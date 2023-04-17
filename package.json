@@ -1,21 +1,44 @@
 {
   "name": "@book000/pixivts",
   "version": "0.0.0",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "description": "Pixiv Unofficial API Library for TypeScript",
+  "homepage": "https://www.npmjs.com/package/@book000/pixivts",
+  "bugs": {
+    "url": "https://github.com/book000/pixivts/issues"
+  },
+  "license": "MIT",
+  "author": "Tomachi <tomachi@tomacheese.com>",
   "files": [
     "dist"
   ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "repository": "git@github.com:book000/node-utils.git",
-  "author": "Tomachi <tomachi@tomacheese.com>",
-  "license": "MIT",
+  "scripts": {
+    "build": "run-s clean compile",
+    "clean": "rimraf dist output",
+    "compile": "tsc -p tsconfig.build.json",
+    "dev": "ts-node-dev --poll -r tsconfig-paths/register ./src/main.ts",
+    "fix": "run-s fix:prettier fix:eslint",
+    "fix:eslint": "eslint . --ext ts,tsx --fix",
+    "fix:prettier": "prettier --write src",
+    "lint": "run-p -c lint:prettier lint:eslint lint:tsc",
+    "lint:eslint": "eslint . --ext ts,tsx",
+    "lint:prettier": "prettier --check src",
+    "lint:tsc": "tsc",
+    "prepare": "run-s build",
+    "prepublishOnly": "run-s lint",
+    "start": "ts-node -r tsconfig-paths/register ./src/main.ts"
+  },
+  "dependencies": {
+    "axios": "1.3.5",
+    "qs": "6.11.1"
+  },
   "devDependencies": {
-    "@book000/node-utils": "1.2.35",
     "@types/node": "18.15.11",
     "@types/qs": "6.9.7",
     "@typescript-eslint/eslint-plugin": "5.58.0",
     "@typescript-eslint/parser": "5.58.0",
-    "@vercel/ncc": "0.36.1",
     "eslint": "8.38.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-config-standard": "17.0.0",
@@ -24,27 +47,9 @@
     "eslint-plugin-promise": "6.1.1",
     "eslint-plugin-unicorn": "46.0.0",
     "prettier": "2.8.7",
-    "qs": "6.11.1",
     "ts-node": "10.9.1",
     "ts-node-dev": "2.0.0",
     "typescript": "5.0.4",
-    "winston": "3.8.2",
     "yarn-run-all": "3.1.1"
-  },
-  "scripts": {
-    "start": "ts-node -r tsconfig-paths/register ./src/main.ts",
-    "dev": "ts-node-dev --poll -r tsconfig-paths/register ./src/main.ts",
-    "compile": "tsc -p tsconfig.build.json",
-    "build": "run-s clean compile",
-    "prepublishOnly": "run-s lint",
-    "prepare": "run-s build",
-    "clean": "rimraf dist output",
-    "lint": "run-p -c lint:prettier lint:eslint lint:tsc",
-    "lint:prettier": "prettier --check src",
-    "lint:eslint": "eslint . --ext ts,tsx",
-    "lint:tsc": "tsc",
-    "fix": "run-s fix:prettier fix:eslint",
-    "fix:eslint": "eslint . --ext ts,tsx --fix",
-    "fix:prettier": "prettier --write src"
   }
 }
