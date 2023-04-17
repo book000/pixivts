@@ -1,4 +1,4 @@
-import { PixivUser } from './pixivCommon'
+import { PixivUser } from './pixiv-common'
 
 /**
  * pixiv ユーザーアイテム

@@ -3,7 +3,7 @@ import {
   PixivUserProfile,
   PixivUserProfilePublicity,
   PixivUserProfileWorkspace,
-} from '../../pixivUser'
+} from '../../pixiv-user'
 
 /**
  * GET /v1/user/detail のレスポンス

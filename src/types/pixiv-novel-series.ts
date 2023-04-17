@@ -1,5 +1,5 @@
-import { PixivUser } from './pixivCommon'
-import { PixivNovelItem } from './pixivNovel'
+import { PixivUser } from './pixiv-common'
+import { PixivNovelItem } from './pixiv-novel'
 
 /**
  * pixiv 小説シリーズ詳細情報

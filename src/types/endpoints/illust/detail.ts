@@ -1,4 +1,4 @@
-import { PixivIllustItem } from '../../pixivIllust'
+import { PixivIllustItem } from '../../pixiv-illust'
 /**
  * POST /v1/illust/detail のレスポンス
  */

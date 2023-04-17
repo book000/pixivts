@@ -1,4 +1,4 @@
-import { ImageUrls, Tag, PixivUser, Series } from './pixivCommon'
+import { ImageUrls, Tag, PixivUser, Series } from './pixiv-common'
 
 /**
  * pixiv 小説アイテム

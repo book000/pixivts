@@ -1,4 +1,4 @@
-import { ImageUrls, PixivUser, Tag, Series } from './pixivCommon'
+import { ImageUrls, PixivUser, Tag, Series } from './pixiv-common'
 
 /** 単一イラスト詳細情報 */
 export interface MetaSinglePage {
