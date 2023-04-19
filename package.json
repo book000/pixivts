@@ -22,10 +22,12 @@
   "types": "dist/index.d.ts",
   "repository": "git@github.com:book000/node-utils.git",
   "scripts": {
-    "build": "run-s clean compile",
+    "build": "run-s clean ctix compile",
     "clean": "rimraf dist output",
     "compile": "tsc -p tsconfig.build.json",
     "dev": "ts-node-dev --poll -r tsconfig-paths/register ./src/main.ts",
+    "ctix": "ctix single -w --noBackup -o src -s false",
+    "generate-docs": "typedoc --cleanOutputDir src/index.ts",
     "fix": "run-s fix:prettier fix:eslint",
     "fix:eslint": "eslint . --ext ts,tsx --fix",
     "fix:prettier": "prettier --write src",
@@ -33,7 +35,7 @@
     "lint:eslint": "eslint . --ext ts,tsx",
     "lint:prettier": "prettier --check src",
     "lint:tsc": "tsc",
-    "prepare": "run-s build",
+    "prepare": "run-s build generate-docs",
     "prepublishOnly": "run-s lint",
     "start": "ts-node -r tsconfig-paths/register ./src/main.ts"
   },
@@ -46,6 +48,7 @@
     "@types/qs": "6.9.7",
     "@typescript-eslint/eslint-plugin": "5.59.0",
     "@typescript-eslint/parser": "5.59.0",
+    "ctix": "1.8.2",
     "eslint": "8.38.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-config-standard": "17.0.0",
@@ -56,6 +59,7 @@
     "prettier": "2.8.7",
     "ts-node": "10.9.1",
     "ts-node-dev": "2.0.0",
+    "typedoc": "0.24.4",
     "typescript": "5.0.4",
     "yarn-run-all": "3.1.1"
   }
