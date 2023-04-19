@@ -23,11 +23,11 @@
   "repository": "git@github.com:book000/node-utils.git",
   "scripts": {
     "build": "run-s clean ctix compile generate-docs",
-    "clean": "rimraf dist output",
+    "clean": "rimraf dist output docs",
     "compile": "tsc -p tsconfig.build.json",
     "dev": "ts-node-dev --poll -r tsconfig-paths/register ./src/main.ts",
     "ctix": "ctix single -w --noBackup -o src -s false",
-    "generate-docs": "typedoc --cleanOutputDir src/index.ts",
+    "generate-docs": "typedoc src/index.ts",
     "fix": "run-s fix:prettier fix:eslint",
     "fix:eslint": "eslint . --ext ts,tsx --fix",
     "fix:prettier": "prettier --write src",
@@ -35,7 +35,7 @@
     "lint:eslint": "eslint . --ext ts,tsx",
     "lint:prettier": "prettier --check src",
     "lint:tsc": "tsc",
-    "prepare": "run-s build generate-docs",
+    "prepare": "run-s build",
     "prepublishOnly": "run-s lint",
     "start": "ts-node -r tsconfig-paths/register ./src/main.ts"
   },
