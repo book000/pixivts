@@ -1,12 +1,17 @@
 {
-  "ts-node": { "files": true },
+  "ts-node": {
+    "files": true
+  },
   "compilerOptions": {
     "target": "es2020",
     "module": "commonjs",
     "moduleResolution": "Node",
-    "lib": ["ESNext", "esnext.AsyncIterable"],
+    "lib": [
+      "ESNext",
+      "esnext.AsyncIterable"
+    ],
     "outDir": "./dist",
-    "removeComments": true,
+    "removeComments": false,
     "esModuleInterop": true,
     "allowJs": true,
     "checkJs": true,
@@ -25,8 +30,12 @@
     "baseUrl": ".",
     "newLine": "LF",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": [
+        "src/*"
+      ]
     }
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }
