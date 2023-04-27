@@ -1,7 +1,7 @@
 import { PixivIllustItem } from '../../pixiv-illust'
 /**
- * POST /v1/illust/detail のレスポンス
+ * GET /v1/illust/detail のレスポンス
  */
-export interface GetIllustDetailApiResponse {
+export interface GetV1IllustDetailResponse {
   illust: PixivIllustItem
 }

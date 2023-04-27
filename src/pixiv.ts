@@ -3,25 +3,26 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios'
 import { ReadStream } from 'node:fs'
 import qs from 'qs'
 import {
-  GetIllustDetailOptions,
+  IllustDetailOptions,
   SearchIllustOptions,
   RecommendedIllustOptions,
   IllustBookmarkAddOptions,
-  GetNovelDetailOptions,
+  NovelDetailOptions,
   SearchNovelOptions,
   RecommendedNovelOptions,
-  GetNovelSeriesOptions,
-  GetUserDetailOptions,
+  NovelSeriesOptions,
+  UserDetailOptions,
+  IllustSeriesOptions,
 } from './options'
-import { IllustBookmarkAddApiResponse } from './types/endpoints/illust/bookmark/add'
-import { GetIllustDetailApiResponse } from './types/endpoints/illust/detail'
-import { RecommendedIllustApiResponse } from './types/endpoints/illust/recommended'
-import { GetNovelDetailApiResponse } from './types/endpoints/novel/detail'
-import { RecommendedNovelApiResponse } from './types/endpoints/novel/recommended'
-import { GetNovelSeriesApiResponse } from './types/endpoints/novel/series'
-import { SearchIllustApiResponse } from './types/endpoints/search/illust'
-import { SearchNovelApiResponse } from './types/endpoints/search/novel'
-import { GetUserDetailApiResponse } from './types/endpoints/user/detail'
+import { PostV2IllustBookmarkAddResponse } from './types/endpoints/illust/bookmark/add'
+import { GetV1IllustDetailResponse } from './types/endpoints/illust/detail'
+import { GetV1RecommendedIllustResponse } from './types/endpoints/illust/recommended'
+import { GetV2NovelDetailResponse } from './types/endpoints/novel/detail'
+import { GetV1RecommendedNovelResponse } from './types/endpoints/novel/recommended'
+import { GetV2NovelSeriesResponse } from './types/endpoints/novel/series'
+import { GetV1SearchIllustResponse } from './types/endpoints/search/illust'
+import { GetV1SearchNovelResponse } from './types/endpoints/search/novel'
+import { GetV1UserDetailResponse } from './types/endpoints/user/detail'
 
 interface RequestOptions {
   method: 'GET' | 'POST'
@@ -141,12 +142,12 @@ export default class Pixiv {
    * @param options オプション
    * @returns レスポンス
    */
-  public async getIllustDetail(options: GetIllustDetailOptions) {
+  public async getIllustDetail(options: IllustDetailOptions) {
     const parameters = {
       illust_id: options.illustId,
     }
 
-    return this.request<GetIllustDetailApiResponse>({
+    return this.request<GetV1IllustDetailResponse>({
       method: 'GET',
       path: '/v1/illust/detail',
       params: parameters,
@@ -171,7 +172,7 @@ export default class Pixiv {
       offset: options.offset,
     }
 
-    return this.request<SearchIllustApiResponse>({
+    return this.request<GetV1SearchIllustResponse>({
       method: 'GET',
       path: '/v1/search/illust',
       params: parameters,
@@ -201,7 +202,7 @@ export default class Pixiv {
       include_privacy_policy: options.includePrivacyPolicy || undefined,
     }
 
-    return this.request<RecommendedIllustApiResponse>({
+    return this.request<GetV1RecommendedIllustResponse>({
       method: 'GET',
       path: '/v1/illust/recommended',
       params: parameters,
@@ -221,10 +222,30 @@ export default class Pixiv {
       'tags[]': (options.tags || []).join(' '),
     }
 
-    return this.request<IllustBookmarkAddApiResponse>({
+    return this.request<PostV2IllustBookmarkAddResponse>({
       method: 'POST',
       path: '/v2/illust/bookmark/add',
       data,
+    })
+  }
+
+  /**
+   * イラストシリーズの詳細情報を取得する。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async illustSeries(options: IllustSeriesOptions) {
+    const parameters = {
+      illust_series_id: options.illustSeriesId,
+      filter: options.filter || 'for_ios',
+      offset: options.offset,
+    }
+
+    return this.request<GetV2NovelSeriesResponse>({
+      method: 'GET',
+      path: '/v1/illust/series',
+      params: parameters,
     })
   }
 
@@ -234,12 +255,12 @@ export default class Pixiv {
    * @param options オプション
    * @returns レスポンス
    */
-  public async getNovelDetail(options: GetNovelDetailOptions) {
+  public async novelDetail(options: NovelDetailOptions) {
     const parameters = {
       novel_id: options.novelId,
     }
 
-    return this.request<GetNovelDetailApiResponse>({
+    return this.request<GetV2NovelDetailResponse>({
       method: 'GET',
       path: '/v2/novel/detail',
       params: parameters,
@@ -266,7 +287,7 @@ export default class Pixiv {
       offset: options.offset,
     }
 
-    return this.request<SearchNovelApiResponse>({
+    return this.request<GetV1SearchNovelResponse>({
       method: 'GET',
       path: '/v1/search/novel',
       params: parameters,
@@ -293,7 +314,7 @@ export default class Pixiv {
       include_privacy_policy: options.includePrivacyPolicy || undefined,
     }
 
-    return this.request<RecommendedNovelApiResponse>({
+    return this.request<GetV1RecommendedNovelResponse>({
       method: 'GET',
       path: '/v1/novel/recommended',
       params: parameters,
@@ -306,14 +327,14 @@ export default class Pixiv {
    * @param options オプション
    * @returns レスポンス
    */
-  public async getNovelSeries(options: GetNovelSeriesOptions) {
+  public async novelSeries(options: NovelSeriesOptions) {
     const parameters = {
       series_id: options.seriesId,
       filter: options.filter || 'for_ios',
       last_order: options.lastOrder || undefined,
     }
 
-    return this.request<GetNovelSeriesApiResponse>({
+    return this.request<GetV2NovelSeriesResponse>({
       method: 'GET',
       path: '/v2/novel/series',
       params: parameters,
@@ -326,13 +347,13 @@ export default class Pixiv {
    * @param options オプション
    * @returns レスポンス
    */
-  public async getUserDetail(options: GetUserDetailOptions) {
+  public async userDetail(options: UserDetailOptions) {
     const parameters = {
       user_id: options.userId,
       filter: options.filter || 'for_ios',
     }
 
-    return this.request<GetUserDetailApiResponse>({
+    return this.request<GetV1UserDetailResponse>({
       method: 'GET',
       path: '/v1/user/detail',
       params: parameters,

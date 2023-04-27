@@ -8,7 +8,7 @@ import {
 /**
  * GET /v1/user/detail のレスポンス
  */
-export interface GetUserDetailApiResponse {
+export interface GetV1UserDetailResponse {
   user: PixivUserItem
   profile: PixivUserProfile
   profile_publicity: PixivUserProfilePublicity

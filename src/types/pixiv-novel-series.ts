@@ -86,7 +86,7 @@ export interface PixivNovelSeriesItem {
   novels: PixivNovelItem[]
 
   /**
-   * 次URL
+   * 次 URL
    */
   next_url: string | null
 }

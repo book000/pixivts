@@ -66,7 +66,7 @@ export interface SearchIllustOptions {
 /**
  * イラスト詳細取得オプション
  */
-export interface GetIllustDetailOptions {
+export interface IllustDetailOptions {
   /**
    * イラストID
    */
@@ -148,10 +148,27 @@ export interface IllustBookmarkAddOptions {
   tags?: string[]
 }
 
+export interface IllustSeriesOptions {
+  /**
+   * イラストシリーズID
+   */
+  illustSeriesId: number
+
+  /**
+   * OSフィルタ
+   */
+  filter?: Filters
+
+  /**
+   * オフセット
+   */
+  offset?: number
+}
+
 /**
  * 小説詳細取得オプション
  */
-export interface GetNovelDetailOptions {
+export interface NovelDetailOptions {
   /**
    * 小説ID
    */
@@ -251,7 +268,7 @@ export interface RecommendedNovelOptions {
 /**
  * 小説シリーズ詳細取得オプション
  */
-export interface GetNovelSeriesOptions {
+export interface NovelSeriesOptions {
   /**
    * 小説シリーズID
    */
@@ -271,7 +288,7 @@ export interface GetNovelSeriesOptions {
 /**
  * ユーザー詳細取得オプション
  */
-export interface GetUserDetailOptions {
+export interface UserDetailOptions {
   /**
    * ユーザーID
    */
