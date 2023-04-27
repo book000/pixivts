@@ -1,4 +1,4 @@
 /**
  * POST /v2/illust/bookmark/add のレスポンス
  */
-export type IllustBookmarkAddApiResponse = Record<string, never>
+export type PostV2IllustBookmarkAddResponse = Record<string, never>

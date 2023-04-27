@@ -3,7 +3,7 @@ import { PixivNovelItem } from '../../pixiv-novel'
 /**
  * GET /v1/novel/recommended のレスポンス
  */
-export interface RecommendedNovelApiResponse {
+export interface GetV1RecommendedNovelResponse {
   novels: PixivNovelItem[]
   ranking_novels: unknown[]
   privacy_policy: unknown
