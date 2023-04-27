@@ -23,6 +23,7 @@ import { GetV2NovelSeriesResponse } from './types/endpoints/novel/series'
 import { GetV1SearchIllustResponse } from './types/endpoints/search/illust'
 import { GetV1SearchNovelResponse } from './types/endpoints/search/novel'
 import { GetV1UserDetailResponse } from './types/endpoints/user/detail'
+import { GetV1IllustSeriesResponse } from './types/endpoints/illust/series'
 
 interface RequestOptions {
   method: 'GET' | 'POST'
@@ -242,7 +243,7 @@ export default class Pixiv {
       offset: options.offset,
     }
 
-    return this.request<GetV2NovelSeriesResponse>({
+    return this.request<GetV1IllustSeriesResponse>({
       method: 'GET',
       path: '/v1/illust/series',
       params: parameters,
