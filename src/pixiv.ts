@@ -143,7 +143,7 @@ export default class Pixiv {
    * @param options オプション
    * @returns レスポンス
    */
-  public async getIllustDetail(options: IllustDetailOptions) {
+  public async illustDetail(options: IllustDetailOptions) {
     const parameters = {
       illust_id: options.illustId,
     }
