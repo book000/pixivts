@@ -1,4 +1,4 @@
-import { PixivNovelSeriesItem } from 'src/types/pixiv-novel-series'
+import { PixivNovelSeriesItem } from '../../pixiv-novel-series'
 
 export interface GetV1NovelTextResponse {
   /**
