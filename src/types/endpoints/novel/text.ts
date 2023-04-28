@@ -7,7 +7,7 @@ export interface GetV1NovelTextResponse {
    * @beta
    */
   novel_marker: Record<string, never>
-  
+
   /**
    * 小説の本文
    */

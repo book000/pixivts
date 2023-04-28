@@ -26,7 +26,7 @@ export interface GetV1RecommendedNovelResponse {
    * @beta
    */
   privacy_policy: unknown
-  
+
   /**
    * 次回のリクエストに使用する URL。
    *
