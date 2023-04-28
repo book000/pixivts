@@ -112,12 +112,14 @@ export interface PixivNovelItem {
   is_muted: boolean
 
   /**
-   * マイピクへの公開限定にしているかどう
+   * マイピクへの公開限定にしているかどうか
    */
   is_mypixiv_only: boolean
 
   /**
    * 不明 (公開制限をしているかどうか？)
+   *
+   * @beta
    */
   is_x_restricted: boolean
 

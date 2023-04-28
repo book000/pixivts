@@ -4,5 +4,8 @@ import { PixivNovelItem } from '../../pixiv-novel'
  * GET /v1/search/novel のレスポンス
  */
 export interface GetV1SearchNovelResponse {
+  /**
+   * 検索結果の小説群
+   */
   novels: PixivNovelItem[]
 }
