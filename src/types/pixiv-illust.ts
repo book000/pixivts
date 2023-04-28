@@ -116,15 +116,15 @@ export interface PixivIllustItem {
    * 単一イラスト詳細情報
    *
    * 単一ページの場合のみ利用。複数ページの場合は `meta_pages` を利用する。
-   * 複数ページの場合、このプロパティには `{}` が入っている。
+   * 複数ページの場合、このプロパティには空オブジェクトが入っている。
    */
-  meta_single_page: MetaSinglePage | unknown[]
+  meta_single_page: MetaSinglePage | Record<string, never>
 
   /**
    * 複数イラスト詳細情報
    *
    * 複数ページの場合のみ利用。単一ページの場合は `meta_single_page` を利用する。
-   * 複数ページの場合、このプロパティには `[]` が入っている。
+   * 単一ページの場合、このプロパティには空配列が入っている。
    */
   meta_pages: MetaPages[]
 

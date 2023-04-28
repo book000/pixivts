@@ -13,6 +13,7 @@ import {
   NovelSeriesOptions,
   UserDetailOptions,
   IllustSeriesOptions,
+  NovelTextOptions,
 } from './options'
 import { PostV2IllustBookmarkAddResponse } from './types/endpoints/illust/bookmark/add'
 import { GetV1IllustDetailResponse } from './types/endpoints/illust/detail'
@@ -24,6 +25,8 @@ import { GetV1SearchIllustResponse } from './types/endpoints/search/illust'
 import { GetV1SearchNovelResponse } from './types/endpoints/search/novel'
 import { GetV1UserDetailResponse } from './types/endpoints/user/detail'
 import { GetV1IllustSeriesResponse } from './types/endpoints/illust/series'
+import { GetV1NovelTextResponse } from './types/endpoints/novel/text'
+import { PixivApiError } from './types/error-response'
 
 interface RequestOptions {
   method: 'GET' | 'POST'
@@ -269,6 +272,25 @@ export default class Pixiv {
   }
 
   /**
+   * 小説の本文を取得する。
+   * (WIP: ページネーションに非対応)
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async novelText(options: NovelTextOptions) {
+    const parameters = {
+      novel_id: options.novelId,
+    }
+
+    return this.request<GetV1NovelTextResponse>({
+      method: 'GET',
+      path: '/v1/novel/text',
+      params: parameters,
+    })
+  }
+
+  /**
    * 小説を検索する。
    *
    * @param options オプション
@@ -374,6 +396,15 @@ export default class Pixiv {
     }
 
     return qs.parse(query)
+  }
+
+  public static isError(response: any): response is PixivApiError {
+    return (
+      response.error !== undefined &&
+      response.error.user_message !== undefined &&
+      response.error.message !== undefined &&
+      response.error.reason !== undefined
+    )
   }
 
   /**

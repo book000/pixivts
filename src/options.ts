@@ -176,6 +176,16 @@ export interface NovelDetailOptions {
 }
 
 /**
+ * 小説本文取得オプション
+ */
+export interface NovelTextOptions {
+  /**
+   * 小説ID
+   */
+  novelId: number
+}
+
+/**
  * 小説検索オプション
  */
 export interface SearchNovelOptions {
