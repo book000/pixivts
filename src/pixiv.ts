@@ -408,14 +408,29 @@ export default class Pixiv {
   }
 
   /**
+   * レスポンスがエラーかどうかを判定する。
+   *
+   * @param response Axios レスポンス
+   * @returns エラーかどうか
+   */
+  public static isError(response: any): response is PixivApiError {
+    return (
+      response.error !== undefined &&
+      response.error.user_message !== undefined &&
+      response.error.message !== undefined &&
+      response.error.reason !== undefined
+    )
+  }
+
+  /**
    * MD5ハッシュを生成する。
    *
    * @param str 文字列
    * @returns ハッシュ
    */
-  private static hash(string_: string) {
+  private static hash(string: string) {
     const hash = crypto.createHash('md5')
-    return hash.update(string_ + this.hashSecret).digest('hex')
+    return hash.update(string + this.hashSecret).digest('hex')
   }
 
   /**

@@ -94,11 +94,15 @@ export interface RecommendedIllustOptions {
 
   /**
    * おすすめイラストの最大ブックマークID (?)
+   *
+   * @beta
    */
   maxBookmarkIdForRecommend?: number
 
   /**
    * 最近のイラストの最小ブックマークID (?)
+   *
+   * @beta
    */
   minBookmarkIdForRecentIllust?: number
 
@@ -119,6 +123,8 @@ export interface RecommendedIllustOptions {
 
   /**
    * プライバシーポリシーを含めるか (?)
+   *
+   * @beta
    */
   includePrivacyPolicy?: boolean
 
@@ -206,6 +212,8 @@ export interface SearchNovelOptions {
 
   /**
    * プレーンキーワード検索結果をマージするか (?)
+   *
+   * @beta
    */
   mergePlainKeywordResults?: boolean
 
@@ -256,6 +264,8 @@ export interface RecommendedNovelOptions {
 
   /**
    * ランキング小説を含めるか (?)
+   *
+   * @beta
    */
   includeRankingNovels?: boolean
 
@@ -266,11 +276,15 @@ export interface RecommendedNovelOptions {
 
   /**
    * おすすめ小説の最大ブックマークID (?)
+   *
+   * @beta
    */
   maxBookmarkIdForRecommend?: number
 
   /**
    * プライバシーポリシーを含めるか (?)
+   *
+   * @beta
    */
   includePrivacyPolicy?: boolean
 }
@@ -291,6 +305,8 @@ export interface NovelSeriesOptions {
 
   /**
    * (?)
+   *
+   * @beta
    */
   lastOrder?: string
 }

@@ -40,7 +40,7 @@ export interface PixivIllustItem {
    * 作品の画像URL群
    *
    * イラスト・マンガの場合は1枚目の画像が入っている。
-   * 2枚目以降の画像は `meta_pages` に入っている。
+   * 2枚目以降の画像は {@link meta_pages} に入っている。
    */
   image_urls: ImageUrls
 
@@ -95,6 +95,8 @@ export interface PixivIllustItem {
    * 正気度? (表現内容設定？)
    *
    * 詳細不明。2, 4, 6 をとりうる。2 は全年齢、6 は R-18？
+   *
+   * @beta
    */
   sanity_level: number
 
@@ -115,7 +117,7 @@ export interface PixivIllustItem {
   /**
    * 単一イラスト詳細情報
    *
-   * 単一ページの場合のみ利用。複数ページの場合は `meta_pages` を利用する。
+   * 単一ページの場合のみ利用。複数ページの場合は {@link meta_pages} を利用する。
    * 複数ページの場合、このプロパティには空オブジェクトが入っている。
    */
   meta_single_page: MetaSinglePage | Record<string, never>
@@ -123,7 +125,7 @@ export interface PixivIllustItem {
   /**
    * 複数イラスト詳細情報
    *
-   * 複数ページの場合のみ利用。単一ページの場合は `meta_single_page` を利用する。
+   * 複数ページの場合のみ利用。単一ページの場合は {@link meta_single_page} を利用する。
    * 単一ページの場合、このプロパティには空配列が入っている。
    */
   meta_pages: MetaPages[]

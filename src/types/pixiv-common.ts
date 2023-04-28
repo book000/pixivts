@@ -1,21 +1,28 @@
+// @ts-ignore because tsdoc
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { MetaSinglePage, MetaPages } from './pixiv-illust'
+
 /**
  * 作品の画像URL群
  *
- * 単一画像の場合、オリジナル画像へは MetaSinglePage.original_image_url から取得
+ * 単一画像の場合、オリジナル画像へは {@link MetaSinglePage.original_image_url} から取得
  *
  * 画像へのアクセスは適切なリファラを付与する必要がある
  */
 export interface ImageUrls {
   /** 360x360 */
   square_medium: string
+
   /** 長辺が最大 540px */
   medium: string
+
   /** 横幅が最大 600px, 縦幅が最大 1200px */
   large: string
+
   /**
    * オリジナル画像
    *
-   * MetaPages.image_urls の場合のみ存在？
+   * {@link MetaPages.image_urls} の場合のみ存在？
    */
   original?: string
 }
