@@ -398,15 +398,6 @@ export default class Pixiv {
     return qs.parse(query)
   }
 
-  public static isError(response: any): response is PixivApiError {
-    return (
-      response.error !== undefined &&
-      response.error.user_message !== undefined &&
-      response.error.message !== undefined &&
-      response.error.reason !== undefined
-    )
-  }
-
   /**
    * レスポンスがエラーかどうかを判定する。
    *
