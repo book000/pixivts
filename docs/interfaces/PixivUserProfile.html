@@ -23,7 +23,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="target">PixivUserProfile</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L18">types/pixiv-user.ts:18</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L20">types/pixiv-user.ts:20</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -32,7 +32,7 @@
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Properties</h3>
 <div class="tsd-index-list"><a href="PixivUserProfile.html#address_id" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-1024-path"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)" id="icon-1024-text"></path></svg><span>address_<wbr/>id</span></a>
-<a href="PixivUserProfile.html#background_image_url" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>background_<wbr/>image_<wbr/>url?</span></a>
+<a href="PixivUserProfile.html#background_image_url" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>background_<wbr/>image_<wbr/>url</span></a>
 <a href="PixivUserProfile.html#birth" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>birth</span></a>
 <a href="PixivUserProfile.html#birth_day" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>birth_<wbr/>day</span></a>
 <a href="PixivUserProfile.html#birth_year" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>birth_<wbr/>year</span></a>
@@ -60,124 +60,208 @@
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member"><a id="address_id" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>address_<wbr/>id</span><a href="#address_id" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">address_<wbr/>id</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">address_<wbr/>id</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>都道府県番号</p>
+<p>・0: 非公開
+・1～47: 都道府県番号
+・48: 日本国外？</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L25">types/pixiv-user.ts:25</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L46">types/pixiv-user.ts:46</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="background_image_url" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagOptional">Optional</code> <span>background_<wbr/>image_<wbr/>url</span><a href="#background_image_url" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">background_<wbr/>image_<wbr/>url</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">any</span></div><aside class="tsd-sources">
+<h3 class="tsd-anchor-link"><span>background_<wbr/>image_<wbr/>url</span><a href="#background_image_url" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">background_<wbr/>image_<wbr/>url</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>背景画像 URL</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L37">types/pixiv-user.ts:37</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L115">types/pixiv-user.ts:115</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="birth" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>birth</span><a href="#birth" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">birth</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L21">types/pixiv-user.ts:21</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member"><a id="birth_day" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>birth_<wbr/>day</span><a href="#birth_day" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">birth_<wbr/>day</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L22">types/pixiv-user.ts:22</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member"><a id="birth_year" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>birth_<wbr/>year</span><a href="#birth_year" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">birth_<wbr/>year</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L23">types/pixiv-user.ts:23</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member"><a id="country_code" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>country_<wbr/>code</span><a href="#country_code" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">country_<wbr/>code</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L26">types/pixiv-user.ts:26</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member"><a id="gender" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>gender</span><a href="#gender" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">gender</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L20">types/pixiv-user.ts:20</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member"><a id="is_premium" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>is_<wbr/>premium</span><a href="#is_premium" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">is_<wbr/>premium</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L41">types/pixiv-user.ts:41</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member"><a id="is_using_custom_profile_image" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>is_<wbr/>using_<wbr/>custom_<wbr/>profile_<wbr/>image</span><a href="#is_using_custom_profile_image" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">is_<wbr/>using_<wbr/>custom_<wbr/>profile_<wbr/>image</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L42">types/pixiv-user.ts:42</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member"><a id="job" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>job</span><a href="#job" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">job</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L27">types/pixiv-user.ts:27</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member"><a id="job_id" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>job_<wbr/>id</span><a href="#job_id" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">job_<wbr/>id</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">birth</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>生年月日（YYYY-MM-DD）</p>
+</div><aside class="tsd-sources">
 <ul>
 <li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L28">types/pixiv-user.ts:28</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member"><a id="pawoo_url" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>pawoo_<wbr/>url</span><a href="#pawoo_url" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">pawoo_<wbr/>url</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L40">types/pixiv-user.ts:40</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member"><a id="region" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>region</span><a href="#region" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">region</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L24">types/pixiv-user.ts:24</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member"><a id="total_follow_users" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>total_<wbr/>follow_<wbr/>users</span><a href="#total_follow_users" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>follow_<wbr/>users</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L29">types/pixiv-user.ts:29</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member"><a id="total_illust_bookmarks_public" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>total_<wbr/>illust_<wbr/>bookmarks_<wbr/>public</span><a href="#total_illust_bookmarks_public" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>illust_<wbr/>bookmarks_<wbr/>public</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L34">types/pixiv-user.ts:34</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member"><a id="total_illust_series" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>total_<wbr/>illust_<wbr/>series</span><a href="#total_illust_series" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>illust_<wbr/>series</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L35">types/pixiv-user.ts:35</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member"><a id="total_illusts" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>total_<wbr/>illusts</span><a href="#total_illusts" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>illusts</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
+<section class="tsd-panel tsd-member"><a id="birth_day" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>birth_<wbr/>day</span><a href="#birth_day" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">birth_<wbr/>day</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>誕生日（MM-DD）</p>
+</div><aside class="tsd-sources">
 <ul>
 <li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L31">types/pixiv-user.ts:31</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="birth_year" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>birth_<wbr/>year</span><a href="#birth_year" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">birth_<wbr/>year</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>誕生年（YYYY）</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L34">types/pixiv-user.ts:34</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="country_code" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>country_<wbr/>code</span><a href="#country_code" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">country_<wbr/>code</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>国名コード</p>
+<p>・日本の場合は空文字列
+・ISO 3166-1 alpha-2 形式</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L54">types/pixiv-user.ts:54</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="gender" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>gender</span><a href="#gender" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">gender</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Gender</span></div>
+<div class="tsd-comment tsd-typography"><p>性別</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L25">types/pixiv-user.ts:25</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="is_premium" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>is_<wbr/>premium</span><a href="#is_premium" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">is_<wbr/>premium</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>プレミアムアカウントかどうか</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L139">types/pixiv-user.ts:139</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="is_using_custom_profile_image" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>is_<wbr/>using_<wbr/>custom_<wbr/>profile_<wbr/>image</span><a href="#is_using_custom_profile_image" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">is_<wbr/>using_<wbr/>custom_<wbr/>profile_<wbr/>image</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>カスタムプロフィール画像を使用しているかどうか</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L142">types/pixiv-user.ts:142</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="job" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>job</span><a href="#job" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">job</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>職業</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L57">types/pixiv-user.ts:57</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="job_id" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>job_<wbr/>id</span><a href="#job_id" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">job_<wbr/>id</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>職業ID</p>
+<p>ナンバリングは以下の通り。
+0: 未指定、または非公開
+1: IT関係
+2: 事務系
+3: 技術系
+4: 営業・企画系
+5: クリエーター系
+6: 販売系
+7: サービス業
+8: ガテン系
+9: 役員・管理職
+10: 専門職
+11: 公務員
+12: 教員
+13: 自営業
+14: アーティスト
+15: フリーター
+16: 小学生
+17: 中学生
+18: 高校生
+19: 大学生・院生
+20: 専門学校生
+21: 主婦
+22: 求職中
+23: その他</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L88">types/pixiv-user.ts:88</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="pawoo_url" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>pawoo_<wbr/>url</span><a href="#pawoo_url" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">pawoo_<wbr/>url</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>Pawoo アカウント URL</p>
+<p>・Pawoo でアカウント連携をしており、「Pawooアカウントへのリンクを表示」にチェックが入っている場合のみ。
+・連携していない場合や表示させていない場合は空文字列</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L136">types/pixiv-user.ts:136</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="region" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>region</span><a href="#region" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">region</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>住所（国名と公開なら都道府県。スペース区切り）</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L37">types/pixiv-user.ts:37</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="total_follow_users" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>total_<wbr/>follow_<wbr/>users</span><a href="#total_follow_users" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>follow_<wbr/>users</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>フォロー中のユーザ数</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L91">types/pixiv-user.ts:91</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="total_illust_bookmarks_public" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>total_<wbr/>illust_<wbr/>bookmarks_<wbr/>public</span><a href="#total_illust_bookmarks_public" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>illust_<wbr/>bookmarks_<wbr/>public</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>公開でのブックマーク数</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L106">types/pixiv-user.ts:106</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="total_illust_series" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>total_<wbr/>illust_<wbr/>series</span><a href="#total_illust_series" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>illust_<wbr/>series</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>作成イラストシリーズ数</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L109">types/pixiv-user.ts:109</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="total_illusts" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>total_<wbr/>illusts</span><a href="#total_illusts" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>illusts</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>投稿イラスト数</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L97">types/pixiv-user.ts:97</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="total_manga" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>total_<wbr/>manga</span><a href="#total_manga" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>manga</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>manga</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>投稿マンガ数</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L32">types/pixiv-user.ts:32</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L100">types/pixiv-user.ts:100</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="total_mypixiv_users" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>total_<wbr/>mypixiv_<wbr/>users</span><a href="#total_mypixiv_users" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>mypixiv_<wbr/>users</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>mypixiv_<wbr/>users</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>マイピクのユーザ数</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L30">types/pixiv-user.ts:30</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L94">types/pixiv-user.ts:94</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="total_novel_series" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>total_<wbr/>novel_<wbr/>series</span><a href="#total_novel_series" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>novel_<wbr/>series</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>novel_<wbr/>series</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>作成小説シリーズ数</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L36">types/pixiv-user.ts:36</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L112">types/pixiv-user.ts:112</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="total_novels" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>total_<wbr/>novels</span><a href="#total_novels" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>novels</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">total_<wbr/>novels</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>投稿小説数</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L33">types/pixiv-user.ts:33</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L103">types/pixiv-user.ts:103</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="twitter_account" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>twitter_<wbr/>account</span><a href="#twitter_account" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">twitter_<wbr/>account</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">twitter_<wbr/>account</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>Twitter アカウントのスクリーンネーム</p>
+<p>・未設定の場合は空文字列
+・@ は含まない
+・連携しているわけではなく手動入力なので、スクリーンネーム変更やアカウント削除などによって存在しない可能性あり
+・Twitter 以外の Instagram や Tumblr などは取得できない</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L38">types/pixiv-user.ts:38</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L125">types/pixiv-user.ts:125</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="twitter_url" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>twitter_<wbr/>url</span><a href="#twitter_url" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">twitter_<wbr/>url</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">twitter_<wbr/>url</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>Twitter アカウント URL</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L39">types/pixiv-user.ts:39</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L128">types/pixiv-user.ts:128</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="webpage" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>webpage</span><a href="#webpage" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">webpage</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">webpage</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>ウェブサイト</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L19">types/pixiv-user.ts:19</a></li></ul></aside></section></section></div>
+<li>Defined in <a href="https://github.com/book000/pixivts/blob/master/src/types/pixiv-user.ts#L22">types/pixiv-user.ts:22</a></li></ul></aside></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -226,6 +310,7 @@
 <ul class="tsd-small-nested-navigation">
 <li><a href="../classes/Pixiv.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-128-path"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)" id="icon-128-text"></path></svg><span>Pixiv</span></a></li>
 <li><a href="GetV1IllustDetailResponse.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-interface)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-256-path"></rect><path d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z" fill="var(--color-text)" id="icon-256-text"></path></svg><span>Get<wbr/>V1<wbr/>Illust<wbr/>Detail<wbr/>Response</span></a></li>
+<li><a href="GetV1NovelTextResponse.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Get<wbr/>V1<wbr/>Novel<wbr/>Text<wbr/>Response</span></a></li>
 <li><a href="GetV1RecommendedIllustResponse.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Get<wbr/>V1<wbr/>Recommended<wbr/>Illust<wbr/>Response</span></a></li>
 <li><a href="GetV1RecommendedNovelResponse.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Get<wbr/>V1<wbr/>Recommended<wbr/>Novel<wbr/>Response</span></a></li>
 <li><a href="GetV1SearchIllustResponse.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Get<wbr/>V1<wbr/>Search<wbr/>Illust<wbr/>Response</span></a></li>
@@ -242,6 +327,8 @@
 <li><a href="NovelDetailOptions.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Novel<wbr/>Detail<wbr/>Options</span></a></li>
 <li><a href="NovelSeriesDetail.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Novel<wbr/>Series<wbr/>Detail</span></a></li>
 <li><a href="NovelSeriesOptions.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Novel<wbr/>Series<wbr/>Options</span></a></li>
+<li><a href="NovelTextOptions.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Novel<wbr/>Text<wbr/>Options</span></a></li>
+<li><a href="PixivApiError.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Pixiv<wbr/>Api<wbr/>Error</span></a></li>
 <li><a href="PixivIllustItem.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Pixiv<wbr/>Illust<wbr/>Item</span></a></li>
 <li><a href="PixivIllustSeriesItem.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Pixiv<wbr/>Illust<wbr/>Series<wbr/>Item</span></a></li>
 <li><a href="PixivNovelItem.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Pixiv<wbr/>Novel<wbr/>Item</span></a></li>
