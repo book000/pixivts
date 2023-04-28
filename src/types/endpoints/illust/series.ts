@@ -1,4 +1,4 @@
-import { PixivIllustSeriesItem } from '@/types/pixiv-illust-series'
+import { PixivIllustSeriesItem } from '../../pixiv-illust-series'
 
 /**
  * GET /v1/illust/series のレスポンス
