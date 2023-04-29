@@ -1,4 +1,4 @@
-import { PixivIllustItem } from '../../pixiv-illust'
+import { PixivIllustItem } from '../../../pixiv-illust'
 
 // @ts-ignore because tsdoc
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
