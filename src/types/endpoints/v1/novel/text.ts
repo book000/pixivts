@@ -1,5 +1,8 @@
-import { PixivNovelSeriesItem } from '../../pixiv-novel-series'
+import { PixivNovelSeriesItem } from '../../../pixiv-novel-series'
 
+/**
+ * GET /v1/novel/text のレスポンス
+ */
 export interface GetV1NovelTextResponse {
   /**
    * 不明

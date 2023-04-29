@@ -1,4 +1,4 @@
-import { PixivNovelItem } from '../../pixiv-novel'
+import { PixivNovelItem } from '../../../pixiv-novel'
 
 /**
  * GET /v1/search/novel のレスポンス

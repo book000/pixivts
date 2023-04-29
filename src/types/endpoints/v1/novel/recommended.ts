@@ -1,8 +1,8 @@
-import { PixivNovelItem } from '../../pixiv-novel'
+import { PixivNovelItem } from '../../../pixiv-novel'
 
 // @ts-ignore because tsdoc
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Pixiv from '../../../pixiv'
+import Pixiv from '../../../../pixiv'
 
 /**
  * GET /v1/novel/recommended のレスポンス

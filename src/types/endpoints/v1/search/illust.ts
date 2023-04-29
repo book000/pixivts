@@ -1,8 +1,8 @@
-import { PixivIllustItem } from '../../pixiv-illust'
+import { PixivIllustItem } from '../../../pixiv-illust'
 
 // @ts-ignore because tsdoc
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Pixiv from '../../../pixiv'
+import Pixiv from '../../../../pixiv'
 
 /**
  * GET /v1/search/illust のレスポンス
