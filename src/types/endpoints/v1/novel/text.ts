@@ -1,6 +1,16 @@
 import { PixivNovelSeriesItem } from '../../../pixiv-novel-series'
 
 /**
+ * GET /v1/novel/text のリクエスト
+ */
+export interface GetV1NovelTextRequest {
+  /**
+   * 小説ID
+   */
+  novel_id: number
+}
+
+/**
  * GET /v1/novel/text のレスポンス
  */
 export interface GetV1NovelTextResponse {

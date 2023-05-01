@@ -55,7 +55,7 @@ export interface PixivUser {
   is_followed: boolean
 
   /** アクセスをブロックしているユーザーであるか */
-  is_access_blocking_user: boolean
+  is_access_blocking_user?: boolean
 }
 
 /**
@@ -81,4 +81,21 @@ export interface Series {
 
   /** シリーズ名 */
   title: string
+}
+
+export interface PrivacyPolicy {
+  /**
+   * バージョン
+   */
+  version?: string
+
+  /**
+   * メッセージ
+   */
+  message?: string
+
+  /**
+   * URL
+   */
+  url?: string
 }

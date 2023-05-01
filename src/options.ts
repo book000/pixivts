@@ -1,327 +1,169 @@
-/** 検索対象 */
-export type SearchTargets =
-  | 'partial_match_for_tags'
-  | 'exact_match_for_tags'
-  | 'title_and_caption'
-  | 'keyword'
-/** ソート */
-export type SearchSorts = 'date_desc' | 'date_asc' | 'popular_desc'
-/** 対象期間 */
-export type SearchIllustDurations =
-  | 'within_last_day'
-  | 'within_last_week'
-  | 'within_last_month'
-/** OSフィルタ */
-export type Filters = 'for_ios' | 'for_android'
-/** コンテンツタイプ */
-export type ContentType = 'illust' | 'manga'
-/** 公開範囲 */
-export type BookmarkRestrict = 'public' | 'private'
+import { GetV1IllustDetailRequest } from './types/endpoints/v1/illust/detail'
+import { SnakeToCamel } from 'snake-camel-types'
+import { GetV1IllustRecommendedRequest } from './types/endpoints/v1/illust/recommended'
+import { GetV1SearchIllustRequest } from './types/endpoints/v1/search/illust'
+import { PostV2IllustBookmarkAddRequest } from './types/endpoints/v2/illust/bookmark/add'
+import { GetV1IllustSeriesRequest } from './types/endpoints/v1/illust/series'
+import { GetV2NovelDetailRequest } from './types/endpoints/v2/novel/detail'
+import { GetV1NovelTextRequest } from './types/endpoints/v1/novel/text'
+import { GetV1NovelRecommendedRequest } from './types/endpoints/v1/novel/recommended'
+import { GetV1SearchNovelRequest } from './types/endpoints/v1/search/novel'
+import { GetV2NovelSeriesRequest } from './types/endpoints/v2/novel/series'
+import { GetV1UserDetailRequest } from './types/endpoints/v1/user/detail'
+
+/**
+ * 検索対象
+ */
+export enum SearchTarget {
+  /** タグの部分一致 */
+  PARTIAL_MATCH_FOR_TAGS = 'partial_match_for_tags',
+  /** タグの完全一致 */
+  EXACT_MATCH_FOR_TAGS = 'exact_match_for_tags',
+  /** タイトル、またはキャプション（アプリ内では本文） */
+  TITLE_AND_CAPTION = 'title_and_caption',
+  /** キーワード */
+  KEYWORD = 'keyword',
+}
+
+/**
+ * ソート
+ */
+export enum SearchSort {
+  /** 新しい順 */
+  DATE_DESC = 'date_desc',
+  /** 古い順 */
+  DATE_ASC = 'date_asc',
+  /** 人気順 */
+  POPULAR_DESC = 'popular_desc',
+}
+
+/**
+ * 対象期間
+ */
+export enum SearchIllustDuration {
+  /** 1日以内 */
+  WITHIN_LAST_DAY = 'within_last_day',
+  /** 1週間以内 */
+  WITHIN_LAST_WEEK = 'within_last_week',
+  /** 1ヶ月以内 */
+  WITHIN_LAST_MONTH = 'within_last_month',
+}
+
+/**
+ * OSフィルタ
+ */
+export enum Filter {
+  /** iOS */
+  FOR_IOS = 'for_ios',
+  /** Android */
+  FOR_ANDROID = 'for_android',
+}
+
+/**
+ * ブックマーク公開範囲
+ */
+export enum BookmarkRestrict {
+  /** 公開 */
+  PUBLIC = 'public',
+  /** 非公開 */
+  PRIVATE = 'private',
+}
+/**
+ * オブジェクトの一部を必須にする
+ *
+ * @see https://qiita.com/yuu_1st/items/71c4fc9cc95a72fa4df9
+ */
+type SomeRequired<T, K extends keyof T> = T & {
+  [P in K]-?: T[P]
+}
+
+/**
+ * オブジェクトの特定プロパティを上書きする
+ *
+ * @see https://qiita.com/ibaragi/items/2a6412aeaca5703694b1
+ */
+type Overwrite<T, U extends { [Key in keyof T]?: unknown }> = Omit<T, keyof U> &
+  U
 
 /**
  * イラスト検索オプション
  */
-export interface SearchIllustOptions {
-  /**
-   * 検索ワード
-   */
-  word: string
-
-  /**
-   * 検索対象
-   */
-  searchTarget?: SearchTargets
-
-  /**
-   * ソート順
-   */
-  sort?: SearchSorts
-
-  /**
-   * 対象期間
-   */
-  duration?: SearchIllustDurations
-
-  /**
-   * 開始日時
-   */
-  startDate?: string
-
-  /**
-   * 終了日時
-   */
-  endDate?: string
-
-  /**
-   * OSフィルタ
-   */
-  filter?: Filters
-
-  /**
-   * オフセット
-   */
-  offset?: number
-}
+export type SearchIllustOptions = SomeRequired<
+  SnakeToCamel<GetV1SearchIllustRequest>,
+  'word'
+>
 
 /**
  * イラスト詳細取得オプション
  */
-export interface IllustDetailOptions {
-  /**
-   * イラストID
-   */
-  illustId: number
-}
+export type IllustDetailOptions = SnakeToCamel<GetV1IllustDetailRequest>
 
 /**
  * おすすめイラスト取得オプション
  */
-export interface RecommendedIllustOptions {
-  /**
-   * コンテンツタイプ (illust or manga)
-   */
-  contentType: ContentType
-
-  /**
-   * ランキングラベルを含めるか
-   */
-  includeRankingLabel?: boolean
-
-  /**
-   * OSフィルタ
-   */
-  filter?: Filters
-
-  /**
-   * おすすめイラストの最大ブックマークID (?)
-   *
-   * @beta
-   */
-  maxBookmarkIdForRecommend?: number
-
-  /**
-   * 最近のイラストの最小ブックマークID (?)
-   *
-   * @beta
-   */
-  minBookmarkIdForRecentIllust?: number
-
-  /**
-   * オフセット
-   */
-  offset?: number
-
-  /**
-   * ランキングイラストを含めるか (?)
-   */
-  includeRankingIllusts?: boolean
-
-  /**
-   * ブックマーク済みのイラストID
-   */
-  bookmarkIllustIds?: number[]
-
-  /**
-   * プライバシーポリシーを含めるか (?)
-   *
-   * @beta
-   */
-  includePrivacyPolicy?: boolean
-
-  /**
-   * 閲覧済みのイラストID
-   */
-  // viewed: number[] // めんどくさいから対応しない
-}
+export type RecommendedIllustOptions = SnakeToCamel<
+  Partial<GetV1IllustRecommendedRequest>
+>
 
 /**
  * イラストブックマーク追加オプション
  */
-export interface IllustBookmarkAddOptions {
-  /**
-   * イラストID
-   */
-  illustId: number
+export type IllustBookmarkAddOptions = SomeRequired<
+  SnakeToCamel<PostV2IllustBookmarkAddRequest>,
+  'illustId'
+>
 
-  /**
-   * 公開範囲
-   */
-  restrict?: BookmarkRestrict
-
-  /**
-   * タグ
-   */
-  tags?: string[]
-}
-
-export interface IllustSeriesOptions {
-  /**
-   * イラストシリーズID
-   */
-  illustSeriesId: number
-
-  /**
-   * OSフィルタ
-   */
-  filter?: Filters
-
-  /**
-   * オフセット
-   */
-  offset?: number
-}
+/**
+ * イラストシリーズ取得オプション
+ */
+export type IllustSeriesOptions = SomeRequired<
+  SnakeToCamel<GetV1IllustSeriesRequest>,
+  'illustSeriesId'
+>
 
 /**
  * 小説詳細取得オプション
  */
-export interface NovelDetailOptions {
-  /**
-   * 小説ID
-   */
-  novelId: number
-}
+export type NovelDetailOptions = SnakeToCamel<GetV2NovelDetailRequest>
 
 /**
  * 小説本文取得オプション
  */
-export interface NovelTextOptions {
-  /**
-   * 小説ID
-   */
-  novelId: number
-}
+export type NovelTextOptions = SnakeToCamel<GetV1NovelTextRequest>
 
 /**
  * 小説検索オプション
  */
-export interface SearchNovelOptions {
-  /**
-   * 検索ワード
-   */
-  word: string
-
-  /**
-   * 検索対象
-   */
-  searchTarget?: SearchTargets
-
-  /**
-   * ソート順
-   */
-  sort?: SearchSorts
-
-  /**
-   * プレーンキーワード検索結果をマージするか (?)
-   *
-   * @beta
-   */
-  mergePlainKeywordResults?: boolean
-
-  /**
-   * 翻訳タグ検索結果を含むか
-   */
-  includeTranslatedTagResults?: boolean
-
-  /**
-   * 開始日時
-   */
-  startDate?: string
-
-  /**
-   * 終了日時
-   */
-  endDate?: string
-
-  /**
-   * OSフィルタ
-   */
-  filter?: Filters
-
-  /**
-   * オフセット
-   */
-  offset?: number
-}
+export type SearchNovelOptions = SomeRequired<
+  SnakeToCamel<GetV1SearchNovelRequest>,
+  'word'
+>
 
 /**
  * おすすめ小説取得オプション
  */
-export interface RecommendedNovelOptions {
-  /**
-   * ランキングラベルを含めるか
-   */
-  includeRankingLabel?: boolean
-
-  /**
-   * OSフィルタ
-   */
-  filter?: Filters
-
-  /**
-   * オフセット
-   */
-  offset?: number
-
-  /**
-   * ランキング小説を含めるか (?)
-   *
-   * @beta
-   */
-  includeRankingNovels?: boolean
-
-  /**
-   * おすすめ済みの小説ID
-   */
-  alreadyRecommended?: number[]
-
-  /**
-   * おすすめ小説の最大ブックマークID (?)
-   *
-   * @beta
-   */
-  maxBookmarkIdForRecommend?: number
-
-  /**
-   * プライバシーポリシーを含めるか (?)
-   *
-   * @beta
-   */
-  includePrivacyPolicy?: boolean
-}
+export type RecommendedNovelOptions = Overwrite<
+  SnakeToCamel<Partial<GetV1NovelRecommendedRequest>>,
+  {
+    /**
+     * すでにおすすめした小説ID群 (?)
+     *
+     * @default undefined
+     * @beta
+     */
+    alreadyRecommended?: number[]
+  }
+>
 
 /**
  * 小説シリーズ詳細取得オプション
  */
-export interface NovelSeriesOptions {
-  /**
-   * 小説シリーズID
-   */
-  seriesId: number
-
-  /**
-   * OSフィルタ
-   */
-  filter?: Filters
-
-  /**
-   * (?)
-   *
-   * @beta
-   */
-  lastOrder?: string
-}
+export type NovelSeriesOptions = SomeRequired<
+  SnakeToCamel<GetV2NovelSeriesRequest>,
+  'seriesId'
+>
 
 /**
  * ユーザー詳細取得オプション
  */
-export interface UserDetailOptions {
-  /**
-   * ユーザーID
-   */
-  userId: number
-
-  /**
-   * OSフィルタ
-   */
-  filter?: Filters
-}
+export type UserDetailOptions = SnakeToCamel<GetV1UserDetailRequest>

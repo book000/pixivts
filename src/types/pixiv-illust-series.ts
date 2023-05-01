@@ -1,5 +1,4 @@
 import { PixivUser } from './pixiv-common'
-import { PixivIllustItem } from './pixiv-illust'
 
 /**
  * pixiv イラストシリーズ詳細情報
@@ -59,29 +58,4 @@ export interface IllustSeriesDetail {
    * ウォッチリストに追加済みかどうか
    */
   watchlist_added: boolean
-}
-
-/**
- * pixiv イラストシリーズ詳細情報
- */
-export interface PixivIllustSeriesItem {
-  /**
-   * シリーズ詳細
-   */
-  illust_series_detail: IllustSeriesDetail
-
-  /**
-   * シリーズの最初のイラスト
-   */
-  illust_series_first_illust: PixivIllustItem
-
-  /**
-   * シリーズに含まれているイラスト群
-   */
-  illusts: PixivIllustItem[]
-
-  /**
-   * 次 URL
-   */
-  next_url: string | null
 }
