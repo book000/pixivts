@@ -4,6 +4,24 @@ import {
   PixivUserProfilePublicity,
   PixivUserProfileWorkspace,
 } from '../../../pixiv-user'
+import { Filter } from '../../../../options'
+
+/**
+ * GET /v1/user/detail のリクエスト
+ */
+export interface GetV1UserDetailRequest {
+  /**
+   * ユーザーID
+   */
+  user_id: number
+
+  /**
+   * OSフィルタ
+   *
+   * @default 'for_ios'
+   */
+  filter?: Filter
+}
 
 /**
  * GET /v1/user/detail のレスポンス

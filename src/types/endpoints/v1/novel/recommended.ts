@@ -1,31 +1,70 @@
-import { PixivNovelItem } from '../../../pixiv-novel'
+import { PrivacyPolicy } from 'src/types/pixiv-common'
+import { PixivNovelItem } from 'src/types/pixiv-novel'
 
-// @ts-ignore because tsdoc
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Pixiv from '../../../../pixiv'
+/**
+ * GET /v1/novel/recommended のリクエスト
+ */
+export interface GetV1NovelRecommendedRequest {
+  /**
+   * ランキング小説を含めるか (?)
+   *
+   * @default true
+   * @beta
+   */
+  include_ranking_novels: boolean
+
+  /**
+   * すでにおすすめした小説ID群。カンマ区切り (?)
+   *
+   * @default undefined
+   * @beta
+   */
+  already_recommended?: string
+
+  /**
+   * おすすめイラストの最大ブックマークID (?)
+   *
+   * @default undefined
+   * @beta
+   */
+  max_bookmark_id_for_recommend?: number
+
+  /**
+   * オフセット
+   *
+   * @default undefined
+   */
+  offset?: number
+
+  /**
+   * プライバシーポリシーを含めるか (?)
+   *
+   * @default true
+   * @beta
+   */
+  include_privacy_policy: boolean
+}
 
 /**
  * GET /v1/novel/recommended のレスポンス
  */
-export interface GetV1RecommendedNovelResponse {
+export interface GetV1NovelRecommendedResponse {
   /**
    * おすすめの小説群
    */
   novels: PixivNovelItem[]
 
   /**
-   * 不明
+   * ランキングの小説群？
    *
    * @beta
    */
-  ranking_novels: unknown[]
+  ranking_novels: PixivNovelItem[]
 
   /**
-   * 不明
-   *
-   * @beta
+   * プライバシーポリシー
    */
-  privacy_policy: unknown
+  privacy_policy?: PrivacyPolicy[]
 
   /**
    * 次回のリクエストに使用する URL。

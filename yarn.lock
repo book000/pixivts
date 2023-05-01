@@ -2674,6 +2674,11 @@ slash@^3.0.0:
   resolved "https://registry.yarnpkg.com/slash/-/slash-3.0.0.tgz#6539be870c165adbd5240220dbe361f1bc4d4634"
   integrity sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==
 
+snake-camel-types@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/snake-camel-types/-/snake-camel-types-1.0.1.tgz#17a3b11f154e8bf5e80142f6ee9a6a28e0b53f06"
+  integrity sha512-nSX22RtPLtnpL3u6tql7SzUWN64q6eWXSkufbV8uRIBrAF4Z9VFtv8jvFqf0bVJaMXt+AEE6yI8k1fF/h1j8ZQ==
+
 snake-case@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/snake-case/-/snake-case-3.0.4.tgz#4f2bbd568e9935abdfd593f34c691dadb49c452c"

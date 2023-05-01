@@ -33,8 +33,9 @@ export interface PixivIllustItem {
    *
    * illust: イラスト
    * manga: マンガ
+   * ugoira: うごイラ
    */
-  type: string
+  type: 'illust' | 'manga' | 'ugoira'
 
   /**
    * 作品の画像URL群
@@ -176,11 +177,15 @@ export interface PixivIllustItem {
 
   /**
    * 作品のスタイル？
+   *
+   * @beta
    */
   illust_book_style: number
 
   /**
    * コメントの閲覧制御？
+   *
+   * @beta
    */
-  comment_access_control: number
+  comment_access_control?: number
 }
