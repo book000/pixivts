@@ -1,5 +1,5 @@
-import { PrivacyPolicy } from 'src/types/pixiv-common'
-import { PixivNovelItem } from 'src/types/pixiv-novel'
+import { PrivacyPolicy } from '../../../pixiv-common'
+import { PixivNovelItem } from '../../../pixiv-novel'
 
 /**
  * GET /v1/novel/recommended のリクエスト

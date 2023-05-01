@@ -1,4 +1,4 @@
-import { PixivIllustItem } from 'src/types/pixiv-illust'
+import { PixivIllustItem } from '../../../pixiv-illust'
 import { Filter } from '../../../../options'
 import { PrivacyPolicy } from '../../../pixiv-common'
 

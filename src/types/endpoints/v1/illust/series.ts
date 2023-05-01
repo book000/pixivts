@@ -1,4 +1,4 @@
-import { PixivIllustItem } from 'src/types/pixiv-illust'
+import { PixivIllustItem } from '../../../pixiv-illust'
 import { IllustSeriesDetail } from '../../../pixiv-illust-series'
 import { Filter } from '../../../../options'
 

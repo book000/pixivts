@@ -1,4 +1,4 @@
-import { PixivNovelItem } from 'src/types/pixiv-novel'
+import { PixivNovelItem } from '../../../pixiv-novel'
 import { NovelSeriesDetail } from '../../../pixiv-novel-series'
 
 /**
