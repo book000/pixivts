@@ -18,6 +18,7 @@ import {
   SearchSort,
   SearchTarget,
   BookmarkRestrict,
+  MangaRecommendedOptions,
 } from './options'
 import { PixivApiError } from './types/error-response'
 import {
@@ -64,6 +65,7 @@ import {
   GetV1UserDetailRequest,
   GetV1UserDetailResponse,
 } from './types/endpoints/v1/user/detail'
+import { GetV1MangaRecommendedRequest, GetV1MangaRecommendedResponse } from './types/endpoints/v1/manga/recommended'
 
 interface GetRequestOptions<T> {
   method: 'GET'
@@ -186,6 +188,8 @@ export default class Pixiv {
       responseType: 'stream',
     })
   }
+
+  // ---------- イラスト ---------- //
 
   /**
    * イラストの詳細情報を取得する。
@@ -310,6 +314,29 @@ export default class Pixiv {
       params: parameters,
     })
   }
+
+  // ---------- マンガ ---------- //
+
+  public async mangaRecommended(options: MangaRecommendedOptions = {}) {
+    type RequestType = GetV1MangaRecommendedRequest
+    const parameters: RequestType = {
+      ...this.convertSnakeToCamel(options),
+      filter: options.filter || Filter.FOR_IOS,
+      include_ranking_illusts: options.includeRankingIllusts || true,
+      max_bookmark_id:
+        options.maxBookmarkId || undefined,
+      offset: options.offset || undefined,
+      include_privacy_policy: options.includePrivacyPolicy || true,
+    }
+
+    return this.request<RequestType, GetV1MangaRecommendedResponse>({
+      method: 'GET',
+      path: '/v1/manga/recommended',
+      params: parameters,
+    })
+  }
+
+  // ---------- 小説 ---------- //
 
   /**
    * 小説の詳細情報を取得する。
@@ -436,8 +463,10 @@ export default class Pixiv {
     })
   }
 
+  // ---------- ユーザ ---------- //
+
   /**
-   * ユーザーの詳細情報を取得する。
+   * ユーザの詳細情報を取得する。
    *
    * @param options オプション
    * @returns レスポンス
@@ -528,6 +557,7 @@ export default class Pixiv {
    *
    * @param options オプション
    * @param required 必須のオプションキー
+   * @throws 必須のオプションが含まれていない場合
    */
   private checkRequiredOptions(
     options: Record<string, any>,
@@ -542,6 +572,9 @@ export default class Pixiv {
 
   /**
    * スネークケースのオブジェクトキーをキャメルケースなオブジェクトキーに変換する。
+   *
+   * @param object オブジェクト
+   * @returns 変換後のオブジェクト
    */
   private convertSnakeToCamel(object: Record<string, any>) {
     const result: Record<string, any> = {}

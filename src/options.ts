@@ -10,6 +10,7 @@ import { GetV1NovelRecommendedRequest } from './types/endpoints/v1/novel/recomme
 import { GetV1SearchNovelRequest } from './types/endpoints/v1/search/novel'
 import { GetV2NovelSeriesRequest } from './types/endpoints/v2/novel/series'
 import { GetV1UserDetailRequest } from './types/endpoints/v1/user/detail'
+import { GetV1MangaRecommendedRequest } from './types/endpoints/v1/manga/recommended'
 
 /**
  * 検索対象
@@ -119,6 +120,13 @@ export type IllustBookmarkAddOptions = SomeRequired<
 export type IllustSeriesOptions = SomeRequired<
   SnakeToCamel<GetV1IllustSeriesRequest>,
   'illustSeriesId'
+>
+
+/**
+ * おすすめマンガ取得オプション
+ */
+export type MangaRecommendedOptions = SnakeToCamel<
+  Partial<GetV1MangaRecommendedRequest>
 >
 
 /**
