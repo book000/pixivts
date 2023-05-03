@@ -1,9 +1,17 @@
-import { PixivIllustItem } from '../../../pixiv-illust'
-import { Filter, SearchSort, SearchTarget } from '../../../../options'
+import { PixivIllustItem, PixivIllustItemCheck } from '../../../pixiv-illust'
+import {
+  Filter,
+  FilterCheck,
+  SearchSort,
+  SearchSortCheck,
+  SearchTarget,
+  SearchTargetCheck,
+} from '../../../../options'
 
 // @ts-ignore because tsdoc
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Pixiv from '../../../../pixiv'
+import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
 
 /**
  * GET /v1/search/illust のリクエスト
@@ -97,4 +105,47 @@ export interface GetV1SearchIllustResponse {
    * @beta
    */
   search_span_limit: number
+}
+
+export class GetV1SearchIllustCheck extends BaseMultipleCheck<
+  GetV1SearchIllustRequest,
+  GetV1SearchIllustResponse
+> {
+  requestChecks(): CheckFunctions<GetV1SearchIllustRequest> {
+    return {
+      word: (data) => typeof data.word === 'string' && data.word.length > 0,
+      search_target: (data) =>
+        new SearchTargetCheck().throwIfFailed(data.search_target),
+      sort: (data) => new SearchSortCheck().throwIfFailed(data.sort),
+      start_date: (data) =>
+        data.start_date === undefined ||
+        (typeof data.start_date === 'string' && data.start_date.length > 0),
+      end_date: (data) =>
+        data.end_date === undefined ||
+        (typeof data.end_date === 'string' && data.end_date.length > 0),
+      filter: (data) =>
+        data.filter === undefined ||
+        new FilterCheck().throwIfFailed(data.filter),
+      offset: (data) =>
+        data.offset === undefined || typeof data.offset === 'number',
+      merge_plain_keyword_results: (data) =>
+        typeof data.merge_plain_keyword_results === 'boolean',
+      include_translated_tag_results: (data) =>
+        typeof data.include_translated_tag_results === 'boolean',
+    }
+  }
+
+  responseChecks(): CheckFunctions<GetV1SearchIllustResponse> {
+    return {
+      illusts: (data) =>
+        Array.isArray(data.illusts) &&
+        data.illusts.every((illust) =>
+          new PixivIllustItemCheck().throwIfFailed(illust)
+        ),
+      next_url: (data) =>
+        data.next_url === null ||
+        (typeof data.next_url === 'string' && data.next_url.length > 0),
+      search_span_limit: (data) => typeof data.search_span_limit === 'number',
+    }
+  }
 }

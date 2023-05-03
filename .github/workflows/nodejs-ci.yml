@@ -11,10 +11,48 @@ on:
     branches:
       - main
       - master
+    types:
+      - opened
+      - synchronize
+  pull_request_target:
+    branches:
+      - main
+      - master
+    types:
+      - labeled
+  workflow_dispatch:
+
+env:
+  PIXIV_REFRESH_TOKEN: ${{ secrets.PIXIV_REFRESH_TOKEN }}
 
 jobs:
   node-ci:
+    if: ${{
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) ||
+      (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.fork == true && contains(github.event.label.name, '🚀request-ci'))
+      }}
     name: Node CI
     uses: book000/templates/.github/workflows/reusable-nodejs-ci.yml@master
     with:
       check-git-diff: true
+
+  remove-label:
+    runs-on: ubuntu-latest
+    needs:
+      - node-ci
+
+    steps:
+      - name: Remove label
+        if: ${{ github.event_name == 'pull_request_target' && contains(github.event.label.name, '🚀request-ci') }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.removeLabel({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: ['🚀request-ci']
+            })

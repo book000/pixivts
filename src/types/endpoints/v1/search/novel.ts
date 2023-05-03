@@ -1,5 +1,13 @@
-import { Filter, SearchSort, SearchTarget } from '../../../../options'
-import { PixivNovelItem } from '../../../pixiv-novel'
+import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
+import {
+  Filter,
+  FilterCheck,
+  SearchSort,
+  SearchSortCheck,
+  SearchTarget,
+  SearchTargetCheck,
+} from '../../../../options'
+import { PixivNovelItem, PixivNovelItemCheck } from '../../../pixiv-novel'
 
 /**
  * GET /v1/search/novel のリクエスト
@@ -93,4 +101,47 @@ export interface GetV1SearchNovelResponse {
    * @beta
    */
   search_span_limit: number
+}
+
+export class GetV1SearchNovelCheck extends BaseMultipleCheck<
+  GetV1SearchNovelRequest,
+  GetV1SearchNovelResponse
+> {
+  requestChecks(): CheckFunctions<GetV1SearchNovelRequest> {
+    return {
+      word: (data) => typeof data.word === 'string' && data.word.length > 0,
+      search_target: (data) =>
+        new SearchTargetCheck().throwIfFailed(data.search_target),
+      sort: (data) => new SearchSortCheck().throwIfFailed(data.sort),
+      start_date: (data) =>
+        data.start_date === undefined ||
+        (typeof data.start_date === 'string' && data.start_date.length > 0),
+      end_date: (data) =>
+        data.end_date === undefined ||
+        (typeof data.end_date === 'string' && data.end_date.length > 0),
+      filter: (data) =>
+        data.filter === undefined ||
+        new FilterCheck().throwIfFailed(data.filter),
+      offset: (data) =>
+        data.offset === undefined || typeof data.offset === 'number',
+      merge_plain_keyword_results: (data) =>
+        typeof data.merge_plain_keyword_results === 'boolean',
+      include_translated_tag_results: (data) =>
+        typeof data.include_translated_tag_results === 'boolean',
+    }
+  }
+
+  responseChecks(): CheckFunctions<GetV1SearchNovelResponse> {
+    return {
+      novels: (data) =>
+        Array.isArray(data.novels) &&
+        data.novels.every((novel) =>
+          new PixivNovelItemCheck().throwIfFailed(novel)
+        ),
+      next_url: (data) =>
+        data.next_url === null ||
+        (typeof data.next_url === 'string' && data.next_url.length > 0),
+      search_span_limit: (data) => typeof data.search_span_limit === 'number',
+    }
+  }
 }

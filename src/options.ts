@@ -10,6 +10,7 @@ import { GetV1NovelRecommendedRequest } from './types/endpoints/v1/novel/recomme
 import { GetV1SearchNovelRequest } from './types/endpoints/v1/search/novel'
 import { GetV2NovelSeriesRequest } from './types/endpoints/v2/novel/series'
 import { GetV1UserDetailRequest } from './types/endpoints/v1/user/detail'
+import { BaseSimpleCheck, CheckFunctions } from './checks'
 
 /**
  * 検索対象
@@ -25,6 +26,21 @@ export enum SearchTarget {
   KEYWORD = 'keyword',
 }
 
+export class SearchTargetCheck extends BaseSimpleCheck<SearchTarget> {
+  checks(): CheckFunctions<SearchTarget> {
+    return {
+      main: (data) =>
+        typeof data === 'string' &&
+        [
+          SearchTarget.PARTIAL_MATCH_FOR_TAGS,
+          SearchTarget.EXACT_MATCH_FOR_TAGS,
+          SearchTarget.TITLE_AND_CAPTION,
+          SearchTarget.KEYWORD,
+        ].includes(data),
+    }
+  }
+}
+
 /**
  * ソート
  */
@@ -35,6 +51,20 @@ export enum SearchSort {
   DATE_ASC = 'date_asc',
   /** 人気順 */
   POPULAR_DESC = 'popular_desc',
+}
+
+export class SearchSortCheck extends BaseSimpleCheck<SearchSort> {
+  checks(): CheckFunctions<SearchSort> {
+    return {
+      main: (data) =>
+        typeof data === 'string' &&
+        [
+          SearchSort.DATE_DESC,
+          SearchSort.DATE_ASC,
+          SearchSort.POPULAR_DESC,
+        ].includes(data),
+    }
+  }
 }
 
 /**
@@ -49,6 +79,20 @@ export enum SearchIllustDuration {
   WITHIN_LAST_MONTH = 'within_last_month',
 }
 
+export class SearchIllustDurationCheck extends BaseSimpleCheck<SearchIllustDuration> {
+  checks(): CheckFunctions<SearchIllustDuration> {
+    return {
+      main: (data) =>
+        typeof data === 'string' &&
+        [
+          SearchIllustDuration.WITHIN_LAST_DAY,
+          SearchIllustDuration.WITHIN_LAST_WEEK,
+          SearchIllustDuration.WITHIN_LAST_MONTH,
+        ].includes(data),
+    }
+  }
+}
+
 /**
  * OSフィルタ
  */
@@ -57,6 +101,16 @@ export enum Filter {
   FOR_IOS = 'for_ios',
   /** Android */
   FOR_ANDROID = 'for_android',
+}
+
+export class FilterCheck extends BaseSimpleCheck<Filter> {
+  checks(): CheckFunctions<Filter> {
+    return {
+      main: (data) =>
+        typeof data === 'string' &&
+        [Filter.FOR_IOS, Filter.FOR_ANDROID].includes(data),
+    }
+  }
 }
 
 /**
@@ -68,14 +122,25 @@ export enum BookmarkRestrict {
   /** 非公開 */
   PRIVATE = 'private',
 }
+
+export class BookmarkRestrictCheck extends BaseSimpleCheck<BookmarkRestrict> {
+  checks(): CheckFunctions<BookmarkRestrict> {
+    return {
+      main: (data) =>
+        typeof data === 'string' &&
+        [BookmarkRestrict.PUBLIC, BookmarkRestrict.PRIVATE].includes(data),
+    }
+  }
+}
+
 /**
- * オブジェクトの一部を必須にする
+ * オブジェクトの一部を必須にし、それ以外はオプショナルにする
  *
+ * @see https://mongolyy.hatenablog.com/entry/2022/03/10/001139
  * @see https://qiita.com/yuu_1st/items/71c4fc9cc95a72fa4df9
  */
-type SomeRequired<T, K extends keyof T> = T & {
-  [P in K]-?: T[P]
-}
+type SomeRequired<T, K extends keyof T> = Partial<Omit<T, K>> &
+  Required<Pick<T, K>>
 
 /**
  * オブジェクトの特定プロパティを上書きする

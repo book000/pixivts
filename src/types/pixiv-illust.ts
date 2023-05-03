@@ -1,4 +1,14 @@
-import { ImageUrls, PixivUser, Tag, Series } from './pixiv-common'
+import { isEmptyObject } from '../utils'
+import { BaseSimpleCheck, CheckFunctions } from '../checks'
+import {
+  ImageUrls,
+  PixivUser,
+  Tag,
+  Series,
+  ImageUrlsCheck,
+  PixivUserCheck,
+  TagCheck,
+} from './pixiv-common'
 
 /** 単一イラスト詳細情報 */
 export interface MetaSinglePage {
@@ -159,7 +169,7 @@ export interface PixivIllustItem {
   /**
    * この作品にコメントしたユーザーの数
    */
-  total_comments: number
+  total_comments?: number
 
   /**
    * AI使用フラグ
@@ -188,4 +198,73 @@ export interface PixivIllustItem {
    * @beta
    */
   comment_access_control?: number
+}
+
+export class PixivIllustItemCheck extends BaseSimpleCheck<PixivIllustItem> {
+  checks(): CheckFunctions<PixivIllustItem> {
+    return {
+      id: (data: PixivIllustItem): boolean => typeof data.id === 'number',
+      title: (data: PixivIllustItem): boolean => typeof data.title === 'string',
+      type: (data: PixivIllustItem): boolean =>
+        typeof data.type === 'string' &&
+        ['illust', 'manga', 'ugoira'].includes(data.type),
+      image_urls: (data: PixivIllustItem): boolean =>
+        typeof data.image_urls === 'object' &&
+        new ImageUrlsCheck().throwIfFailed(data.image_urls),
+      caption: (data: PixivIllustItem): boolean =>
+        typeof data.caption === 'string',
+      restrict: (data: PixivIllustItem): boolean =>
+        typeof data.restrict === 'number',
+      user: (data: PixivIllustItem): boolean =>
+        typeof data.user === 'object' &&
+        new PixivUserCheck().throwIfFailed(data.user),
+      tags: (data: PixivIllustItem): boolean =>
+        typeof data.tags === 'object' &&
+        Array.isArray(data.tags) &&
+        data.tags.every((tag) => new TagCheck().throwIfFailed(tag)),
+      tools: (data: PixivIllustItem): boolean =>
+        typeof data.tools === 'object' &&
+        Array.isArray(data.tools) &&
+        data.tools.every((tool) => typeof tool === 'string') &&
+        data.tools.length <= 3,
+      create_date: (data: PixivIllustItem): boolean =>
+        typeof data.create_date === 'string',
+      page_count: (data: PixivIllustItem): boolean =>
+        typeof data.page_count === 'number',
+      width: (data: PixivIllustItem): boolean => typeof data.width === 'number',
+      height: (data: PixivIllustItem): boolean =>
+        typeof data.height === 'number',
+      sanity_level: (data: PixivIllustItem): boolean =>
+        typeof data.sanity_level === 'number',
+      meta_single_page: (data: PixivIllustItem): boolean =>
+        typeof data.meta_single_page === 'object' &&
+        (isEmptyObject(data.meta_single_page) ||
+          data.meta_single_page.original_image_url !== undefined),
+      meta_pages: (data: PixivIllustItem): boolean =>
+        typeof data.meta_pages === 'object' &&
+        Array.isArray(data.meta_pages) &&
+        data.meta_pages.every(
+          (metaPage) =>
+            typeof metaPage.image_urls === 'object' &&
+            new ImageUrlsCheck().throwIfFailed(metaPage.image_urls)
+        ),
+      total_view: (data: PixivIllustItem): boolean =>
+        typeof data.total_view === 'number',
+      total_bookmarks: (data: PixivIllustItem): boolean =>
+        typeof data.total_bookmarks === 'number',
+      is_bookmarked: (data: PixivIllustItem): boolean =>
+        typeof data.is_bookmarked === 'boolean',
+      visible: (data: PixivIllustItem): boolean =>
+        typeof data.visible === 'boolean',
+      is_muted: (data: PixivIllustItem): boolean =>
+        typeof data.is_muted === 'boolean',
+      total_comments: (data: PixivIllustItem): boolean =>
+        data.total_comments === undefined ||
+        typeof data.total_comments === 'number',
+      illust_ai_type: (data: PixivIllustItem): boolean =>
+        typeof data.illust_ai_type === 'number',
+      illust_book_style: (data: PixivIllustItem): boolean =>
+        typeof data.illust_book_style === 'number',
+    }
+  }
 }
