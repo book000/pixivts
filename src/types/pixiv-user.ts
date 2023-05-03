@@ -1,4 +1,5 @@
-import { PixivUser } from './pixiv-common'
+import { BaseSimpleCheck, CheckFunctions } from '../checks'
+import { PixivUser, PixivUserCheck } from './pixiv-common'
 
 /**
  * pixiv ユーザーアイテム
@@ -12,6 +13,15 @@ export type PixivUserItem = PixivUser & {
   comment: string
 }
 
+export class PixivUserItemCheck extends BaseSimpleCheck<PixivUserItem> {
+  checks(): CheckFunctions<PixivUserItem> {
+    return {
+      pixivUser: (data) => new PixivUserCheck().throwIfFailed(data),
+      comment: (data) => typeof data.comment === 'string',
+    }
+  }
+}
+
 type Gender = 'male' | 'female' | 'unknown'
 
 /**
@@ -19,7 +29,7 @@ type Gender = 'male' | 'female' | 'unknown'
  */
 export interface PixivUserProfile {
   /** ウェブサイト */
-  webpage: string
+  webpage: string | null
 
   /** 性別 */
   gender: Gender
@@ -142,6 +152,69 @@ export interface PixivUserProfile {
   is_using_custom_profile_image: boolean
 }
 
+export class PixivUserProfileCheck extends BaseSimpleCheck<PixivUserProfile> {
+  checks(): CheckFunctions<PixivUserProfile> {
+    return {
+      webpage: (data) =>
+        typeof data.webpage === 'string' || data.webpage === null,
+      gender: (data) =>
+        typeof data.gender === 'string' &&
+        ['male', 'female', 'unknown'].includes(data.gender),
+      birth: (data) =>
+        typeof data.birth === 'string' &&
+        /^\d{4}-\d{2}-\d{2}$/.test(data.birth),
+      birth_day: (data) =>
+        typeof data.birth_day === 'string' &&
+        /^\d{2}-\d{2}$/.test(data.birth_day),
+      birth_year: (data) =>
+        typeof data.birth_year === 'number' &&
+        data.birth_year >= 1000 &&
+        data.birth_year <= 9999,
+      region: (data) => typeof data.region === 'string',
+      address_id: (data) =>
+        typeof data.address_id === 'number' &&
+        (data.address_id === 0 ||
+          (data.address_id >= 1 && data.address_id <= 48)),
+      country_code: (data) =>
+        typeof data.country_code === 'string' &&
+        (data.country_code === '' || /^[A-Z]{2}$/.test(data.country_code)),
+      job: (data) => typeof data.job === 'string',
+      job_id: (data) =>
+        typeof data.job_id === 'number' &&
+        (data.job_id === 0 || (data.job_id >= 1 && data.job_id <= 23)),
+      total_follow_users: (data) =>
+        typeof data.total_follow_users === 'number' &&
+        data.total_follow_users >= 0,
+      total_mypixiv_users: (data) =>
+        typeof data.total_mypixiv_users === 'number' &&
+        data.total_mypixiv_users >= 0,
+      total_illusts: (data) =>
+        typeof data.total_illusts === 'number' && data.total_illusts >= 0,
+      total_manga: (data) =>
+        typeof data.total_manga === 'number' && data.total_manga >= 0,
+      total_novels: (data) =>
+        typeof data.total_novels === 'number' && data.total_novels >= 0,
+      total_illust_bookmarks_public: (data) =>
+        typeof data.total_illust_bookmarks_public === 'number' &&
+        data.total_illust_bookmarks_public >= 0,
+      total_illust_series: (data) =>
+        typeof data.total_illust_series === 'number' &&
+        data.total_illust_series >= 0,
+      total_novel_series: (data) =>
+        typeof data.total_novel_series === 'number' &&
+        data.total_novel_series >= 0,
+      background_image_url: (data) =>
+        typeof data.background_image_url === 'string',
+      twitter_account: (data) => typeof data.twitter_account === 'string',
+      twitter_url: (data) => typeof data.twitter_url === 'string',
+      pawoo_url: (data) => typeof data.pawoo_url === 'string',
+      is_premium: (data) => typeof data.is_premium === 'boolean',
+      is_using_custom_profile_image: (data) =>
+        typeof data.is_using_custom_profile_image === 'boolean',
+    }
+  }
+}
+
 type Publicity = 'public' | 'private' | 'mypixiv'
 
 /**
@@ -163,6 +236,21 @@ export interface PixivUserProfilePublicity {
   job: Publicity
   /** Pawoo アカウントへのリンクを表示するか */
   pawoo: boolean
+}
+
+export class PixivUserProfilePublicityCheck extends BaseSimpleCheck<PixivUserProfilePublicity> {
+  checks(): CheckFunctions<PixivUserProfilePublicity> {
+    return {
+      gender: (data) => ['public', 'private', 'mypixiv'].includes(data.gender),
+      region: (data) => ['public', 'private', 'mypixiv'].includes(data.region),
+      birth_day: (data) =>
+        ['public', 'private', 'mypixiv'].includes(data.birth_day),
+      birth_year: (data) =>
+        ['public', 'private', 'mypixiv'].includes(data.birth_year),
+      job: (data) => ['public', 'private', 'mypixiv'].includes(data.job),
+      pawoo: (data) => typeof data.pawoo === 'boolean',
+    }
+  }
 }
 
 /**
@@ -195,4 +283,26 @@ export interface PixivUserProfileWorkspace {
   comment: string
   /** 画像 */
   workspace_image_url: string | null
+}
+
+export class PixivUserProfileWorkspaceCheck extends BaseSimpleCheck<PixivUserProfileWorkspace> {
+  checks(): CheckFunctions<PixivUserProfileWorkspace> {
+    return {
+      pc: (data) => typeof data.pc === 'string',
+      monitor: (data) => typeof data.monitor === 'string',
+      tool: (data) => typeof data.tool === 'string',
+      scanner: (data) => typeof data.scanner === 'string',
+      tablet: (data) => typeof data.tablet === 'string',
+      mouse: (data) => typeof data.mouse === 'string',
+      printer: (data) => typeof data.printer === 'string',
+      desktop: (data) => typeof data.desktop === 'string',
+      music: (data) => typeof data.music === 'string',
+      desk: (data) => typeof data.desk === 'string',
+      chair: (data) => typeof data.chair === 'string',
+      comment: (data) => typeof data.comment === 'string',
+      workspace_image_url: (data) =>
+        typeof data.workspace_image_url === 'string' ||
+        data.workspace_image_url === null,
+    }
+  }
 }

@@ -1,4 +1,15 @@
-import { ImageUrls, Tag, PixivUser, Series } from './pixiv-common'
+import { isEmptyObject } from '../utils'
+import { BaseSimpleCheck, CheckFunctions } from '../checks'
+import {
+  ImageUrls,
+  Tag,
+  PixivUser,
+  Series,
+  TagCheck,
+  PixivUserCheck,
+  SeriesCheck,
+  ImageUrlsCheck,
+} from './pixiv-common'
 
 /**
  * pixiv 小説アイテム
@@ -77,9 +88,9 @@ export interface PixivNovelItem {
   /**
    * シリーズ情報
    *
-   * 小説の場合、シリーズに属していない場合空配列が入っている。
+   * 小説の場合、シリーズに属していない場合空オブジェクトが入っている。
    */
-  series: Series | unknown[]
+  series: Series | Record<string, never>
 
   /**
    * ブックマークしているかどうか
@@ -136,4 +147,43 @@ export interface PixivNovelItem {
    * @see https://github.com/ArkoClub/async-pixiv/blob/fa45c81093a5c6f4eabfcc942915fc479e42174f/src/async_pixiv/model/other.py#L40-L48
    */
   novel_ai_type: number
+}
+
+export class PixivNovelItemCheck extends BaseSimpleCheck<PixivNovelItem> {
+  checks(): CheckFunctions<PixivNovelItem> {
+    return {
+      id: (data) => typeof data.id === 'number',
+      title: (data) => typeof data.title === 'string',
+      caption: (data) => typeof data.caption === 'string',
+      restrict: (data) => typeof data.restrict === 'number',
+      x_restrict: (data) => typeof data.x_restrict === 'number',
+      is_original: (data) => typeof data.is_original === 'boolean',
+      image_urls: (data) =>
+        typeof data.image_urls === 'object' &&
+        new ImageUrlsCheck().throwIfFailed(data.image_urls),
+      create_date: (data) => typeof data.create_date === 'string',
+      tags: (data) =>
+        typeof data.tags === 'object' &&
+        Array.isArray(data.tags) &&
+        data.tags.every((tag) => new TagCheck().throwIfFailed(tag)),
+      page_count: (data) => typeof data.page_count === 'number',
+      text_length: (data) => typeof data.text_length === 'number',
+      user: (data) =>
+        typeof data.user === 'object' &&
+        new PixivUserCheck().throwIfFailed(data.user),
+      series: (data) =>
+        typeof data.series === 'object' &&
+        (isEmptyObject(data.series) ||
+          new SeriesCheck().throwIfFailed(data.series)),
+      is_bookmarked: (data) => typeof data.is_bookmarked === 'boolean',
+      total_bookmarks: (data) => typeof data.total_bookmarks === 'number',
+      total_view: (data) => typeof data.total_view === 'number',
+      visible: (data) => typeof data.visible === 'boolean',
+      total_comments: (data) => typeof data.total_comments === 'number',
+      is_muted: (data) => typeof data.is_muted === 'boolean',
+      is_mypixiv_only: (data) => typeof data.is_mypixiv_only === 'boolean',
+      is_x_restricted: (data) => typeof data.is_x_restricted === 'boolean',
+      novel_ai_type: (data) => typeof data.novel_ai_type === 'number',
+    }
+  }
 }

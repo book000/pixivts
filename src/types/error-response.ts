@@ -17,7 +17,7 @@ interface Error {
   /**
    * ユーザ向けのエラーメッセージ詳細
    */
-  user_message_details: unknown
+  user_message_details?: unknown
 }
 
 /**

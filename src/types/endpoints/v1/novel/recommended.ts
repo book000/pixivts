@@ -1,5 +1,6 @@
-import { PrivacyPolicy } from '../../../pixiv-common'
-import { PixivNovelItem } from '../../../pixiv-novel'
+import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
+import { PrivacyPolicy, PrivacyPolicyCheck } from '../../../pixiv-common'
+import { PixivNovelItem, PixivNovelItemCheck } from '../../../pixiv-novel'
 
 /**
  * GET /v1/novel/recommended のリクエスト
@@ -64,7 +65,7 @@ export interface GetV1NovelRecommendedResponse {
   /**
    * プライバシーポリシー
    */
-  privacy_policy?: PrivacyPolicy[]
+  privacy_policy?: PrivacyPolicy
 
   /**
    * 次回のリクエストに使用する URL。
@@ -72,4 +73,45 @@ export interface GetV1NovelRecommendedResponse {
    * @see {Pixiv.parseQueryString}
    */
   next_url: string
+}
+
+export class GetV1NovelRecommendedCheck extends BaseMultipleCheck<
+  GetV1NovelRecommendedRequest,
+  GetV1NovelRecommendedResponse
+> {
+  requestChecks(): CheckFunctions<GetV1NovelRecommendedRequest> {
+    return {
+      include_ranking_novels: (data) =>
+        typeof data.include_ranking_novels === 'boolean',
+      already_recommended: (data) =>
+        data.already_recommended === undefined ||
+        typeof data.already_recommended === 'string',
+      max_bookmark_id_for_recommend: (data) =>
+        data.max_bookmark_id_for_recommend === undefined ||
+        typeof data.max_bookmark_id_for_recommend === 'number',
+      offset: (data) =>
+        data.offset === undefined || typeof data.offset === 'number',
+      include_privacy_policy: (data) =>
+        typeof data.include_privacy_policy === 'boolean',
+    }
+  }
+
+  responseChecks(): CheckFunctions<GetV1NovelRecommendedResponse> {
+    return {
+      novels: (data) =>
+        Array.isArray(data.novels) &&
+        data.novels.every((novel) =>
+          new PixivNovelItemCheck().throwIfFailed(novel)
+        ),
+      ranking_novels: (data) =>
+        Array.isArray(data.ranking_novels) &&
+        data.ranking_novels.every((novel) =>
+          new PixivNovelItemCheck().throwIfFailed(novel)
+        ),
+      privacy_policy: (data) =>
+        data.privacy_policy === undefined ||
+        new PrivacyPolicyCheck().throwIfFailed(data.privacy_policy),
+      next_url: (data) => typeof data.next_url === 'string',
+    }
+  }
 }
