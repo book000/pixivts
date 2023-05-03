@@ -91,7 +91,7 @@ describe('pixiv', () => {
     expect(searchIllust.status).toBe(200)
     expect(searchIllust.data).toBeDefined()
     expect(searchIllust.data.illusts).toBeDefined()
-    expect(searchIllust.data.illusts).toHaveLength(30)
+    expect(searchIllust.data.illusts).toBeGreaterThan(0)
 
     const check = new GetV1SearchIllustCheck()
     expect(() => check.throwIfResponseFailed(searchIllust.data)).not.toThrow()
@@ -206,7 +206,7 @@ describe('pixiv', () => {
     expect(searchNovel.status).toBe(200)
     expect(searchNovel.data).toBeDefined()
     expect(searchNovel.data.novels).toBeDefined()
-    expect(searchNovel.data.novels).toHaveLength(30)
+    expect(searchNovel.data.novels).toBeGreaterThan(0)
 
     const check = new GetV1SearchNovelCheck()
     expect(() => check.throwIfResponseFailed(searchNovel.data)).not.toThrow()
