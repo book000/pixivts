@@ -65,7 +65,10 @@ import {
   GetV1UserDetailRequest,
   GetV1UserDetailResponse,
 } from './types/endpoints/v1/user/detail'
-import { GetV1MangaRecommendedRequest, GetV1MangaRecommendedResponse } from './types/endpoints/v1/manga/recommended'
+import {
+  GetV1MangaRecommendedRequest,
+  GetV1MangaRecommendedResponse,
+} from './types/endpoints/v1/manga/recommended'
 
 interface GetRequestOptions<T> {
   method: 'GET'
@@ -323,8 +326,7 @@ export default class Pixiv {
       ...this.convertSnakeToCamel(options),
       filter: options.filter || Filter.FOR_IOS,
       include_ranking_illusts: options.includeRankingIllusts || true,
-      max_bookmark_id:
-        options.maxBookmarkId || undefined,
+      max_bookmark_id: options.maxBookmarkId || undefined,
       offset: options.offset || undefined,
       include_privacy_policy: options.includePrivacyPolicy || true,
     }
