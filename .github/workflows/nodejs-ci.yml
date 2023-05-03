@@ -42,8 +42,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: .node-version
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          cache: yarn
+          cache-dependency-path: yarn.lock
 
       - name: 📃 Check package.json definition
         id: package-json
