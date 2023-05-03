@@ -248,7 +248,7 @@ export default class Pixiv {
    * @param options オプション
    * @returns レスポンス
    */
-  public async recommendedIllust(options: RecommendedIllustOptions = {}) {
+  public async illustRecommended(options: RecommendedIllustOptions = {}) {
     type RequestType = GetV1IllustRecommendedRequest
     const parameters: RequestType = {
       ...this.convertSnakeToCamel(options),
@@ -418,7 +418,7 @@ export default class Pixiv {
    * @param options オプション
    * @returns レスポンス
    */
-  public async recommendedNovel(options: RecommendedNovelOptions = {}) {
+  public async novelRecommended(options: RecommendedNovelOptions = {}) {
     type RequestType = GetV1NovelRecommendedRequest
     const parameters: RequestType = {
       ...this.convertSnakeToCamel(options),

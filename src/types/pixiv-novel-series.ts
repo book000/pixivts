@@ -1,5 +1,6 @@
+import { BaseSimpleCheck, CheckFunctions } from '../checks'
 import { PixivUser } from './pixiv-common'
-import { PixivNovelItem } from './pixiv-novel'
+import { PixivNovelItem, PixivNovelItemCheck } from './pixiv-novel'
 
 /**
  * pixiv 小説シリーズ詳細情報
@@ -61,6 +62,25 @@ export interface NovelSeriesDetail {
   watchlist_added: boolean
 }
 
+export class NovelSeriesDetailCheck extends BaseSimpleCheck<NovelSeriesDetail> {
+  checks(): CheckFunctions<NovelSeriesDetail> {
+    return {
+      id: (data) => typeof data.id === 'number',
+      title: (data) => typeof data.title === 'string',
+      caption: (data) => typeof data.caption === 'string',
+      is_original: (data) => typeof data.is_original === 'boolean',
+      is_concluded: (data) => typeof data.is_concluded === 'boolean',
+      content_count: (data) => typeof data.content_count === 'number',
+      total_character_count: (data) =>
+        typeof data.total_character_count === 'number',
+      user: (data) => typeof data.user === 'object',
+      display_text: (data) => typeof data.display_text === 'string',
+      novel_ai_type: (data) => typeof data.novel_ai_type === 'number',
+      watchlist_added: (data) => typeof data.watchlist_added === 'boolean',
+    }
+  }
+}
+
 /**
  * pixiv 小説シリーズアイテム
  */
@@ -89,4 +109,29 @@ export interface PixivNovelSeriesItem {
    * 次 URL
    */
   next_url: string | null
+}
+
+export class PixivNovelSeriesItemCheck extends BaseSimpleCheck<PixivNovelSeriesItem> {
+  checks(): CheckFunctions<PixivNovelSeriesItem> {
+    return {
+      novel_series_detail: (data) =>
+        typeof data.novel_series_detail === 'object' &&
+        new NovelSeriesDetailCheck().throwIfFailed(data.novel_series_detail),
+      novel_series_first_novel: (data) =>
+        typeof data.novel_series_first_novel === 'object' &&
+        new PixivNovelItemCheck().throwIfFailed(data.novel_series_first_novel),
+      novel_series_latest_novel: (data) =>
+        typeof data.novel_series_latest_novel === 'object' &&
+        new PixivNovelItemCheck().throwIfFailed(data.novel_series_latest_novel),
+      novels: (data) =>
+        Array.isArray(data.novels) &&
+        data.novels.every(
+          (novel) =>
+            typeof novel === 'object' &&
+            new PixivNovelItemCheck().throwIfFailed(novel)
+        ),
+      next_url: (data) =>
+        typeof data.next_url === 'string' || data.next_url === null,
+    }
+  }
 }
