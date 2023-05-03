@@ -31,7 +31,7 @@
     "fix": "run-s fix:prettier fix:eslint",
     "fix:eslint": "eslint . --ext ts,tsx --fix",
     "fix:prettier": "prettier --write src",
-    "test": "jest -u",
+    "test": "jest",
     "lint": "run-p -c lint:prettier lint:eslint lint:tsc",
     "lint:eslint": "eslint . --ext ts,tsx",
     "lint:prettier": "prettier --check src",

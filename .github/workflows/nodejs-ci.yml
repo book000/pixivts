@@ -96,7 +96,7 @@ jobs:
 
       - name: 🧪 Run tests
         if: steps.package-json.outputs.test == 'true'
-        run: yarn test
+        run: yarn test -u
         env:
           PIXIV_REFRESH_TOKEN: ${{ secrets.PIXIV_REFRESH_TOKEN }}
 
