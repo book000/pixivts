@@ -28,7 +28,7 @@
     "dev": "ts-node-dev --poll -r tsconfig-paths/register ./src/main.ts",
     "ctix": "ctix single -w --noBackup -o src -s false",
     "generate-docs": "typedoc --gitRevision master src/index.ts",
-    "fix": "run-s fix:prettier fix:eslint",
+    "fix": "run-s fix:prettier fix:eslint ctix",
     "fix:eslint": "eslint . --ext ts,tsx --fix",
     "fix:prettier": "prettier --write src",
     "test": "jest",
