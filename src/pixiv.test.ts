@@ -3,6 +3,7 @@ import Pixiv from './pixiv'
 import { GetV1IllustDetailCheck } from './types/endpoints/v1/illust/detail'
 import { GetV1IllustRecommendedCheck } from './types/endpoints/v1/illust/recommended'
 import { GetV1IllustSeriesCheck } from './types/endpoints/v1/illust/series'
+import { GetV1MangaRecommendedCheck } from './types/endpoints/v1/manga/recommended'
 import { GetV1NovelRecommendedCheck } from './types/endpoints/v1/novel/recommended'
 import { GetV1NovelTextCheck } from './types/endpoints/v1/novel/text'
 import { GetV1SearchIllustCheck } from './types/endpoints/v1/search/illust'
@@ -26,7 +27,7 @@ describe('pixiv', () => {
     pixiv = await Pixiv.of(pixivRefreshToken)
   })
 
-  it('illustDetail:107565629', async () => {
+  it('illustDetail:107565629[illust]', async () => {
     const illustDetail = await pixiv.illustDetail({
       illustId: 107_565_629,
     })
@@ -84,6 +85,61 @@ describe('pixiv', () => {
     expect(() => check.throwIfResponseFailed(illustDetail.data)).not.toThrow()
   })
 
+  it('illustDetail:103905962[manga]', async () => {
+    const illustDetail = await pixiv.illustDetail({
+      illustId: 103_905_962,
+    })
+    expect(illustDetail.status).toBe(200)
+    expect(illustDetail.data.illust.id).toBe(103_905_962)
+    expect(illustDetail.data.illust.title).toBe('【C101】あくあに恋した猫の話')
+    expect(illustDetail.data.illust.type).toBe('manga')
+    // "square_medium": "https://i.pximg.net/c/360x360_70/img-master/img/2023/04/27/13/39/51/107565629_p0_square1200.jpg",
+    expect(illustDetail.data.illust.image_urls.square_medium).toMatch(
+      /^https:\/\/i\.pximg\.net\/c\/360x360_70\/img-master\/img\/.+_square1200\.jpg$/
+    )
+    // "medium": "https://i.pximg.net/c/540x540_70/img-master/img/2023/04/27/13/39/51/107565629_p0_master1200.jpg",
+    expect(illustDetail.data.illust.image_urls.medium).toMatch(
+      /^https:\/\/i\.pximg\.net\/c\/540x540_70\/img-master\/img\/.+_master1200\.jpg$/
+    )
+    // "large": "https://i.pximg.net/c/600x1200_90/img-master/img/2023/04/27/13/39/51/107565629_p0_master1200.jpg",
+    expect(illustDetail.data.illust.image_urls.large).toMatch(
+      /^https:\/\/i\.pximg\.net\/c\/600x1200_90\/img-master\/img\/.+_master1200\.jpg$/
+    )
+    expect(illustDetail.data.illust.caption).toBe(
+      "C101の新刊サンプルです！<br /><br />恋愛アドベンチャーゲーム『あくありうむ。』に登場する「猫」。<br />彼はどんなことを考えていたのか?<br />彼にとって、これはどんな物語だったのか?<br />そういった本編で語られなかった部分を想像で掘り下げたお話です。<br />※本文は『あくありうむ。』のネタバレおよび多少の負傷描写を含みます。苦手な方はご注意ください。<br /><br />【1日目東C-13b/くらうでぃ】でお待ちしています！<br /><br />メロンブックス様にて新刊の事前予約も始まっています！<br />気になる方は是非チェックしてみてください！<br />【<a href=\"https://www.melonbooks.co.jp/detail/detail.php?product_id=1746005\" target='_blank' rel='noopener noreferrer'>https://www.melonbooks.co.jp/detail/detail.php?product_id=1746005</a>】"
+    )
+    expect(illustDetail.data.illust.restrict).toBe(0)
+    expect(illustDetail.data.illust.user.id).toBe(8_166_267)
+    expect(illustDetail.data.illust.user.name).toBe('くらうど')
+    expect(illustDetail.data.illust.user.account).toBe('borinn0812')
+    // https://i.pximg.net/user-profile/img/
+    expect(illustDetail.data.illust.user.profile_image_urls.medium).toMatch(
+      /^https:\/\/i\.pximg\.net\/user-profile\/img\/.+\.(?:jpg|png)$/
+    )
+    expect(illustDetail.data.illust.tags.length).toBeGreaterThan(0)
+    expect(illustDetail.data.illust.tools).toBeDefined()
+    expect(illustDetail.data.illust.tools.length).toBeGreaterThan(0)
+    expect(illustDetail.data.illust.create_date).toBe(
+      '2022-12-25T18:31:02+09:00'
+    )
+    expect(illustDetail.data.illust.page_count).toBe(8)
+    expect(illustDetail.data.illust.width).toBe(2508)
+    expect(illustDetail.data.illust.height).toBe(3541)
+    expect(illustDetail.data.illust.sanity_level).toBe(2)
+    expect(illustDetail.data.illust.x_restrict).toBe(0)
+    expect(illustDetail.data.illust.series).toBeNull()
+    expect(illustDetail.data.illust.meta_single_page).toStrictEqual({})
+    expect(illustDetail.data.illust.meta_pages).toHaveLength(8)
+    expect(illustDetail.data.illust.total_bookmarks).toBeGreaterThan(0)
+    expect(illustDetail.data.illust.total_view).toBeGreaterThan(0)
+    expect(illustDetail.data.illust.visible).toBe(true)
+    expect(illustDetail.data.illust.illust_ai_type).toBe(1)
+    expect(illustDetail.data.illust.illust_book_style).toBe(0)
+
+    const check = new GetV1IllustDetailCheck()
+    expect(() => check.throwIfResponseFailed(illustDetail.data)).not.toThrow()
+  })
+
   it('searchIllust', async () => {
     const searchIllust = await pixiv.searchIllust({
       word: 'ホロライブ',
@@ -126,6 +182,19 @@ describe('pixiv', () => {
     expect(() => check.throwIfResponseFailed(illustSeries.data)).not.toThrow()
   })
 
+  it('recommendedManga', async () => {
+    const mangaRecommended = await pixiv.mangaRecommended()
+    expect(mangaRecommended.status).toBe(200)
+    expect(mangaRecommended.data).toBeDefined()
+    expect(mangaRecommended.data.illusts).toBeDefined()
+    expect(mangaRecommended.data.illusts.length).toBeGreaterThan(0)
+
+    const check = new GetV1MangaRecommendedCheck()
+    expect(() =>
+      check.throwIfResponseFailed(mangaRecommended.data)
+    ).not.toThrow()
+  })
+
   it('novelDetail', async () => {
     const novelDetail = await pixiv.novelDetail({
       novelId: 13_574_875,
@@ -162,7 +231,7 @@ describe('pixiv', () => {
     expect(novelDetail.data.novel.user.account).toBe('user_wrmt2824')
     expect(novelDetail.data.novel.user.profile_image_urls).toBeDefined()
     expect(novelDetail.data.novel.user.profile_image_urls.medium).toMatch(
-      /^https:\/\/i\.pximg\.net\/user-profile\/img\/.+\.jpg$/
+      /^https:\/\/i\.pximg\.net\/user-profile\/img\/.+\.(?:jpg|png)$/
     )
     expect(novelDetail.data.novel.user.is_followed).toBeDefined()
     expect(novelDetail.data.novel.series).toStrictEqual({})
