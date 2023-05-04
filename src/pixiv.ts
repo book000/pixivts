@@ -19,6 +19,11 @@ import {
   SearchTarget,
   BookmarkRestrict,
   MangaRecommendedOptions,
+  IllustBookmarkDeleteOptions,
+  NovelBookmarkAddOptions,
+  NovelBookmarkDeleteOptions,
+  UserBookmarksIllustOptions,
+  UserBookmarksNovelOptions,
 } from './options'
 import { PixivApiError } from './types/error-response'
 import {
@@ -69,6 +74,26 @@ import {
   GetV1MangaRecommendedRequest,
   GetV1MangaRecommendedResponse,
 } from './types/endpoints/v1/manga/recommended'
+import {
+  PostV1IllustBookmarkDeleteRequest,
+  PostV1IllustBookmarkDeleteResponse,
+} from './types/endpoints/v1/illust/bookmark/delete'
+import {
+  PostV2NovelBookmarkAddRequest,
+  PostV2NovelBookmarkAddResponse,
+} from './types/endpoints/v2/novel/bookmark/add'
+import {
+  PostV1NovelBookmarkDeleteRequest,
+  PostV1NovelBookmarkDeleteResponse,
+} from './types/endpoints/v1/novel/bookmark/delete'
+import {
+  GetV1UserBookmarksNovelRequest,
+  GetV1UserBookmarksNovelResponse,
+} from './types/endpoints/v1/user/bookmarks/novel'
+import {
+  GetV1UserBookmarksIllustRequest,
+  GetV1UserBookmarksIllustResponse,
+} from './types/endpoints/v1/user/bookmarks/illust'
 
 interface GetRequestOptions<T> {
   method: 'GET'
@@ -273,29 +298,6 @@ export default class Pixiv {
   }
 
   /**
-   * イラストをブックマークする。
-   *
-   * @param options オプション
-   * @returns レスポンス
-   */
-  public async illustBookmarkAdd(options: IllustBookmarkAddOptions) {
-    type RequestType = PostV2IllustBookmarkAddRequest
-    this.checkRequiredOptions(options, ['illustId'])
-    const data: RequestType = {
-      ...this.convertSnakeToCamel(options),
-      illust_id: options.illustId,
-      restrict: options.restrict || BookmarkRestrict.PUBLIC,
-      // 'tags[]': (options.tags || []).join(' '),
-    }
-
-    return this.request<RequestType, PostV2IllustBookmarkAddResponse>({
-      method: 'POST',
-      path: '/v2/illust/bookmark/add',
-      data,
-    })
-  }
-
-  /**
    * イラストシリーズの詳細情報を取得する。
    *
    * @param options オプション
@@ -315,6 +317,50 @@ export default class Pixiv {
       method: 'GET',
       path: '/v1/illust/series',
       params: parameters,
+    })
+  }
+
+  /**
+   * イラストをブックマークする。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async illustBookmarkAdd(options: IllustBookmarkAddOptions) {
+    type RequestType = PostV2IllustBookmarkAddRequest
+    this.checkRequiredOptions(options, ['illustId'])
+    const data: RequestType = {
+      ...this.convertSnakeToCamel(options),
+      illust_id: options.illustId,
+      restrict: options.restrict || BookmarkRestrict.PUBLIC,
+      tags: options.tags || [],
+    }
+
+    return this.request<RequestType, PostV2IllustBookmarkAddResponse>({
+      method: 'POST',
+      path: '/v2/illust/bookmark/add',
+      data,
+    })
+  }
+
+  /**
+   * イラストのブックマークを削除する。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async illustBookmarkDelete(options: IllustBookmarkDeleteOptions) {
+    type RequestType = PostV1IllustBookmarkDeleteRequest
+    this.checkRequiredOptions(options, ['illustId'])
+    const data: RequestType = {
+      ...this.convertSnakeToCamel(options),
+      illust_id: options.illustId,
+    }
+
+    return this.request<RequestType, PostV1IllustBookmarkDeleteResponse>({
+      method: 'POST',
+      path: '/v1/illust/bookmark/delete',
+      data,
     })
   }
 
@@ -465,6 +511,50 @@ export default class Pixiv {
     })
   }
 
+  /**
+   * 小説をブックマークする。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async novelBookmarkAdd(options: NovelBookmarkAddOptions) {
+    type RequestType = PostV2NovelBookmarkAddRequest
+    this.checkRequiredOptions(options, ['novelId'])
+    const data: RequestType = {
+      ...this.convertSnakeToCamel(options),
+      novel_id: options.novelId,
+      restrict: options.restrict || BookmarkRestrict.PUBLIC,
+      tags: options.tags || [],
+    }
+
+    return this.request<RequestType, PostV2NovelBookmarkAddResponse>({
+      method: 'POST',
+      path: '/v2/novel/bookmark/add',
+      data,
+    })
+  }
+
+  /**
+   * 小説のブックマークを削除する。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async novelBookmarkDelete(options: NovelBookmarkDeleteOptions) {
+    type RequestType = PostV1NovelBookmarkDeleteRequest
+    this.checkRequiredOptions(options, ['novelId'])
+    const data: RequestType = {
+      ...this.convertSnakeToCamel(options),
+      novel_id: options.novelId,
+    }
+
+    return this.request<RequestType, PostV1NovelBookmarkDeleteResponse>({
+      method: 'POST',
+      path: '/v1/novel/bookmark/delete',
+      data,
+    })
+  }
+
   // ---------- ユーザ ---------- //
 
   /**
@@ -488,6 +578,57 @@ export default class Pixiv {
       params: parameters,
     })
   }
+
+  /**
+   * ユーザのイラストブックマークを取得する。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async userBookmarksIllust(options: UserBookmarksIllustOptions) {
+    type RequestType = GetV1UserBookmarksIllustRequest
+    this.checkRequiredOptions(options, ['userId'])
+    const parameters = {
+      ...this.convertSnakeToCamel(options),
+      user_id: options.userId,
+      restrict: options.restrict || BookmarkRestrict.PUBLIC,
+      filter: options.filter || Filter.FOR_IOS,
+      max_bookmark_id: options.maxBookmarkId || undefined,
+      tag: options.tag || undefined,
+    }
+
+    return this.request<RequestType, GetV1UserBookmarksIllustResponse>({
+      method: 'GET',
+      path: '/v1/user/bookmarks/illust',
+      params: parameters,
+    })
+  }
+
+  /**
+   * ユーザの小説ブックマークを取得する。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async userBookmarksNovel(options: UserBookmarksNovelOptions) {
+    type RequestType = GetV1UserBookmarksNovelRequest
+    this.checkRequiredOptions(options, ['userId'])
+    const parameters = {
+      ...this.convertSnakeToCamel(options),
+      user_id: options.userId,
+      restrict: options.restrict || BookmarkRestrict.PUBLIC,
+      max_bookmark_id: options.maxBookmarkId || undefined,
+      tag: options.tag || undefined,
+    }
+
+    return this.request<RequestType, GetV1UserBookmarksNovelResponse>({
+      method: 'GET',
+      path: '/v1/user/bookmarks/novel',
+      params: parameters,
+    })
+  }
+
+  // ---------- ユーティリティ ---------- //
 
   /**
    * クエリストリングをパースする。
@@ -542,6 +683,7 @@ export default class Pixiv {
     if (options.method === 'GET') {
       return this.axios.get<U>(options.path, {
         params: options.params,
+        paramsSerializer: { indexes: null },
       })
     }
     if (options.method === 'POST') {
@@ -549,6 +691,7 @@ export default class Pixiv {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
+        paramsSerializer: { indexes: null },
       })
     }
     throw new Error('Invalid method')

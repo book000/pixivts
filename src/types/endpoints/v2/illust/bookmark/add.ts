@@ -19,7 +19,10 @@ export interface PostV2IllustBookmarkAddRequest {
    */
   restrict: BookmarkRestrict
 
-  // tags: string[]; があるかもしれない。要確認
+  /**
+   * ブックマークタグ群
+   */
+  tags?: string[]
 }
 
 /**
