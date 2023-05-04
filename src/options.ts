@@ -15,6 +15,8 @@ import { BaseSimpleCheck, CheckFunctions } from './checks'
 import { PostV1IllustBookmarkDeleteRequest } from './types/endpoints/v1/illust/bookmark/delete'
 import { PostV2NovelBookmarkAddRequest } from './types/endpoints/v2/novel/bookmark/add'
 import { PostV1NovelBookmarkDeleteRequest } from './types/endpoints/v1/novel/bookmark/delete'
+import { GetV1UserBookmarksIllustRequest } from './types/endpoints/v1/user/bookmarks/illust'
+import { GetV1UserBookmarksNovelRequest } from './types/endpoints/v1/user/bookmarks/novel'
 
 /**
  * 検索対象
@@ -34,13 +36,7 @@ export class SearchTargetCheck extends BaseSimpleCheck<SearchTarget> {
   checks(): CheckFunctions<SearchTarget> {
     return {
       main: (data) =>
-        typeof data === 'string' &&
-        [
-          SearchTarget.PARTIAL_MATCH_FOR_TAGS,
-          SearchTarget.EXACT_MATCH_FOR_TAGS,
-          SearchTarget.TITLE_AND_CAPTION,
-          SearchTarget.KEYWORD,
-        ].includes(data),
+        typeof data === 'string' && Object.values(SearchTarget).includes(data),
     }
   }
 }
@@ -61,12 +57,7 @@ export class SearchSortCheck extends BaseSimpleCheck<SearchSort> {
   checks(): CheckFunctions<SearchSort> {
     return {
       main: (data) =>
-        typeof data === 'string' &&
-        [
-          SearchSort.DATE_DESC,
-          SearchSort.DATE_ASC,
-          SearchSort.POPULAR_DESC,
-        ].includes(data),
+        typeof data === 'string' && Object.values(SearchSort).includes(data),
     }
   }
 }
@@ -88,11 +79,7 @@ export class SearchIllustDurationCheck extends BaseSimpleCheck<SearchIllustDurat
     return {
       main: (data) =>
         typeof data === 'string' &&
-        [
-          SearchIllustDuration.WITHIN_LAST_DAY,
-          SearchIllustDuration.WITHIN_LAST_WEEK,
-          SearchIllustDuration.WITHIN_LAST_MONTH,
-        ].includes(data),
+        Object.values(SearchIllustDuration).includes(data),
     }
   }
 }
@@ -111,8 +98,7 @@ export class FilterCheck extends BaseSimpleCheck<Filter> {
   checks(): CheckFunctions<Filter> {
     return {
       main: (data) =>
-        typeof data === 'string' &&
-        [Filter.FOR_IOS, Filter.FOR_ANDROID].includes(data),
+        typeof data === 'string' && Object.values(Filter).includes(data),
     }
   }
 }
@@ -132,7 +118,7 @@ export class BookmarkRestrictCheck extends BaseSimpleCheck<BookmarkRestrict> {
     return {
       main: (data) =>
         typeof data === 'string' &&
-        [BookmarkRestrict.PUBLIC, BookmarkRestrict.PRIVATE].includes(data),
+        Object.values(BookmarkRestrict).includes(data),
     }
   }
 }
@@ -260,6 +246,22 @@ export type NovelBookmarkDeleteOptions =
   SnakeToCamel<PostV1NovelBookmarkDeleteRequest>
 
 /**
- * ユーザー詳細取得オプション
+ * ユーザ詳細取得オプション
  */
 export type UserDetailOptions = SnakeToCamel<GetV1UserDetailRequest>
+
+/**
+ * ユーザイラストブックマーク取得オプション
+ */
+export type UserBookmarksIllustOptions = SomeRequired<
+  SnakeToCamel<GetV1UserBookmarksIllustRequest>,
+  'userId'
+>
+
+/**
+ * ユーザ小説ブックマーク取得オプション
+ */
+export type UserBookmarksNovelOptions = SomeRequired<
+  SnakeToCamel<GetV1UserBookmarksNovelRequest>,
+  'userId'
+>

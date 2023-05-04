@@ -22,6 +22,8 @@ import {
   IllustBookmarkDeleteOptions,
   NovelBookmarkAddOptions,
   NovelBookmarkDeleteOptions,
+  UserBookmarksIllustOptions,
+  UserBookmarksNovelOptions,
 } from './options'
 import { PixivApiError } from './types/error-response'
 import {
@@ -84,6 +86,14 @@ import {
   PostV1NovelBookmarkDeleteRequest,
   PostV1NovelBookmarkDeleteResponse,
 } from './types/endpoints/v1/novel/bookmark/delete'
+import {
+  GetV1UserBookmarksNovelRequest,
+  GetV1UserBookmarksNovelResponse,
+} from './types/endpoints/v1/user/bookmarks/novel'
+import {
+  GetV1UserBookmarksIllustRequest,
+  GetV1UserBookmarksIllustResponse,
+} from './types/endpoints/v1/user/bookmarks/illust'
 
 interface GetRequestOptions<T> {
   method: 'GET'
@@ -568,6 +578,57 @@ export default class Pixiv {
       params: parameters,
     })
   }
+
+  /**
+   * ユーザのイラストブックマークを取得する。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async userBookmarksIllust(options: UserBookmarksIllustOptions) {
+    type RequestType = GetV1UserBookmarksIllustRequest
+    this.checkRequiredOptions(options, ['userId'])
+    const parameters = {
+      ...this.convertSnakeToCamel(options),
+      user_id: options.userId,
+      restrict: options.restrict || BookmarkRestrict.PUBLIC,
+      filter: options.filter || Filter.FOR_IOS,
+      max_bookmark_id: options.maxBookmarkId || undefined,
+      tag: options.tag || undefined,
+    }
+
+    return this.request<RequestType, GetV1UserBookmarksIllustResponse>({
+      method: 'GET',
+      path: '/v1/user/bookmarks/illust',
+      params: parameters,
+    })
+  }
+
+  /**
+   * ユーザの小説ブックマークを取得する。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async userBookmarksNovel(options: UserBookmarksNovelOptions) {
+    type RequestType = GetV1UserBookmarksNovelRequest
+    this.checkRequiredOptions(options, ['userId'])
+    const parameters = {
+      ...this.convertSnakeToCamel(options),
+      user_id: options.userId,
+      restrict: options.restrict || BookmarkRestrict.PUBLIC,
+      max_bookmark_id: options.maxBookmarkId || undefined,
+      tag: options.tag || undefined,
+    }
+
+    return this.request<RequestType, GetV1UserBookmarksNovelResponse>({
+      method: 'GET',
+      path: '/v1/user/bookmarks/novel',
+      params: parameters,
+    })
+  }
+
+  // ---------- ユーティリティ ---------- //
 
   /**
    * クエリストリングをパースする。

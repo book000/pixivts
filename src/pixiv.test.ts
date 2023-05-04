@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import { BookmarkRestrict } from './options'
 import Pixiv from './pixiv'
 import { GetV1IllustDetailCheck } from './types/endpoints/v1/illust/detail'
 import { GetV1IllustRecommendedCheck } from './types/endpoints/v1/illust/recommended'
@@ -8,6 +9,8 @@ import { GetV1NovelRecommendedCheck } from './types/endpoints/v1/novel/recommend
 import { GetV1NovelTextCheck } from './types/endpoints/v1/novel/text'
 import { GetV1SearchIllustCheck } from './types/endpoints/v1/search/illust'
 import { GetV1SearchNovelCheck } from './types/endpoints/v1/search/novel'
+import { GetV1UserBookmarksIllustCheck } from './types/endpoints/v1/user/bookmarks/illust'
+import { GetV1UserBookmarksNovelCheck } from './types/endpoints/v1/user/bookmarks/novel'
 import { GetV1UserDetailCheck } from './types/endpoints/v1/user/detail'
 import { GetV2NovelDetailCheck } from './types/endpoints/v2/novel/detail'
 import { GetV2NovelSeriesCheck } from './types/endpoints/v2/novel/series'
@@ -321,6 +324,38 @@ describe('pixiv', () => {
 
     const check = new GetV1UserDetailCheck()
     expect(() => check.throwIfResponseFailed(userDetail.data)).not.toThrow()
+  })
+
+  it('userBookmarksIllust', async () => {
+    const userBookmarksIllust = await pixiv.userBookmarksIllust({
+      userId: 16_568_776,
+      restrict: BookmarkRestrict.PRIVATE,
+    })
+    expect(userBookmarksIllust.status).toBe(200)
+    expect(userBookmarksIllust.data).toBeDefined()
+    expect(userBookmarksIllust.data.illusts).toBeDefined()
+    expect(userBookmarksIllust.data.illusts.length).toBeGreaterThan(0)
+
+    const check = new GetV1UserBookmarksIllustCheck()
+    expect(() =>
+      check.throwIfResponseFailed(userBookmarksIllust.data)
+    ).not.toThrow()
+  })
+
+  it('userBookmarksNovel', async () => {
+    const userBookmarksNovel = await pixiv.userBookmarksNovel({
+      userId: 16_568_776,
+      restrict: BookmarkRestrict.PRIVATE,
+    })
+    expect(userBookmarksNovel.status).toBe(200)
+    expect(userBookmarksNovel.data).toBeDefined()
+    expect(userBookmarksNovel.data.novels).toBeDefined()
+    expect(userBookmarksNovel.data.novels.length).toBeGreaterThan(0)
+
+    const check = new GetV1UserBookmarksNovelCheck()
+    expect(() =>
+      check.throwIfResponseFailed(userBookmarksNovel.data)
+    ).not.toThrow()
   })
 
   it('parseQueryString', async () => {
