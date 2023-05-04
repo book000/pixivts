@@ -20,6 +20,8 @@ import {
   BookmarkRestrict,
   MangaRecommendedOptions,
   IllustBookmarkDeleteOptions,
+  NovelBookmarkAddOptions,
+  NovelBookmarkDeleteOptions,
 } from './options'
 import { PixivApiError } from './types/error-response'
 import {
@@ -70,7 +72,18 @@ import {
   GetV1MangaRecommendedRequest,
   GetV1MangaRecommendedResponse,
 } from './types/endpoints/v1/manga/recommended'
-import { PostV1IllustBookmarkDeleteRequest, PostV1IllustBookmarkDeleteResponse } from './types/endpoints/v1/illust/bookmark/delete'
+import {
+  PostV1IllustBookmarkDeleteRequest,
+  PostV1IllustBookmarkDeleteResponse,
+} from './types/endpoints/v1/illust/bookmark/delete'
+import {
+  PostV2NovelBookmarkAddRequest,
+  PostV2NovelBookmarkAddResponse,
+} from './types/endpoints/v2/novel/bookmark/add'
+import {
+  PostV1NovelBookmarkDeleteRequest,
+  PostV1NovelBookmarkDeleteResponse,
+} from './types/endpoints/v1/novel/bookmark/delete'
 
 interface GetRequestOptions<T> {
   method: 'GET'
@@ -275,6 +288,29 @@ export default class Pixiv {
   }
 
   /**
+   * イラストシリーズの詳細情報を取得する。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async illustSeries(options: IllustSeriesOptions) {
+    type RequestType = GetV1IllustSeriesRequest
+    this.checkRequiredOptions(options, ['illustSeriesId'])
+    const parameters: RequestType = {
+      ...this.convertSnakeToCamel(options),
+      illust_series_id: options.illustSeriesId,
+      filter: options.filter || Filter.FOR_IOS,
+      // offset: options.offset,
+    }
+
+    return this.request<RequestType, GetV1IllustSeriesResponse>({
+      method: 'GET',
+      path: '/v1/illust/series',
+      params: parameters,
+    })
+  }
+
+  /**
    * イラストをブックマークする。
    *
    * @param options オプション
@@ -315,29 +351,6 @@ export default class Pixiv {
       method: 'POST',
       path: '/v1/illust/bookmark/delete',
       data,
-    })
-  }
-
-  /**
-   * イラストシリーズの詳細情報を取得する。
-   *
-   * @param options オプション
-   * @returns レスポンス
-   */
-  public async illustSeries(options: IllustSeriesOptions) {
-    type RequestType = GetV1IllustSeriesRequest
-    this.checkRequiredOptions(options, ['illustSeriesId'])
-    const parameters: RequestType = {
-      ...this.convertSnakeToCamel(options),
-      illust_series_id: options.illustSeriesId,
-      filter: options.filter || Filter.FOR_IOS,
-      // offset: options.offset,
-    }
-
-    return this.request<RequestType, GetV1IllustSeriesResponse>({
-      method: 'GET',
-      path: '/v1/illust/series',
-      params: parameters,
     })
   }
 
@@ -485,6 +498,50 @@ export default class Pixiv {
       method: 'GET',
       path: '/v2/novel/series',
       params: parameters,
+    })
+  }
+
+  /**
+   * 小説をブックマークする。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async novelBookmarkAdd(options: NovelBookmarkAddOptions) {
+    type RequestType = PostV2NovelBookmarkAddRequest
+    this.checkRequiredOptions(options, ['novelId'])
+    const data: RequestType = {
+      ...this.convertSnakeToCamel(options),
+      novel_id: options.novelId,
+      restrict: options.restrict || BookmarkRestrict.PUBLIC,
+      // 'tags[]': (options.tags || []).join(' '),
+    }
+
+    return this.request<RequestType, PostV2NovelBookmarkAddResponse>({
+      method: 'POST',
+      path: '/v2/novel/bookmark/add',
+      data,
+    })
+  }
+
+  /**
+   * 小説のブックマークを削除する。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async novelBookmarkDelete(options: NovelBookmarkDeleteOptions) {
+    type RequestType = PostV1NovelBookmarkDeleteRequest
+    this.checkRequiredOptions(options, ['novelId'])
+    const data: RequestType = {
+      ...this.convertSnakeToCamel(options),
+      novel_id: options.novelId,
+    }
+
+    return this.request<RequestType, PostV1NovelBookmarkDeleteResponse>({
+      method: 'POST',
+      path: '/v1/novel/bookmark/delete',
+      data,
     })
   }
 

@@ -13,6 +13,8 @@ import { GetV1UserDetailRequest } from './types/endpoints/v1/user/detail'
 import { GetV1MangaRecommendedRequest } from './types/endpoints/v1/manga/recommended'
 import { BaseSimpleCheck, CheckFunctions } from './checks'
 import { PostV1IllustBookmarkDeleteRequest } from './types/endpoints/v1/illust/bookmark/delete'
+import { PostV2NovelBookmarkAddRequest } from './types/endpoints/v2/novel/bookmark/add'
+import { PostV1NovelBookmarkDeleteRequest } from './types/endpoints/v1/novel/bookmark/delete'
 
 /**
  * 検索対象
@@ -173,6 +175,14 @@ export type RecommendedIllustOptions = SnakeToCamel<
 >
 
 /**
+ * イラストシリーズ取得オプション
+ */
+export type IllustSeriesOptions = SomeRequired<
+  SnakeToCamel<GetV1IllustSeriesRequest>,
+  'illustSeriesId'
+>
+
+/**
  * イラストブックマーク追加オプション
  */
 export type IllustBookmarkAddOptions =
@@ -183,14 +193,6 @@ export type IllustBookmarkAddOptions =
  */
 export type IllustBookmarkDeleteOptions =
   SnakeToCamel<PostV1IllustBookmarkDeleteRequest>
-
-/**
- * イラストシリーズ取得オプション
- */
-export type IllustSeriesOptions = SomeRequired<
-  SnakeToCamel<GetV1IllustSeriesRequest>,
-  'illustSeriesId'
->
 
 /**
  * おすすめマンガ取得オプション
@@ -240,6 +242,18 @@ export type NovelSeriesOptions = SomeRequired<
   SnakeToCamel<GetV2NovelSeriesRequest>,
   'seriesId'
 >
+
+/**
+ * 小説ブックマーク追加オプション
+ */
+export type NovelBookmarkAddOptions =
+  SnakeToCamel<PostV2NovelBookmarkAddRequest>
+
+/**
+ * 小説ブックマーク削除オプション
+ */
+export type NovelBookmarkDeleteOptions =
+  SnakeToCamel<PostV1NovelBookmarkDeleteRequest>
 
 /**
  * ユーザー詳細取得オプション
