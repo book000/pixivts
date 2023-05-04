@@ -185,8 +185,10 @@ export type IllustSeriesOptions = SomeRequired<
 /**
  * イラストブックマーク追加オプション
  */
-export type IllustBookmarkAddOptions =
-  SnakeToCamel<PostV2IllustBookmarkAddRequest>
+export type IllustBookmarkAddOptions = SomeRequired<
+  SnakeToCamel<PostV2IllustBookmarkAddRequest>,
+  'illustId'
+>
 
 /**
  * イラストブックマーク削除オプション
@@ -246,8 +248,10 @@ export type NovelSeriesOptions = SomeRequired<
 /**
  * 小説ブックマーク追加オプション
  */
-export type NovelBookmarkAddOptions =
-  SnakeToCamel<PostV2NovelBookmarkAddRequest>
+export type NovelBookmarkAddOptions = SomeRequired<
+  SnakeToCamel<PostV2NovelBookmarkAddRequest>,
+  'novelId'
+>
 
 /**
  * 小説ブックマーク削除オプション

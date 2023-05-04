@@ -323,7 +323,7 @@ export default class Pixiv {
       ...this.convertSnakeToCamel(options),
       illust_id: options.illustId,
       restrict: options.restrict || BookmarkRestrict.PUBLIC,
-      // 'tags[]': (options.tags || []).join(' '),
+      tags: options.tags || [],
     }
 
     return this.request<RequestType, PostV2IllustBookmarkAddResponse>({
@@ -514,7 +514,7 @@ export default class Pixiv {
       ...this.convertSnakeToCamel(options),
       novel_id: options.novelId,
       restrict: options.restrict || BookmarkRestrict.PUBLIC,
-      // 'tags[]': (options.tags || []).join(' '),
+      tags: options.tags || [],
     }
 
     return this.request<RequestType, PostV2NovelBookmarkAddResponse>({
@@ -622,6 +622,7 @@ export default class Pixiv {
     if (options.method === 'GET') {
       return this.axios.get<U>(options.path, {
         params: options.params,
+        paramsSerializer: { indexes: null },
       })
     }
     if (options.method === 'POST') {
@@ -629,6 +630,7 @@ export default class Pixiv {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
+        paramsSerializer: { indexes: null },
       })
     }
     throw new Error('Invalid method')

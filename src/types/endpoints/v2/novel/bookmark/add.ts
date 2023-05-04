@@ -17,7 +17,10 @@ export interface PostV2NovelBookmarkAddRequest {
    */
   restrict: string
 
-  // tags: string[]; があるかもしれない。要確認
+  /**
+   * ブックマークタグ群
+   */
+  tags?: string[]
 }
 
 /**
