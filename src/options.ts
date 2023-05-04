@@ -12,6 +12,7 @@ import { GetV2NovelSeriesRequest } from './types/endpoints/v2/novel/series'
 import { GetV1UserDetailRequest } from './types/endpoints/v1/user/detail'
 import { GetV1MangaRecommendedRequest } from './types/endpoints/v1/manga/recommended'
 import { BaseSimpleCheck, CheckFunctions } from './checks'
+import { PostV1IllustBookmarkDeleteRequest } from './types/endpoints/v1/illust/bookmark/delete'
 
 /**
  * 検索対象
@@ -174,10 +175,14 @@ export type RecommendedIllustOptions = SnakeToCamel<
 /**
  * イラストブックマーク追加オプション
  */
-export type IllustBookmarkAddOptions = SomeRequired<
-  SnakeToCamel<PostV2IllustBookmarkAddRequest>,
-  'illustId'
->
+export type IllustBookmarkAddOptions =
+  SnakeToCamel<PostV2IllustBookmarkAddRequest>
+
+/**
+ * イラストブックマーク削除オプション
+ */
+export type IllustBookmarkDeleteOptions =
+  SnakeToCamel<PostV1IllustBookmarkDeleteRequest>
 
 /**
  * イラストシリーズ取得オプション

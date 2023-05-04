@@ -19,6 +19,7 @@ import {
   SearchTarget,
   BookmarkRestrict,
   MangaRecommendedOptions,
+  IllustBookmarkDeleteOptions,
 } from './options'
 import { PixivApiError } from './types/error-response'
 import {
@@ -69,6 +70,7 @@ import {
   GetV1MangaRecommendedRequest,
   GetV1MangaRecommendedResponse,
 } from './types/endpoints/v1/manga/recommended'
+import { PostV1IllustBookmarkDeleteRequest, PostV1IllustBookmarkDeleteResponse } from './types/endpoints/v1/illust/bookmark/delete'
 
 interface GetRequestOptions<T> {
   method: 'GET'
@@ -291,6 +293,27 @@ export default class Pixiv {
     return this.request<RequestType, PostV2IllustBookmarkAddResponse>({
       method: 'POST',
       path: '/v2/illust/bookmark/add',
+      data,
+    })
+  }
+
+  /**
+   * イラストのブックマークを削除する。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async illustBookmarkDelete(options: IllustBookmarkDeleteOptions) {
+    type RequestType = PostV1IllustBookmarkDeleteRequest
+    this.checkRequiredOptions(options, ['illustId'])
+    const data: RequestType = {
+      ...this.convertSnakeToCamel(options),
+      illust_id: options.illustId,
+    }
+
+    return this.request<RequestType, PostV1IllustBookmarkDeleteResponse>({
+      method: 'POST',
+      path: '/v1/illust/bookmark/delete',
       data,
     })
   }
