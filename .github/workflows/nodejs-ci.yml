@@ -97,13 +97,6 @@ jobs:
           yarn build
           yarn generate
 
-      - name: 📦 Cache snapshots
-        if: steps.package-json.outputs.test == 'true'
-        uses: actions/cache@v2
-        with:
-          path: src/__snapshots__
-          key: ${{ runner.os }}-snapshots-${{ hashFiles('src/**.test.ts') }}
-
       - name: 🧪 Run tests
         if: steps.package-json.outputs.test == 'true'
         run: yarn test
