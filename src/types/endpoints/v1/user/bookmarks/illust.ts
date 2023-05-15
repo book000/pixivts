@@ -31,7 +31,7 @@ export interface GetV1UserBookmarksIllustRequest {
    *
    * @beta
    */
-  max_bookmark_id?: string
+  max_bookmark_id?: number
 
   /**
    * OSフィルタ

@@ -26,7 +26,7 @@ export interface GetV1UserBookmarksNovelRequest {
    *
    * @beta
    */
-  max_bookmark_id?: string
+  max_bookmark_id?: number
 }
 
 /**
