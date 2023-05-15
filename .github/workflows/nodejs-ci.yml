@@ -21,6 +21,8 @@ on:
     types:
       - labeled
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
   node-ci:
@@ -28,6 +30,7 @@ jobs:
     if: ${{
       github.event_name == 'push' ||
       github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
       (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) ||
       (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.fork == true && contains(github.event.label.name, '🚀request-deploy'))
       }}
@@ -96,7 +99,7 @@ jobs:
 
       - name: 🧪 Run tests
         if: steps.package-json.outputs.test == 'true'
-        run: yarn test -u
+        run: yarn test
         env:
           PIXIV_REFRESH_TOKEN: ${{ secrets.PIXIV_REFRESH_TOKEN }}
 
