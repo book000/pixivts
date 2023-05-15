@@ -43,7 +43,7 @@
   "dependencies": {
     "@types/qs": "6.9.7",
     "axios": "1.4.0",
-    "qs": "6.11.1",
+    "qs": "6.11.2",
     "snake-camel-types": "1.0.1"
   },
   "devDependencies": {
