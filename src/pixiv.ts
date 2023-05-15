@@ -724,7 +724,7 @@ export default class Pixiv {
   private convertSnakeToCamel(object: Record<string, any>) {
     const result: Record<string, any> = {}
     for (const key of Object.keys(object)) {
-      const camelKey = key.replace(/_([a-z])/g, (m) => m[1].toUpperCase())
+      const camelKey = key.replaceAll(/_([a-z])/g, (m) => m[1].toUpperCase())
       result[camelKey] = object[key]
     }
     return result
