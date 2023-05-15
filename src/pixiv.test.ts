@@ -14,7 +14,7 @@ import { GetV1UserBookmarksNovelCheck } from './types/endpoints/v1/user/bookmark
 import { GetV1UserDetailCheck } from './types/endpoints/v1/user/detail'
 import { GetV2NovelDetailCheck } from './types/endpoints/v2/novel/detail'
 import { GetV2NovelSeriesCheck } from './types/endpoints/v2/novel/series'
-import { isEmptyObject } from './utils'
+import { isEmptyObject, omit } from './utils'
 
 jest.setTimeout(120_000) // 120sec
 
@@ -86,6 +86,14 @@ describe('pixiv', () => {
 
     const check = new GetV1IllustDetailCheck()
     expect(() => check.throwIfResponseFailed(illustDetail.data)).not.toThrow()
+
+    expect(
+      omit(illustDetail.data.illust, [
+        'total_bookmarks',
+        'total_comments',
+        'total_view',
+      ])
+    ).toMatchSnapshot()
   })
 
   it('illustDetail:103905962[manga]', async () => {
@@ -141,6 +149,14 @@ describe('pixiv', () => {
 
     const check = new GetV1IllustDetailCheck()
     expect(() => check.throwIfResponseFailed(illustDetail.data)).not.toThrow()
+
+    expect(
+      omit(illustDetail.data.illust, [
+        'total_bookmarks',
+        'total_comments',
+        'total_view',
+      ])
+    ).toMatchSnapshot()
   })
 
   it('searchIllust', async () => {
@@ -183,6 +199,17 @@ describe('pixiv', () => {
 
     const check = new GetV1IllustSeriesCheck()
     expect(() => check.throwIfResponseFailed(illustSeries.data)).not.toThrow()
+
+    expect(
+      omit(illustSeries.data.illust_series_detail, ['series_work_count'])
+    ).toMatchSnapshot('illust_series_detail')
+    expect(
+      omit(illustSeries.data.illust_series_first_illust, [
+        'total_bookmarks',
+        'total_comments',
+        'total_view',
+      ])
+    ).toMatchSnapshot('illust_series_first_illust')
   })
 
   it('recommendedManga', async () => {
@@ -250,6 +277,14 @@ describe('pixiv', () => {
 
     const check = new GetV2NovelDetailCheck()
     expect(() => check.throwIfResponseFailed(novelDetail.data)).not.toThrow()
+
+    expect(
+      omit(novelDetail.data.novel, [
+        'total_bookmarks',
+        'total_comments',
+        'total_view',
+      ])
+    ).toMatchSnapshot()
   })
 
   it('novelText', async () => {
@@ -258,7 +293,6 @@ describe('pixiv', () => {
     })
     expect(novelText.status).toBe(200)
     expect(novelText.data).toBeDefined()
-    expect(novelText.data).toMatchSnapshot()
     expect(novelText.data.novel_text).toBeDefined()
     expect(novelText.data.novel_text.length).toBeGreaterThan(0)
     if (!isEmptyObject(novelText.data.novel_marker)) {
@@ -269,6 +303,9 @@ describe('pixiv', () => {
 
     const check = new GetV1NovelTextCheck()
     expect(() => check.throwIfResponseFailed(novelText.data)).not.toThrow()
+
+    expect(novelText.data.novel_marker).toMatchSnapshot('novel_marker')
+    expect(novelText.data.novel_text).toMatchSnapshot()
   })
 
   it('searchNovel', async () => {
@@ -309,6 +346,24 @@ describe('pixiv', () => {
 
     const check = new GetV2NovelSeriesCheck()
     expect(() => check.throwIfResponseFailed(novelSeries.data)).not.toThrow()
+
+    expect(
+      omit(novelSeries.data.novel_series_detail, ['content_count'])
+    ).toMatchSnapshot('novel_series_detail')
+    expect(
+      omit(novelSeries.data.novel_series_first_novel, [
+        'total_bookmarks',
+        'total_comments',
+        'total_view',
+      ])
+    ).toMatchSnapshot('novel_series_first_novel')
+    expect(
+      omit(novelSeries.data.novel_series_latest_novel, [
+        'total_bookmarks',
+        'total_comments',
+        'total_view',
+      ])
+    ).toMatchSnapshot('illust_series_first_illust')
   })
 
   it('userDetail', async () => {
@@ -320,10 +375,21 @@ describe('pixiv', () => {
     expect(userDetail.data.user).toBeDefined()
     expect(userDetail.data.user.id).toBe(16_568_776)
     expect(userDetail.data.user.name).toBe('ihcamot')
-    expect(userDetail.data).toMatchSnapshot()
 
     const check = new GetV1UserDetailCheck()
     expect(() => check.throwIfResponseFailed(userDetail.data)).not.toThrow()
+
+    expect(userDetail.data.user).toMatchSnapshot('user')
+    expect(
+      omit(userDetail.data.profile, [
+        'total_follow_users',
+        'total_illust_bookmarks_public',
+      ])
+    ).toMatchSnapshot('profile')
+    expect(userDetail.data.profile_publicity).toMatchSnapshot(
+      'profile_publicity'
+    )
+    expect(userDetail.data.workspace).toMatchSnapshot('workspace')
   })
 
   it('userBookmarksIllust', async () => {
