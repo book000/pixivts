@@ -463,58 +463,68 @@ exports[`pixiv novelDetail 1`] = `
 
 exports[`pixiv novelSeries: illust_series_first_illust 1`] = `
 {
-  "caption": "あ〜(^^)",
-  "create_date": "2023-05-10T00:24:01+09:00",
-  "id": 19854434,
+  "caption": "どうも、忙しくてこのシリーズの#3が7/1というのをみて驚愕している作者です。<br />いや〜、そろそろ年を越しますね。正直ここまで投稿が遅れると思ってなかったです。<br />本当に申し訳ない。<br />不定期と言えど割と頑張って投稿するのでこれからも宜しくお願い致します。<br />そしてこの回、実は一昨日の夕方に出る予定だったんですけど書いてる途中でpcが落ちて内容消えて萎えたので今日改めて出しています(弱々で申し訳ない)。<br />後編も早めに出します。<br />長らくお待たせしました、コメント等励みになるので是非感想など書き残してって下さい！では、本編どうぞ！",
+  "create_date": "2021-12-25T09:00:50+09:00",
+  "id": 16664510,
   "image_urls": {
-    "large": "https://i.pximg.net/c/240x480_80/novel-cover-master/img/2023/05/10/00/57/44/ci19854434_8d38bde93b0ba03ef57b58b1eaabe029_master1200.jpg",
-    "medium": "https://i.pximg.net/c/176x352/novel-cover-master/img/2023/05/10/00/57/44/ci19854434_8d38bde93b0ba03ef57b58b1eaabe029_master1200.jpg",
-    "square_medium": "https://i.pximg.net/c/128x128/novel-cover-master/img/2023/05/10/00/57/44/ci19854434_8d38bde93b0ba03ef57b58b1eaabe029_square1200.jpg",
+    "large": "https://i.pximg.net/c/240x480_80/novel-cover-master/img/2021/12/25/09/00/50/16664510_a434e352d8c321046bd5857b613bf7ce_master1200.jpg",
+    "medium": "https://i.pximg.net/c/176x352/novel-cover-master/img/2021/12/25/09/00/50/16664510_a434e352d8c321046bd5857b613bf7ce_master1200.jpg",
+    "square_medium": "https://i.pximg.net/c/128x128/novel-cover-master/img/2021/12/25/09/00/50/16664510_a434e352d8c321046bd5857b613bf7ce_square1200.jpg",
   },
   "is_bookmarked": true,
   "is_muted": false,
   "is_mypixiv_only": false,
   "is_original": false,
   "is_x_restricted": false,
-  "novel_ai_type": 1,
-  "page_count": 2,
+  "novel_ai_type": 0,
+  "page_count": 1,
   "restrict": 0,
   "series": {
-    "id": 10181799,
-    "title": "ゆるししらみ",
+    "id": 7474721,
+    "title": "夏色吹雪の恋人生活",
   },
   "tags": [
-    {
-      "added_by_uploaded_user": true,
-      "name": "獅白ぼたん",
-      "translated_name": null,
-    },
-    {
-      "added_by_uploaded_user": true,
-      "name": "雪花ラミィ",
-      "translated_name": null,
-    },
-    {
-      "added_by_uploaded_user": true,
-      "name": "ししらみ",
-      "translated_name": null,
-    },
     {
       "added_by_uploaded_user": true,
       "name": "ホロライブ",
       "translated_name": null,
     },
+    {
+      "added_by_uploaded_user": true,
+      "name": "夏色吹雪",
+      "translated_name": null,
+    },
+    {
+      "added_by_uploaded_user": true,
+      "name": "夏色まつり",
+      "translated_name": null,
+    },
+    {
+      "added_by_uploaded_user": true,
+      "name": "白上フブキ",
+      "translated_name": null,
+    },
+    {
+      "added_by_uploaded_user": true,
+      "name": "百合",
+      "translated_name": null,
+    },
+    {
+      "added_by_uploaded_user": true,
+      "name": "壊滅的文章力",
+      "translated_name": null,
+    },
   ],
-  "text_length": 1648,
-  "title": "頬も空もまだ紅いから",
+  "text_length": 1583,
+  "title": "休日といえば....　[前編]",
   "user": {
-    "account": "user_utvh7357",
-    "id": 70910389,
+    "account": "nyao_alp-lck",
+    "id": 69131958,
     "is_access_blocking_user": false,
     "is_followed": false,
-    "name": "木々鬼　北",
+    "name": "nyao1820-RdeCua",
     "profile_image_urls": {
-      "medium": "https://i.pximg.net/user-profile/img/2023/03/09/02/26/38/24127823_63815ee55e41f8e5792e3f09ef132efb_170.jpg",
+      "medium": "https://i.pximg.net/user-profile/img/2021/07/08/07/02/09/21000900_15ac086e2f005f45794becba5c9dcc00_170.jpg",
     },
   },
   "visible": true,
@@ -524,26 +534,28 @@ exports[`pixiv novelSeries: illust_series_first_illust 1`] = `
 
 exports[`pixiv novelSeries: novel_series_detail 1`] = `
 {
-  "caption": "1〜5話両思いだけどまだ付き合って無いししらみ。
-6話以降はその後の話になります
-",
-  "display_text": "1〜5話両思いだけどまだ付き合って無いししらみ。
-6話以降はその後の話になります
-",
-  "id": 10181799,
+  "caption": "一話から非日常で始まるのあれですが、温かい目で見て下さい。
+別シリーズとして学生時代の話的なのも作ろうと思ってます。
+基本は甘いストーリーを書いてます。(甘いのが好きなので)
+文章力皆無で投稿スピードあんま早くないですが、気長に待ってくれると嬉しいです。",
+  "display_text": "一話から非日常で始まるのあれですが、温かい目で見て下さい。
+別シリーズとして学生時代の話的なのも作ろうと思ってます。
+基本は甘いストーリーを書いてます。(甘いのが好きなので)
+文章力皆無で投稿スピードあんま早くないですが、気長に待ってくれると嬉しいです。",
+  "id": 7474721,
   "is_concluded": false,
   "is_original": false,
-  "novel_ai_type": 1,
-  "title": "ゆるししらみ",
-  "total_character_count": 46673,
+  "novel_ai_type": 0,
+  "title": "夏色吹雪の恋人生活",
+  "total_character_count": 10671,
   "user": {
-    "account": "user_utvh7357",
-    "id": 70910389,
+    "account": "nyao_alp-lck",
+    "id": 69131958,
     "is_access_blocking_user": false,
     "is_followed": false,
-    "name": "木々鬼　北",
+    "name": "nyao1820-RdeCua",
     "profile_image_urls": {
-      "medium": "https://i.pximg.net/user-profile/img/2023/03/09/02/26/38/24127823_63815ee55e41f8e5792e3f09ef132efb_170.jpg",
+      "medium": "https://i.pximg.net/user-profile/img/2021/07/08/07/02/09/21000900_15ac086e2f005f45794becba5c9dcc00_170.jpg",
     },
   },
   "watchlist_added": true,
@@ -552,68 +564,83 @@ exports[`pixiv novelSeries: novel_series_detail 1`] = `
 
 exports[`pixiv novelSeries: novel_series_first_novel 1`] = `
 {
-  "caption": "最近お腹を蚊に刺されました。痒いです",
-  "create_date": "2023-03-11T01:57:27+09:00",
-  "id": 19462426,
+  "caption": "甘い系です(？)。キャラ崩壊の可能性があります。<br />初投稿なのでそこは温かい目で見てもらえると助かります。あとタイトル思いつきませんでした...雑です()<br />ちなみに作者は膝枕が好きなのでそのシチュエーションが多々あります。<br />設定<br />・最初は全然関係ない話　←これ重要<br />・基本まつりちゃん一人称<br />・フブキがお酒飲める、夏色吹雪は同居している など<br />これらが大丈夫な人は見ていってくださいね〜<br />感想などコメントして下さると励ましになります。<br />それでは〜",
+  "create_date": "2021-06-28T23:15:45+09:00",
+  "id": 15513340,
   "image_urls": {
-    "large": "https://i.pximg.net/c/240x480_80/novel-cover-master/img/2023/03/11/01/57/27/ci19462426_e12a1a3a52a2a4da88c026cd4290073a_master1200.jpg",
-    "medium": "https://i.pximg.net/c/176x352/novel-cover-master/img/2023/03/11/01/57/27/ci19462426_e12a1a3a52a2a4da88c026cd4290073a_master1200.jpg",
-    "square_medium": "https://i.pximg.net/c/128x128/novel-cover-master/img/2023/03/11/01/57/27/ci19462426_e12a1a3a52a2a4da88c026cd4290073a_square1200.jpg",
+    "large": "https://i.pximg.net/c/240x480_80/novel-cover-master/img/2021/06/28/23/15/46/15513340_75da1116710a463d897c331fb81fb605_master1200.jpg",
+    "medium": "https://i.pximg.net/c/176x352/novel-cover-master/img/2021/06/28/23/15/46/15513340_75da1116710a463d897c331fb81fb605_master1200.jpg",
+    "square_medium": "https://i.pximg.net/c/128x128/novel-cover-master/img/2021/06/28/23/15/46/15513340_75da1116710a463d897c331fb81fb605_square1200.jpg",
   },
   "is_bookmarked": true,
   "is_muted": false,
   "is_mypixiv_only": false,
   "is_original": false,
   "is_x_restricted": false,
-  "novel_ai_type": 1,
-  "page_count": 2,
+  "novel_ai_type": 0,
+  "page_count": 1,
   "restrict": 0,
   "series": {
-    "id": 10181799,
-    "title": "ゆるししらみ",
+    "id": 7474721,
+    "title": "夏色吹雪の恋人生活",
   },
   "tags": [
-    {
-      "added_by_uploaded_user": true,
-      "name": "獅白ぼたん",
-      "translated_name": null,
-    },
-    {
-      "added_by_uploaded_user": true,
-      "name": "雪花ラミィ",
-      "translated_name": null,
-    },
-    {
-      "added_by_uploaded_user": true,
-      "name": "ししらみ",
-      "translated_name": null,
-    },
-    {
-      "added_by_uploaded_user": true,
-      "name": "尾丸ポルカ",
-      "translated_name": null,
-    },
-    {
-      "added_by_uploaded_user": true,
-      "name": "桃鈴ねね",
-      "translated_name": null,
-    },
     {
       "added_by_uploaded_user": true,
       "name": "ホロライブ",
       "translated_name": null,
     },
+    {
+      "added_by_uploaded_user": true,
+      "name": "夏色吹雪",
+      "translated_name": null,
+    },
+    {
+      "added_by_uploaded_user": true,
+      "name": "夏色まつり",
+      "translated_name": null,
+    },
+    {
+      "added_by_uploaded_user": true,
+      "name": "白上フブキ",
+      "translated_name": null,
+    },
+    {
+      "added_by_uploaded_user": true,
+      "name": "百合",
+      "translated_name": null,
+    },
+    {
+      "added_by_uploaded_user": true,
+      "name": "大神ミオ",
+      "translated_name": null,
+    },
+    {
+      "added_by_uploaded_user": true,
+      "name": "大空スバル",
+      "translated_name": null,
+    },
+    {
+      "added_by_uploaded_user": true,
+      "name": "紫咲シオン",
+      "translated_name": null,
+    },
+    {
+      "added_by_uploaded_user": true,
+      "name": "壊滅的文章力",
+      "translated_name": null,
+    },
   ],
-  "text_length": 928,
-  "title": "ししデレを求めて",
+  "text_length": 4795,
+  "title": "非日常と、日常と。",
   "user": {
-    "account": "user_utvh7357",
-    "id": 70910389,
+    "account": "nyao_alp-lck",
+    "id": 69131958,
     "is_access_blocking_user": false,
     "is_followed": false,
-    "name": "木々鬼　北",
+    "name": "nyao1820-RdeCua",
     "profile_image_urls": {
-      "medium": "https://i.pximg.net/user-profile/img/2023/03/09/02/26/38/24127823_63815ee55e41f8e5792e3f09ef132efb_170.jpg",
+      "medium": "https://i.pximg.net/user-profile/img/2021/07/08/07/02/09/21000900_15ac086e2f005f45794becba5c9dcc00_170.jpg",
     },
   },
   "visible": true,
