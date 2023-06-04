@@ -336,11 +336,13 @@ describe('pixiv', () => {
 
   it('novelSeries', async () => {
     const novelSeries = await pixiv.novelSeries({
-      seriesId: 10_181_799,
+      seriesId: 7_474_721,
     })
     expect(novelSeries.status).toBe(200)
     expect(novelSeries.data).toBeDefined()
-    expect(novelSeries.data.novel_series_detail.title).toBe('ゆるししらみ')
+    expect(novelSeries.data.novel_series_detail.title).toBe(
+      '夏色吹雪の恋人生活'
+    )
     expect(novelSeries.data.novels).toBeDefined()
     expect(novelSeries.data.novels.length).toBeGreaterThan(0)
 
