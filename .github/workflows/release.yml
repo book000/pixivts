@@ -56,12 +56,12 @@ jobs:
 
       - name: 📃 Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: ncipollo/release-action@v1.12.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.tag-version.outputs.new_tag }}
-          release_name: ${{ steps.tag-version.outputs.new_tag }}
+          tag: ${{ steps.tag-version.outputs.new_tag }}
+          name: ${{ steps.tag-version.outputs.new_tag }}
           body: ${{ steps.tag-version.outputs.changelog }}
           draft: false
           prerelease: false
