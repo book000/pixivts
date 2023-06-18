@@ -20,7 +20,7 @@
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": "git@github.com:book000/node-utils.git",
+  "repository": "git@github.com:book000/pixivts.git",
   "scripts": {
     "build": "run-s clean ctix compile generate-docs",
     "clean": "rimraf dist output docs",
