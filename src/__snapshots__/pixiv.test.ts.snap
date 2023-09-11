@@ -944,7 +944,7 @@ exports[`pixiv userDetail: profile 1`] = `
   "birth_year": 1990,
   "country_code": "",
   "gender": "unknown",
-  "is_premium": false,
+  "is_premium": true,
   "is_using_custom_profile_image": true,
   "job": "IT関係",
   "job_id": 1,
