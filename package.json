@@ -41,7 +41,7 @@
     "start": "ts-node -r tsconfig-paths/register ./src/main.ts"
   },
   "dependencies": {
-    "@types/qs": "6.9.9",
+    "@types/qs": "6.9.10",
     "axios": "1.6.0",
     "qs": "6.11.2",
     "snake-camel-types": "1.0.1"
