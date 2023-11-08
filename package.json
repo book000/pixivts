@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@types/qs": "6.9.10",
-    "axios": "1.6.0",
+    "axios": "1.6.1",
     "qs": "6.11.2",
     "snake-camel-types": "1.0.1"
   },
