@@ -159,6 +159,18 @@ describe('pixiv', () => {
     ).toMatchSnapshot()
   })
 
+  it('ugoiraDetail:83638393[ugoira]', async () => {
+    const ugoiraDetail = await pixiv.ugoiraMetadata({
+      illustId: 83_638_393
+    })
+    expect(ugoiraDetail.status).toBe(200)
+    // "medium": "https://i.pximg.net/img-zip-ugoira/img/2014/06/28/12/42/39/44360221_ugoira600x600.zip".
+    expect(ugoiraDetail.data.ugoira_metadata.zip_urls.medium).toMatch(
+      /^https:\/\/i\.pximg\.net\/img-zip-ugoira\/img\/.+_ugoira600x600\.zip$/
+    )
+    expect(ugoiraDetail.data.ugoira_metadata.frames).toHaveLength(96)
+  })
+
   it('searchIllust', async () => {
     const searchIllust = await pixiv.searchIllust({
       word: 'ホロライブ',
