@@ -193,7 +193,7 @@ export type MangaRecommendedOptions = SnakeToCamel<
 /**
  * うごイラ詳細取得オプション
  */
-export type UgoiraDetailOptions = SnakeToCamel<GetV1IllustUgoiraMetadataRequest>;
+export type UgoiraDetailOptions = SnakeToCamel<GetV1IllustUgoiraMetadataRequest>
 
 /**
  * 小説詳細取得オプション

@@ -1,14 +1,14 @@
-import { BaseSimpleCheck, CheckFunctions } from "src/checks"
+import { BaseSimpleCheck, CheckFunctions } from 'src/checks'
 
 /**
  * 圧縮されたフレームのURL
- * 
+ *
  * ここのURLも {@link ImageUrls} と同様に、適切なリファラを付与する必要がある
  */
 export interface ZipUrls {
   /**
    * 長辺が最大 600px
-   * 
+   *
    * "600x600" を "1920x1080" に変換したらオリジナル画像が得られる？
    */
   medium: string
@@ -62,10 +62,10 @@ export class FramesCheck extends BaseSimpleCheck<Frames> {
 export class PixivUgoiraItemCheck extends BaseSimpleCheck<PixivUgoiraItem> {
   checks(): CheckFunctions<PixivUgoiraItem> {
     return {
-      zip_urls: (data) => 
+      zip_urls: (data) =>
         typeof data.zip_urls === 'object' &&
         new ZipUrlsCheck().throwIfFailed(data.zip_urls),
-      frames: (data) => 
+      frames: (data) =>
         typeof data.frames === 'object' &&
         Array.isArray(data.frames) &&
         data.frames.every((frame) => new FramesCheck().throwIfFailed(frame)),

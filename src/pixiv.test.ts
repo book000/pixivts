@@ -161,7 +161,7 @@ describe('pixiv', () => {
 
   it('ugoiraDetail:83638393[ugoira]', async () => {
     const ugoiraDetail = await pixiv.ugoiraMetadata({
-      illustId: 83_638_393
+      illustId: 83_638_393,
     })
     expect(ugoiraDetail.status).toBe(200)
     // "medium": "https://i.pximg.net/img-zip-ugoira/img/2014/06/28/12/42/39/44360221_ugoira600x600.zip".
