@@ -1555,6 +1555,11 @@ combined-stream@^1.0.8:
   dependencies:
     delayed-stream "~1.0.0"
 
+comment-parser@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/comment-parser/-/comment-parser-1.4.1.tgz#bdafead37961ac079be11eb7ec65c4d021eaf9cc"
+  integrity sha512-buhp5kePrmda3vhc5B9t7pUQXAb2Tnd0qgpkIhPhkHXxJpiPJ11H0ZEU0oBpJ2QztSbzG/ZxMj/CHsYJqRHmyg==
+
 complex.js@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/complex.js/-/complex.js-2.1.1.tgz#0675dac8e464ec431fb2ab7d30f41d889fb25c31"
@@ -1624,14 +1629,15 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
-ctix@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/ctix/-/ctix-2.0.0.tgz#a686b9ea68ea3af325719f346dcd9057294bc719"
-  integrity sha512-eZrxX8zbgnHfwbQZrpQ0bn5x8UhiXDlW2VEPZn5M5bT+6W2193QJQEkNARW/7PZALZac23XCCFA6hqApQlKS/Q==
+ctix@2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/ctix/-/ctix-2.3.0.tgz#35907d484d4198b9374efc90a808f06a710d634d"
+  integrity sha512-hDIlQuQTmhYwCq7XL52zkGQ/GJStvUHyuSymEFFI5a5PdOJ+b0+TOGzxgDEM8mRr6uhxDqBThXEq5eAdeYaf2Q==
   dependencies:
     chalk "^4.1.2"
     change-case "^4.1.2"
     cli-progress "^3.12.0"
+    comment-parser "^1.4.1"
     consola "^3.2.3"
     dayjs "^1.11.10"
     eta "^3.1.1"
