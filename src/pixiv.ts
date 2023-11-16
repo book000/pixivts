@@ -24,6 +24,7 @@ import {
   NovelBookmarkDeleteOptions,
   UserBookmarksIllustOptions,
   UserBookmarksNovelOptions,
+  UgoiraDetailOptions,
 } from './options'
 import { PixivApiError } from './types/error-response'
 import {
@@ -94,6 +95,10 @@ import {
   GetV1UserBookmarksIllustRequest,
   GetV1UserBookmarksIllustResponse,
 } from './types/endpoints/v1/user/bookmarks/illust'
+import {
+  GetV1IllustUgoiraMetadataRequest,
+  GetV1IllustUgoiraMetadataResponse,
+} from './types/endpoints/v1/illust/ugoira/metadata'
 
 interface GetRequestOptions<T> {
   method: 'GET'
@@ -380,6 +385,28 @@ export default class Pixiv {
     return this.request<RequestType, GetV1MangaRecommendedResponse>({
       method: 'GET',
       path: '/v1/manga/recommended',
+      params: parameters,
+    })
+  }
+
+  // ---------- うごイラ ---------- //
+
+  /**
+   * うごイラの詳細情報を取得する。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async ugoiraMetadata(options: UgoiraDetailOptions) {
+    type RequestType = GetV1IllustUgoiraMetadataRequest
+    const parameters: RequestType = {
+      ...this.convertSnakeToCamel(options),
+      illust_id: options.illustId,
+    }
+
+    return this.request<RequestType, GetV1IllustUgoiraMetadataResponse>({
+      method: 'GET',
+      path: '/v1/ugoira/metadata',
       params: parameters,
     })
   }

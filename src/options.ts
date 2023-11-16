@@ -17,6 +17,7 @@ import { PostV2NovelBookmarkAddRequest } from './types/endpoints/v2/novel/bookma
 import { PostV1NovelBookmarkDeleteRequest } from './types/endpoints/v1/novel/bookmark/delete'
 import { GetV1UserBookmarksIllustRequest } from './types/endpoints/v1/user/bookmarks/illust'
 import { GetV1UserBookmarksNovelRequest } from './types/endpoints/v1/user/bookmarks/novel'
+import { GetV1IllustUgoiraMetadataRequest } from './types/endpoints/v1/illust/ugoira/metadata'
 
 /**
  * 検索対象
@@ -188,6 +189,11 @@ export type IllustBookmarkDeleteOptions =
 export type MangaRecommendedOptions = SnakeToCamel<
   Partial<GetV1MangaRecommendedRequest>
 >
+
+/**
+ * うごイラ詳細取得オプション
+ */
+export type UgoiraDetailOptions = SnakeToCamel<GetV1IllustUgoiraMetadataRequest>
 
 /**
  * 小説詳細取得オプション
