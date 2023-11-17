@@ -1,4 +1,4 @@
-import { BaseSimpleCheck, CheckFunctions } from 'src/checks'
+import { BaseSimpleCheck, CheckFunctions } from '../checks'
 
 /**
  * 圧縮されたフレームのURL
