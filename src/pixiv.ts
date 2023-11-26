@@ -789,7 +789,13 @@ export default class Pixiv {
     }
     const method = request.method
     const path = request.path
-    const url = this.hosts + path
+    const url = [
+      this.hosts,
+      path,
+      method === 'GET'
+        ? qs.stringify(request.params, { addQueryPrefix: true })
+        : '',
+    ].join('')
 
     const responseType = this.isJSON(response.data) ? 'JSON' : 'TEXT'
     const responseBody =
