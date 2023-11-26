@@ -27,7 +27,7 @@
     "compile": "tsc -p tsconfig.build.json",
     "ctix": "ctix single -w --noBackup -o src -s false",
     "generate-docs": "typedoc --gitRevision master src/index.ts",
-    "fix": "run-s fix:prettier fix:eslint ctix",
+    "fix": "run-z fix:prettier fix:eslint ctix",
     "fix:eslint": "eslint . --ext ts,tsx --fix",
     "fix:prettier": "prettier --write src",
     "test": "jest",
