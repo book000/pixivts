@@ -2,6 +2,13 @@
   "name": "@book000/pixivts",
   "version": "0.0.0",
   "description": "pixiv Unofficial API Library for TypeScript",
+  "keywords": [
+    "pixiv",
+    "typescript",
+    "pixiv-app",
+    "pixiv-api",
+    "pixiv-app-api"
+  ],
   "homepage": "https://www.npmjs.com/package/@book000/pixivts",
   "bugs": {
     "url": "https://github.com/book000/pixivts/issues"
@@ -10,13 +17,6 @@
   "author": "Tomachi <tomachi@tomacheese.com>",
   "files": [
     "dist"
-  ],
-  "keywords": [
-    "pixiv",
-    "typescript",
-    "pixiv-app",
-    "pixiv-api",
-    "pixiv-app-api"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -84,5 +84,6 @@
     "testMatch": [
       "**/*.test.ts"
     ]
-  }
+  },
+  "packageManager": "pnpm@8.10.5"
 }
