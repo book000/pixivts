@@ -27,7 +27,17 @@ describe('pixiv', () => {
       throw new Error('PIXIV_REFRESH_TOKEN is not set')
     }
 
-    pixiv = await Pixiv.of(pixivRefreshToken)
+    pixiv = await Pixiv.of(pixivRefreshToken, {
+      debugOptions: {
+        outputResponse: {
+          enable: true,
+        },
+      },
+    })
+  })
+
+  afterAll(async () => {
+    await pixiv.close()
   })
 
   it('illustDetail:107565629[illust]', async () => {

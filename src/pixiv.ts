@@ -99,6 +99,7 @@ import {
   GetV1IllustUgoiraMetadataRequest,
   GetV1IllustUgoiraMetadataResponse,
 } from './types/endpoints/v1/illust/ugoira/metadata'
+import { ResponseDatabase, ResponseDatabaseOptions } from './saving-responses'
 
 interface GetRequestOptions<T> {
   method: 'GET'
@@ -114,6 +115,20 @@ interface PostRequestOptions<T> {
 
 type RequestOptions<T> = GetRequestOptions<T> | PostRequestOptions<T>
 
+export interface PixivDebugOutputResponseOptions {
+  enable: boolean
+
+  db?: ResponseDatabaseOptions
+}
+
+export interface PixivDebugOptions {
+  outputResponse?: PixivDebugOutputResponseOptions
+}
+
+export interface PixivTsOptions {
+  debugOptions?: PixivDebugOptions
+}
+
 /**
  * pixiv API
  */
@@ -128,6 +143,7 @@ export default class Pixiv {
   readonly userId: string
   readonly accessToken: string
   readonly refreshToken: string
+  readonly responseDatabase: ResponseDatabase | null
   readonly axios: AxiosInstance
 
   /**
@@ -136,15 +152,18 @@ export default class Pixiv {
    * @param userId ユーザー ID
    * @param accessToken アクセストークン
    * @param refreshToken リフレッシュトークン
+   * @param pixivTsOptions Pixivts オプション
    */
   private constructor(
     userId: string,
     accessToken: string,
-    refreshToken: string
+    refreshToken: string,
+    responseDatabase?: ResponseDatabase | null
   ) {
     this.userId = userId
     this.accessToken = accessToken
     this.refreshToken = refreshToken
+    this.responseDatabase = responseDatabase || null
 
     this.axios = axios.create({
       baseURL: this.hosts,
@@ -165,7 +184,10 @@ export default class Pixiv {
    * @param refreshToken リフレッシュトークン
    * @returns Pixiv インスタンス
    */
-  public static async of(refreshToken: string) {
+  public static async of(
+    refreshToken: string,
+    pixivTsOptions?: PixivTsOptions
+  ) {
     // @see https://github.com/upbit/pixivpy/blob/master/pixivpy3/api.py#L120
 
     // UTCで YYYY-MM-DDTHH:mm:ss+00:00 の形式で現在時刻を取得
@@ -205,7 +227,22 @@ export default class Pixiv {
       refreshToken: response.data.response.refresh_token,
     }
 
-    return new Pixiv(options.userId, options.accessToken, options.refreshToken)
+    const responseDatabase = pixivTsOptions?.debugOptions?.outputResponse
+      ?.enable
+      ? new ResponseDatabase(pixivTsOptions.debugOptions.outputResponse.db)
+      : null
+    if (responseDatabase) {
+      await responseDatabase.init()
+      await responseDatabase.migrate()
+      await responseDatabase.sync()
+    }
+
+    return new Pixiv(
+      options.userId,
+      options.accessToken,
+      options.refreshToken,
+      responseDatabase
+    )
   }
 
   /**
@@ -655,6 +692,17 @@ export default class Pixiv {
     })
   }
 
+  // ---------- その他 ---------- //
+
+  /**
+   * 接続を閉じる。
+   */
+  public async close() {
+    if (this.responseDatabase) {
+      await this.responseDatabase.close()
+    }
+  }
+
   // ---------- ユーティリティ ---------- //
 
   /**
@@ -706,22 +754,74 @@ export default class Pixiv {
    * @param options オプション
    * @returns レスポンス
    */
-  private request<T, U>(options: RequestOptions<T>): Promise<AxiosResponse<U>> {
+  private async request<T, U extends string | object>(
+    options: RequestOptions<T>
+  ): Promise<AxiosResponse<U>> {
     if (options.method === 'GET') {
-      return this.axios.get<U>(options.path, {
-        params: options.params,
-        paramsSerializer: { indexes: null },
-      })
+      return await this.saveResponse(
+        options,
+        await this.axios.get<U>(options.path, {
+          params: options.params,
+          paramsSerializer: { indexes: null },
+        })
+      )
     }
     if (options.method === 'POST') {
-      return this.axios.post<U>(options.path, qs.stringify(options.data), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        paramsSerializer: { indexes: null },
-      })
+      return await this.saveResponse(
+        options,
+        await this.axios.post<U>(options.path, qs.stringify(options.data), {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          paramsSerializer: { indexes: null },
+        })
+      )
     }
     throw new Error('Invalid method')
+  }
+
+  private async saveResponse<T extends string | object>(
+    request: RequestOptions<any>,
+    response: AxiosResponse<T>
+  ): Promise<AxiosResponse<T>> {
+    if (this.responseDatabase === null) {
+      return response
+    }
+    const method = request.method
+    const path = request.path
+    const url = this.hosts + path
+
+    const responseType = this.isJSON(response.data) ? 'JSON' : 'TEXT'
+    const responseBody =
+      responseType === 'JSON'
+        ? JSON.stringify(response.data)
+        : (response.data as string)
+
+    await this.responseDatabase.addResponse({
+      method,
+      endpoint: path,
+      url,
+      requestHeaders: JSON.stringify(response.config.headers),
+      requestBody: response.config.data,
+      responseType,
+      statusCode: response.status,
+      responseHeaders: JSON.stringify(response.headers),
+      responseBody,
+    })
+
+    return response
+  }
+
+  private isJSON(value: string | object) {
+    if (typeof value === 'object') {
+      return true
+    }
+    try {
+      JSON.parse(value)
+      return true
+    } catch {
+      return false
+    }
   }
 
   /**
