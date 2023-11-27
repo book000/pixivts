@@ -7,7 +7,7 @@ import {
 } from 'typeorm'
 
 @Entity('responses')
-@Index(['method', 'endpoint', 'statusCode', 'urlHash', 'createdAt'], {
+@Index(['method', 'endpoint', 'statusCode', 'createdAt', 'urlHash'], {
   unique: true,
 })
 export class DBResponse extends BaseEntity {
