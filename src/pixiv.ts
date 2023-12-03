@@ -25,6 +25,7 @@ import {
   UserBookmarksIllustOptions,
   UserBookmarksNovelOptions,
   UgoiraDetailOptions,
+  IllustRelatedOptions,
 } from './options'
 import { PixivApiError } from './types/error-response'
 import {
@@ -100,6 +101,10 @@ import {
   GetV1IllustUgoiraMetadataResponse,
 } from './types/endpoints/v1/illust/ugoira/metadata'
 import { ResponseDatabase, ResponseDatabaseOptions } from './saving-responses'
+import {
+  GetV2IllustRelatedRequest,
+  GetV2IllustRelatedResponse,
+} from './types/endpoints/v2/illust/related'
 
 interface GetRequestOptions<T> {
   method: 'GET'
@@ -277,6 +282,30 @@ export default class Pixiv {
     return this.request<RequestType, GetV1IllustDetailResponse>({
       method: 'GET',
       path: '/v1/illust/detail',
+      params: parameters,
+    })
+  }
+
+  /**
+   * イラストの関連イラストを取得する。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async illustRelated(options: IllustRelatedOptions) {
+    type RequestType = GetV2IllustRelatedRequest
+    this.checkRequiredOptions(options, ['illustId'])
+    const parameters: RequestType = {
+      ...this.convertCamelToSnake(options),
+      illust_id: options.illustId,
+      seed_illust_ids: options.seedIllustIds,
+      viewed: options.viewed,
+      offset: options.offset,
+    }
+
+    return this.request<RequestType, GetV2IllustRelatedResponse>({
+      method: 'GET',
+      path: '/v2/illust/related',
       params: parameters,
     })
   }

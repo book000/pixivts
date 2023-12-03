@@ -12,6 +12,7 @@ import { GetV1SearchNovelCheck } from './types/endpoints/v1/search/novel'
 import { GetV1UserBookmarksIllustCheck } from './types/endpoints/v1/user/bookmarks/illust'
 import { GetV1UserBookmarksNovelCheck } from './types/endpoints/v1/user/bookmarks/novel'
 import { GetV1UserDetailCheck } from './types/endpoints/v1/user/detail'
+import { GetV2IllustRelatedCheck } from './types/endpoints/v2/illust/related'
 import { GetV2NovelDetailCheck } from './types/endpoints/v2/novel/detail'
 import { GetV2NovelSeriesCheck } from './types/endpoints/v2/novel/series'
 import { isEmptyObject, omit } from './utils'
@@ -167,6 +168,18 @@ describe('pixiv', () => {
         'total_view',
       ])
     ).toMatchSnapshot()
+  })
+
+  it('illustRelated:107565629[illust]', async () => {
+    const illustRelated = await pixiv.illustRelated({
+      illustId: 107_565_629,
+    })
+    expect(illustRelated.status).toBe(200)
+    expect(illustRelated.data.illusts).toBeDefined()
+    expect(illustRelated.data.illusts.length).toBeGreaterThan(0)
+
+    const check = new GetV2IllustRelatedCheck()
+    expect(() => check.throwIfResponseFailed(illustRelated.data)).not.toThrow()
   })
 
   it('ugoiraDetail:83638393[ugoira]', async () => {
