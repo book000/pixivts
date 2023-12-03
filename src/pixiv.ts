@@ -270,7 +270,7 @@ export default class Pixiv {
   public async illustDetail(options: IllustDetailOptions) {
     type RequestType = GetV1IllustDetailRequest
     const parameters: RequestType = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       illust_id: options.illustId,
     }
 
@@ -291,7 +291,7 @@ export default class Pixiv {
     this.checkRequiredOptions(options, ['word'])
     type RequestType = GetV1SearchIllustRequest
     const parameters: RequestType = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       word: options.word, // required
       search_target:
         options.searchTarget || SearchTarget.PARTIAL_MATCH_FOR_TAGS,
@@ -321,7 +321,7 @@ export default class Pixiv {
   public async illustRecommended(options: RecommendedIllustOptions = {}) {
     type RequestType = GetV1IllustRecommendedRequest
     const parameters: RequestType = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       filter: options.filter || Filter.FOR_IOS,
       include_ranking_illusts: options.includeRankingIllusts || true,
       min_bookmark_id_for_recent_illust:
@@ -349,7 +349,7 @@ export default class Pixiv {
     type RequestType = GetV1IllustSeriesRequest
     this.checkRequiredOptions(options, ['illustSeriesId'])
     const parameters: RequestType = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       illust_series_id: options.illustSeriesId,
       filter: options.filter || Filter.FOR_IOS,
       // offset: options.offset,
@@ -372,7 +372,7 @@ export default class Pixiv {
     type RequestType = PostV2IllustBookmarkAddRequest
     this.checkRequiredOptions(options, ['illustId'])
     const data: RequestType = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       illust_id: options.illustId,
       restrict: options.restrict || BookmarkRestrict.PUBLIC,
       tags: options.tags || [],
@@ -395,7 +395,7 @@ export default class Pixiv {
     type RequestType = PostV1IllustBookmarkDeleteRequest
     this.checkRequiredOptions(options, ['illustId'])
     const data: RequestType = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       illust_id: options.illustId,
     }
 
@@ -411,7 +411,7 @@ export default class Pixiv {
   public async mangaRecommended(options: MangaRecommendedOptions = {}) {
     type RequestType = GetV1MangaRecommendedRequest
     const parameters: RequestType = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       filter: options.filter || Filter.FOR_IOS,
       include_ranking_illusts: options.includeRankingIllusts || true,
       max_bookmark_id: options.maxBookmarkId || undefined,
@@ -437,7 +437,7 @@ export default class Pixiv {
   public async ugoiraMetadata(options: UgoiraDetailOptions) {
     type RequestType = GetV1IllustUgoiraMetadataRequest
     const parameters: RequestType = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       illust_id: options.illustId,
     }
 
@@ -460,7 +460,7 @@ export default class Pixiv {
     type RequestType = GetV2NovelDetailRequest
     this.checkRequiredOptions(options, ['novelId'])
     const parameters: RequestType = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       novel_id: options.novelId,
     }
 
@@ -482,7 +482,7 @@ export default class Pixiv {
     type RequestType = GetV1NovelTextRequest
     this.checkRequiredOptions(options, ['novelId'])
     const parameters: RequestType = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       novel_id: options.novelId,
     }
 
@@ -503,7 +503,7 @@ export default class Pixiv {
     type RequestType = GetV1SearchNovelRequest
     this.checkRequiredOptions(options, ['word'])
     const parameters = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       word: options.word, // required
       search_target:
         options.searchTarget || SearchTarget.PARTIAL_MATCH_FOR_TAGS,
@@ -533,7 +533,7 @@ export default class Pixiv {
   public async novelRecommended(options: RecommendedNovelOptions = {}) {
     type RequestType = GetV1NovelRecommendedRequest
     const parameters: RequestType = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       // filter: options.filter || 'for_ios',
       include_ranking_novels: options.includeRankingNovels || true,
       already_recommended: options.alreadyRecommended
@@ -562,7 +562,7 @@ export default class Pixiv {
     type RequestType = GetV2NovelSeriesRequest
     this.checkRequiredOptions(options, ['seriesId'])
     const parameters: RequestType = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       series_id: options.seriesId,
       // filter: options.filter || 'for_ios',
       last_order: options.lastOrder || undefined,
@@ -585,7 +585,7 @@ export default class Pixiv {
     type RequestType = PostV2NovelBookmarkAddRequest
     this.checkRequiredOptions(options, ['novelId'])
     const data: RequestType = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       novel_id: options.novelId,
       restrict: options.restrict || BookmarkRestrict.PUBLIC,
       tags: options.tags || [],
@@ -608,7 +608,7 @@ export default class Pixiv {
     type RequestType = PostV1NovelBookmarkDeleteRequest
     this.checkRequiredOptions(options, ['novelId'])
     const data: RequestType = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       novel_id: options.novelId,
     }
 
@@ -631,7 +631,7 @@ export default class Pixiv {
     type RequestType = GetV1UserDetailRequest
     this.checkRequiredOptions(options, ['userId'])
     const parameters = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       user_id: options.userId,
       filter: options.filter || Filter.FOR_IOS,
     }
@@ -653,7 +653,7 @@ export default class Pixiv {
     type RequestType = GetV1UserBookmarksIllustRequest
     this.checkRequiredOptions(options, ['userId'])
     const parameters = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       user_id: options.userId,
       restrict: options.restrict || BookmarkRestrict.PUBLIC,
       filter: options.filter || Filter.FOR_IOS,
@@ -678,7 +678,7 @@ export default class Pixiv {
     type RequestType = GetV1UserBookmarksNovelRequest
     this.checkRequiredOptions(options, ['userId'])
     const parameters = {
-      ...this.convertSnakeToCamel(options),
+      ...this.convertCamelToSnake(options),
       user_id: options.userId,
       restrict: options.restrict || BookmarkRestrict.PUBLIC,
       max_bookmark_id: options.maxBookmarkId || undefined,
@@ -849,16 +849,19 @@ export default class Pixiv {
   }
 
   /**
-   * スネークケースのオブジェクトキーをキャメルケースなオブジェクトキーに変換する。
+   * キャメルケースのオブジェクトキーをスネークケースなオブジェクトキーに変換する。
    *
    * @param object オブジェクト
    * @returns 変換後のオブジェクト
    */
-  private convertSnakeToCamel(object: Record<string, any>) {
+  private convertCamelToSnake(object: Record<string, any>) {
     const result: Record<string, any> = {}
     for (const key of Object.keys(object)) {
-      const camelKey = key.replaceAll(/_([a-z])/g, (m) => m[1].toUpperCase())
-      result[camelKey] = object[key]
+      const snakeKey = key.replaceAll(
+        /([A-Z])/g,
+        (m) => `_${m[0].toLowerCase()}`
+      )
+      result[snakeKey] = object[key]
     }
     return result
   }
