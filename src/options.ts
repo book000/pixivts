@@ -18,6 +18,7 @@ import { PostV1NovelBookmarkDeleteRequest } from './types/endpoints/v1/novel/boo
 import { GetV1UserBookmarksIllustRequest } from './types/endpoints/v1/user/bookmarks/illust'
 import { GetV1UserBookmarksNovelRequest } from './types/endpoints/v1/user/bookmarks/novel'
 import { GetV1IllustUgoiraMetadataRequest } from './types/endpoints/v1/illust/ugoira/metadata'
+import { GetV2IllustRelatedRequest } from './types/endpoints/v2/illust/related'
 
 /**
  * 検索対象
@@ -153,6 +154,11 @@ export type SearchIllustOptions = SomeRequired<
  * イラスト詳細取得オプション
  */
 export type IllustDetailOptions = SnakeToCamel<GetV1IllustDetailRequest>
+
+/**
+ * イラストの関連イラスト取得オプション
+ */
+export type IllustRelatedOptions = SnakeToCamel<GetV2IllustRelatedRequest>
 
 /**
  * おすすめイラスト取得オプション
