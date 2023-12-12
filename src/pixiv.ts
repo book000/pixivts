@@ -28,6 +28,8 @@ import {
   IllustRelatedOptions,
   NovelRelatedOptions,
   IllustRankingOptions,
+  RankingMode,
+  NovelRankingOptions,
 } from './options'
 import { PixivApiError } from './types/error-response'
 import {
@@ -115,6 +117,10 @@ import {
   GetV1IllustRankingRequest,
   GetV1IllustRankingResponse,
 } from './types/endpoints/v1/illust/ranking'
+import {
+  GetV1NovelRankingRequest,
+  GetV1NovelRankingResponse,
+} from './types/endpoints/v1/novel/ranking'
 
 interface GetRequestOptions<T> {
   method: 'GET'
@@ -361,7 +367,7 @@ export default class Pixiv {
     type RequestType = GetV1IllustRankingRequest
     const parameters: RequestType = {
       ...this.convertCamelToSnake(options),
-      mode: options.mode || 'day',
+      mode: options.mode || RankingMode.DAY,
       filter: options.filter || OSFilter.FOR_IOS,
       date: options.date || undefined,
       offset: options.offset || undefined,
@@ -605,6 +611,25 @@ export default class Pixiv {
     return this.request<RequestType, GetV1SearchNovelResponse>({
       method: 'GET',
       path: '/v1/search/novel',
+      params: parameters,
+    })
+  }
+
+  /**
+   * 小説ランキングを取得する。
+   */
+  public async novelRanking(options: NovelRankingOptions = {}) {
+    type RequestType = GetV1NovelRankingRequest
+    const parameters: RequestType = {
+      ...this.convertCamelToSnake(options),
+      mode: options.mode || RankingMode.DAY,
+      date: options.date || undefined,
+      offset: options.offset || undefined,
+    }
+
+    return this.request<RequestType, GetV1NovelRankingResponse>({
+      method: 'GET',
+      path: '/v1/novel/ranking',
       params: parameters,
     })
   }
