@@ -8,7 +8,7 @@ import {
   PixivUserProfileWorkspace,
   PixivUserProfileWorkspaceCheck,
 } from '../../../pixiv-user'
-import { Filter, FilterCheck } from '../../../../options'
+import { OSFilter, OSFilterCheck } from '../../../../options'
 import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
 
 /**
@@ -25,7 +25,7 @@ export interface GetV1UserDetailRequest {
    *
    * @default 'for_ios'
    */
-  filter?: Filter
+  filter?: OSFilter
 }
 
 /**
@@ -63,7 +63,7 @@ export class GetV1UserDetailCheck extends BaseMultipleCheck<
       filter: (data) =>
         data.filter === undefined ||
         (typeof data.filter === 'string' &&
-          new FilterCheck().throwIfFailed(data.filter)),
+          new OSFilterCheck().throwIfFailed(data.filter)),
     }
   }
 

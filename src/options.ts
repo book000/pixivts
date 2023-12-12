@@ -90,18 +90,21 @@ export class SearchIllustDurationCheck extends BaseSimpleCheck<SearchIllustDurat
 /**
  * OSフィルタ
  */
-export enum Filter {
+export enum OSFilter {
   /** iOS */
   FOR_IOS = 'for_ios',
   /** Android */
   FOR_ANDROID = 'for_android',
 }
 
-export class FilterCheck extends BaseSimpleCheck<Filter> {
-  checks(): CheckFunctions<Filter> {
+/**
+ * OSフィルタのチェック
+ */
+export class OSFilterCheck extends BaseSimpleCheck<OSFilter> {
+  checks(): CheckFunctions<OSFilter> {
     return {
       main: (data) =>
-        typeof data === 'string' && Object.values(Filter).includes(data),
+        typeof data === 'string' && Object.values(OSFilter).includes(data),
     }
   }
 }
@@ -116,12 +119,59 @@ export enum BookmarkRestrict {
   PRIVATE = 'private',
 }
 
+/**
+ * ブックマーク公開範囲のチェック
+ */
 export class BookmarkRestrictCheck extends BaseSimpleCheck<BookmarkRestrict> {
   checks(): CheckFunctions<BookmarkRestrict> {
     return {
       main: (data) =>
         typeof data === 'string' &&
         Object.values(BookmarkRestrict).includes(data),
+    }
+  }
+}
+
+/**
+ * ランキングの種類
+ */
+export enum RankingMode {
+  /** デイリー */
+  DAY = 'day',
+  /** 男性向け */
+  DAY_MALE = 'day_male',
+  /** 女性向け */
+  DAY_FEMALE = 'day_female',
+  /** オリジナル */
+  WEEK_ORIGINAL = 'week_original',
+  /** ルーキー */
+  WEEK_ROOKIE = 'week_rookie',
+  /** ウィークリー */
+  WEEK = 'week',
+  /** マンスリー */
+  MONTH = 'month',
+  /** AI生成 */
+  DAY_AI = 'day_ai',
+  /** R18デイリー */
+  DAY_R18 = 'day_r18',
+  /** R18ウィークリー */
+  WEEK_R18 = 'week_r18',
+  /** R18男性向け */
+  DAY_MALE_R18 = 'day_male_r18',
+  /** R18女性向け */
+  DAY_FEMALE_R18 = 'day_female_r18',
+  /** R-18 AI生成 */
+  DAY_R18_AI = 'day_r18_ai',
+}
+
+/**
+ * ランキングの種類のチェック
+ */
+export class RankingModeCheck extends BaseSimpleCheck<RankingMode> {
+  checks(): CheckFunctions<RankingMode> {
+    return {
+      main: (data) =>
+        typeof data === 'string' && Object.values(RankingMode).includes(data),
     }
   }
 }
@@ -150,6 +200,11 @@ export type SearchIllustOptions = SomeRequired<
   SnakeToCamel<GetV1SearchIllustRequest>,
   'word'
 >
+
+/**
+ * イラストランキング取得オプション
+ */
+export type IllustRankingOptions = any
 
 /**
  * イラスト詳細取得オプション

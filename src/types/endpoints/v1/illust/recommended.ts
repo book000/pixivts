@@ -1,5 +1,5 @@
 import { PixivIllustItem, PixivIllustItemCheck } from '../../../pixiv-illust'
-import { Filter, FilterCheck } from '../../../../options'
+import { OSFilter, OSFilterCheck } from '../../../../options'
 import { PrivacyPolicy, PrivacyPolicyCheck } from '../../../pixiv-common'
 
 // @ts-ignore because tsdoc
@@ -16,7 +16,7 @@ export interface GetV1IllustRecommendedRequest {
    *
    * @default 'for_ios'
    */
-  filter: Filter
+  filter: OSFilter
 
   /**
    * ランキングイラストを含めるか (?)
@@ -106,7 +106,7 @@ export class GetV1IllustRecommendedCheck extends BaseMultipleCheck<
 > {
   requestChecks(): CheckFunctions<GetV1IllustRecommendedRequest> {
     return {
-      filter: (data) => new FilterCheck().throwIfFailed(data.filter),
+      filter: (data) => new OSFilterCheck().throwIfFailed(data.filter),
       include_ranking_illusts: (data) =>
         typeof data.include_ranking_illusts === 'boolean',
       min_bookmark_id_for_recent_illust: (data) =>

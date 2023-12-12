@@ -3,7 +3,7 @@ import {
   IllustSeriesDetail,
   IllustSeriesDetailCheck,
 } from '../../../pixiv-illust-series'
-import { Filter, FilterCheck } from '../../../../options'
+import { OSFilter, OSFilterCheck } from '../../../../options'
 import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
 
 /**
@@ -20,7 +20,7 @@ export interface GetV1IllustSeriesRequest {
    *
    * @default 'for_ios'
    */
-  filter: Filter
+  filter: OSFilter
 
   // offset: number があるかもしれない。要確認
 }
@@ -58,7 +58,7 @@ export class GetV1IllustSeriesCheck extends BaseMultipleCheck<
     return {
       illust_series_id: (data) =>
         typeof data.illust_series_id === 'number' && data.illust_series_id > 0,
-      filter: (data) => new FilterCheck().throwIfFailed(data.filter),
+      filter: (data) => new OSFilterCheck().throwIfFailed(data.filter),
     }
   }
 

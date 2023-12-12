@@ -1,7 +1,7 @@
 import { PixivIllustItem, PixivIllustItemCheck } from '../../../pixiv-illust'
 import {
-  Filter,
-  FilterCheck,
+  OSFilter,
+  OSFilterCheck,
   SearchSort,
   SearchSortCheck,
   SearchTarget,
@@ -55,7 +55,7 @@ export interface GetV1SearchIllustRequest {
    *
    * @default 'for_ios'
    */
-  filter?: Filter
+  filter?: OSFilter
 
   /**
    * オフセット
@@ -125,7 +125,7 @@ export class GetV1SearchIllustCheck extends BaseMultipleCheck<
         (typeof data.end_date === 'string' && data.end_date.length > 0),
       filter: (data) =>
         data.filter === undefined ||
-        new FilterCheck().throwIfFailed(data.filter),
+        new OSFilterCheck().throwIfFailed(data.filter),
       offset: (data) =>
         data.offset === undefined || typeof data.offset === 'number',
       merge_plain_keyword_results: (data) =>
