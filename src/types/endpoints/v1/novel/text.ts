@@ -35,6 +35,8 @@ export interface GetV1NovelTextResponse {
 
   /**
    * 小説の本文
+   *
+   * [newpage] で改ページされる。
    */
   novel_text: string
 

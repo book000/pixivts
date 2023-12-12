@@ -6,6 +6,7 @@ import { GetV1IllustRecommendedCheck } from './types/endpoints/v1/illust/recomme
 import { GetV1IllustSeriesCheck } from './types/endpoints/v1/illust/series'
 import { GetV1MangaRecommendedCheck } from './types/endpoints/v1/manga/recommended'
 import { GetV1NovelRecommendedCheck } from './types/endpoints/v1/novel/recommended'
+import { GetV1NovelRelatedCheck } from './types/endpoints/v1/novel/related'
 import { GetV1NovelTextCheck } from './types/endpoints/v1/novel/text'
 import { GetV1SearchIllustCheck } from './types/endpoints/v1/search/illust'
 import { GetV1SearchNovelCheck } from './types/endpoints/v1/search/novel'
@@ -341,6 +342,29 @@ describe('pixiv', () => {
 
     expect(novelText.data.novel_marker).toMatchSnapshot('novel_marker')
     expect(novelText.data.novel_text).toMatchSnapshot()
+  })
+
+  it('novelRelated:13_574_875[novel]', async () => {
+    const viewed = [
+      19_257_307, 14_823_759, 18_139_010, 20_311_890, 19_219_621, 13_254_987,
+      19_228_582, 19_692_090, 20_571_910, 20_451_982, 15_018_893, 16_748_181,
+      15_885_571, 12_981_294, 16_331_599, 16_962_597, 16_381_107,
+    ]
+    const novelRelated = await pixiv.novelRelated({
+      novelId: 13_574_875,
+      seedNovelIds: [13_574_875],
+      viewed,
+    })
+    expect(novelRelated.status).toBe(200)
+    expect(novelRelated.data).toBeDefined()
+    expect(novelRelated.data.novels).toBeDefined()
+    expect(novelRelated.data.novels.length).toBeGreaterThan(0)
+    expect(
+      novelRelated.data.novels.filter((novel) => viewed.includes(novel.id))
+    ).toHaveLength(0)
+
+    const check = new GetV1NovelRelatedCheck()
+    expect(() => check.throwIfResponseFailed(novelRelated.data)).not.toThrow()
   })
 
   it('searchNovel', async () => {

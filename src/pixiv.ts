@@ -26,6 +26,7 @@ import {
   UserBookmarksNovelOptions,
   UgoiraDetailOptions,
   IllustRelatedOptions,
+  NovelRelatedOptions,
 } from './options'
 import { PixivApiError } from './types/error-response'
 import {
@@ -105,6 +106,10 @@ import {
   GetV2IllustRelatedRequest,
   GetV2IllustRelatedResponse,
 } from './types/endpoints/v2/illust/related'
+import {
+  GetV1NovelRelatedRequest,
+  GetV1NovelRelatedResponse,
+} from './types/endpoints/v1/novel/related'
 
 interface GetRequestOptions<T> {
   method: 'GET'
@@ -502,7 +507,6 @@ export default class Pixiv {
 
   /**
    * 小説の本文を取得する。
-   * (WIP: ページネーションに非対応)
    *
    * @param options オプション
    * @returns レスポンス
@@ -518,6 +522,30 @@ export default class Pixiv {
     return this.request<RequestType, GetV1NovelTextResponse>({
       method: 'GET',
       path: '/v1/novel/text',
+      params: parameters,
+    })
+  }
+
+  /**
+   * 小説の関連小説を取得する。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async novelRelated(options: NovelRelatedOptions) {
+    type RequestType = GetV1NovelRelatedRequest
+    this.checkRequiredOptions(options, ['novelId'])
+
+    const parameters: RequestType = {
+      ...this.convertCamelToSnake(options),
+      novel_id: options.novelId,
+      seed_novel_ids: options.seedNovelIds,
+      viewed: options.viewed,
+    }
+
+    return this.request<RequestType, GetV1NovelRelatedResponse>({
+      method: 'GET',
+      path: '/v1/novel/related',
       params: parameters,
     })
   }
@@ -791,7 +819,7 @@ export default class Pixiv {
         options,
         await this.axios.get<U>(options.path, {
           params: options.params,
-          paramsSerializer: { indexes: null },
+          paramsSerializer: { indexes: true },
         })
       )
     }
@@ -802,7 +830,7 @@ export default class Pixiv {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-          paramsSerializer: { indexes: null },
+          paramsSerializer: { indexes: true },
         })
       )
     }
@@ -818,13 +846,14 @@ export default class Pixiv {
     }
     const method = request.method
     const path = request.path
-    const url = [
+    const rawUrl = [
       this.hosts,
       path,
       method === 'GET'
         ? qs.stringify(request.params, { addQueryPrefix: true })
         : '',
     ].join('')
+    const url = response.request.res.responseUrl || rawUrl
 
     const responseType = this.isJSON(response.data) ? 'JSON' : 'TEXT'
     const responseBody =

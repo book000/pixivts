@@ -19,6 +19,7 @@ import { GetV1UserBookmarksIllustRequest } from './types/endpoints/v1/user/bookm
 import { GetV1UserBookmarksNovelRequest } from './types/endpoints/v1/user/bookmarks/novel'
 import { GetV1IllustUgoiraMetadataRequest } from './types/endpoints/v1/illust/ugoira/metadata'
 import { GetV2IllustRelatedRequest } from './types/endpoints/v2/illust/related'
+import { GetV1NovelRelatedRequest } from './types/endpoints/v1/novel/related'
 
 /**
  * 検索対象
@@ -210,6 +211,11 @@ export type NovelDetailOptions = SnakeToCamel<GetV2NovelDetailRequest>
  * 小説本文取得オプション
  */
 export type NovelTextOptions = SnakeToCamel<GetV1NovelTextRequest>
+
+/**
+ * 小説の関連小説取得オプション
+ */
+export type NovelRelatedOptions = SnakeToCamel<GetV1NovelRelatedRequest>
 
 /**
  * 小説検索オプション
