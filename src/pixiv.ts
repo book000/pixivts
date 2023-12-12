@@ -14,7 +14,7 @@ import {
   UserDetailOptions,
   IllustSeriesOptions,
   NovelTextOptions,
-  Filter,
+  OSFilter,
   SearchSort,
   SearchTarget,
   BookmarkRestrict,
@@ -27,6 +27,7 @@ import {
   UgoiraDetailOptions,
   IllustRelatedOptions,
   NovelRelatedOptions,
+  IllustRankingOptions,
 } from './options'
 import { PixivApiError } from './types/error-response'
 import {
@@ -110,6 +111,10 @@ import {
   GetV1NovelRelatedRequest,
   GetV1NovelRelatedResponse,
 } from './types/endpoints/v1/novel/related'
+import {
+  GetV1IllustRankingRequest,
+  GetV1IllustRankingResponse,
+} from './types/endpoints/v1/illust/ranking'
 
 interface GetRequestOptions<T> {
   method: 'GET'
@@ -332,7 +337,7 @@ export default class Pixiv {
       sort: options.sort || SearchSort.DATE_DESC,
       start_date: options.startDate,
       end_date: options.endDate,
-      filter: options.filter || Filter.FOR_IOS,
+      filter: options.filter || OSFilter.FOR_IOS,
       offset: options.offset,
       merge_plain_keyword_results: options.mergePlainKeywordResults || true,
       include_translated_tag_results:
@@ -347,6 +352,29 @@ export default class Pixiv {
   }
 
   /**
+   * イラストランキングを取得する。
+   *
+   * @param options オプション
+   * @returns レスポンス
+   */
+  public async illustRanking(options: IllustRankingOptions = {}) {
+    type RequestType = GetV1IllustRankingRequest
+    const parameters: RequestType = {
+      ...this.convertCamelToSnake(options),
+      mode: options.mode || 'day',
+      filter: options.filter || OSFilter.FOR_IOS,
+      date: options.date || undefined,
+      offset: options.offset || undefined,
+    }
+
+    return this.request<RequestType, GetV1IllustRankingResponse>({
+      method: 'GET',
+      path: '/v1/illust/ranking',
+      params: parameters,
+    })
+  }
+
+  /**
    * おすすめイラストを取得する。
    *
    * @param options オプション
@@ -356,7 +384,7 @@ export default class Pixiv {
     type RequestType = GetV1IllustRecommendedRequest
     const parameters: RequestType = {
       ...this.convertCamelToSnake(options),
-      filter: options.filter || Filter.FOR_IOS,
+      filter: options.filter || OSFilter.FOR_IOS,
       include_ranking_illusts: options.includeRankingIllusts || true,
       min_bookmark_id_for_recent_illust:
         options.minBookmarkIdForRecentIllust || undefined,
@@ -385,7 +413,7 @@ export default class Pixiv {
     const parameters: RequestType = {
       ...this.convertCamelToSnake(options),
       illust_series_id: options.illustSeriesId,
-      filter: options.filter || Filter.FOR_IOS,
+      filter: options.filter || OSFilter.FOR_IOS,
       // offset: options.offset,
     }
 
@@ -446,7 +474,7 @@ export default class Pixiv {
     type RequestType = GetV1MangaRecommendedRequest
     const parameters: RequestType = {
       ...this.convertCamelToSnake(options),
-      filter: options.filter || Filter.FOR_IOS,
+      filter: options.filter || OSFilter.FOR_IOS,
       include_ranking_illusts: options.includeRankingIllusts || true,
       max_bookmark_id: options.maxBookmarkId || undefined,
       offset: options.offset || undefined,
@@ -567,7 +595,7 @@ export default class Pixiv {
       sort: options.sort || SearchSort.DATE_DESC,
       startDate: options.startDate,
       endDate: options.endDate,
-      filter: options.filter || Filter.FOR_IOS,
+      filter: options.filter || OSFilter.FOR_IOS,
       offset: options.offset,
       merge_plain_keyword_results: options.mergePlainKeywordResults || true,
       include_translated_tag_results:
@@ -690,7 +718,7 @@ export default class Pixiv {
     const parameters = {
       ...this.convertCamelToSnake(options),
       user_id: options.userId,
-      filter: options.filter || Filter.FOR_IOS,
+      filter: options.filter || OSFilter.FOR_IOS,
     }
 
     return this.request<RequestType, GetV1UserDetailResponse>({
@@ -713,7 +741,7 @@ export default class Pixiv {
       ...this.convertCamelToSnake(options),
       user_id: options.userId,
       restrict: options.restrict || BookmarkRestrict.PUBLIC,
-      filter: options.filter || Filter.FOR_IOS,
+      filter: options.filter || OSFilter.FOR_IOS,
       max_bookmark_id: options.maxBookmarkId || undefined,
       tag: options.tag || undefined,
     }

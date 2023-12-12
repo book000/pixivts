@@ -2,6 +2,7 @@
 import { BookmarkRestrict } from './options'
 import Pixiv from './pixiv'
 import { GetV1IllustDetailCheck } from './types/endpoints/v1/illust/detail'
+import { GetV1IllustRankingCheck } from './types/endpoints/v1/illust/ranking'
 import { GetV1IllustRecommendedCheck } from './types/endpoints/v1/illust/recommended'
 import { GetV1IllustSeriesCheck } from './types/endpoints/v1/illust/series'
 import { GetV1MangaRecommendedCheck } from './types/endpoints/v1/manga/recommended'
@@ -208,7 +209,18 @@ describe('pixiv', () => {
     expect(() => check.throwIfResponseFailed(searchIllust.data)).not.toThrow()
   })
 
-  it('recommendedIllust', async () => {
+  it('illustRanking', async () => {
+    const illustRanking = await pixiv.illustRanking()
+    expect(illustRanking.status).toBe(200)
+    expect(illustRanking.data).toBeDefined()
+    expect(illustRanking.data.illusts).toBeDefined()
+    expect(illustRanking.data.illusts.length).toBeGreaterThan(0)
+
+    const check = new GetV1IllustRankingCheck()
+    expect(() => check.throwIfResponseFailed(illustRanking.data)).not.toThrow()
+  })
+
+  it('illustRecommended', async () => {
     const recommendedIllust = await pixiv.illustRecommended()
     expect(recommendedIllust.status).toBe(200)
     expect(recommendedIllust.data).toBeDefined()
@@ -248,7 +260,7 @@ describe('pixiv', () => {
     ).toMatchSnapshot('illust_series_first_illust')
   })
 
-  it('recommendedManga', async () => {
+  it('mangaRecommended', async () => {
     const mangaRecommended = await pixiv.mangaRecommended()
     expect(mangaRecommended.status).toBe(200)
     expect(mangaRecommended.data).toBeDefined()
@@ -380,7 +392,7 @@ describe('pixiv', () => {
     expect(() => check.throwIfResponseFailed(searchNovel.data)).not.toThrow()
   })
 
-  it('recommendedNovel', async () => {
+  it('novelRecommended', async () => {
     const novelRecommended = await pixiv.novelRecommended()
     expect(novelRecommended.status).toBe(200)
     expect(novelRecommended.data).toBeDefined()

@@ -2,8 +2,8 @@ import { BaseMultipleCheck, CheckFunctions } from '../../../../../checks'
 import {
   BookmarkRestrict,
   BookmarkRestrictCheck,
-  Filter,
-  FilterCheck,
+  OSFilter,
+  OSFilterCheck,
 } from '../../../../../options'
 import { PixivIllustItem, PixivIllustItemCheck } from '../../../../pixiv-illust'
 
@@ -36,7 +36,7 @@ export interface GetV1UserBookmarksIllustRequest {
   /**
    * OSフィルタ
    */
-  filter?: Filter
+  filter?: OSFilter
 }
 
 /**
@@ -69,7 +69,7 @@ export class GetV1UserBookmarksIllustCheck extends BaseMultipleCheck<
         typeof data.max_bookmark_id === 'string',
       filter: (data) =>
         data.filter === undefined ||
-        new FilterCheck().throwIfFailed(data.filter),
+        new OSFilterCheck().throwIfFailed(data.filter),
     }
   }
 
