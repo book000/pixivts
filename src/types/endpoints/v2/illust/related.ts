@@ -11,7 +11,7 @@ export interface GetV2IllustRelatedRequest {
   illust_id: number
 
   /**
-   * イラストID シート配列 (?)
+   * イラストID シード配列 (?)
    */
   seed_illust_ids?: number[]
 
@@ -38,7 +38,7 @@ export interface GetV2IllustRelatedResponse {
   /**
    * 次のURL
    */
-  next_url: string | null
+  next_url: string
 }
 
 export class GetV2IllustRelatedCheck extends BaseMultipleCheck<
