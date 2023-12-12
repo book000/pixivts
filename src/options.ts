@@ -20,6 +20,8 @@ import { GetV1UserBookmarksNovelRequest } from './types/endpoints/v1/user/bookma
 import { GetV1IllustUgoiraMetadataRequest } from './types/endpoints/v1/illust/ugoira/metadata'
 import { GetV2IllustRelatedRequest } from './types/endpoints/v2/illust/related'
 import { GetV1NovelRelatedRequest } from './types/endpoints/v1/novel/related'
+import { GetV1IllustRankingRequest } from './types/endpoints/v1/illust/ranking'
+import { GetV1NovelRankingRequest } from './types/endpoints/v1/novel/ranking'
 
 /**
  * 検索対象
@@ -204,7 +206,9 @@ export type SearchIllustOptions = SomeRequired<
 /**
  * イラストランキング取得オプション
  */
-export type IllustRankingOptions = any
+export type IllustRankingOptions = SnakeToCamel<
+  Partial<GetV1IllustRankingRequest>
+>
 
 /**
  * イラスト詳細取得オプション
@@ -278,6 +282,13 @@ export type NovelRelatedOptions = SnakeToCamel<GetV1NovelRelatedRequest>
 export type SearchNovelOptions = SomeRequired<
   SnakeToCamel<GetV1SearchNovelRequest>,
   'word'
+>
+
+/**
+ * 小説ランキング取得オプション
+ */
+export type NovelRankingOptions = SnakeToCamel<
+  Partial<GetV1NovelRankingRequest>
 >
 
 /**

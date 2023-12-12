@@ -6,6 +6,7 @@ import { GetV1IllustRankingCheck } from './types/endpoints/v1/illust/ranking'
 import { GetV1IllustRecommendedCheck } from './types/endpoints/v1/illust/recommended'
 import { GetV1IllustSeriesCheck } from './types/endpoints/v1/illust/series'
 import { GetV1MangaRecommendedCheck } from './types/endpoints/v1/manga/recommended'
+import { GetV1NovelRankingCheck } from './types/endpoints/v1/novel/ranking'
 import { GetV1NovelRecommendedCheck } from './types/endpoints/v1/novel/recommended'
 import { GetV1NovelRelatedCheck } from './types/endpoints/v1/novel/related'
 import { GetV1NovelTextCheck } from './types/endpoints/v1/novel/text'
@@ -377,6 +378,17 @@ describe('pixiv', () => {
 
     const check = new GetV1NovelRelatedCheck()
     expect(() => check.throwIfResponseFailed(novelRelated.data)).not.toThrow()
+  })
+
+  it('novelRanking', async () => {
+    const novelRanking = await pixiv.novelRanking()
+    expect(novelRanking.status).toBe(200)
+    expect(novelRanking.data).toBeDefined()
+    expect(novelRanking.data.novels).toBeDefined()
+    expect(novelRanking.data.novels.length).toBeGreaterThan(0)
+
+    const check = new GetV1NovelRankingCheck()
+    expect(() => check.throwIfResponseFailed(novelRanking.data)).not.toThrow()
   })
 
   it('searchNovel', async () => {
