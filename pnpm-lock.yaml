@@ -21,11 +21,11 @@ dependencies:
     specifier: 1.0.1
     version: 1.0.1(typescript@5.3.3)
   typeorm:
-    specifier: 0.3.18
-    version: 0.3.18(mysql2@3.6.5)
+    specifier: 0.3.19
+    version: 0.3.19(mysql2@3.6.5)
   typeorm-naming-strategies:
     specifier: 4.1.0
-    version: 4.1.0(typeorm@0.3.18)
+    version: 4.1.0(typeorm@0.3.19)
 
 devDependencies:
   '@types/jest':
@@ -4827,16 +4827,16 @@ packages:
       typescript: 5.3.3
     dev: true
 
-  /typeorm-naming-strategies@4.1.0(typeorm@0.3.18):
+  /typeorm-naming-strategies@4.1.0(typeorm@0.3.19):
     resolution: {integrity: sha512-vPekJXzZOTZrdDvTl1YoM+w+sUIfQHG4kZTpbFYoTsufyv9NIBRe4Q+PdzhEAFA2std3D9LZHEb1EjE9zhRpiQ==}
     peerDependencies:
       typeorm: ^0.2.0 || ^0.3.0
     dependencies:
-      typeorm: 0.3.18(mysql2@3.6.5)
+      typeorm: 0.3.19(mysql2@3.6.5)
     dev: false
 
-  /typeorm@0.3.18(mysql2@3.6.5):
-    resolution: {integrity: sha512-St/k5Rdk3Qq0aiYiUw/FRq5i+VqPrqn4ld6m1fqfYJ6uIIK26KFFU9eE0Vl1zdLHkCxTW6Sj4JAL5I3B5N1/5g==}
+  /typeorm@0.3.19(mysql2@3.6.5):
+    resolution: {integrity: sha512-OGelrY5qEoAU80mR1iyvmUHiKCPUydL6xp6bebXzS7jyv/X70Gp/jBWRAfF4qGOfy2A7orMiGRfwsBUNbEL65g==}
     engines: {node: '>= 12.9.0'}
     hasBin: true
     peerDependencies:
