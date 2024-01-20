@@ -12,8 +12,8 @@ dependencies:
     specifier: 1.6.5
     version: 1.6.5
   mysql2:
-    specifier: 3.7.0
-    version: 3.7.0
+    specifier: 3.7.1
+    version: 3.7.1
   qs:
     specifier: 6.11.2
     version: 6.11.2
@@ -22,7 +22,7 @@ dependencies:
     version: 1.0.1(typescript@5.3.3)
   typeorm:
     specifier: 0.3.19
-    version: 0.3.19(mysql2@3.7.0)
+    version: 0.3.19(mysql2@3.7.1)
   typeorm-naming-strategies:
     specifier: 4.1.0
     version: 4.1.0(typeorm@0.3.19)
@@ -3703,8 +3703,8 @@ packages:
     resolution: {integrity: sha512-Ww01dhgmQLLHwEww6b0F5eyPMz0zfCYId4SsP8p7VPxtxPrh6v+fwORrBDYAHgOcVE2Bg9+wwztDKkSEbuxZog==}
     dev: true
 
-  /mysql2@3.7.0:
-    resolution: {integrity: sha512-c45jA3Jc1X8yJKzrWu1GpplBKGwv/wIV6ITZTlCSY7npF2YfJR+6nMP5e+NTQhUeJPSyOQAbGDCGEHbAl8HN9w==}
+  /mysql2@3.7.1:
+    resolution: {integrity: sha512-4EEqYu57mnkW5+Bvp5wBebY7PpfyrmvJ3knHcmLkp8FyBu4kqgrF2GxIjsC2tbLNZWqJaL21v/MYH7bU5f03oA==}
     engines: {node: '>= 8.0'}
     dependencies:
       denque: 2.1.0
@@ -4826,10 +4826,10 @@ packages:
     peerDependencies:
       typeorm: ^0.2.0 || ^0.3.0
     dependencies:
-      typeorm: 0.3.19(mysql2@3.7.0)
+      typeorm: 0.3.19(mysql2@3.7.1)
     dev: false
 
-  /typeorm@0.3.19(mysql2@3.7.0):
+  /typeorm@0.3.19(mysql2@3.7.1):
     resolution: {integrity: sha512-OGelrY5qEoAU80mR1iyvmUHiKCPUydL6xp6bebXzS7jyv/X70Gp/jBWRAfF4qGOfy2A7orMiGRfwsBUNbEL65g==}
     engines: {node: '>= 12.9.0'}
     hasBin: true
@@ -4897,7 +4897,7 @@ packages:
       dotenv: 16.3.1
       glob: 10.3.10
       mkdirp: 2.1.6
-      mysql2: 3.7.0
+      mysql2: 3.7.1
       reflect-metadata: 0.1.14
       sha.js: 2.4.11
       tslib: 2.6.2
