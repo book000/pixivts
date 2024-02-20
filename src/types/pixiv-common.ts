@@ -64,7 +64,7 @@ export interface PixivUser {
   profile_image_urls: ProfileImageUrls
 
   /** フォローしているかどうか */
-  is_followed: boolean
+  is_followed?: boolean
 
   /** アクセスをブロックしているユーザーであるか */
   is_access_blocking_user?: boolean
@@ -79,7 +79,8 @@ export class PixivUserCheck extends BaseSimpleCheck<PixivUser> {
       profile_image_urls: (data) =>
         typeof data.profile_image_urls === 'object' &&
         data.profile_image_urls.medium !== undefined,
-      is_followed: (data) => typeof data.is_followed === 'boolean',
+      is_followed: (data) =>
+        typeof data.is_followed === 'boolean' || data.is_followed === undefined,
       is_access_blocking_user: (data) =>
         data.is_access_blocking_user === undefined ||
         typeof data.is_access_blocking_user === 'boolean',
