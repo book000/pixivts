@@ -39,7 +39,7 @@
     "prepublishOnly": "run-z lint"
   },
   "dependencies": {
-    "@types/qs": "6.9.11",
+    "@types/qs": "6.9.12",
     "axios": "1.6.7",
     "mysql2": "3.9.2",
     "qs": "6.11.2",
