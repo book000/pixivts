@@ -57,10 +57,6 @@ import {
   GetV2NovelDetailResponse,
 } from './types/endpoints/v2/novel/detail'
 import {
-  GetV1NovelTextRequest,
-  GetV1NovelTextResponse,
-} from './types/endpoints/v1/novel/text'
-import {
   GetV1SearchNovelRequest,
   GetV1SearchNovelResponse,
 } from './types/endpoints/v1/search/novel'
@@ -121,6 +117,10 @@ import {
   GetV1NovelRankingRequest,
   GetV1NovelRankingResponse,
 } from './types/endpoints/v1/novel/ranking'
+import {
+  GetWebViewV2NovelRequest,
+  GetWebViewV2NovelResponse,
+} from './types/endpoints/webview/v2/novel'
 
 interface GetRequestOptions<T> {
   method: 'GET'
@@ -546,16 +546,16 @@ export default class Pixiv {
    * @returns レスポンス
    */
   public async novelText(options: NovelTextOptions) {
-    type RequestType = GetV1NovelTextRequest
-    this.checkRequiredOptions(options, ['novelId'])
+    type RequestType = GetWebViewV2NovelRequest
+    this.checkRequiredOptions(options, ['id'])
     const parameters: RequestType = {
       ...this.convertCamelToSnake(options),
-      novel_id: options.novelId,
+      id: options.id,
     }
 
-    return this.request<RequestType, GetV1NovelTextResponse>({
+    return await this.request<RequestType, GetWebViewV2NovelResponse>({
       method: 'GET',
-      path: '/v1/novel/text',
+      path: '/webview/v2/novel',
       params: parameters,
     })
   }

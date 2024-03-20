@@ -5,7 +5,6 @@ import { GetV1SearchIllustRequest } from './types/endpoints/v1/search/illust'
 import { PostV2IllustBookmarkAddRequest } from './types/endpoints/v2/illust/bookmark/add'
 import { GetV1IllustSeriesRequest } from './types/endpoints/v1/illust/series'
 import { GetV2NovelDetailRequest } from './types/endpoints/v2/novel/detail'
-import { GetV1NovelTextRequest } from './types/endpoints/v1/novel/text'
 import { GetV1NovelRecommendedRequest } from './types/endpoints/v1/novel/recommended'
 import { GetV1SearchNovelRequest } from './types/endpoints/v1/search/novel'
 import { GetV2NovelSeriesRequest } from './types/endpoints/v2/novel/series'
@@ -22,6 +21,7 @@ import { GetV2IllustRelatedRequest } from './types/endpoints/v2/illust/related'
 import { GetV1NovelRelatedRequest } from './types/endpoints/v1/novel/related'
 import { GetV1IllustRankingRequest } from './types/endpoints/v1/illust/ranking'
 import { GetV1NovelRankingRequest } from './types/endpoints/v1/novel/ranking'
+import { GetWebViewV2NovelRequest } from './types/endpoints/webview/v2/novel'
 
 /**
  * 検索対象
@@ -269,7 +269,7 @@ export type NovelDetailOptions = SnakeToCamel<GetV2NovelDetailRequest>
 /**
  * 小説本文取得オプション
  */
-export type NovelTextOptions = SnakeToCamel<GetV1NovelTextRequest>
+export type NovelTextOptions = SnakeToCamel<GetWebViewV2NovelRequest>
 
 /**
  * 小説の関連小説取得オプション
