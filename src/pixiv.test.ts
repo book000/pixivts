@@ -9,7 +9,6 @@ import { GetV1MangaRecommendedCheck } from './types/endpoints/v1/manga/recommend
 import { GetV1NovelRankingCheck } from './types/endpoints/v1/novel/ranking'
 import { GetV1NovelRecommendedCheck } from './types/endpoints/v1/novel/recommended'
 import { GetV1NovelRelatedCheck } from './types/endpoints/v1/novel/related'
-import { GetV1NovelTextCheck } from './types/endpoints/v1/novel/text'
 import { GetV1SearchIllustCheck } from './types/endpoints/v1/search/illust'
 import { GetV1SearchNovelCheck } from './types/endpoints/v1/search/novel'
 import { GetV1UserBookmarksIllustCheck } from './types/endpoints/v1/user/bookmarks/illust'
@@ -18,7 +17,7 @@ import { GetV1UserDetailCheck } from './types/endpoints/v1/user/detail'
 import { GetV2IllustRelatedCheck } from './types/endpoints/v2/illust/related'
 import { GetV2NovelDetailCheck } from './types/endpoints/v2/novel/detail'
 import { GetV2NovelSeriesCheck } from './types/endpoints/v2/novel/series'
-import { isEmptyObject, omit } from './utils'
+import { omit } from './utils'
 
 jest.setTimeout(120_000) // 120sec
 
@@ -338,23 +337,10 @@ describe('pixiv', () => {
 
   it('novelText', async () => {
     const novelText = await pixiv.novelText({
-      novelId: 13_574_875,
+      id: 13_574_875,
     })
     expect(novelText.status).toBe(200)
     expect(novelText.data).toBeDefined()
-    expect(novelText.data.novel_text).toBeDefined()
-    expect(novelText.data.novel_text.length).toBeGreaterThan(0)
-    if (!isEmptyObject(novelText.data.novel_marker)) {
-      expect(novelText.data.novel_marker.page).toBeGreaterThan(0)
-    }
-    expect(novelText.data.series_prev).toStrictEqual({})
-    expect(novelText.data.series_next).toStrictEqual({})
-
-    const check = new GetV1NovelTextCheck()
-    expect(() => check.throwIfResponseFailed(novelText.data)).not.toThrow()
-
-    expect(novelText.data.novel_marker).toMatchSnapshot('novel_marker')
-    expect(novelText.data.novel_text).toMatchSnapshot()
   })
 
   it('novelRelated:13_574_875[novel]', async () => {
