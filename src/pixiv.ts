@@ -117,7 +117,10 @@ import {
   GetV1NovelRankingRequest,
   GetV1NovelRankingResponse,
 } from './types/endpoints/v1/novel/ranking'
-import { GetWebViewV2NovelRequest, GetWebViewV2NovelResponse } from './types/endpoints/webview/v2/novel'
+import {
+  GetWebViewV2NovelRequest,
+  GetWebViewV2NovelResponse,
+} from './types/endpoints/webview/v2/novel'
 
 interface GetRequestOptions<T> {
   method: 'GET'
