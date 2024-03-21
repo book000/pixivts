@@ -39,10 +39,10 @@
     "prepublishOnly": "run-z lint"
   },
   "dependencies": {
-    "@types/qs": "6.9.12",
+    "@types/qs": "6.9.14",
     "axios": "1.6.8",
     "mysql2": "3.9.2",
-    "qs": "6.11.2",
+    "qs": "6.12.0",
     "snake-camel-types": "1.0.1",
     "typeorm": "0.3.20",
     "typeorm-naming-strategies": "4.1.0"
