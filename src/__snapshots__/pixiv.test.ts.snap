@@ -666,7 +666,7 @@ exports[`pixiv userDetail: profile 1`] = `
   "total_illust_series": 0,
   "total_illusts": 0,
   "total_manga": 0,
-  "total_mypixiv_users": 0,
+  "total_mypixiv_users": 1,
   "total_novel_series": 0,
   "total_novels": 0,
   "twitter_account": "ihc_amot",
