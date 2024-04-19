@@ -1,7 +1,5 @@
 export type CheckFunction<T> = (data: T) => boolean
-export type CheckFunctions<T> = {
-  [key: string]: CheckFunction<T>
-}
+export type CheckFunctions<T> = Record<string, CheckFunction<T>>
 
 export abstract class BaseSimpleCheck<T> {
   abstract checks(): CheckFunctions<T>

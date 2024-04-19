@@ -60,6 +60,7 @@ export class GetV1NovelRelatedCheck extends BaseMultipleCheck<
             new PixivNovelItemCheck().throwIfFailed(novel)
         ),
       next_url: (data) =>
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         typeof data.next_url === 'string' || data.next_url === null,
     }
   }

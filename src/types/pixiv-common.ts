@@ -1,5 +1,3 @@
-// @ts-ignore because tsdoc
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { BaseSimpleCheck, CheckFunctions } from '../checks'
 
 /**
@@ -78,8 +76,10 @@ export class PixivUserCheck extends BaseSimpleCheck<PixivUser> {
       account: (data) => typeof data.account === 'string',
       profile_image_urls: (data) =>
         typeof data.profile_image_urls === 'object' &&
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         data.profile_image_urls.medium !== undefined,
       is_followed: (data) =>
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         typeof data.is_followed === 'boolean' || data.is_followed === undefined,
       is_access_blocking_user: (data) =>
         data.is_access_blocking_user === undefined ||
@@ -108,6 +108,7 @@ export class TagCheck extends BaseSimpleCheck<Tag> {
       name: (data) => typeof data.name === 'string',
       translated_name: (data) =>
         typeof data.translated_name === 'string' ||
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         data.translated_name === null,
       added_by_uploaded_user: (data) =>
         data.added_by_uploaded_user === undefined ||

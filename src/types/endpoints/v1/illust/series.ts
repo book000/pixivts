@@ -79,6 +79,7 @@ export class GetV1IllustSeriesCheck extends BaseMultipleCheck<
           new PixivIllustItemCheck().throwIfFailed(illust)
         ),
       next_url: (data) =>
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         typeof data.next_url === 'string' || data.next_url === null,
     }
   }

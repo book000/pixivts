@@ -156,6 +156,7 @@ export class PixivUserProfileCheck extends BaseSimpleCheck<PixivUserProfile> {
   checks(): CheckFunctions<PixivUserProfile> {
     return {
       webpage: (data) =>
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         typeof data.webpage === 'string' || data.webpage === null,
       gender: (data) =>
         typeof data.gender === 'string' &&
@@ -302,6 +303,7 @@ export class PixivUserProfileWorkspaceCheck extends BaseSimpleCheck<PixivUserPro
       comment: (data) => typeof data.comment === 'string',
       workspace_image_url: (data) =>
         typeof data.workspace_image_url === 'string' ||
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         data.workspace_image_url === null,
     }
   }

@@ -2,7 +2,7 @@ import { PixivIllustItem, PixivIllustItemCheck } from '../../../pixiv-illust'
 import { OSFilter, OSFilterCheck } from '../../../../options'
 import { PrivacyPolicy, PrivacyPolicyCheck } from '../../../pixiv-common'
 
-// @ts-ignore because tsdoc
+// @ts-expect-error because tsdoc
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Pixiv from '../../../pixiv'
 import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'

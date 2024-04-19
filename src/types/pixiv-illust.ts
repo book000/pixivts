@@ -239,6 +239,7 @@ export class PixivIllustItemCheck extends BaseSimpleCheck<PixivIllustItem> {
       meta_single_page: (data: PixivIllustItem): boolean =>
         typeof data.meta_single_page === 'object' &&
         (isEmptyObject(data.meta_single_page) ||
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           data.meta_single_page.original_image_url !== undefined),
       meta_pages: (data: PixivIllustItem): boolean =>
         typeof data.meta_pages === 'object' &&

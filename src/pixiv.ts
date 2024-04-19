@@ -184,7 +184,7 @@ export default class Pixiv {
     this.userId = userId
     this.accessToken = accessToken
     this.refreshToken = refreshToken
-    this.responseDatabase = responseDatabase || null
+    this.responseDatabase = responseDatabase ?? null
 
     this.axios = axios.create({
       baseURL: this.hosts,
@@ -233,7 +233,10 @@ export default class Pixiv {
       refresh_token: refreshToken,
     })
 
-    const response = await axios.post(authUrl, data, {
+    const response = await axios.post<{
+      user: { id: string }
+      response: { access_token: string; refresh_token: string }
+    }>(authUrl, data, {
       headers,
       validateStatus: () => true,
     })
@@ -339,15 +342,15 @@ export default class Pixiv {
       ...this.convertCamelToSnake(options),
       word: options.word, // required
       search_target:
-        options.searchTarget || SearchTarget.PARTIAL_MATCH_FOR_TAGS,
-      sort: options.sort || SearchSort.DATE_DESC,
+        options.searchTarget ?? SearchTarget.PARTIAL_MATCH_FOR_TAGS,
+      sort: options.sort ?? SearchSort.DATE_DESC,
       start_date: options.startDate,
       end_date: options.endDate,
-      filter: options.filter || OSFilter.FOR_IOS,
+      filter: options.filter ?? OSFilter.FOR_IOS,
       offset: options.offset,
-      merge_plain_keyword_results: options.mergePlainKeywordResults || true,
+      merge_plain_keyword_results: options.mergePlainKeywordResults ?? true,
       include_translated_tag_results:
-        options.includeTranslatedTagResults || true,
+        options.includeTranslatedTagResults ?? true,
     }
 
     return this.request<RequestType, GetV1SearchIllustResponse>({
@@ -367,10 +370,10 @@ export default class Pixiv {
     type RequestType = GetV1IllustRankingRequest
     const parameters: RequestType = {
       ...this.convertCamelToSnake(options),
-      mode: options.mode || RankingMode.DAY,
-      filter: options.filter || OSFilter.FOR_IOS,
-      date: options.date || undefined,
-      offset: options.offset || undefined,
+      mode: options.mode ?? RankingMode.DAY,
+      filter: options.filter ?? OSFilter.FOR_IOS,
+      date: options.date ?? undefined,
+      offset: options.offset ?? undefined,
     }
 
     return this.request<RequestType, GetV1IllustRankingResponse>({
@@ -390,14 +393,14 @@ export default class Pixiv {
     type RequestType = GetV1IllustRecommendedRequest
     const parameters: RequestType = {
       ...this.convertCamelToSnake(options),
-      filter: options.filter || OSFilter.FOR_IOS,
-      include_ranking_illusts: options.includeRankingIllusts || true,
+      filter: options.filter ?? OSFilter.FOR_IOS,
+      include_ranking_illusts: options.includeRankingIllusts ?? true,
       min_bookmark_id_for_recent_illust:
-        options.minBookmarkIdForRecentIllust || undefined,
+        options.minBookmarkIdForRecentIllust ?? undefined,
       max_bookmark_id_for_recommend:
-        options.maxBookmarkIdForRecommend || undefined,
-      offset: options.offset || undefined,
-      include_privacy_policy: options.includePrivacyPolicy || true,
+        options.maxBookmarkIdForRecommend ?? undefined,
+      offset: options.offset ?? undefined,
+      include_privacy_policy: options.includePrivacyPolicy ?? true,
     }
 
     return this.request<RequestType, GetV1IllustRecommendedResponse>({
@@ -419,7 +422,7 @@ export default class Pixiv {
     const parameters: RequestType = {
       ...this.convertCamelToSnake(options),
       illust_series_id: options.illustSeriesId,
-      filter: options.filter || OSFilter.FOR_IOS,
+      filter: options.filter ?? OSFilter.FOR_IOS,
       // offset: options.offset,
     }
 
@@ -442,8 +445,8 @@ export default class Pixiv {
     const data: RequestType = {
       ...this.convertCamelToSnake(options),
       illust_id: options.illustId,
-      restrict: options.restrict || BookmarkRestrict.PUBLIC,
-      tags: options.tags || [],
+      restrict: options.restrict ?? BookmarkRestrict.PUBLIC,
+      tags: options.tags ?? [],
     }
 
     return this.request<RequestType, PostV2IllustBookmarkAddResponse>({
@@ -480,11 +483,11 @@ export default class Pixiv {
     type RequestType = GetV1MangaRecommendedRequest
     const parameters: RequestType = {
       ...this.convertCamelToSnake(options),
-      filter: options.filter || OSFilter.FOR_IOS,
-      include_ranking_illusts: options.includeRankingIllusts || true,
-      max_bookmark_id: options.maxBookmarkId || undefined,
-      offset: options.offset || undefined,
-      include_privacy_policy: options.includePrivacyPolicy || true,
+      filter: options.filter ?? OSFilter.FOR_IOS,
+      include_ranking_illusts: options.includeRankingIllusts ?? true,
+      max_bookmark_id: options.maxBookmarkId ?? undefined,
+      offset: options.offset ?? undefined,
+      include_privacy_policy: options.includePrivacyPolicy ?? true,
     }
 
     return this.request<RequestType, GetV1MangaRecommendedResponse>({
@@ -597,15 +600,15 @@ export default class Pixiv {
       ...this.convertCamelToSnake(options),
       word: options.word, // required
       search_target:
-        options.searchTarget || SearchTarget.PARTIAL_MATCH_FOR_TAGS,
-      sort: options.sort || SearchSort.DATE_DESC,
+        options.searchTarget ?? SearchTarget.PARTIAL_MATCH_FOR_TAGS,
+      sort: options.sort ?? SearchSort.DATE_DESC,
       startDate: options.startDate,
       endDate: options.endDate,
-      filter: options.filter || OSFilter.FOR_IOS,
+      filter: options.filter ?? OSFilter.FOR_IOS,
       offset: options.offset,
-      merge_plain_keyword_results: options.mergePlainKeywordResults || true,
+      merge_plain_keyword_results: options.mergePlainKeywordResults ?? true,
       include_translated_tag_results:
-        options.includeTranslatedTagResults || true,
+        options.includeTranslatedTagResults ?? true,
     }
 
     return this.request<RequestType, GetV1SearchNovelResponse>({
@@ -622,9 +625,9 @@ export default class Pixiv {
     type RequestType = GetV1NovelRankingRequest
     const parameters: RequestType = {
       ...this.convertCamelToSnake(options),
-      mode: options.mode || RankingMode.DAY,
-      date: options.date || undefined,
-      offset: options.offset || undefined,
+      mode: options.mode ?? RankingMode.DAY,
+      date: options.date ?? undefined,
+      offset: options.offset ?? undefined,
     }
 
     return this.request<RequestType, GetV1NovelRankingResponse>({
@@ -644,15 +647,15 @@ export default class Pixiv {
     type RequestType = GetV1NovelRecommendedRequest
     const parameters: RequestType = {
       ...this.convertCamelToSnake(options),
-      // filter: options.filter || 'for_ios',
-      include_ranking_novels: options.includeRankingNovels || true,
+      // filter: options.filter ?? 'for_ios',
+      include_ranking_novels: options.includeRankingNovels ?? true,
       already_recommended: options.alreadyRecommended
         ? options.alreadyRecommended.join(',')
         : undefined,
       max_bookmark_id_for_recommend:
-        options.maxBookmarkIdForRecommend || undefined,
-      offset: options.offset || undefined,
-      include_privacy_policy: options.includePrivacyPolicy || true,
+        options.maxBookmarkIdForRecommend ?? undefined,
+      offset: options.offset ?? undefined,
+      include_privacy_policy: options.includePrivacyPolicy ?? true,
     }
 
     return this.request<RequestType, GetV1NovelRecommendedResponse>({
@@ -674,8 +677,8 @@ export default class Pixiv {
     const parameters: RequestType = {
       ...this.convertCamelToSnake(options),
       series_id: options.seriesId,
-      // filter: options.filter || 'for_ios',
-      last_order: options.lastOrder || undefined,
+      // filter: options.filter ?? 'for_ios',
+      last_order: options.lastOrder ?? undefined,
     }
 
     return this.request<RequestType, GetV2NovelSeriesResponse>({
@@ -697,8 +700,8 @@ export default class Pixiv {
     const data: RequestType = {
       ...this.convertCamelToSnake(options),
       novel_id: options.novelId,
-      restrict: options.restrict || BookmarkRestrict.PUBLIC,
-      tags: options.tags || [],
+      restrict: options.restrict ?? BookmarkRestrict.PUBLIC,
+      tags: options.tags ?? [],
     }
 
     return this.request<RequestType, PostV2NovelBookmarkAddResponse>({
@@ -743,7 +746,7 @@ export default class Pixiv {
     const parameters = {
       ...this.convertCamelToSnake(options),
       user_id: options.userId,
-      filter: options.filter || OSFilter.FOR_IOS,
+      filter: options.filter ?? OSFilter.FOR_IOS,
     }
 
     return this.request<RequestType, GetV1UserDetailResponse>({
@@ -765,10 +768,10 @@ export default class Pixiv {
     const parameters = {
       ...this.convertCamelToSnake(options),
       user_id: options.userId,
-      restrict: options.restrict || BookmarkRestrict.PUBLIC,
-      filter: options.filter || OSFilter.FOR_IOS,
-      max_bookmark_id: options.maxBookmarkId || undefined,
-      tag: options.tag || undefined,
+      restrict: options.restrict ?? BookmarkRestrict.PUBLIC,
+      filter: options.filter ?? OSFilter.FOR_IOS,
+      max_bookmark_id: options.maxBookmarkId ?? undefined,
+      tag: options.tag ?? undefined,
     }
 
     return this.request<RequestType, GetV1UserBookmarksIllustResponse>({
@@ -790,9 +793,9 @@ export default class Pixiv {
     const parameters = {
       ...this.convertCamelToSnake(options),
       user_id: options.userId,
-      restrict: options.restrict || BookmarkRestrict.PUBLIC,
-      max_bookmark_id: options.maxBookmarkId || undefined,
-      tag: options.tag || undefined,
+      restrict: options.restrict ?? BookmarkRestrict.PUBLIC,
+      max_bookmark_id: options.maxBookmarkId ?? undefined,
+      tag: options.tag ?? undefined,
     }
 
     return this.request<RequestType, GetV1UserBookmarksNovelResponse>({
@@ -838,9 +841,13 @@ export default class Pixiv {
    */
   public static isError(response: any): response is PixivApiError {
     return (
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       response.error !== undefined &&
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       response.error.user_message !== undefined &&
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       response.error.message !== undefined &&
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       response.error.reason !== undefined
     )
   }
@@ -876,6 +883,7 @@ export default class Pixiv {
         })
       )
     }
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (options.method === 'POST') {
       return await this.saveResponse(
         options,
@@ -906,7 +914,8 @@ export default class Pixiv {
         ? qs.stringify(request.params, { addQueryPrefix: true })
         : '',
     ].join('')
-    const url = response.request.res.responseUrl || rawUrl
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const url = response.request.res.responseUrl ?? rawUrl
 
     const responseType = this.isJSON(response.data) ? 'JSON' : 'TEXT'
     const responseBody =
