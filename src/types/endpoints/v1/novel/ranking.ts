@@ -50,6 +50,7 @@ export class GetV1NovelRankingCheck extends BaseMultipleCheck<
         (typeof data.date === 'string' && this.checkDate(data.date)) ||
         data.date === undefined,
       offset: (data) =>
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         typeof data.offset === 'number' || data.offset === undefined,
     }
   }
@@ -62,6 +63,7 @@ export class GetV1NovelRankingCheck extends BaseMultipleCheck<
           new PixivNovelItemCheck().throwIfFailed(novel)
         ),
       next_url: (data) =>
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         typeof data.next_url === 'string' || data.next_url === null,
     }
   }

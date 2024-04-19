@@ -67,11 +67,11 @@ export class ResponseDatabase {
 
   constructor(options: ResponseDatabaseOptions = {}) {
     const configuration = {
-      DB_HOSTNAME: options.hostname || process.env.RESPONSE_DB_HOSTNAME,
-      DB_PORT: options.port || process.env.RESPONSE_DB_PORT,
-      DB_USERNAME: options.username || process.env.RESPONSE_DB_USERNAME,
-      DB_PASSWORD: options.password || process.env.RESPONSE_DB_PASSWORD,
-      DB_DATABASE: options.database || process.env.RESPONSE_DB_DATABASE,
+      DB_HOSTNAME: options.hostname ?? process.env.RESPONSE_DB_HOSTNAME,
+      DB_PORT: options.port ?? process.env.RESPONSE_DB_PORT,
+      DB_USERNAME: options.username ?? process.env.RESPONSE_DB_USERNAME,
+      DB_PASSWORD: options.password ?? process.env.RESPONSE_DB_PASSWORD,
+      DB_DATABASE: options.database ?? process.env.RESPONSE_DB_DATABASE,
     }
 
     // DB_PORTがintパースできない場合はエラー
@@ -160,7 +160,7 @@ export class ResponseDatabase {
     response.url = options.url
     response.urlHash = crypto
       .createHash('sha256')
-      .update(options.url || '')
+      .update(options.url ?? '')
       .digest('hex')
     response.requestHeaders = options.requestHeaders
     response.requestBody = options.requestBody
@@ -187,7 +187,7 @@ export class ResponseDatabase {
     if (!this.dataSource.isInitialized) {
       throw new Error('Responses database is not initialized')
     }
-    const options = rangeOptions || {}
+    const options = rangeOptions ?? {}
     const page = options.page
     const limit = options.limit
 
@@ -348,11 +348,10 @@ export class ResponseDatabase {
       return
     }
     if (error !== undefined) {
-      // eslint-disable-next-line no-console
       console.error(`[PixivTs@ResponseDatabase] ${text}`, error)
       return
     }
-    // eslint-disable-next-line no-console
+
     console.debug(`[PixivTs@ResponseDatabase] ${text}`)
   }
 }

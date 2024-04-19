@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { BookmarkRestrict } from './options'
 import Pixiv from './pixiv'
 import { GetV1IllustDetailCheck } from './types/endpoints/v1/illust/detail'
@@ -495,7 +494,7 @@ describe('pixiv', () => {
     ).not.toThrow()
   })
 
-  it('parseQueryString', async () => {
+  it('parseQueryString', () => {
     const qs = 'https://example.com?a=1&b=2&c=3'
     const parsed = Pixiv.parseQueryString(qs)
     expect(parsed).toStrictEqual({
@@ -505,7 +504,7 @@ describe('pixiv', () => {
     })
   })
 
-  it('isError', async () => {
+  it('isError', () => {
     const error = {
       error: {
         user_message: 'Rate limit exceeded.',
