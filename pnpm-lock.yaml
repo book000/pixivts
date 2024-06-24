@@ -73,8 +73,8 @@ importers:
         specifier: 29.1.5
         version: 29.1.5(@babel/core@7.24.7)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.24.7))(jest@29.7.0(@types/node@20.14.8))(typescript@5.5.2)
       typedoc:
-        specifier: 0.26.1
-        version: 0.26.1(typescript@5.5.2)
+        specifier: 0.26.2
+        version: 0.26.2(typescript@5.5.2)
       typescript:
         specifier: 5.5.2
         version: 5.5.2
@@ -2584,8 +2584,8 @@ packages:
     resolution: {integrity: sha512-EGjWssW7Tsk4DGfE+5yluuljS1OGYWiI1J6e8puZz9nTMM51Oug8CD5Zo4gWMsOhq5BI+1bF+rWTm4Vbj3ivRA==}
     engines: {node: '>= 18'}
 
-  typedoc@0.26.1:
-    resolution: {integrity: sha512-APsVXqh93jTlpkLuw6+/IORx7n5LN8hzJV8nvMIrYYaIva0VCq0CoDN7Z3hsRThEYVExI/qoFHnAAxrhG+Wd7Q==}
+  typedoc@0.26.2:
+    resolution: {integrity: sha512-q/t+M+PZqhN9gPWLBZ3CCvP+KT8O1tyYkSzEYbcQ6mo89avdIrMlBEl3vfo5BgSzwC6Lbmq0W64E8RkY+eVsLA==}
     engines: {node: '>= 18'}
     hasBin: true
     peerDependencies:
@@ -5804,7 +5804,7 @@ snapshots:
 
   typed-function@4.2.1: {}
 
-  typedoc@0.26.1(typescript@5.5.2):
+  typedoc@0.26.2(typescript@5.5.2):
     dependencies:
       lunr: 2.3.9
       markdown-it: 14.1.0
