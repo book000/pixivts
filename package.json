@@ -62,7 +62,7 @@
     "rimraf": "6.0.0",
     "run-z": "2.0.0",
     "ts-jest": "29.2.0",
-    "typedoc": "0.26.3",
+    "typedoc": "0.26.4",
     "typescript": "5.5.3"
   },
   "jest": {
