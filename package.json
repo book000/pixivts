@@ -41,7 +41,7 @@
   "dependencies": {
     "@types/qs": "6.9.15",
     "axios": "1.7.2",
-    "mysql2": "3.10.3",
+    "mysql2": "3.11.0",
     "qs": "6.12.3",
     "snake-camel-types": "1.0.1",
     "typeorm": "0.3.20",
