@@ -232,7 +232,7 @@ exports[`pixiv illustSeries: illust_series_detail 1`] = `
     "account": "itimi",
     "id": 147203,
     "is_followed": false,
-    "name": "いちみ",
+    "name": "いちみ＠冬コミ１日目ス－80a",
     "profile_image_urls": {
       "medium": "https://i.pximg.net/user-profile/img/2019/05/14/22/18/07/15770409_7935f0f46dcaddffd99f325bca49e2d1_170.jpg",
     },
@@ -368,7 +368,7 @@ exports[`pixiv illustSeries: illust_series_first_illust 1`] = `
     "account": "itimi",
     "id": 147203,
     "is_followed": false,
-    "name": "いちみ",
+    "name": "いちみ＠冬コミ１日目ス－80a",
     "profile_image_urls": {
       "medium": "https://i.pximg.net/user-profile/img/2019/05/14/22/18/07/15770409_7935f0f46dcaddffd99f325bca49e2d1_170.jpg",
     },
