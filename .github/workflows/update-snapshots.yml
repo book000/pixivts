@@ -9,6 +9,22 @@ jobs:
   update-snapshots:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:9.1
+        env:
+          MYSQL_ROOT_PASSWORD: rootPassword
+          MYSQL_USER: pixiv-ts
+          MYSQL_PASSWORD: pixiv-ts-test
+          MYSQL_DATABASE: pixiv-ts
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: 🛎 Checkout
         uses: actions/checkout@v4
@@ -45,6 +61,14 @@ jobs:
 
       - name: 🏃 Update snapshot
         run: pnpm run test -u
+        env:
+          PIXIV_REFRESH_TOKEN: ${{ secrets.PIXIV_REFRESH_TOKEN }}
+          NODE_ENV: test
+          RESPONSE_DB_HOSTNAME: localhost
+          RESPONSE_DB_USERNAME: pixiv-ts
+          RESPONSE_DB_PASSWORD: pixiv-ts-test
+          RESPONSE_DB_DATABASE: pixiv-ts
+          RESPONSE_DB_PORT: 3306
 
       - name: Commit and push changes
         run: |
@@ -56,7 +80,7 @@ jobs:
           git push origin update-snapshots
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: update-snapshots
