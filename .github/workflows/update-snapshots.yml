@@ -44,7 +44,7 @@ jobs:
           pnpm install --frozen-lockfile --prefer-frozen-lockfile
 
       - name: 🏃 Update snapshot
-        run: pnpm test -- -u
+        run: pnpm run test -- -u
 
       - name: Commit and push changes
         run: |
