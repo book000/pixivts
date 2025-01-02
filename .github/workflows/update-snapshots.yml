@@ -84,6 +84,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: update-snapshots
+          base: master
           title: 'Update snapshots'
           body: 'This PR updates the snapshots.'
           assignees: 'book000'
