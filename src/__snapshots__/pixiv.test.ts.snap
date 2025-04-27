@@ -84,6 +84,7 @@ exports[`pixiv illustDetail:103905962[manga] 1`] = `
   ],
   "meta_single_page": {},
   "page_count": 8,
+  "request": null,
   "restrict": 0,
   "sanity_level": 2,
   "series": null,
@@ -126,6 +127,7 @@ exports[`pixiv illustDetail:103905962[manga] 1`] = `
   "user": {
     "account": "borinn0812",
     "id": 8166267,
+    "is_accept_request": false,
     "is_followed": false,
     "name": "くらうど",
     "profile_image_urls": {
@@ -159,6 +161,7 @@ exports[`pixiv illustDetail:107565629[illust] 1`] = `
     "original_image_url": "https://i.pximg.net/img-original/img/2023/04/27/13/39/51/107565629_p0.png",
   },
   "page_count": 1,
+  "request": null,
   "restrict": 0,
   "sanity_level": 2,
   "series": null,
@@ -206,6 +209,7 @@ exports[`pixiv illustDetail:107565629[illust] 1`] = `
   "user": {
     "account": "yukitohoshizora",
     "id": 16668308,
+    "is_accept_request": false,
     "is_followed": false,
     "name": "桜もち",
     "profile_image_urls": {
@@ -231,6 +235,7 @@ exports[`pixiv illustSeries: illust_series_detail 1`] = `
   "user": {
     "account": "itimi",
     "id": 147203,
+    "is_accept_request": false,
     "is_followed": false,
     "name": "いちみ＠冬コミ１日目ス－80a",
     "profile_image_urls": {
@@ -325,6 +330,7 @@ exports[`pixiv illustSeries: illust_series_first_illust 1`] = `
   ],
   "meta_single_page": {},
   "page_count": 8,
+  "request": null,
   "restrict": 0,
   "sanity_level": 2,
   "series": {
@@ -367,6 +373,7 @@ exports[`pixiv illustSeries: illust_series_first_illust 1`] = `
   "user": {
     "account": "itimi",
     "id": 147203,
+    "is_accept_request": false,
     "is_followed": false,
     "name": "いちみ＠冬コミ１日目ス－80a",
     "profile_image_urls": {
@@ -397,6 +404,7 @@ exports[`pixiv novelDetail 1`] = `
   "is_x_restricted": false,
   "novel_ai_type": 0,
   "page_count": 7,
+  "request": null,
   "restrict": 0,
   "series": {},
   "tags": [
@@ -446,6 +454,7 @@ exports[`pixiv novelDetail 1`] = `
   "user": {
     "account": "user_wrmt2824",
     "id": 53003997,
+    "is_accept_request": true,
     "is_followed": false,
     "name": "蘇鞠-そまり-",
     "profile_image_urls": {
@@ -474,6 +483,7 @@ exports[`pixiv novelSeries: illust_series_first_illust 1`] = `
   "is_x_restricted": false,
   "novel_ai_type": 0,
   "page_count": 1,
+  "request": null,
   "restrict": 0,
   "series": {
     "id": 7474721,
@@ -516,6 +526,7 @@ exports[`pixiv novelSeries: illust_series_first_illust 1`] = `
   "user": {
     "account": "nyao_alp-lck",
     "id": 69131958,
+    "is_accept_request": false,
     "is_access_blocking_user": false,
     "is_followed": false,
     "name": "nyao1820-RdeCua",
@@ -547,6 +558,7 @@ exports[`pixiv novelSeries: novel_series_detail 1`] = `
   "user": {
     "account": "nyao_alp-lck",
     "id": 69131958,
+    "is_accept_request": false,
     "is_access_blocking_user": false,
     "is_followed": false,
     "name": "nyao1820-RdeCua",
@@ -575,6 +587,7 @@ exports[`pixiv novelSeries: novel_series_first_novel 1`] = `
   "is_x_restricted": false,
   "novel_ai_type": 0,
   "page_count": 1,
+  "request": null,
   "restrict": 0,
   "series": {
     "id": 7474721,
@@ -632,6 +645,7 @@ exports[`pixiv novelSeries: novel_series_first_novel 1`] = `
   "user": {
     "account": "nyao_alp-lck",
     "id": 69131958,
+    "is_accept_request": false,
     "is_access_blocking_user": false,
     "is_followed": false,
     "name": "nyao1820-RdeCua",
