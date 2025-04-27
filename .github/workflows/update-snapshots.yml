@@ -70,21 +70,13 @@ jobs:
           RESPONSE_DB_DATABASE: pixiv-ts
           RESPONSE_DB_PORT: 3306
 
-      - name: Commit and push changes
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git checkout -b update-snapshots
-          git add .
-          git commit -m 'Update snapshots'
-          git push origin update-snapshots
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: update-snapshots
           base: master
+          commit-message: 'Update snapshots'
           title: 'Update snapshots'
           body: 'This PR updates the snapshots.'
           assignees: 'book000'
