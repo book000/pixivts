@@ -63,7 +63,7 @@
     "run-z": "2.1.0",
     "ts-jest": "29.3.2",
     "typedoc": "0.28.3",
-    "typescript": "5.8.2"
+    "typescript": "5.8.3"
   },
   "jest": {
     "moduleFileExtensions": [
