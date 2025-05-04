@@ -30,7 +30,7 @@
     "fix": "run-z fix:prettier fix:eslint ctix",
     "fix:eslint": "eslint . -c eslint.config.mjs --fix",
     "fix:prettier": "prettier --write src",
-    "test": "jest",
+    "test": "jest --coverage",
     "lint": "run-z lint:prettier,lint:eslint,lint:tsc",
     "lint:eslint": "eslint . -c eslint.config.mjs",
     "lint:prettier": "prettier --check src",
@@ -80,6 +80,18 @@
     },
     "testMatch": [
       "**/*.test.ts"
+    ],
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/**/*.test.ts",
+      "!src/types/**"
     ]
   },
   "packageManager": "pnpm@10.10.0"
