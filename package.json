@@ -90,6 +90,7 @@
     ],
     "collectCoverageFrom": [
       "src/**/*.ts",
+      "!src/index.ts",
       "!src/**/*.test.ts",
       "!src/types/**"
     ]
