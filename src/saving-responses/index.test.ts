@@ -205,19 +205,19 @@ describe('ResponseDatabase', () => {
   })
 
   describe('init', () => {
-    let originalPrintDebug: any;
-    
+    let originalPrintDebug: any
+
     beforeEach(() => {
       // テスト中のログ出力を抑制するためにprintDebugをモック化
-      originalPrintDebug = ResponseDatabase.printDebug;
-      ResponseDatabase.printDebug = jest.fn();
-    });
-    
+      originalPrintDebug = ResponseDatabase.printDebug
+      ResponseDatabase.printDebug = jest.fn()
+    })
+
     afterEach(() => {
       // テスト後に元に戻す
-      ResponseDatabase.printDebug = originalPrintDebug;
-    });
-    
+      ResponseDatabase.printDebug = originalPrintDebug
+    })
+
     it('should return true when initialization succeeds', async () => {
       mockDataSource.isInitialized = false
       mockDataSource.initialize.mockResolvedValueOnce(null)
@@ -250,24 +250,24 @@ describe('ResponseDatabase', () => {
     // カバレッジ向上のための追加テスト - 行252を実行するケース
     it('should correctly handle initialization error and return false', async () => {
       mockDataSource.isInitialized = false
-      const initError = new Error('Database connection failed');
+      const initError = new Error('Database connection failed')
       mockDataSource.initialize.mockRejectedValueOnce(initError)
-      
+
       // printDebugをさらにスパイして実際に呼び出されたことを確認
-      const printDebugSpy = jest.spyOn(ResponseDatabase, 'printDebug');
-      
+      const printDebugSpy = jest.spyOn(ResponseDatabase, 'printDebug')
+
       const result = await responseDB.init()
-      
+
       // ケース内で失敗し、falseを返すことを確認
       expect(result).toBe(false)
-      
+
       // エラーメッセージでprintDebugが呼ばれたことを確認
       expect(printDebugSpy).toHaveBeenCalledWith(
-        'Responses database initialization failed', 
+        'Responses database initialization failed',
         initError
       )
-      
-      printDebugSpy.mockRestore();
+
+      printDebugSpy.mockRestore()
     })
   })
 

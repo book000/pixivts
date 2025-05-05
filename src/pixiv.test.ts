@@ -496,6 +496,30 @@ describe('pixiv', () => {
     ).not.toThrow()
   })
 
+  async function restoreBookmarkState(
+    illustId: number,
+    wasBookmarked: boolean
+  ) {
+    if (wasBookmarked) {
+      // 元々ブックマークされていた場合、ブックマークを確実に追加
+      await pixiv.illustBookmarkAdd({
+        illustId,
+        restrict: BookmarkRestrict.PUBLIC,
+        tags: [],
+      })
+    } else {
+      // 元々ブックマークされていなかった場合、ブックマークを確実に削除
+      try {
+        await pixiv.illustBookmarkDelete({
+          illustId: String(illustId),
+        })
+      } catch {
+        // すでに削除済みの場合はエラーを無視
+        // エラーハンドリング用のコメント
+      }
+    }
+  }
+
   it('illustBookmarkAdd and illustBookmarkDelete', async () => {
     // テスト用のイラストID（実際に存在するイラストを使用）
     const illustId = 107_565_629 // 正しい桁区切り
@@ -536,29 +560,8 @@ describe('pixiv', () => {
         expect(bookmarkDeleteResult.status).toBe(200)
       }
     } finally {
-      await restoreBookmarkState(illustId, wasBookmarked);
+      await restoreBookmarkState(illustId, wasBookmarked)
     }
-
-async function restoreBookmarkState(illustId: number, wasBookmarked: boolean) {
-  if (wasBookmarked) {
-    // 元々ブックマークされていた場合、ブックマークを確実に追加
-    await pixiv.illustBookmarkAdd({
-      illustId,
-      restrict: BookmarkRestrict.PUBLIC,
-      tags: [],
-    });
-  } else {
-    // 元々ブックマークされていなかった場合、ブックマークを確実に削除
-    try {
-      await pixiv.illustBookmarkDelete({
-        illustId: String(illustId),
-      });
-    } catch {
-      // すでに削除済みの場合はエラーを無視
-      // エラーハンドリング用のコメント
-    }
-  }
-}
   })
 
   it('novelBookmarkAdd and novelBookmarkDelete', async () => {
