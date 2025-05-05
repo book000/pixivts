@@ -536,26 +536,29 @@ describe('pixiv', () => {
         expect(bookmarkDeleteResult.status).toBe(200)
       }
     } finally {
-      // テスト後に元のブックマーク状態に戻す
-      if (wasBookmarked) {
-        // 元々ブックマークされていた場合、ブックマークを確実に追加
-        await pixiv.illustBookmarkAdd({
-          illustId,
-          restrict: BookmarkRestrict.PUBLIC,
-          tags: [],
-        })
-      } else {
-        // 元々ブックマークされていなかった場合、ブックマークを確実に削除
-        try {
-          await pixiv.illustBookmarkDelete({
-            illustId: String(illustId),
-          })
-        } catch {
-          // すでに削除済みの場合はエラーを無視
-          // エラーハンドリング用のコメント
-        }
-      }
+      await restoreBookmarkState(illustId, wasBookmarked);
     }
+
+async function restoreBookmarkState(illustId: number, wasBookmarked: boolean) {
+  if (wasBookmarked) {
+    // 元々ブックマークされていた場合、ブックマークを確実に追加
+    await pixiv.illustBookmarkAdd({
+      illustId,
+      restrict: BookmarkRestrict.PUBLIC,
+      tags: [],
+    });
+  } else {
+    // 元々ブックマークされていなかった場合、ブックマークを確実に削除
+    try {
+      await pixiv.illustBookmarkDelete({
+        illustId: String(illustId),
+      });
+    } catch {
+      // すでに削除済みの場合はエラーを無視
+      // エラーハンドリング用のコメント
+    }
+  }
+}
   })
 
   it('novelBookmarkAdd and novelBookmarkDelete', async () => {
