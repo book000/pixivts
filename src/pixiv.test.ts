@@ -19,6 +19,7 @@ import { GetV2NovelDetailCheck } from './types/endpoints/v2/novel/detail'
 import { GetV2NovelSeriesCheck } from './types/endpoints/v2/novel/series'
 import { omit } from './utils'
 import axios from 'axios'
+import fs from 'node:fs'
 
 jest.setTimeout(120_000) // 120sec
 
@@ -26,6 +27,17 @@ describe('pixiv', () => {
   let pixiv: Pixiv
 
   beforeAll(async () => {
+    // .envファイルから環境変数を読み込む。dotenvなどを使用しない
+    if (fs.existsSync('.env')) {
+      const env = fs.readFileSync('.env', 'utf8')
+      for (const line of env.split('\n')) {
+        const [key, value] = line.split('=')
+        if (key && value) {
+          process.env[key] = value
+        }
+      }
+    }
+
     const pixivRefreshToken = process.env.PIXIV_REFRESH_TOKEN
     if (!pixivRefreshToken) {
       throw new Error('PIXIV_REFRESH_TOKEN is not set')
@@ -496,28 +508,12 @@ describe('pixiv', () => {
     ).not.toThrow()
   })
 
-  async function restoreBookmarkState(
-    illustId: number,
-    wasBookmarked: boolean
-  ) {
-    if (wasBookmarked) {
-      // 元々ブックマークされていた場合、ブックマークを確実に追加
-      await pixiv.illustBookmarkAdd({
-        illustId,
-        restrict: BookmarkRestrict.PUBLIC,
-        tags: [],
-      })
-    } else {
-      // 元々ブックマークされていなかった場合、ブックマークを確実に削除
-      try {
-        await pixiv.illustBookmarkDelete({
-          illustId: String(illustId),
-        })
-      } catch {
-        // すでに削除済みの場合はエラーを無視
-        // エラーハンドリング用のコメント
-      }
-    }
+  async function restoreBookmarkState(illustId: number) {
+    await pixiv.illustBookmarkAdd({
+      illustId,
+      restrict: BookmarkRestrict.PUBLIC,
+      tags: [],
+    })
   }
 
   it('illustBookmarkAdd and illustBookmarkDelete', async () => {
@@ -560,7 +556,7 @@ describe('pixiv', () => {
         expect(bookmarkDeleteResult.status).toBe(200)
       }
     } finally {
-      await restoreBookmarkState(illustId, wasBookmarked)
+      await restoreBookmarkState(illustId)
     }
   })
 
