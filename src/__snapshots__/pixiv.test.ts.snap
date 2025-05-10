@@ -154,7 +154,7 @@ exports[`pixiv illustDetail:107565629[illust] 1`] = `
     "medium": "https://i.pximg.net/c/540x540_70/img-master/img/2023/04/27/13/39/51/107565629_p0_master1200.jpg",
     "square_medium": "https://i.pximg.net/c/360x360_70/img-master/img/2023/04/27/13/39/51/107565629_p0_square1200.jpg",
   },
-  "is_bookmarked": true,
+  "is_bookmarked": false,
   "is_muted": false,
   "meta_pages": [],
   "meta_single_page": {
