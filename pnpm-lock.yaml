@@ -24,11 +24,11 @@ importers:
         specifier: 1.0.1
         version: 1.0.1(typescript@5.8.3)
       typeorm:
-        specifier: 0.3.23
-        version: 0.3.23(mysql2@3.14.1)(reflect-metadata@0.2.2)
+        specifier: 0.3.24
+        version: 0.3.24(mysql2@3.14.1)(reflect-metadata@0.2.2)
       typeorm-naming-strategies:
         specifier: 4.1.0
-        version: 4.1.0(typeorm@0.3.23(mysql2@3.14.1)(reflect-metadata@0.2.2))
+        version: 4.1.0(typeorm@0.3.24(mysql2@3.14.1)(reflect-metadata@0.2.2))
     devDependencies:
       '@book000/eslint-config':
         specifier: 1.8.75
@@ -2863,8 +2863,8 @@ packages:
     peerDependencies:
       typeorm: ^0.2.0 || ^0.3.0
 
-  typeorm@0.3.23:
-    resolution: {integrity: sha512-CJUZWW7O5zZG0TA7bRpntJx97AvvQwsoSa1UgYlzTOtmkwODrqIyxP9wtzHpBssEKie5chnLiCVyxKNeYo65wQ==}
+  typeorm@0.3.24:
+    resolution: {integrity: sha512-4IrHG7A0tY8l5gEGXfW56VOMfUVWEkWlH/h5wmcyZ+V8oCiLj7iTPp0lEjMEZVrxEkGSdP9ErgTKHKXQApl/oA==}
     engines: {node: '>=16.13.0'}
     hasBin: true
     peerDependencies:
@@ -6447,11 +6447,11 @@ snapshots:
       typescript: 5.8.3
       yaml: 2.7.1
 
-  typeorm-naming-strategies@4.1.0(typeorm@0.3.23(mysql2@3.14.1)(reflect-metadata@0.2.2)):
+  typeorm-naming-strategies@4.1.0(typeorm@0.3.24(mysql2@3.14.1)(reflect-metadata@0.2.2)):
     dependencies:
-      typeorm: 0.3.23(mysql2@3.14.1)(reflect-metadata@0.2.2)
+      typeorm: 0.3.24(mysql2@3.14.1)(reflect-metadata@0.2.2)
 
-  typeorm@0.3.23(mysql2@3.14.1)(reflect-metadata@0.2.2):
+  typeorm@0.3.24(mysql2@3.14.1)(reflect-metadata@0.2.2):
     dependencies:
       '@sqltools/formatter': 1.2.5
       ansis: 3.17.0
@@ -6459,6 +6459,7 @@ snapshots:
       buffer: 6.0.3
       dayjs: 1.11.13
       debug: 4.4.0
+      dedent: 1.6.0
       dotenv: 16.5.0
       glob: 10.4.5
       reflect-metadata: 0.2.2
@@ -6470,6 +6471,7 @@ snapshots:
     optionalDependencies:
       mysql2: 3.14.1
     transitivePeerDependencies:
+      - babel-plugin-macros
       - supports-color
 
   typescript-eslint@8.32.1(eslint@9.26.0)(typescript@5.8.3):
