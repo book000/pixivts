@@ -61,7 +61,7 @@
     "prettier": "3.5.3",
     "rimraf": "6.0.1",
     "run-z": "2.1.0",
-    "ts-jest": "29.3.3",
+    "ts-jest": "29.3.4",
     "typedoc": "0.28.4",
     "typescript": "5.8.3"
   },
