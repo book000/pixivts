@@ -87,6 +87,7 @@ exports[`pixiv illustDetail:103905962[manga] 1`] = `
   "request": null,
   "restrict": 0,
   "sanity_level": 2,
+  "seasonal_effect_animation_urls": null,
   "series": null,
   "tags": [
     {
@@ -164,6 +165,7 @@ exports[`pixiv illustDetail:107565629[illust] 1`] = `
   "request": null,
   "restrict": 0,
   "sanity_level": 2,
+  "seasonal_effect_animation_urls": null,
   "series": null,
   "tags": [
     {
@@ -333,6 +335,7 @@ exports[`pixiv illustSeries: illust_series_first_illust 1`] = `
   "request": null,
   "restrict": 0,
   "sanity_level": 2,
+  "seasonal_effect_animation_urls": null,
   "series": {
     "id": 147483,
     "title": "ホロライブ学パロ",
