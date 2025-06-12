@@ -5,6 +5,7 @@ exports[`pixiv illustDetail:103905962[manga] 1`] = `
   "caption": "C101の新刊サンプルです！<br /><br />恋愛アドベンチャーゲーム『あくありうむ。』に登場する「猫」。<br />彼はどんなことを考えていたのか?<br />彼にとって、これはどんな物語だったのか?<br />そういった本編で語られなかった部分を想像で掘り下げたお話です。<br />※本文は『あくありうむ。』のネタバレおよび多少の負傷描写を含みます。苦手な方はご注意ください。<br /><br />【1日目東C-13b/くらうでぃ】でお待ちしています！<br /><br />メロンブックス様にて新刊の事前予約も始まっています！<br />気になる方は是非チェックしてみてください！<br />【<a href="https://www.melonbooks.co.jp/detail/detail.php?product_id=1746005" target='_blank' rel='noopener noreferrer'>https://www.melonbooks.co.jp/detail/detail.php?product_id=1746005</a>】",
   "comment_access_control": 0,
   "create_date": "2022-12-25T18:31:02+09:00",
+  "event_banners": null,
   "height": 3541,
   "id": 103905962,
   "illust_ai_type": 1,
@@ -146,6 +147,7 @@ exports[`pixiv illustDetail:107565629[illust] 1`] = `
   "caption": "",
   "comment_access_control": 0,
   "create_date": "2023-04-27T13:39:51+09:00",
+  "event_banners": null,
   "height": 2626,
   "id": 107565629,
   "illust_ai_type": 1,
@@ -253,6 +255,7 @@ exports[`pixiv illustSeries: illust_series_first_illust 1`] = `
 {
   "caption": "時にはこういう感じも良いなと思いつつ( ˘ω˘ )<br />後半はいろいろラフ画<br />合間合間にまたやったりするやも<br /><br />こっそりとskeb【<a href="https://skeb.jp/@itimi" target='_blank' rel='noopener noreferrer'>https://skeb.jp/@itimi</a>】はじめてました<br /><br />新刊の『あくおかSUMMER』【<strong><a href="pixiv://illusts/92103181">illust/92103181</a></strong>】委託販売中です！ヽ(=´▽\`=)ﾉ<br />今回は全編新規で夏の海のお話です！ﾎﾛﾗｲﾌﾞｻﾏｰｯ<br />購入報告や感想ありがとうございます、励みになります(✿´ ꒳ \` )<br /><br />書店様<br />メロン【<a href="http://bit.ly/1s21HMK" target='_blank' rel='noopener noreferrer'>http://bit.ly/1s21HMK</a> 】<br />とら【<a href="https://goo.gl/f8zmgy" target='_blank' rel='noopener noreferrer'>https://goo.gl/f8zmgy</a> 】<br />Grep【<a href="https://goo.gl/S5Rnvr" target='_blank' rel='noopener noreferrer'>https://goo.gl/S5Rnvr</a> 】<br /><br />電子書籍<br />メロン【<a href="http://bit.ly/1s21HMK" target='_blank' rel='noopener noreferrer'>http://bit.ly/1s21HMK</a> 】<br />DLSite【<a href="http://ur2.link/PyA0" target='_blank' rel='noopener noreferrer'>http://ur2.link/PyA0</a> 】",
   "create_date": "2021-10-27T20:09:10+09:00",
+  "event_banners": null,
   "height": 900,
   "id": 93720367,
   "illust_ai_type": 0,
