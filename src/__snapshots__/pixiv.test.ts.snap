@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`pixiv illustDetail:103905962[manga] 1`] = `
 {
@@ -241,7 +241,7 @@ exports[`pixiv illustSeries: illust_series_detail 1`] = `
     "id": 147203,
     "is_accept_request": false,
     "is_followed": false,
-    "name": "いちみ＠ぼ虹オンリー『虹10』",
+    "name": "いちみ＠C106 『A-16』",
     "profile_image_urls": {
       "medium": "https://i.pximg.net/user-profile/img/2019/05/14/22/18/07/15770409_7935f0f46dcaddffd99f325bca49e2d1_170.jpg",
     },
@@ -381,7 +381,7 @@ exports[`pixiv illustSeries: illust_series_first_illust 1`] = `
     "id": 147203,
     "is_accept_request": false,
     "is_followed": false,
-    "name": "いちみ＠ぼ虹オンリー『虹10』",
+    "name": "いちみ＠C106 『A-16』",
     "profile_image_urls": {
       "medium": "https://i.pximg.net/user-profile/img/2019/05/14/22/18/07/15770409_7935f0f46dcaddffd99f325bca49e2d1_170.jpg",
     },
