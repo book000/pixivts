@@ -95,5 +95,5 @@
       "!src/types/**"
     ]
   },
-  "packageManager": "pnpm@10.16.0"
+  "packageManager": "pnpm@10.16.1"
 }
