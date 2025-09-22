@@ -24,11 +24,11 @@ importers:
         specifier: 1.0.1
         version: 1.0.1(typescript@5.9.2)
       typeorm:
-        specifier: 0.3.26
-        version: 0.3.26(mysql2@3.15.0)(reflect-metadata@0.2.2)
+        specifier: 0.3.27
+        version: 0.3.27(mysql2@3.15.0)(reflect-metadata@0.2.2)
       typeorm-naming-strategies:
         specifier: 4.1.0
-        version: 4.1.0(typeorm@0.3.26(mysql2@3.15.0)(reflect-metadata@0.2.2))
+        version: 4.1.0(typeorm@0.3.27(mysql2@3.15.0)(reflect-metadata@0.2.2))
     devDependencies:
       '@book000/eslint-config':
         specifier: 1.11.2
@@ -2818,8 +2818,8 @@ packages:
     peerDependencies:
       typeorm: ^0.2.0 || ^0.3.0
 
-  typeorm@0.3.26:
-    resolution: {integrity: sha512-o2RrBNn3lczx1qv4j+JliVMmtkPSqEGpG0UuZkt9tCfWkoXKu8MZnjvp2GjWPll1SehwemQw6xrbVRhmOglj8Q==}
+  typeorm@0.3.27:
+    resolution: {integrity: sha512-pNV1bn+1n8qEe8tUNsNdD8ejuPcMAg47u2lUGnbsajiNUr3p2Js1XLKQjBMH0yMRMDfdX8T+fIRejFmIwy9x4A==}
     engines: {node: '>=16.13.0'}
     hasBin: true
     peerDependencies:
@@ -6301,11 +6301,11 @@ snapshots:
       typescript: 5.9.2
       yaml: 2.8.1
 
-  typeorm-naming-strategies@4.1.0(typeorm@0.3.26(mysql2@3.15.0)(reflect-metadata@0.2.2)):
+  typeorm-naming-strategies@4.1.0(typeorm@0.3.27(mysql2@3.15.0)(reflect-metadata@0.2.2)):
     dependencies:
-      typeorm: 0.3.26(mysql2@3.15.0)(reflect-metadata@0.2.2)
+      typeorm: 0.3.27(mysql2@3.15.0)(reflect-metadata@0.2.2)
 
-  typeorm@0.3.26(mysql2@3.15.0)(reflect-metadata@0.2.2):
+  typeorm@0.3.27(mysql2@3.15.0)(reflect-metadata@0.2.2):
     dependencies:
       '@sqltools/formatter': 1.2.5
       ansis: 3.17.0
