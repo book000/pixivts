@@ -71,7 +71,7 @@ jobs:
           RESPONSE_DB_PORT: 3306
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: update-snapshots
