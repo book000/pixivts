@@ -15,7 +15,17 @@
 - 日本語と英数字の間には半角スペースを入れる。
 
 ## プロジェクト概要
-- 目的: [pixiv](https://www.pixiv.net/) Unofficial API Library for TypeScript
+Pixiv 非公式 API ライブラリ（TypeScript 実装）。iOS Pixiv アプリの通信 API を利用して、Pixiv データアクセスを提供します。
+
+### 技術スタック
+- **言語**: TypeScript
+- **フレームワーク**: None (Library)
+- **パッケージマネージャー**: pnpm@10.28.1
+- **主要な依存関係**:
+  - axios 1.13.2
+  - mysql2 3.16.1
+  - typeorm 0.3.28
+  - qs 6.14.1
 
 ## コーディング規約
 - フォーマット: 既存設定（ESLint / Prettier / formatter）に従う。
@@ -23,12 +33,20 @@
 - コメント言語: 日本語
 - エラーメッセージ: 英語
 
-## 開発コマンド
+### 開発コマンド
 ```bash
-# 依存関係のインストール
+# install
 pnpm install
 
-# 開発 / テスト / Lint は README を確認してください
+# build
+pnpm build (tsc + ctix + typedoc)
+
+# test
+jest --coverage
+
+# lint
+pnpm lint (prettier, eslint, tsc チェック)
+
 ```
 
 ## 注意事項
@@ -37,3 +55,8 @@ pnpm install
 - 既存のプロジェクトルールがある場合はそれを優先する。
 
 ## リポジトリ固有
+- npm 公開パッケージ (@book000/pixivts)
+- GitHub Pages API ドキュメント
+- TypeORM データベース統合
+- スナップショットテスト
+- API レスポンスの直接取得パターン
