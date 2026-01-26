@@ -37,7 +37,7 @@ jobs:
 
     services:
       mysql:
-        image: mysql:9.5
+        image: mysql:9.6
         env:
           MYSQL_ROOT_PASSWORD: rootPassword
           MYSQL_USER: pixiv-ts
