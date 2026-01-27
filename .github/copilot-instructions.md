@@ -14,7 +14,7 @@
 
 ## 技術スタック
 
-- 言語: TypeScript (ES2020)
+- 言語: TypeScript (es2020)
 - パッケージマネージャー: pnpm
 - テストフレームワーク: Jest
 - Lint: ESLint (@book000/eslint-config)

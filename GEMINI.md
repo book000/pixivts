@@ -2,7 +2,7 @@
 
 ## 目的
 
-このドキュメントは、Gemini CLI が pixivts プロジェクトで作業を行う際のコンテキストと作業方針を定義します。
+このドキュメントは、Google が提供する AI エージェント用コマンドラインツールである Gemini CLI（参考: https://ai.google.dev/gemini-api/docs/developer-tools?hl=ja） が pixivts プロジェクトで作業を行う際のコンテキストと作業方針を定義します。
 
 ## 出力スタイル
 
