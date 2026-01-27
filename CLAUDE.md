@@ -219,7 +219,7 @@ pnpm lint:tsc
 3. `gh pr checks <PR ID> --watch` で GitHub Actions CI を待ち、その結果がエラーとなっていないこと
 4. `request-review-copilot` コマンド（このリポジトリ／開発環境で用意されている、GitHub Copilot へのレビュー依頼用の補助コマンド）が存在する場合、それを使用して GitHub Copilot へレビューを依頼すること
 5. 10 分以内に投稿される GitHub Copilot レビューへの対応を行うこと。対応したら、レビューコメントそれぞれに対して返信を行うこと
-6. GitHub Copilot Code Review のスラッシュコマンド `/code-review:code-review` を（対応するエディタや GitHub 上で）実行し、コードレビューを実施したこと。スコアが 50 以上の指摘事項に対して対応すること
+6. Claude Code のコマンド `/code-review:code-review` を実行し、コードレビューを実施したこと。スコアが 50 以上の指摘事項に対して対応すること
 
 ## リポジトリ固有
 
