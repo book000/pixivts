@@ -42,7 +42,7 @@
     "@types/qs": "6.14.0",
     "axios": "1.13.5",
     "mysql2": "3.17.1",
-    "qs": "6.14.2",
+    "qs": "6.15.0",
     "snake-camel-types": "1.0.1",
     "typeorm": "0.3.28",
     "typeorm-naming-strategies": "4.1.0"
