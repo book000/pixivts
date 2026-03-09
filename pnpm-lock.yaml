@@ -31,8 +31,8 @@ importers:
         version: 4.1.0(typeorm@0.3.28(mysql2@3.18.2(@types/node@24.11.0)))
     devDependencies:
       '@book000/eslint-config':
-        specifier: 1.13.12
-        version: 1.13.12(eslint@10.0.2)(typescript@5.9.3)
+        specifier: 1.13.13
+        version: 1.13.13(eslint@10.0.2)(typescript@5.9.3)
       '@types/jest':
         specifier: 30.0.0
         version: 30.0.0
@@ -250,8 +250,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@book000/eslint-config@1.13.12':
-    resolution: {integrity: sha512-zv8S8PNof8jtykDP+GuE+l3xDHVQCmiCEtxZWKvFIhRRbREXKtfZr0Q+0eXHnqggeBh2flP1s58bDAAlU1ooRg==}
+  '@book000/eslint-config@1.13.13':
+    resolution: {integrity: sha512-O4+nvr9cl/QbbPRfWH5cUKnvjlNvSJvU9r218dePdE08sMwuY+VSN6AelI7cf5md6N2rv/48JBVDcxM7XFrDkQ==}
     peerDependencies:
       eslint: 10.0.2
 
@@ -3253,7 +3253,7 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@book000/eslint-config@1.13.12(eslint@10.0.2)(typescript@5.9.3)':
+  '@book000/eslint-config@1.13.13(eslint@10.0.2)(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/parser': 8.56.1(eslint@10.0.2)(typescript@5.9.3)
       eslint: 10.0.2
