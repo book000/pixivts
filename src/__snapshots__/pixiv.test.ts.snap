@@ -403,7 +403,7 @@ exports[`pixiv novelDetail 1`] = `
     "medium": "https://i.pximg.net/c/176x352/novel-cover-master/img/2020/08/22/21/24/48/13574875_5c3aae3260ca71f457dd4d7f20342edf_master1200.jpg",
     "square_medium": "https://i.pximg.net/c/128x128/novel-cover-master/img/2020/08/22/21/24/48/13574875_5c3aae3260ca71f457dd4d7f20342edf_square1200.jpg",
   },
-  "is_bookmarked": false,
+  "is_bookmarked": true,
   "is_muted": false,
   "is_mypixiv_only": false,
   "is_original": false,
