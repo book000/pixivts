@@ -76,7 +76,7 @@ jobs:
         github.event_name == 'pull_request_target'
       )
     # フォーク PR の場合のみ Environment で手動承認が必要（同一リポジトリからの PR は不要）
-    environment: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository && 'fork-pr-build' || null }}
+    environment: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository && 'fork-pr-build' || '' }}
     permissions:
       contents: read
 
