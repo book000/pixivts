@@ -26,6 +26,10 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 # ワークフロー全体のデフォルト権限を無効化（各ジョブで最小権限を明示する）
 permissions: {}
 
@@ -217,7 +221,9 @@ jobs:
   finished-node-ci:
     name: Check finished Node CI
     runs-on: ubuntu-latest
-    if: always()
+    # node-ci がスキップされた場合（フォーク PR の pull_request イベント）はこのジョブも実行しない
+    # 実際の CI チェックは pull_request_target イベントの実行で行われる
+    if: always() && needs.node-ci.result != 'skipped'
     needs:
       - node-ci
     permissions: {}
@@ -228,9 +234,7 @@ jobs:
 
       - name: Check finished Node CI
         run: |
-          # skipped はフォーク PR の pull_request イベント時（node-ci がスキップされる場合）に許容する
-          # 実際の CI チェックは pull_request_target イベントの実行で行われる
-          if [ "${{ env.WORKFLOW_CONCLUSION }}" != "success" ] && [ "${{ env.WORKFLOW_CONCLUSION }}" != "skipped" ]; then
+          if [ "${{ env.WORKFLOW_CONCLUSION }}" != "success" ]; then
             echo "Build failed"
             exit 1
           fi
