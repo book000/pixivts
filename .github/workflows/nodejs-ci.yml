@@ -10,7 +10,7 @@ on:
   # PR は pull_request_target に一本化する（pull_request と pull_request_target が
   # 同時発火すると finished-node-ci の skipped が required check を誤通過させうるため）
   # pull_request_target は同一リポジトリ PR・フォーク PR の両方で発火する
-  # 同一リポジトリ PR: environment: が null になるため承認不要で実行
+  # 同一リポジトリ PR: environment: が空文字列になるため承認不要で実行
   # フォーク PR:       environment: fork-pr-build の承認ゲートでブロック
   pull_request_target:
     branches:
