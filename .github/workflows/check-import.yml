@@ -23,7 +23,7 @@ jobs:
           COUNT=`grep -rEn "from 'src/" --include=*.ts src | tee ../import-src.txt | wc -l || true`
           echo count: $COUNT
           cat ../import-src.txt
-          cat ../import-src.txt | reviewdog -efm="%f:%l:%m" -name="Check using src-import" -reporter=local -level=warning
+          cat ../import-src.txt | reviewdog -efm="%f:%l:%m" -name="Check using src-import" -reporter=github-annotations -level=warning
           if [ "$COUNT" != "0" ]; then
             echo "Found src-import in $COUNT files"
             exit 1
