@@ -226,16 +226,14 @@ jobs:
     if: always() && needs.node-ci.result != 'skipped'
     needs:
       - node-ci
-    permissions:
-      actions: read
+    permissions: {}
 
     steps:
-      - name: Workflow conclusion
-        uses: technote-space/workflow-conclusion-action@v3
-
       - name: Check finished Node CI
+        # post-approval-request は通知目的のため失敗しても CI に影響させない
+        # セキュリティゲートは node-ci の environment: が担保しているため、node-ci の結果のみを確認する
         run: |
-          if [ "${{ env.WORKFLOW_CONCLUSION }}" != "success" ]; then
+          if [ "${{ needs.node-ci.result }}" != "success" ]; then
             echo "Build failed"
             exit 1
           fi
