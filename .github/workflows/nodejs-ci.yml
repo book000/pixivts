@@ -27,7 +27,9 @@ on:
     - cron: '0 0 * * *'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # pull_request と pull_request_target が同一グループになるとフォーク PR で互いをキャンセルしてしまうため
+  # event_name を含めることで両イベントのキャンセルを独立させる
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 # ワークフロー全体のデフォルト権限を無効化（各ジョブで最小権限を明示する）
