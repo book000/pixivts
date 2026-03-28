@@ -228,7 +228,9 @@ jobs:
 
       - name: Check finished Node CI
         run: |
-          if [ "${{ env.WORKFLOW_CONCLUSION }}" != "success" ]; then
+          # skipped はフォーク PR の pull_request イベント時（node-ci がスキップされる場合）に許容する
+          # 実際の CI チェックは pull_request_target イベントの実行で行われる
+          if [ "${{ env.WORKFLOW_CONCLUSION }}" != "success" ] && [ "${{ env.WORKFLOW_CONCLUSION }}" != "skipped" ]; then
             echo "Build failed"
             exit 1
           fi
