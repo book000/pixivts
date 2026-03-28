@@ -25,8 +25,8 @@ on:
     - cron: '0 0 * * *'
 
 concurrency:
-  # pull_request と pull_request_target が同一グループになるとフォーク PR で互いをキャンセルしてしまうため
-  # event_name を含めることで両イベントのキャンセルを独立させる
+  # 将来 pull_request トリガーが追加された場合でもイベント間で互いをキャンセルしないよう
+  # event_name を含めて防衛的に設定している
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
@@ -41,18 +41,17 @@ jobs:
     if: github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository
     permissions:
       issues: write
-      pull-requests: write
     steps:
       - name: Find existing approval request comment
         id: find-comment
-        uses: peter-evans/find-comment@v3
+        uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: github-actions[bot]
           body-includes: Environment 承認待ち
 
       - name: Post or update approval request comment
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
         with:
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
@@ -220,8 +219,8 @@ jobs:
   finished-node-ci:
     name: Check finished Node CI
     runs-on: ubuntu-latest
-    # node-ci がスキップされた場合（フォーク PR の pull_request イベント）はこのジョブも実行しない
-    # 実際の CI チェックは pull_request_target イベントの実行で行われる
+    # node-ci ジョブがスキップされた場合（needs.node-ci.result == 'skipped' のとき）はこのジョブも実行しない
+    # 実際の CI チェックは node-ci ジョブの結果に基づいて行われる
     if: always() && needs.node-ci.result != 'skipped'
     needs:
       - node-ci
