@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pull-requests: read
 
     steps:
       - name: Checkout
@@ -19,6 +20,8 @@ jobs:
         uses: reviewdog/action-setup@v1
 
       - name: Check using src-import
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           COUNT=`grep -rEn "from 'src/" --include=*.ts src | tee ../import-src.txt | wc -l || true`
           echo count: $COUNT
