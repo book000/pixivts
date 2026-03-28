@@ -39,6 +39,8 @@ jobs:
     runs-on: ubuntu-latest
     # フォーク PR のときのみ承認リクエストを投稿する（同一リポジトリからの PR は不要）
     if: github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository
+    # コメント投稿の失敗はワークフロー結論に影響させない（セキュリティゲートは environment: が担保する）
+    continue-on-error: true
     permissions:
       issues: write
     steps:
