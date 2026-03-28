@@ -19,21 +19,64 @@ on:
       - main
       - master
     types:
-      - labeled
+      - opened
+      - synchronize
+      - reopened
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
 
+# ワークフロー全体のデフォルト権限を無効化（各ジョブで最小権限を明示する）
+permissions: {}
+
 jobs:
+  post-approval-request:
+    name: Post approval request
+    runs-on: ubuntu-latest
+    # フォーク PR のときのみ承認リクエストを投稿する（同一リポジトリからの PR は不要）
+    if: github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Find existing approval request comment
+        id: find-comment
+        uses: peter-evans/find-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: github-actions[bot]
+          body-includes: Environment 承認待ち
+
+      - name: Post or update approval request comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          edit-mode: replace
+          body: |
+            ## Environment 承認待ち
+
+            この PR のビルドを実行するには、Environment `fork-pr-build` の承認が必要です。
+
+            [Actions run を確認して承認してください](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}?pr=${{ github.event.pull_request.number }})
+
   node-ci:
     runs-on: ubuntu-latest
-    if: ${{
-      github.event_name == 'push' ||
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'schedule' ||
-      (github.event_name == 'pull_request' && github.repository == github.event.pull_request.head.repo.full_name) ||
-      (github.event_name == 'pull_request_target' && github.repository != github.event.pull_request.head.repo.full_name && contains(github.event.label.name, '🚀request-ci'))
-      }}
+    needs: post-approval-request
+    # post-approval-request の結果に関わらず常に実行する
+    # セキュリティゲートは environment: が担保するため、コメント投稿の失敗でスキップされてはならない
+    if: >-
+      always() && (
+        github.event_name == 'push' ||
+        github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'schedule' ||
+        (github.event_name == 'pull_request' && github.repository == github.event.pull_request.head.repo.full_name) ||
+        (github.event_name == 'pull_request_target' && github.repository != github.event.pull_request.head.repo.full_name)
+      )
+    # フォーク PR の場合のみ Environment で手動承認が必要（同一リポジトリからの PR は不要）
+    environment: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository && 'fork-pr-build' || null }}
+    permissions:
+      contents: read
 
     services:
       mysql:
@@ -55,7 +98,7 @@ jobs:
       - name: 🛎 Checkout
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: 🏗 Setup node
         uses: actions/setup-node@v6
@@ -171,39 +214,13 @@ jobs:
           git status
           git diff --exit-code || (echo "Git status is not clean." && exit 1)
 
-  comment:
-    name: Comment
-    runs-on: ubuntu-latest
-
-    if: ${{
-      github.event_name == 'pull_request_target' &&
-      github.event.action == 'opened' &&
-      github.repository != github.event.pull_request.head.repo.full_name
-      }}
-
-    steps:
-      - name: Create PR comment
-        run: |
-          cat << EOF > comment.md
-          # ⚠️ CIの実行には \`🚀request-ci\` ラベルが必要です
-
-          このリポジトリはフォークされたリポジトリです。
-          セキュリティ上の理由から、フォークされたリポジトリからのCI実行は自動的に行われません。
-
-          CI実行をリクエストするには、このプルリクエストに \`🚀request-ci\` ラベルを追加してください。
-          （ラベルを追加できるのは一部のメンバーのみです）
-          EOF
-
-          gh pr comment ${{ github.event.number }} -R ${{ github.repository }} -F comment.md
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   finished-node-ci:
     name: Check finished Node CI
     runs-on: ubuntu-latest
     if: always()
     needs:
       - node-ci
+    permissions: {}
 
     steps:
       - name: Workflow conclusion
@@ -215,16 +232,3 @@ jobs:
             echo "Build failed"
             exit 1
           fi
-
-      - name: Remove label
-        if: ${{ github.event_name == 'pull_request_target' && contains(github.event.label.name, '🚀request-ci') }}
-        uses: actions/github-script@v8
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.issues.removeLabel({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: ['🚀request-ci']
-            })
