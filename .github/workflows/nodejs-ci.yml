@@ -10,7 +10,7 @@ on:
   # PR は pull_request_target に一本化する（pull_request と pull_request_target が
   # 同時発火すると finished-node-ci の skipped が required check を誤通過させうるため）
   # pull_request_target は同一リポジトリ PR・フォーク PR の両方で発火する
-  # 同一リポジトリ PR: environment: が null になるため承認不要で実行
+  # 同一リポジトリ PR: environment: が空文字列になるため承認不要で実行
   # フォーク PR:       environment: fork-pr-build の承認ゲートでブロック
   pull_request_target:
     branches:
@@ -39,8 +39,11 @@ jobs:
     runs-on: ubuntu-latest
     # フォーク PR のときのみ承認リクエストを投稿する（同一リポジトリからの PR は不要）
     if: github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository
+    # コメント投稿の失敗はワークフロー結論に影響させない（セキュリティゲートは environment: が担保する）
+    continue-on-error: true
     permissions:
       issues: write
+      pull-requests: write
     steps:
       - name: Find existing approval request comment
         id: find-comment
@@ -76,7 +79,7 @@ jobs:
         github.event_name == 'pull_request_target'
       )
     # フォーク PR の場合のみ Environment で手動承認が必要（同一リポジトリからの PR は不要）
-    environment: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository && 'fork-pr-build' || null }}
+    environment: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository && 'fork-pr-build' || '' }}
     permissions:
       contents: read
 
@@ -224,16 +227,14 @@ jobs:
     if: always() && needs.node-ci.result != 'skipped'
     needs:
       - node-ci
-    permissions:
-      actions: read
+    permissions: {}
 
     steps:
-      - name: Workflow conclusion
-        uses: technote-space/workflow-conclusion-action@v3
-
       - name: Check finished Node CI
+        # post-approval-request は通知目的のため失敗しても CI に影響させない
+        # セキュリティゲートは node-ci の environment: が担保しているため、node-ci の結果のみを確認する
         run: |
-          if [ "${{ env.WORKFLOW_CONCLUSION }}" != "success" ]; then
+          if [ "${{ needs.node-ci.result }}" != "success" ]; then
             echo "Build failed"
             exit 1
           fi
