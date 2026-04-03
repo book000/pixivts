@@ -110,10 +110,10 @@ export class ResponseDatabase {
       await this.dataSource.initialize()
       ResponseDatabase.printDebug('Responses database initialized')
       return true
-    } catch (error) {
+    } catch (err) {
       ResponseDatabase.printDebug(
         'Responses database initialization failed',
-        error as Error
+        err as Error
       )
       return false
     }

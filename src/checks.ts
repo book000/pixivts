@@ -10,9 +10,9 @@ export abstract class BaseSimpleCheck<T> {
       // 失敗ならtrueを返す
       try {
         return !checks[key](data) // Trueかつ例外が発生しない場合は成功 (falseを返す)
-      } catch (error) {
+      } catch (err) {
         if (reThrow) {
-          throw error
+          throw err
         }
         return true // 例外の場合は失敗 (true)
       }
@@ -43,9 +43,9 @@ export abstract class BaseMultipleCheck<T, U> {
       // 失敗ならtrueを返す
       try {
         return !checks[key](data) // Trueかつ例外が発生しない場合は成功 (falseを返す)
-      } catch (error) {
+      } catch (err) {
         if (reThrow) {
-          throw error
+          throw err
         }
         return true // 例外の場合は失敗 (true)
       }
@@ -70,9 +70,9 @@ export abstract class BaseMultipleCheck<T, U> {
       // 失敗ならtrueを返す
       try {
         return !checks[key](data) // Trueかつ例外が発生しない場合は成功 (falseを返す)
-      } catch (error) {
+      } catch (err) {
         if (reThrow) {
-          throw error
+          throw err
         }
         return true // 例外の場合は失敗 (true)
       }
