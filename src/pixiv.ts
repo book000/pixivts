@@ -172,7 +172,12 @@ class PixivHttpClient {
     const response = await fetch(url, {
       headers: this.defaultHeaders,
     })
-    const data = (await response.json()) as U
+    const contentType = response.headers.get('content-type') ?? ''
+    const data = (
+      contentType.includes('application/json')
+        ? await response.json()
+        : await response.text()
+    ) as U
     return {
       data,
       status: response.status,
