@@ -173,10 +173,9 @@ class PixivHttpClient {
       headers: this.defaultHeaders,
     })
     const contentType = response.headers.get('content-type') ?? ''
+    const text = await response.text()
     const data = (
-      contentType.includes('application/json')
-        ? await response.json()
-        : await response.text()
+      contentType.includes('application/json') ? JSON.parse(text) : text
     ) as U
     return {
       data,
@@ -267,6 +266,7 @@ export default class Pixiv {
       'App-OS': 'ios',
       'App-OS-Version': '14.6',
       'User-Agent': 'PixivIOSApp/7.13.3 (iOS 14.6; iPhone13,2)',
+      'Accept-Language': '',
       Authorization: `Bearer ${this.accessToken}`,
     })
   }
