@@ -111,7 +111,7 @@ jobs:
           node-version-file: .node-version
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v5
+        uses: pnpm/action-setup@v6
         id: pnpm-install
         with:
           run_install: false
