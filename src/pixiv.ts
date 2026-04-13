@@ -270,7 +270,7 @@ export default class Pixiv {
       'App-OS': 'ios',
       'App-OS-Version': '14.6',
       'User-Agent': 'PixivIOSApp/7.13.3 (iOS 14.6; iPhone13,2)',
-      'Accept-Language': '',
+      'Accept-Language': 'ja',
       Authorization: `Bearer ${this.accessToken}`,
     })
   }
