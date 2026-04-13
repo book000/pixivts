@@ -151,7 +151,7 @@ function headersToRecord(headers: Headers): Record<string, string> {
   return result
 }
 
-class PixivHttpClient {
+export class PixivHttpClient {
   private readonly baseURL: string
   private readonly defaultHeaders: Record<string, string>
 
@@ -199,7 +199,11 @@ class PixivHttpClient {
       headers,
       body,
     })
-    const data = (await response.json()) as U
+    const contentType = response.headers.get('content-type') ?? ''
+    const text = await response.text()
+    const data = (
+      contentType.includes('application/json') ? JSON.parse(text) : text
+    ) as U
     return {
       data,
       status: response.status,
@@ -348,7 +352,14 @@ export default class Pixiv {
   }
 
   /**
-   * 画像のストリームを取得する。
+   * 画像取得用の `Response` を返す。
+   *
+   * 戻り値はストリームそのものではなく `Response` オブジェクトであり、
+   * ストリームとして読み取る場合は `response.body` を参照する。
+   * 必要に応じて `arrayBuffer()` などの `Response` の API も利用できる。
+   *
+   * @param url 画像 URL
+   * @returns 画像取得結果の `Response`
    */
   public static async getImageStream(url: string): Promise<Response> {
     return fetch(url, {
