@@ -18,7 +18,6 @@ import { GetV2IllustRelatedCheck } from './types/endpoints/v2/illust/related'
 import { GetV2NovelDetailCheck } from './types/endpoints/v2/novel/detail'
 import { GetV2NovelSeriesCheck } from './types/endpoints/v2/novel/series'
 import { omit } from './utils'
-import axios from 'axios'
 import fs from 'node:fs'
 
 jest.setTimeout(120_000) // 120sec
@@ -741,42 +740,40 @@ describe('Pixiv class coverage tests', () => {
     // 行245のカバレッジ: トークンリフレッシュ失敗のテスト
     it('should throw an error when refresh token fails', async () => {
       // モック化してエラーを起こす
-      const originalAxiosPost = axios.post
-      try {
-        // axiosをモック化し、トークンリフレッシュが失敗するようにする
-        axios.post = jest.fn().mockResolvedValueOnce({
-          status: 401,
-          data: {
-            error: 'invalid_token',
-            message: 'Invalid refresh token',
-          },
-        })
+      const fetchSpy = jest
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce(
+          Response.json(
+            { error: 'invalid_token', message: 'Invalid refresh token' },
+            { status: 401 }
+          )
+        )
 
+      try {
         await expect(Pixiv.of('invalid_refresh_token')).rejects.toThrow(
           'Failed to refresh token'
         )
       } finally {
-        // モックを元に戻す
-        axios.post = originalAxiosPost
+        fetchSpy.mockRestore()
       }
     })
 
     // 行276のカバレッジ: データベースなしの場合
     it('should initialize without response database', async () => {
-      const originalAxiosPost = axios.post
-      try {
-        // モックでPOSTメソッドが成功を返すようにする
-        axios.post = jest.fn().mockResolvedValueOnce({
-          status: 200,
-          data: {
+      const fetchSpy = jest.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+        Response.json(
+          {
             user: { id: 'test_user_id' },
             response: {
               access_token: 'test_access_token',
               refresh_token: 'test_refresh_token',
             },
           },
-        })
+          { status: 200 }
+        )
+      )
 
+      try {
         // データベースオプションなしでインスタンス化
         const instance = await Pixiv.of('test_refresh_token', {
           debugOptions: {
@@ -789,8 +786,7 @@ describe('Pixiv class coverage tests', () => {
         expect(instance).toBeInstanceOf(Pixiv)
         await instance.close()
       } finally {
-        // モックを元に戻す
-        axios.post = originalAxiosPost
+        fetchSpy.mockRestore()
       }
     })
   })
@@ -801,24 +797,23 @@ describe('Pixiv class coverage tests', () => {
 
     beforeAll(async () => {
       // テスト用のPixivインスタンスを生成
-      const originalAxiosPost = axios.post
-      try {
-        // モックでPOSTメソッドが成功を返すようにする
-        axios.post = jest.fn().mockResolvedValueOnce({
-          status: 200,
-          data: {
+      const fetchSpy = jest.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+        Response.json(
+          {
             user: { id: 'test_user_id' },
             response: {
               access_token: 'test_access_token',
               refresh_token: 'test_refresh_token',
             },
           },
-        })
+          { status: 200 }
+        )
+      )
 
+      try {
         pixiv = await Pixiv.of('test_refresh_token')
       } finally {
-        // モックを元に戻す
-        axios.post = originalAxiosPost
+        fetchSpy.mockRestore()
       }
     })
 
@@ -857,22 +852,18 @@ describe('Pixiv class coverage tests', () => {
       // saveResponseメソッドをスパイ
       const saveResponseSpy = jest.spyOn(pixiv as any, 'saveResponse')
 
-      // 元のaxios.getをバックアップ
-      const originalAxiosGet = pixiv.axios.get
+      // 元のhttp.getをバックアップ
+      const originalHttpGet = pixiv.http.get
 
       try {
         // モック化
-        pixiv.axios.get = jest.fn().mockResolvedValueOnce({
+        pixiv.http.get = jest.fn().mockResolvedValueOnce({
           status: 200,
           data: { test: 'data' },
-          config: {
-            headers: {},
-            data: null,
-          },
           headers: {},
-          request: {
-            res: {}, // responseUrlプロパティがない
-          },
+          requestHeaders: {},
+          requestBody: null,
+          responseUrl: undefined,
         })
 
         // レスポンスデータベースが設定されていれば実行
@@ -888,7 +879,7 @@ describe('Pixiv class coverage tests', () => {
         }
       } finally {
         // モックを元に戻す
-        pixiv.axios.get = originalAxiosGet
+        pixiv.http.get = originalHttpGet
         saveResponseSpy.mockRestore()
       }
     })
