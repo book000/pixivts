@@ -1,6 +1,4 @@
 import crypto from 'node:crypto'
-import axios, { AxiosInstance, AxiosResponse } from 'axios'
-import { ReadStream } from 'node:fs'
 import qs from 'qs'
 import {
   IllustDetailOptions,
@@ -136,6 +134,79 @@ interface PostRequestOptions<T> {
 
 type RequestOptions<T> = GetRequestOptions<T> | PostRequestOptions<T>
 
+export interface PixivApiResponse<T> {
+  data: T
+  status: number
+  headers: Record<string, string>
+  requestHeaders: Record<string, string>
+  requestBody: string | null
+  responseUrl: string | undefined
+}
+
+function headersToRecord(headers: Headers): Record<string, string> {
+  const result: Record<string, string> = {}
+  for (const [key, value] of headers) {
+    result[key] = value
+  }
+  return result
+}
+
+class PixivHttpClient {
+  private readonly baseURL: string
+  private readonly defaultHeaders: Record<string, string>
+
+  constructor(baseURL: string, headers: Record<string, string>) {
+    this.baseURL = baseURL
+    this.defaultHeaders = headers
+  }
+
+  async get<U>(
+    path: string,
+    options: { params?: Record<string, any> } = {}
+  ): Promise<PixivApiResponse<U>> {
+    let url = `${this.baseURL}${path}`
+    if (options.params) {
+      const queryString = qs.stringify(options.params)
+      if (queryString) url += `?${queryString}`
+    }
+    const response = await fetch(url, {
+      headers: this.defaultHeaders,
+    })
+    const data = (await response.json()) as U
+    return {
+      data,
+      status: response.status,
+      headers: headersToRecord(response.headers),
+      requestHeaders: this.defaultHeaders,
+      requestBody: null,
+      responseUrl: response.url || undefined,
+    }
+  }
+
+  async post<U>(
+    path: string,
+    body: string,
+    options: { headers?: Record<string, string> } = {}
+  ): Promise<PixivApiResponse<U>> {
+    const url = `${this.baseURL}${path}`
+    const headers = { ...this.defaultHeaders, ...options.headers }
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body,
+    })
+    const data = (await response.json()) as U
+    return {
+      data,
+      status: response.status,
+      headers: headersToRecord(response.headers),
+      requestHeaders: headers,
+      requestBody: body,
+      responseUrl: response.url || undefined,
+    }
+  }
+}
+
 export interface PixivDebugOutputResponseOptions {
   enable: boolean
 
@@ -165,7 +236,7 @@ export default class Pixiv {
   readonly accessToken: string
   readonly refreshToken: string
   readonly responseDatabase: ResponseDatabase | null
-  readonly axios: AxiosInstance
+  readonly http: PixivHttpClient
 
   /**
    * コンストラクタ。外部からインスタンス化できないので、of メソッドを使うこと。
@@ -186,16 +257,12 @@ export default class Pixiv {
     this.refreshToken = refreshToken
     this.responseDatabase = responseDatabase ?? null
 
-    this.axios = axios.create({
-      baseURL: this.hosts,
-      headers: {
-        Host: 'app-api.pixiv.net',
-        'App-OS': 'ios',
-        'App-OS-Version': '14.6',
-        'User-Agent': 'PixivIOSApp/7.13.3 (iOS 14.6; iPhone13,2)',
-        Authorization: `Bearer ${this.accessToken}`,
-      },
-      validateStatus: () => true,
+    this.http = new PixivHttpClient(this.hosts, {
+      Host: 'app-api.pixiv.net',
+      'App-OS': 'ios',
+      'App-OS-Version': '14.6',
+      'User-Agent': 'PixivIOSApp/7.13.3 (iOS 14.6; iPhone13,2)',
+      Authorization: `Bearer ${this.accessToken}`,
     })
   }
 
@@ -233,22 +300,28 @@ export default class Pixiv {
       refresh_token: refreshToken,
     })
 
-    const response = await axios.post<{
-      user: { id: string }
-      response: { access_token: string; refresh_token: string }
-    }>(authUrl, data, {
-      headers,
-      validateStatus: () => true,
+    const response = await fetch(authUrl, {
+      method: 'POST',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: data,
     })
 
     if (response.status !== 200) {
       throw new Error('Failed to refresh token')
     }
 
+    const responseData = (await response.json()) as {
+      user: { id: string }
+      response: { access_token: string; refresh_token: string }
+    }
+
     const options = {
-      userId: response.data.user.id,
-      accessToken: response.data.response.access_token,
-      refreshToken: response.data.response.refresh_token,
+      userId: responseData.user.id,
+      accessToken: responseData.response.access_token,
+      refreshToken: responseData.response.refresh_token,
     }
 
     const responseDatabase = pixivTsOptions?.debugOptions?.outputResponse
@@ -270,16 +343,15 @@ export default class Pixiv {
   }
 
   /**
-   * 画像のaxiosストリームを取得する。
+   * 画像のストリームを取得する。
    */
-  public static async getAxiosImageStream(url: string) {
-    return axios.get<ReadStream>(url, {
+  public static async getImageStream(url: string): Promise<Response> {
+    return fetch(url, {
       headers: {
         'User-Agent':
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
         Referer: 'https://www.pixiv.net/',
       },
-      responseType: 'stream',
     })
   }
 
@@ -873,13 +945,12 @@ export default class Pixiv {
    */
   private async request<T, U extends string | object>(
     options: RequestOptions<T>
-  ): Promise<AxiosResponse<U>> {
+  ): Promise<PixivApiResponse<U>> {
     if (options.method === 'GET') {
       return await this.saveResponse(
         options,
-        await this.axios.get<U>(options.path, {
-          params: options.params,
-          paramsSerializer: { indexes: true },
+        await this.http.get<U>(options.path, {
+          params: options.params as Record<string, any> | undefined,
         })
       )
     }
@@ -887,11 +958,10 @@ export default class Pixiv {
     if (options.method === 'POST') {
       return await this.saveResponse(
         options,
-        await this.axios.post<U>(options.path, qs.stringify(options.data), {
+        await this.http.post<U>(options.path, qs.stringify(options.data), {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-          paramsSerializer: { indexes: true },
         })
       )
     }
@@ -900,8 +970,8 @@ export default class Pixiv {
 
   private async saveResponse<T extends string | object>(
     request: RequestOptions<any>,
-    response: AxiosResponse<T>
-  ): Promise<AxiosResponse<T>> {
+    response: PixivApiResponse<T>
+  ): Promise<PixivApiResponse<T>> {
     if (this.responseDatabase === null) {
       return response
     }
@@ -914,8 +984,7 @@ export default class Pixiv {
         ? qs.stringify(request.params, { addQueryPrefix: true })
         : '',
     ].join('')
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const url = response.request.res.responseUrl ?? rawUrl
+    const url = response.responseUrl ?? rawUrl
 
     const responseType = this.isJSON(response.data) ? 'JSON' : 'TEXT'
     const responseBody =
@@ -927,8 +996,8 @@ export default class Pixiv {
       method,
       endpoint: path,
       url,
-      requestHeaders: JSON.stringify(response.config.headers),
-      requestBody: response.config.data,
+      requestHeaders: JSON.stringify(response.requestHeaders),
+      requestBody: response.requestBody,
       responseType,
       statusCode: response.status,
       responseHeaders: JSON.stringify(response.headers),
