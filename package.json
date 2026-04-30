@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@types/qs": "6.15.0",
-    "mysql2": "3.22.2",
+    "mysql2": "3.22.3",
     "qs": "6.15.1",
     "snake-camel-types": "1.0.1",
     "typeorm": "0.3.28",
