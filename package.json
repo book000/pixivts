@@ -39,7 +39,7 @@
     "prepublishOnly": "run-z lint"
   },
   "dependencies": {
-    "@types/qs": "6.15.0",
+    "@types/qs": "6.15.1",
     "mysql2": "3.22.3",
     "qs": "6.15.1",
     "snake-camel-types": "1.0.1",
