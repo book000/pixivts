@@ -13,7 +13,7 @@ importers:
         version: 6.15.1
       mysql2:
         specifier: 3.22.3
-        version: 3.22.3(@types/node@24.12.3)
+        version: 3.22.3(@types/node@24.12.4)
       qs:
         specifier: 6.15.1
         version: 6.15.1
@@ -22,10 +22,10 @@ importers:
         version: 1.0.1(typescript@6.0.3)
       typeorm:
         specifier: 0.3.29
-        version: 0.3.29(mysql2@3.22.3(@types/node@24.12.3))
+        version: 0.3.29(mysql2@3.22.3(@types/node@24.12.4))
       typeorm-naming-strategies:
         specifier: 4.1.0
-        version: 4.1.0(typeorm@0.3.29(mysql2@3.22.3(@types/node@24.12.3)))
+        version: 4.1.0(typeorm@0.3.29(mysql2@3.22.3(@types/node@24.12.4)))
     devDependencies:
       '@book000/eslint-config':
         specifier: 1.14.33
@@ -34,11 +34,11 @@ importers:
         specifier: 30.0.0
         version: 30.0.0
       '@types/node':
-        specifier: 24.12.3
-        version: 24.12.3
+        specifier: 24.12.4
+        version: 24.12.4
       ctix:
         specifier: 2.8.0
-        version: 2.8.0(@types/node@24.12.3)(prettier-plugin-organize-imports@4.3.0(prettier@3.8.3)(typescript@6.0.3))(prettier@3.8.3)(typescript@6.0.3)
+        version: 2.8.0(@types/node@24.12.4)(prettier-plugin-organize-imports@4.3.0(prettier@3.8.3)(typescript@6.0.3))(prettier@3.8.3)(typescript@6.0.3)
       eslint:
         specifier: 10.3.0
         version: 10.3.0
@@ -56,7 +56,7 @@ importers:
         version: 7.3.0(eslint@10.3.0)
       jest:
         specifier: 30.4.2
-        version: 30.4.2(@types/node@24.12.3)
+        version: 30.4.2(@types/node@24.12.4)
       prettier:
         specifier: 3.8.3
         version: 3.8.3
@@ -68,7 +68,7 @@ importers:
         version: 2.1.0
       ts-jest:
         specifier: 29.4.9
-        version: 29.4.9(@babel/core@7.29.0)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@7.29.0))(jest-util@30.4.1)(jest@30.4.2(@types/node@24.12.3))(typescript@6.0.3)
+        version: 29.4.9(@babel/core@7.29.0)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@7.29.0))(jest-util@30.4.1)(jest@30.4.2(@types/node@24.12.4))(typescript@6.0.3)
       typedoc:
         specifier: 0.28.19
         version: 0.28.19(typescript@6.0.3)
@@ -528,11 +528,11 @@ packages:
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
 
-  '@types/node@24.12.2':
-    resolution: {integrity: sha512-A1sre26ke7HDIuY/M23nd9gfB+nrmhtYyMINbjI1zHJxYteKR6qSMX56FsmjMcDb3SMcjJg5BiRRgOCC/yBD0g==}
-
   '@types/node@24.12.3':
     resolution: {integrity: sha512-8oljBDGun9cIsZRJR6fkihn0TSXJI0UDOOhncYaERq6M0JMDoPLxyscwruJcb4GKS6dvK/d8xebYBg27h/duaQ==}
+
+  '@types/node@24.12.4':
+    resolution: {integrity: sha512-GUUEShf+PBCGW2KaXwcIt3Yk+e3pkKwWKb9GSyM9WQVE+ep2jzmHdGsHzu4wgcZy5fN9FBdVzjpBQsYlpfpgLA==}
 
   '@types/qs@6.15.1':
     resolution: {integrity: sha512-GZHUBZR9hckSUhrxmp1nG6NwdpM9fCunJwyThLW1X3AyHgd9IlHb6VANpQQqDr2o/qQp6McZ3y/IA2rVzKzSbw==}
@@ -3357,12 +3357,12 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@inquirer/external-editor@1.0.3(@types/node@24.12.3)':
+  '@inquirer/external-editor@1.0.3(@types/node@24.12.4)':
     dependencies:
       chardet: 2.1.1
       iconv-lite: 0.7.2
     optionalDependencies:
-      '@types/node': 24.12.3
+      '@types/node': 24.12.4
 
   '@isaacs/cliui@8.0.2':
     dependencies:
@@ -3697,11 +3697,11 @@ snapshots:
 
   '@types/json5@0.0.29': {}
 
-  '@types/node@24.12.2':
+  '@types/node@24.12.3':
     dependencies:
       undici-types: 7.16.0
 
-  '@types/node@24.12.3':
+  '@types/node@24.12.4':
     dependencies:
       undici-types: 7.16.0
 
@@ -4336,7 +4336,7 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  ctix@2.8.0(@types/node@24.12.3)(prettier-plugin-organize-imports@4.3.0(prettier@3.8.3)(typescript@6.0.3))(prettier@3.8.3)(typescript@6.0.3):
+  ctix@2.8.0(@types/node@24.12.4)(prettier-plugin-organize-imports@4.3.0(prettier@3.8.3)(typescript@6.0.3))(prettier@3.8.3)(typescript@6.0.3):
     dependencies:
       chalk: 4.1.2
       change-case: 4.1.2
@@ -4350,8 +4350,8 @@ snapshots:
       find-up: 5.0.0
       fuse.js: 7.3.0
       glob: 10.5.0
-      inquirer: 8.2.7(@types/node@24.12.3)
-      inquirer-ts-checkbox-plus-prompt: 1.0.1(@types/node@24.12.3)
+      inquirer: 8.2.7(@types/node@24.12.4)
+      inquirer-ts-checkbox-plus-prompt: 1.0.1(@types/node@24.12.4)
       json5: 2.2.3
       jsonc-parser: 3.3.1
       mathjs: 12.4.3
@@ -5068,19 +5068,19 @@ snapshots:
 
   inherits@2.0.4: {}
 
-  inquirer-ts-checkbox-plus-prompt@1.0.1(@types/node@24.12.3):
+  inquirer-ts-checkbox-plus-prompt@1.0.1(@types/node@24.12.4):
     dependencies:
       chalk: 4.1.2
       cli-cursor: 3.1.0
       figures: 3.2.0
-      inquirer: 8.2.7(@types/node@24.12.3)
+      inquirer: 8.2.7(@types/node@24.12.4)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - '@types/node'
 
-  inquirer@8.2.7(@types/node@24.12.3):
+  inquirer@8.2.7(@types/node@24.12.4):
     dependencies:
-      '@inquirer/external-editor': 1.0.3(@types/node@24.12.3)
+      '@inquirer/external-editor': 1.0.3(@types/node@24.12.4)
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       cli-cursor: 3.1.0
@@ -5316,7 +5316,7 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  jest-cli@30.4.2(@types/node@24.12.3):
+  jest-cli@30.4.2(@types/node@24.12.4):
     dependencies:
       '@jest/core': 30.4.2
       '@jest/test-result': 30.4.1
@@ -5324,7 +5324,7 @@ snapshots:
       chalk: 4.1.2
       exit-x: 0.2.2
       import-local: 3.2.0
-      jest-config: 30.4.2(@types/node@24.12.3)
+      jest-config: 30.4.2(@types/node@24.12.4)
       jest-util: 30.4.1
       jest-validate: 30.4.1
       yargs: 17.7.2
@@ -5362,6 +5362,37 @@ snapshots:
       strip-json-comments: 3.1.1
     optionalDependencies:
       '@types/node': 24.12.3
+    transitivePeerDependencies:
+      - babel-plugin-macros
+      - supports-color
+
+  jest-config@30.4.2(@types/node@24.12.4):
+    dependencies:
+      '@babel/core': 7.29.0
+      '@jest/get-type': 30.1.0
+      '@jest/pattern': 30.4.0
+      '@jest/test-sequencer': 30.4.1
+      '@jest/types': 30.4.1
+      babel-jest: 30.4.1(@babel/core@7.29.0)
+      chalk: 4.1.2
+      ci-info: 4.4.0
+      deepmerge: 4.3.1
+      glob: 10.5.0
+      graceful-fs: 4.2.11
+      jest-circus: 30.4.2
+      jest-docblock: 30.4.0
+      jest-environment-node: 30.4.1
+      jest-regex-util: 30.4.0
+      jest-resolve: 30.4.1
+      jest-runner: 30.4.2
+      jest-util: 30.4.1
+      jest-validate: 30.4.1
+      parse-json: 5.2.0
+      pretty-format: 30.4.1
+      slash: 3.0.0
+      strip-json-comments: 3.1.1
+    optionalDependencies:
+      '@types/node': 24.12.4
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
@@ -5438,7 +5469,7 @@ snapshots:
   jest-mock@30.4.1:
     dependencies:
       '@jest/types': 30.4.1
-      '@types/node': 24.12.2
+      '@types/node': 24.12.3
       jest-util: 30.4.1
 
   jest-pnp-resolver@1.2.3(jest-resolve@30.4.1):
@@ -5548,7 +5579,7 @@ snapshots:
   jest-util@30.4.1:
     dependencies:
       '@jest/types': 30.4.1
-      '@types/node': 24.12.2
+      '@types/node': 24.12.3
       chalk: 4.1.2
       ci-info: 4.4.0
       graceful-fs: 4.2.11
@@ -5582,12 +5613,12 @@ snapshots:
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
-  jest@30.4.2(@types/node@24.12.3):
+  jest@30.4.2(@types/node@24.12.4):
     dependencies:
       '@jest/core': 30.4.2
       '@jest/types': 30.4.1
       import-local: 3.2.0
-      jest-cli: 30.4.2(@types/node@24.12.3)
+      jest-cli: 30.4.2(@types/node@24.12.4)
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
@@ -5759,9 +5790,9 @@ snapshots:
 
   my-only-either@1.3.0: {}
 
-  mysql2@3.22.3(@types/node@24.12.3):
+  mysql2@3.22.3(@types/node@24.12.4):
     dependencies:
-      '@types/node': 24.12.3
+      '@types/node': 24.12.4
       aws-ssl-profiles: 1.1.2
       denque: 2.1.0
       generate-function: 2.3.1
@@ -6410,12 +6441,12 @@ snapshots:
       picomatch: 4.0.4
       typescript: 6.0.3
 
-  ts-jest@29.4.9(@babel/core@7.29.0)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@7.29.0))(jest-util@30.4.1)(jest@30.4.2(@types/node@24.12.3))(typescript@6.0.3):
+  ts-jest@29.4.9(@babel/core@7.29.0)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@7.29.0))(jest-util@30.4.1)(jest@30.4.2(@types/node@24.12.4))(typescript@6.0.3):
     dependencies:
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
       handlebars: 4.7.9
-      jest: 30.4.2(@types/node@24.12.3)
+      jest: 30.4.2(@types/node@24.12.4)
       json5: 2.2.3
       lodash.memoize: 4.1.2
       make-error: 1.3.6
@@ -6504,11 +6535,11 @@ snapshots:
       typescript: 6.0.3
       yaml: 2.8.4
 
-  typeorm-naming-strategies@4.1.0(typeorm@0.3.29(mysql2@3.22.3(@types/node@24.12.3))):
+  typeorm-naming-strategies@4.1.0(typeorm@0.3.29(mysql2@3.22.3(@types/node@24.12.4))):
     dependencies:
-      typeorm: 0.3.29(mysql2@3.22.3(@types/node@24.12.3))
+      typeorm: 0.3.29(mysql2@3.22.3(@types/node@24.12.4))
 
-  typeorm@0.3.29(mysql2@3.22.3(@types/node@24.12.3)):
+  typeorm@0.3.29(mysql2@3.22.3(@types/node@24.12.4)):
     dependencies:
       '@sqltools/formatter': 1.2.5
       ansis: 4.2.0
@@ -6526,7 +6557,7 @@ snapshots:
       uuid: 11.1.1
       yargs: 17.7.2
     optionalDependencies:
-      mysql2: 3.22.3(@types/node@24.12.3)
+      mysql2: 3.22.3(@types/node@24.12.4)
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
