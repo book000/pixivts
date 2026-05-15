@@ -47,7 +47,7 @@
     "typeorm-naming-strategies": "4.1.0"
   },
   "devDependencies": {
-    "@book000/eslint-config": "1.14.33",
+    "@book000/eslint-config": "1.14.34",
     "@types/jest": "30.0.0",
     "@types/node": "24.12.4",
     "ctix": "2.8.0",
