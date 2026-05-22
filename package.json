@@ -43,7 +43,7 @@
     "mysql2": "3.22.3",
     "qs": "6.15.2",
     "snake-camel-types": "1.0.1",
-    "typeorm": "0.3.30",
+    "typeorm": "1.0.0",
     "typeorm-naming-strategies": "4.1.0"
   },
   "devDependencies": {
