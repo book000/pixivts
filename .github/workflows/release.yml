@@ -62,6 +62,21 @@ jobs:
       - name: 🏃 Build
         run: pnpm run build
 
+      - name: 🔍 Verify dist contents
+        run: |
+          test -f dist/index.js
+          test -f dist/index.d.ts
+
+      - name: 📦 Verify pack contents
+        run: |
+          mkdir -p /tmp/pack-check
+          pnpm pack --pack-destination /tmp/pack-check
+          TARBALL=$(ls /tmp/pack-check/*.tgz | head -1)
+          echo "Inspecting $TARBALL"
+          tar -tzf "$TARBALL" | tee /tmp/pack-files.txt
+          grep -q '^package/dist/index.js$' /tmp/pack-files.txt
+          grep -q '^package/dist/index.d.ts$' /tmp/pack-files.txt
+
       - name: 🏷 Bump version and push tag
         id: tag-version
         uses: mathieudutour/github-tag-action@v6.2
@@ -76,7 +91,7 @@ jobs:
 
       - name: 📦 Publish
         run: |
-          pnpm publish --access public --no-git-checks
+          pnpm publish --access public --no-git-checks --ignore-scripts
 
       - name: 📃 Create Release
         id: create_release
