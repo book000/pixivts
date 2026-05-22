@@ -23,7 +23,7 @@
   "repository": "git@github.com:book000/pixivts.git",
   "scripts": {
     "build": "run-z clean ctix compile generate-docs",
-    "clean": "rimraf dist output docs tsconfig.build.tsbuildinfo",
+    "clean": "rimraf dist output docs tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
     "compile": "tsc -p tsconfig.build.json",
     "ctix": "ctix single -w --noBackup -o src -s false",
     "generate-docs": "typedoc --gitRevision master src/index.ts",

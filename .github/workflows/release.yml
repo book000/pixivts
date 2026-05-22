@@ -89,6 +89,9 @@ jobs:
         run: |
           pnpm version --no-git-tag-version ${{ steps.tag-version.outputs.new_version }}
 
+      - name: 🔬 Lint
+        run: pnpm run lint
+
       - name: 📦 Publish
         run: |
           pnpm publish --access public --no-git-checks --ignore-scripts
