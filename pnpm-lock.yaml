@@ -37,8 +37,8 @@ importers:
         specifier: 24.12.4
         version: 24.12.4
       ctix:
-        specifier: 2.8.0
-        version: 2.8.0(@types/node@24.12.4)(prettier-plugin-organize-imports@4.3.0(prettier@3.8.3)(typescript@6.0.3))(prettier@3.8.3)(typescript@6.0.3)
+        specifier: 2.8.1
+        version: 2.8.1(@types/node@24.12.4)(prettier-plugin-organize-imports@4.3.0(prettier@3.8.3)(typescript@6.0.3))(prettier@3.8.3)(typescript@6.0.3)
       eslint:
         specifier: 10.4.1
         version: 10.4.1
@@ -1057,8 +1057,8 @@ packages:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
 
-  ctix@2.8.0:
-    resolution: {integrity: sha512-9vjPOSxaJhTCjH/BOuHYCf9K+UE2Ow2eN/S2NeqeEXXwapyiy4ERIipxQ7Hx4UmTKRvjszPoTQP9i9zRqzci2g==}
+  ctix@2.8.1:
+    resolution: {integrity: sha512-Zx0IxPSmBK5JWogn7O6nljwY63oNYW9byjau0guH1t1LkuTnfbyswpfgAewjkZok+4Lzo3D9hzOmS6XV2Mdshw==}
     engines: {node: '>=18'}
     hasBin: true
     peerDependencies:
@@ -2982,11 +2982,6 @@ packages:
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
 
-  yaml@2.8.1:
-    resolution: {integrity: sha512-lcYcMxX2PO9XMGvAJkJ3OsNMw+/7FKes7/hgerGUYWIoWu5j/+YQqcZr5JnPZWzOsEBgMbSbiSTn/dv/69Mkpw==}
-    engines: {node: '>= 14.6'}
-    hasBin: true
-
   yaml@2.9.0:
     resolution: {integrity: sha512-2AvhNX3mb8zd6Zy7INTtSpl1F15HW6Wnqj0srWlkKLcpYl/gMIMJiyuGq2KeI2YFxUPjdlB+3Lc10seMLtL4cA==}
     engines: {node: '>= 14.6'}
@@ -4192,7 +4187,7 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  ctix@2.8.0(@types/node@24.12.4)(prettier-plugin-organize-imports@4.3.0(prettier@3.8.3)(typescript@6.0.3))(prettier@3.8.3)(typescript@6.0.3):
+  ctix@2.8.1(@types/node@24.12.4)(prettier-plugin-organize-imports@4.3.0(prettier@3.8.3)(typescript@6.0.3))(prettier@3.8.3)(typescript@6.0.3):
     dependencies:
       chalk: 4.1.2
       change-case: 4.1.2
@@ -4226,7 +4221,7 @@ snapshots:
       type-check: 0.4.0
       type-fest: 5.0.1
       typescript: 6.0.3
-      yaml: 2.8.1
+      yaml: 2.9.0
       yargs: 17.7.2
     transitivePeerDependencies:
       - '@types/node'
@@ -6541,8 +6536,6 @@ snapshots:
   y18n@5.0.8: {}
 
   yallist@3.1.1: {}
-
-  yaml@2.8.1: {}
 
   yaml@2.9.0: {}
 
