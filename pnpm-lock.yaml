@@ -38,7 +38,7 @@ importers:
         version: 24.13.1
       ctix:
         specifier: 2.8.1
-        version: 2.8.1(@types/node@24.13.1)(prettier-plugin-organize-imports@4.3.0(prettier@3.8.3)(typescript@6.0.3))(prettier@3.8.3)(typescript@6.0.3)
+        version: 2.8.1(@types/node@24.13.1)(prettier-plugin-organize-imports@4.3.0(prettier@3.8.4)(typescript@6.0.3))(prettier@3.8.4)(typescript@6.0.3)
       eslint:
         specifier: 10.4.1
         version: 10.4.1
@@ -58,8 +58,8 @@ importers:
         specifier: 30.4.2
         version: 30.4.2(@types/node@24.13.1)
       prettier:
-        specifier: 3.8.3
-        version: 3.8.3
+        specifier: 3.8.4
+        version: 3.8.4
       rimraf:
         specifier: 6.1.3
         version: 6.1.3
@@ -2367,8 +2367,8 @@ packages:
       vue-tsc:
         optional: true
 
-  prettier@3.8.3:
-    resolution: {integrity: sha512-7igPTM53cGHMW8xWuVTydi2KO233VFiTNyF5hLJqpilHfmn8C8gPf+PS7dUT64YcXFbiMGZxS9pCSxL/Dxm/Jw==}
+  prettier@3.8.4:
+    resolution: {integrity: sha512-N2MylSdi48+5N/6S5j+maeHbUSIzzZ5uOcX5Hm4QpV8Dkb1HFjfAKTKX6yNPJQD9AhcT3ifHNB66tWTTJDi11Q==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -4194,7 +4194,7 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  ctix@2.8.1(@types/node@24.13.1)(prettier-plugin-organize-imports@4.3.0(prettier@3.8.3)(typescript@6.0.3))(prettier@3.8.3)(typescript@6.0.3):
+  ctix@2.8.1(@types/node@24.13.1)(prettier-plugin-organize-imports@4.3.0(prettier@3.8.4)(typescript@6.0.3))(prettier@3.8.4)(typescript@6.0.3):
     dependencies:
       chalk: 4.1.2
       change-case: 4.1.2
@@ -4219,8 +4219,8 @@ snapshots:
       my-only-either: 1.3.0
       ora: 5.4.1
       pathe: 2.0.3
-      prettier: 3.8.3
-      prettier-plugin-organize-imports: 4.3.0(prettier@3.8.3)(typescript@6.0.3)
+      prettier: 3.8.4
+      prettier-plugin-organize-imports: 4.3.0(prettier@3.8.4)(typescript@6.0.3)
       source-map-support: 0.5.21
       ts-morph: 27.0.0
       ts-pattern: 5.9.0
@@ -5882,12 +5882,12 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-organize-imports@4.3.0(prettier@3.8.3)(typescript@6.0.3):
+  prettier-plugin-organize-imports@4.3.0(prettier@3.8.4)(typescript@6.0.3):
     dependencies:
-      prettier: 3.8.3
+      prettier: 3.8.4
       typescript: 6.0.3
 
-  prettier@3.8.3: {}
+  prettier@3.8.4: {}
 
   pretty-format@30.4.1:
     dependencies:
