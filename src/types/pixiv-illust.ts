@@ -12,7 +12,13 @@ import {
 
 /** Single-illust details */
 export interface MetaSinglePage {
-  /** Original image URL */
+  /**
+   * Original image URL
+   *
+   * Always present when {@link PixivIllustItem.meta_single_page} is a {@link MetaSinglePage}
+   * (i.e. for single-page works). For manga (multi-page works), `meta_single_page` is typed as
+   * `Record<string, never>` (empty object) and this field is never accessed.
+   */
   original_image_url: string
 }
 
@@ -199,6 +205,13 @@ export interface PixivIllustItem {
    * @beta
    */
   comment_access_control?: number
+
+  /**
+   * Restriction attributes
+   *
+   * Purpose unknown. Not always present in API responses.
+   */
+  restriction_attributes?: string[]
 }
 
 export class PixivIllustItemCheck extends BaseSimpleCheck<PixivIllustItem> {
@@ -267,6 +280,12 @@ export class PixivIllustItemCheck extends BaseSimpleCheck<PixivIllustItem> {
         typeof data.illust_ai_type === 'number',
       illust_book_style: (data: PixivIllustItem): boolean =>
         typeof data.illust_book_style === 'number',
+      restriction_attributes: (data: PixivIllustItem): boolean =>
+        data.restriction_attributes === undefined ||
+        (Array.isArray(data.restriction_attributes) &&
+          data.restriction_attributes.every(
+            (attr) => typeof attr === 'string'
+          )),
     }
   }
 }
