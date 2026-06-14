@@ -87,6 +87,7 @@ exports[`pixiv illustDetail:103905962[manga] 1`] = `
   "page_count": 8,
   "request": null,
   "restrict": 0,
+  "restriction_attributes": [],
   "sanity_level": 2,
   "seasonal_effect_animation_urls": null,
   "series": null,
@@ -166,6 +167,7 @@ exports[`pixiv illustDetail:107565629[illust] 1`] = `
   "page_count": 1,
   "request": null,
   "restrict": 0,
+  "restriction_attributes": [],
   "sanity_level": 2,
   "seasonal_effect_animation_urls": null,
   "series": null,
@@ -337,6 +339,7 @@ exports[`pixiv illustSeries: illust_series_first_illust 1`] = `
   "page_count": 8,
   "request": null,
   "restrict": 0,
+  "restriction_attributes": [],
   "sanity_level": 2,
   "seasonal_effect_animation_urls": null,
   "series": {

@@ -12,8 +12,13 @@ import {
 
 /** Single-illust details */
 export interface MetaSinglePage {
-  /** Original image URL */
-  original_image_url: string
+  /**
+   * Original image URL
+   *
+   * Not present for manga (multi-page) works, since {@link PixivIllustItem.meta_single_page}
+   * is an empty object for those works.
+   */
+  original_image_url?: string
 }
 
 /** Multi-illust details */
@@ -199,6 +204,13 @@ export interface PixivIllustItem {
    * @beta
    */
   comment_access_control?: number
+
+  /**
+   * Restriction attributes
+   *
+   * Purpose unknown. Defaults to an empty array.
+   */
+  restriction_attributes: string[]
 }
 
 export class PixivIllustItemCheck extends BaseSimpleCheck<PixivIllustItem> {
@@ -240,7 +252,6 @@ export class PixivIllustItemCheck extends BaseSimpleCheck<PixivIllustItem> {
       meta_single_page: (data: PixivIllustItem): boolean =>
         typeof data.meta_single_page === 'object' &&
         (isEmptyObject(data.meta_single_page) ||
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           data.meta_single_page.original_image_url !== undefined),
       meta_pages: (data: PixivIllustItem): boolean =>
         typeof data.meta_pages === 'object' &&
@@ -267,6 +278,9 @@ export class PixivIllustItemCheck extends BaseSimpleCheck<PixivIllustItem> {
         typeof data.illust_ai_type === 'number',
       illust_book_style: (data: PixivIllustItem): boolean =>
         typeof data.illust_book_style === 'number',
+      restriction_attributes: (data: PixivIllustItem): boolean =>
+        Array.isArray(data.restriction_attributes) &&
+        data.restriction_attributes.every((attr) => typeof attr === 'string'),
     }
   }
 }

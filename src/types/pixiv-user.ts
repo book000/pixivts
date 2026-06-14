@@ -139,16 +139,20 @@ export interface PixivUserProfile {
    */
   twitter_account: string
 
-  /** Twitter account URL */
-  twitter_url: string
+  /**
+   * Twitter account URL
+   *
+   * - Null if no Twitter account is linked
+   */
+  twitter_url: string | null
 
   /**
    * Pawoo account URL
    *
    * - Only present if linked with a Pawoo account and "Show link to Pawoo account" is checked.
-   * - Empty string if not linked or not displayed
+   * - Null if not linked or not displayed
    */
-  pawoo_url: string
+  pawoo_url: string | null
 
   /** Whether it is a premium account */
   is_premium: boolean
@@ -210,10 +214,16 @@ export class PixivUserProfileCheck extends BaseSimpleCheck<PixivUserProfile> {
         typeof data.total_novel_series === 'number' &&
         data.total_novel_series >= 0,
       background_image_url: (data) =>
-        typeof data.background_image_url === 'string',
+        typeof data.background_image_url === 'string' ||
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        data.background_image_url === null,
       twitter_account: (data) => typeof data.twitter_account === 'string',
-      twitter_url: (data) => typeof data.twitter_url === 'string',
-      pawoo_url: (data) => typeof data.pawoo_url === 'string',
+      twitter_url: (data) =>
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        typeof data.twitter_url === 'string' || data.twitter_url === null,
+      pawoo_url: (data) =>
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        typeof data.pawoo_url === 'string' || data.pawoo_url === null,
       is_premium: (data) => typeof data.is_premium === 'boolean',
       is_using_custom_profile_image: (data) =>
         typeof data.is_using_custom_profile_image === 'boolean',

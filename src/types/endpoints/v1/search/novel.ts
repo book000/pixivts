@@ -101,6 +101,11 @@ export interface GetV1SearchNovelResponse {
    * @beta
    */
   search_span_limit: number
+
+  /**
+   * Whether AI-generated works are shown in the search results
+   */
+  show_ai: boolean
 }
 
 export class GetV1SearchNovelCheck extends BaseMultipleCheck<
@@ -142,6 +147,7 @@ export class GetV1SearchNovelCheck extends BaseMultipleCheck<
         data.next_url === null ||
         (typeof data.next_url === 'string' && data.next_url.length > 0),
       search_span_limit: (data) => typeof data.search_span_limit === 'number',
+      show_ai: (data) => typeof data.show_ai === 'boolean',
     }
   }
 }

@@ -148,6 +148,15 @@ export interface PixivNovelItem {
    * @see https://github.com/ArkoClub/async-pixiv/blob/fa45c81093a5c6f4eabfcc942915fc479e42174f/src/async_pixiv/model/other.py#L40-L48
    */
   novel_ai_type: number
+
+  /**
+   * Comment visibility control?
+   *
+   * Already defined in {@link PixivIllustItem} for illusts; added here for parity.
+   *
+   * @beta
+   */
+  comment_access_control?: number
 }
 
 export class PixivNovelItemCheck extends BaseSimpleCheck<PixivNovelItem> {
@@ -185,6 +194,9 @@ export class PixivNovelItemCheck extends BaseSimpleCheck<PixivNovelItem> {
       is_mypixiv_only: (data) => typeof data.is_mypixiv_only === 'boolean',
       is_x_restricted: (data) => typeof data.is_x_restricted === 'boolean',
       novel_ai_type: (data) => typeof data.novel_ai_type === 'number',
+      comment_access_control: (data) =>
+        data.comment_access_control === undefined ||
+        typeof data.comment_access_control === 'number',
     }
   }
 }

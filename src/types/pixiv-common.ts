@@ -66,6 +66,14 @@ export interface PixivUser {
 
   /** Whether this user has blocked access */
   is_access_blocking_user?: boolean
+
+  /**
+   * Whether the user accepts work requests
+   *
+   * Returned by following/follower endpoints. Indicates whether the user's
+   * request acceptance setting is enabled.
+   */
+  is_accept_request?: boolean
 }
 
 export class PixivUserCheck extends BaseSimpleCheck<PixivUser> {
@@ -84,6 +92,9 @@ export class PixivUserCheck extends BaseSimpleCheck<PixivUser> {
       is_access_blocking_user: (data) =>
         data.is_access_blocking_user === undefined ||
         typeof data.is_access_blocking_user === 'boolean',
+      is_accept_request: (data) =>
+        data.is_accept_request === undefined ||
+        typeof data.is_accept_request === 'boolean',
     }
   }
 }
