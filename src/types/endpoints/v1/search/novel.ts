@@ -10,58 +10,58 @@ import {
 import { PixivNovelItem, PixivNovelItemCheck } from '../../../pixiv-novel'
 
 /**
- * GET /v1/search/novel のリクエスト
+ * Request for GET /v1/search/novel
  */
 export interface GetV1SearchNovelRequest {
   /**
-   * 検索ワード
+   * Search word
    */
   word: string
 
   /**
-   * 検索対象
+   * Search target
    *
    * @default 'partial_match_for_tags'
    */
   search_target: SearchTarget
 
   /**
-   * ソート順
+   * Sort order
    *
    * @default 'date_desc'
    */
   sort: SearchSort
 
   /**
-   * 開始日時
+   * Start date and time
    *
    * @default undefined
    */
   start_date?: string
 
   /**
-   * 終了日時
+   * End date and time
    *
    * @default undefined
    */
   end_date?: string
 
   /**
-   * OSフィルタ
+   * OS filter
    *
    * @default 'for_ios'
    */
   filter?: OSFilter
 
   /**
-   * オフセット
+   * Offset
    *
    * @default undefined
    */
   offset?: number
 
   /**
-   * プレーンキーワード検索結果をマージするか (?)
+   * Whether to merge plain keyword search results (?)
    *
    * @default true
    * @beta
@@ -69,7 +69,7 @@ export interface GetV1SearchNovelRequest {
   merge_plain_keyword_results: boolean
 
   /**
-   * 翻訳タグ検索結果を含むか
+   * Whether to include translated tag search results
    *
    * @default true
    * @beta
@@ -78,25 +78,25 @@ export interface GetV1SearchNovelRequest {
 }
 
 /**
- * GET /v1/search/novel のレスポンス
+ * Response for GET /v1/search/novel
  */
 export interface GetV1SearchNovelResponse {
   /**
-   * 検索結果の小説群
+   * Search result novels
    */
   novels: PixivNovelItem[]
 
   /**
-   * 次回のリクエストに使用する URL。
+   * URL to use for the next request.
    *
    * @see {Pixiv.parseQueryString}
    */
   next_url: string | null
 
   /**
-   * 不明
+   * Unknown
    *
-   * 「31536000」固定？1年間？
+   * Fixed at "31536000"? One year?
    *
    * @beta
    */

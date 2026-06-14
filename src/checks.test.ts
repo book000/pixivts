@@ -70,14 +70,14 @@ describe('BaseSimpleCheck', () => {
     it('should return appropriate failures for valid data', () => {
       const data = { name: 'Test', age: 20 }
       const failedChecks = simpleCheck.getFailedChecks(data)
-      // throwingCheckは常に失敗するので、それ以外のチェックは通過していることを確認
+      // throwingCheck always fails, so check that the other checks pass
       expect(failedChecks).toEqual(['throwingCheck'])
     })
 
     it('should return all failed check names for invalid data', () => {
       const data = { name: '', age: -5 }
       const failedChecks = simpleCheck.getFailedChecks(data)
-      // throwingCheckに加えて、他の検証も失敗することを確認
+      // Check that other validations fail in addition to throwingCheck
       expect(failedChecks).toContain('nameNotEmpty')
       expect(failedChecks).toContain('hasValidAge')
       expect(failedChecks).toContain('throwingCheck')
@@ -100,14 +100,14 @@ describe('BaseSimpleCheck', () => {
   describe('is', () => {
     it('should return true for valid data', () => {
       const data = { name: 'Test', age: 20 }
-      // throwingCheckはエラーを投げるので常に失敗するが、テストのためこれを除く
+      // throwingCheck always fails because it throws an error, but exclude it for this test
       jest.spyOn(simpleCheck, 'getFailedChecks').mockReturnValue([])
       expect(simpleCheck.is(data)).toBe(true)
     })
 
     it('should return false for invalid data', () => {
-      // 文字列をnumberプロパティに割り当てないように修正
-      const data = { name: 'Test' } // name のみ指定、age は undefined
+      // Fixed to avoid assigning a string to a number property
+      const data = { name: 'Test' } // only name is specified, age is undefined
       expect(simpleCheck.is(data)).toBe(false)
     })
   })
@@ -115,7 +115,7 @@ describe('BaseSimpleCheck', () => {
   describe('throwIfFailed', () => {
     it('should not throw for valid data when mocked', () => {
       const data = { name: 'Test', age: 20 }
-      // throwingCheckはエラーを投げるので常に失敗するが、テストのためこれを除く
+      // throwingCheck always fails because it throws an error, but exclude it for this test
       jest.spyOn(simpleCheck, 'getFailedChecks').mockReturnValue([])
       expect(() => simpleCheck.throwIfFailed(data)).not.toThrow()
       expect(simpleCheck.throwIfFailed(data)).toBe(true)
@@ -123,8 +123,8 @@ describe('BaseSimpleCheck', () => {
 
     it('should throw with correct message for invalid data', () => {
       const data = { name: '', age: -5 }
-      // throwingCheckに加えて、nameNotEmptyとhasValidAgeも失敗するので、
-      // getFailedChecksの結果をモックして特定のエラーのみにする
+      // nameNotEmpty and hasValidAge also fail in addition to throwingCheck,
+      // so mock the getFailedChecks result to contain only the specific errors
       jest
         .spyOn(simpleCheck, 'getFailedChecks')
         .mockReturnValue(['nameNotEmpty', 'hasValidAge'])
@@ -145,7 +145,7 @@ describe('BaseMultipleCheck', () => {
   describe('getFailureRequestChecks', () => {
     it('should return empty array for valid request data', () => {
       const data = { id: 1 }
-      // throwingCheckはエラーを投げるので常に失敗するが、テストのためこれを無視する
+      // throwingCheck always fails because it throws an error, but ignore it for this test
       jest.spyOn(multipleCheck, 'requestChecks').mockImplementation(() => {
         return {
           isObject: (data: TestData): boolean => typeof data === 'object',
@@ -160,8 +160,8 @@ describe('BaseMultipleCheck', () => {
         }
       })
 
-      // requestChecksの結果内のthrowingCheckを上書きしないようにした上で、
-      // getFailureRequestChecksを一部モックして、throwingCheckによる失敗を無視
+      // Without overwriting throwingCheck in the requestChecks result,
+      // partially mock getFailureRequestChecks to ignore the failure caused by throwingCheck
       const originalGetFailureRequestChecks =
         multipleCheck.getFailureRequestChecks.bind(multipleCheck)
       jest
@@ -177,7 +177,7 @@ describe('BaseMultipleCheck', () => {
 
     it('should return failed check names for invalid request data', () => {
       const data = { id: 0 }
-      // throwingCheckはエラーを投げるので常に失敗するが、テストのためこれを無視する
+      // throwingCheck always fails because it throws an error, but ignore it for this test
       jest.spyOn(multipleCheck, 'requestChecks').mockImplementation(() => {
         return {
           isObject: (data: TestData): boolean => typeof data === 'object',
@@ -192,8 +192,8 @@ describe('BaseMultipleCheck', () => {
         }
       })
 
-      // requestChecksの結果内のthrowingCheckを上書きしないようにした上で、
-      // getFailureRequestChecksを一部モックして、throwingCheckによる失敗を無視
+      // Without overwriting throwingCheck in the requestChecks result,
+      // partially mock getFailureRequestChecks to ignore the failure caused by throwingCheck
       const originalGetFailureRequestChecks =
         multipleCheck.getFailureRequestChecks.bind(multipleCheck)
       jest
@@ -224,14 +224,14 @@ describe('BaseMultipleCheck', () => {
   describe('isRequest', () => {
     it('should return true for valid request data', () => {
       const data = { id: 1 }
-      // throwingCheckはエラーを投げるので常に失敗するが、テストのためこれを除く
+      // throwingCheck always fails because it throws an error, but exclude it for this test
       jest.spyOn(multipleCheck, 'getFailureRequestChecks').mockReturnValue([])
       expect(multipleCheck.isRequest(data)).toBe(true)
     })
 
     it('should return false for invalid request data', () => {
-      // 文字列をnumberプロパティに割り当てないように修正
-      const data = {} // id を指定しない
+      // Fixed to avoid assigning a string to a number property
+      const data = {} // id is not specified
       expect(multipleCheck.isRequest(data)).toBe(false)
     })
   })
@@ -239,7 +239,7 @@ describe('BaseMultipleCheck', () => {
   describe('throwIfRequestFailed', () => {
     it('should not throw for valid request data', () => {
       const data = { id: 1 }
-      // throwingCheckはエラーを投げるので常に失敗するが、テストのためこれを除く
+      // throwingCheck always fails because it throws an error, but exclude it for this test
       jest.spyOn(multipleCheck, 'getFailureRequestChecks').mockReturnValue([])
       expect(() => multipleCheck.throwIfRequestFailed(data)).not.toThrow()
       expect(multipleCheck.throwIfRequestFailed(data)).toBe(true)
@@ -247,7 +247,7 @@ describe('BaseMultipleCheck', () => {
 
     it('should throw for invalid request data', () => {
       const data = { id: -1 }
-      // throwingCheckはエラーを投げるので常に失敗するが、テストのためこれを一部無視する
+      // throwingCheck always fails because it throws an error, but partially ignore it for this test
       const spy = jest.spyOn(multipleCheck, 'getFailureRequestChecks')
       spy.mockReturnValue(['idPositive'])
       expect(() => multipleCheck.throwIfRequestFailed(data)).toThrow(
@@ -260,7 +260,7 @@ describe('BaseMultipleCheck', () => {
   describe('getFailedResponseChecks', () => {
     it('should return empty array for valid response data', () => {
       const data = { data: [] }
-      // throwingCheckはエラーを投げるので常に失敗するが、テストのためこれを無視する
+      // throwingCheck always fails because it throws an error, but ignore it for this test
       jest.spyOn(multipleCheck, 'responseChecks').mockImplementation(() => {
         return {
           isObject: (data: TestData): boolean => typeof data === 'object',
@@ -274,8 +274,8 @@ describe('BaseMultipleCheck', () => {
         }
       })
 
-      // responseChecksの結果内のthrowingCheckを上書きしないようにした上で、
-      // getFailedResponseChecksを一部モックして、throwingCheckによる失敗を無視
+      // Without overwriting throwingCheck in the responseChecks result,
+      // partially mock getFailedResponseChecks to ignore the failure caused by throwingCheck
       const originalGetFailedResponseChecks =
         multipleCheck.getFailedResponseChecks.bind(multipleCheck)
       jest
@@ -291,7 +291,7 @@ describe('BaseMultipleCheck', () => {
 
     it('should return failed check names for invalid response data', () => {
       const data = { data: 'not an array' }
-      // throwingCheckはエラーを投げるので常に失敗するが、テストのためこれを無視する
+      // throwingCheck always fails because it throws an error, but ignore it for this test
       jest.spyOn(multipleCheck, 'responseChecks').mockImplementation(() => {
         return {
           isObject: (data: TestData): boolean => typeof data === 'object',
@@ -305,8 +305,8 @@ describe('BaseMultipleCheck', () => {
         }
       })
 
-      // responseChecksの結果内のthrowingCheckを上書きしないようにした上で、
-      // getFailedResponseChecksを一部モックして、throwingCheckによる失敗を無視
+      // Without overwriting throwingCheck in the responseChecks result,
+      // partially mock getFailedResponseChecks to ignore the failure caused by throwingCheck
       const originalGetFailedResponseChecks =
         multipleCheck.getFailedResponseChecks.bind(multipleCheck)
       jest
@@ -337,7 +337,7 @@ describe('BaseMultipleCheck', () => {
   describe('isResponse', () => {
     it('should return true for valid response data', () => {
       const data = { data: [] }
-      // throwingCheckはエラーを投げるので常に失敗するが、テストのためこれを除く
+      // throwingCheck always fails because it throws an error, but exclude it for this test
       jest.spyOn(multipleCheck, 'getFailedResponseChecks').mockReturnValue([])
       expect(multipleCheck.isResponse(data)).toBe(true)
     })
@@ -351,7 +351,7 @@ describe('BaseMultipleCheck', () => {
   describe('throwIfResponseFailed', () => {
     it('should not throw for valid response data', () => {
       const data = { data: [] }
-      // throwingCheckはエラーを投げるので常に失敗するが、テストのためこれを除く
+      // throwingCheck always fails because it throws an error, but exclude it for this test
       jest.spyOn(multipleCheck, 'getFailedResponseChecks').mockReturnValue([])
       expect(() => multipleCheck.throwIfResponseFailed(data)).not.toThrow()
       expect(multipleCheck.throwIfResponseFailed(data)).toBe(true)
@@ -359,7 +359,7 @@ describe('BaseMultipleCheck', () => {
 
     it('should throw for invalid response data', () => {
       const data = { data: 'not an array' }
-      // throwingCheckはエラーを投げるので常に失敗するが、テストのためこれを一部無視する
+      // throwingCheck always fails because it throws an error, but partially ignore it for this test
       const spy = jest.spyOn(multipleCheck, 'getFailedResponseChecks')
       spy.mockReturnValue(['dataIsArray'])
       expect(() => multipleCheck.throwIfResponseFailed(data)).toThrow(

@@ -2,41 +2,41 @@ import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
 import { PixivIllustItem, PixivIllustItemCheck } from '../../../pixiv-illust'
 
 /**
- * GET /v2/illust/related のリクエスト
+ * Request for GET /v2/illust/related
  */
 export interface GetV2IllustRelatedRequest {
   /**
-   * イラストID
+   * Illust ID
    */
   illust_id: number
 
   /**
-   * イラストID シード配列 (?)
+   * Array of seed illust IDs (?)
    */
   seed_illust_ids?: number[]
 
   /**
-   * 閲覧済みイラストID
+   * Viewed illust IDs
    */
   viewed?: number[]
 
   /**
-   * オフセット
+   * Offset
    */
   offset?: number
 }
 
 /**
- * GET /v1/illust/related のレスポンス
+ * Response for GET /v1/illust/related
  */
 export interface GetV2IllustRelatedResponse {
   /**
-   * イラストの詳細情報
+   * Illust details
    */
   illusts: PixivIllustItem[]
 
   /**
-   * 次のURL
+   * Next URL
    */
   next_url: string
 }

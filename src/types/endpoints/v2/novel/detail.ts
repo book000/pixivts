@@ -2,21 +2,21 @@ import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
 import { PixivNovelItem, PixivNovelItemCheck } from '../../../pixiv-novel'
 
 /**
- * GET /v2/novel/detail のリクエスト
+ * Request for GET /v2/novel/detail
  */
 export interface GetV2NovelDetailRequest {
   /**
-   * 小説ID
+   * Novel ID
    */
   novel_id: number
 }
 
 /**
- * GET /v2/novel/detail のレスポンス
+ * Response for GET /v2/novel/detail
  */
 export interface GetV2NovelDetailResponse {
   /**
-   * 小説の詳細情報
+   * Novel details
    */
   novel: PixivNovelItem
 }

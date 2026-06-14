@@ -3,61 +3,61 @@ import { PixivUser } from './pixiv-common'
 import { PixivNovelItem, PixivNovelItemCheck } from './pixiv-novel'
 
 /**
- * pixiv 小説シリーズ詳細情報
+ * pixiv novel series details
  */
 export interface NovelSeriesDetail {
   /**
-   * シリーズ ID
+   * Series ID
    */
   id: number
 
   /**
-   * シリーズタイトル
+   * Series title
    */
   title: string
 
   /**
-   * シリーズの説明文
+   * Series description
    */
   caption: string
 
   /**
-   * オリジナル作品かどうか
+   * Whether it is an original work
    */
   is_original: boolean
 
   /**
-   * 完結済みかどうか
+   * Whether it has concluded
    */
   is_concluded: boolean
 
   /**
-   * コンテンツ数
+   * Number of contents
    */
   content_count: number
 
   /**
-   * 累計文字数
+   * Total character count
    */
   total_character_count: number
 
   /**
-   * ユーザー情報
+   * User information
    */
   user: PixivUser
 
   /**
-   * シリーズ説明文
+   * Series display text
    */
   display_text: string
 
   /**
-   * AI使用フラグ
+   * AI usage flag
    */
   novel_ai_type: number
 
   /**
-   * ウォッチリストに追加済みかどうか
+   * Whether it has been added to the watchlist
    */
   watchlist_added: boolean
 }
@@ -82,31 +82,31 @@ export class NovelSeriesDetailCheck extends BaseSimpleCheck<NovelSeriesDetail> {
 }
 
 /**
- * pixiv 小説シリーズアイテム
+ * pixiv novel series item
  */
 export interface PixivNovelSeriesItem {
   /**
-   * シリーズ詳細
+   * Series details
    */
   novel_series_detail: NovelSeriesDetail
 
   /**
-   * シリーズの1個目の小説データ
+   * First novel data in the series
    */
   novel_series_first_novel: PixivNovelItem
 
   /**
-   * シリーズの最新の小説データ
+   * Latest novel data in the series
    */
   novel_series_latest_novel: PixivNovelItem
 
   /**
-   * シリーズにある小説一覧
+   * List of novels in the series
    */
   novels: PixivNovelItem[]
 
   /**
-   * 次 URL
+   * Next URL
    */
   next_url: string | null
 }

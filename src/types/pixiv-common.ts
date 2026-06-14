@@ -1,26 +1,26 @@
 import { BaseSimpleCheck, CheckFunctions } from '../checks'
 
 /**
- * 作品の画像URL群
+ * Image URLs for a work
  *
- * 単一画像の場合、オリジナル画像へは {@link MetaSinglePage.original_image_url} から取得
+ * For a single image, the original image can be obtained from {@link MetaSinglePage.original_image_url}
  *
- * 画像へのアクセスは適切なリファラを付与する必要がある
+ * Accessing the images requires an appropriate referer to be set
  */
 export interface ImageUrls {
   /** 360x360 */
   square_medium: string
 
-  /** 長辺が最大 540px */
+  /** Long side is at most 540px */
   medium: string
 
-  /** 横幅が最大 600px, 縦幅が最大 1200px */
+  /** Width is at most 600px, height is at most 1200px */
   large: string
 
   /**
-   * オリジナル画像
+   * Original image
    *
-   * {@link MetaPages.image_urls} の場合のみ存在？
+   * Only present for {@link MetaPages.image_urls}?
    */
   original?: string
 }
@@ -38,33 +38,33 @@ export class ImageUrlsCheck extends BaseSimpleCheck<ImageUrls> {
 }
 
 /**
- * プロフィール画像URL群
+ * Profile image URLs
  */
 export interface ProfileImageUrls {
-  /** 中サイズ */
+  /** Medium size */
   medium: string
 }
 
 /**
- * ユーザー情報
+ * User information
  */
 export interface PixivUser {
-  /** ユーザー内部 ID */
+  /** Internal user ID */
   id: number
 
-  /** ユーザー名 */
+  /** Username */
   name: string
 
-  /** pixiv ID (URLに使用) */
+  /** pixiv ID (used in the URL) */
   account: string
 
-  /** プロフィール画像URL群 */
+  /** Profile image URLs */
   profile_image_urls: ProfileImageUrls
 
-  /** フォローしているかどうか */
+  /** Whether the user is followed */
   is_followed?: boolean
 
-  /** アクセスをブロックしているユーザーであるか */
+  /** Whether this user has blocked access */
   is_access_blocking_user?: boolean
 }
 
@@ -89,16 +89,16 @@ export class PixivUserCheck extends BaseSimpleCheck<PixivUser> {
 }
 
 /**
- * タグ情報
+ * Tag information
  */
 export interface Tag {
-  /** タグ名 */
+  /** Tag name */
   name: string
 
-  /** 翻訳済みタグ名 */
+  /** Translated tag name */
   translated_name: string | null
 
-  /** 投稿者によって追加されたタグかどうか */
+  /** Whether the tag was added by the uploader */
   added_by_uploaded_user?: boolean
 }
 
@@ -118,13 +118,13 @@ export class TagCheck extends BaseSimpleCheck<Tag> {
 }
 
 /**
- * シリーズ情報
+ * Series information
  */
 export interface Series {
-  /** シリーズ ID */
+  /** Series ID */
   id: number
 
-  /** シリーズ名 */
+  /** Series title */
   title: string
 }
 
@@ -139,12 +139,12 @@ export class SeriesCheck extends BaseSimpleCheck<Series> {
 
 export interface PrivacyPolicy {
   /**
-   * バージョン
+   * Version
    */
   version?: string
 
   /**
-   * メッセージ
+   * Message
    */
   message?: string
 

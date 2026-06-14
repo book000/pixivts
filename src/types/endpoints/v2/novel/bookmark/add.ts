@@ -1,29 +1,29 @@
 /**
- * POST /v2/novel/bookmark/add のリクエスト
+ * Request for POST /v2/novel/bookmark/add
  */
 export interface PostV2NovelBookmarkAddRequest {
   /**
-   * 小説ID
+   * Novel ID
    */
   novel_id: string
 
   /**
-   * 公開設定
+   * Visibility setting
    *
-   * public: 公開
-   * private: 非公開
+   * public: Public
+   * private: Private
    *
    * @default BookmarkRestrict.Public
    */
   restrict: string
 
   /**
-   * ブックマークタグ群
+   * Bookmark tags
    */
   tags?: string[]
 }
 
 /**
- * POST /v2/novel/bookmark/add のレスポンス
+ * Response for POST /v2/novel/bookmark/add
  */
 export type PostV2NovelBookmarkAddResponse = Record<string, never>

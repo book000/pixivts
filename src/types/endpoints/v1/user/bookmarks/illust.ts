@@ -8,48 +8,48 @@ import {
 import { PixivIllustItem, PixivIllustItemCheck } from '../../../../pixiv-illust'
 
 /**
- * GET /v1/user/bookmarks/illust のリクエスト
+ * Request for GET /v1/user/bookmarks/illust
  */
 export interface GetV1UserBookmarksIllustRequest {
   /**
-   * ユーザーID
+   * User ID
    */
   user_id: number
 
   /**
-   * ブックマーク公開範囲
+   * Bookmark visibility
    */
   restrict: BookmarkRestrict
 
   /**
-   * ブックマークタグ
+   * Bookmark tag
    */
   tag?: string
 
   /**
-   * ブックマークIDの最大値（ページネーション？）
+   * Maximum bookmark ID (pagination?)
    *
    * @beta
    */
   max_bookmark_id?: number
 
   /**
-   * OSフィルタ
+   * OS filter
    */
   filter?: OSFilter
 }
 
 /**
- * GET /v1/user/bookmarks/illust のレスポンス
+ * Response for GET /v1/user/bookmarks/illust
  */
 export interface GetV1UserBookmarksIllustResponse {
   /**
-   * ブックマークしたイラスト群
+   * Bookmarked illusts
    */
   illusts: PixivIllustItem[]
 
   /**
-   * 次 URL
+   * Next URL
    */
   next_url: string | null
 }

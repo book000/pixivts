@@ -1,31 +1,31 @@
 import { BookmarkRestrict } from '../../../../../options'
 
 /**
- * POST /v2/illust/bookmark/add のリクエスト
+ * Request for POST /v2/illust/bookmark/add
  */
 export interface PostV2IllustBookmarkAddRequest {
   /**
-   * イラストID
+   * Illust ID
    */
   illust_id: number
 
   /**
-   * 公開設定
+   * Visibility setting
    *
-   * public: 公開
-   * private: 非公開
+   * public: Public
+   * private: Private
    *
    * @default BookmarkRestrict.Public
    */
   restrict: BookmarkRestrict
 
   /**
-   * ブックマークタグ群
+   * Bookmark tags
    */
   tags?: string[]
 }
 
 /**
- * POST /v2/illust/bookmark/add のレスポンス
+ * Response for POST /v2/illust/bookmark/add
  */
 export type PostV2IllustBookmarkAddResponse = Record<string, never>

@@ -24,16 +24,16 @@ import { GetV1NovelRankingRequest } from './types/endpoints/v1/novel/ranking'
 import { GetWebViewV2NovelRequest } from './types/endpoints/webview/v2/novel'
 
 /**
- * 検索対象
+ * Search target
  */
 export enum SearchTarget {
-  /** タグの部分一致 */
+  /** Partial match for tags */
   PARTIAL_MATCH_FOR_TAGS = 'partial_match_for_tags',
-  /** タグの完全一致 */
+  /** Exact match for tags */
   EXACT_MATCH_FOR_TAGS = 'exact_match_for_tags',
-  /** タイトル、またはキャプション（アプリ内では本文） */
+  /** Title or caption (referred to as "text" in the app) */
   TITLE_AND_CAPTION = 'title_and_caption',
-  /** キーワード */
+  /** Keyword */
   KEYWORD = 'keyword',
 }
 
@@ -47,14 +47,14 @@ export class SearchTargetCheck extends BaseSimpleCheck<SearchTarget> {
 }
 
 /**
- * ソート
+ * Sort order
  */
 export enum SearchSort {
-  /** 新しい順 */
+  /** Newest first */
   DATE_DESC = 'date_desc',
-  /** 古い順 */
+  /** Oldest first */
   DATE_ASC = 'date_asc',
-  /** 人気順 */
+  /** Most popular first */
   POPULAR_DESC = 'popular_desc',
 }
 
@@ -68,14 +68,14 @@ export class SearchSortCheck extends BaseSimpleCheck<SearchSort> {
 }
 
 /**
- * 対象期間
+ * Target period
  */
 export enum SearchIllustDuration {
-  /** 1日以内 */
+  /** Within the last day */
   WITHIN_LAST_DAY = 'within_last_day',
-  /** 1週間以内 */
+  /** Within the last week */
   WITHIN_LAST_WEEK = 'within_last_week',
-  /** 1ヶ月以内 */
+  /** Within the last month */
   WITHIN_LAST_MONTH = 'within_last_month',
 }
 
@@ -90,7 +90,7 @@ export class SearchIllustDurationCheck extends BaseSimpleCheck<SearchIllustDurat
 }
 
 /**
- * OSフィルタ
+ * OS filter
  */
 export enum OSFilter {
   /** iOS */
@@ -100,7 +100,7 @@ export enum OSFilter {
 }
 
 /**
- * OSフィルタのチェック
+ * Check for OS filter
  */
 export class OSFilterCheck extends BaseSimpleCheck<OSFilter> {
   checks(): CheckFunctions<OSFilter> {
@@ -112,17 +112,17 @@ export class OSFilterCheck extends BaseSimpleCheck<OSFilter> {
 }
 
 /**
- * ブックマーク公開範囲
+ * Bookmark visibility
  */
 export enum BookmarkRestrict {
-  /** 公開 */
+  /** Public */
   PUBLIC = 'public',
-  /** 非公開 */
+  /** Private */
   PRIVATE = 'private',
 }
 
 /**
- * ブックマーク公開範囲のチェック
+ * Check for bookmark visibility
  */
 export class BookmarkRestrictCheck extends BaseSimpleCheck<BookmarkRestrict> {
   checks(): CheckFunctions<BookmarkRestrict> {
@@ -135,39 +135,39 @@ export class BookmarkRestrictCheck extends BaseSimpleCheck<BookmarkRestrict> {
 }
 
 /**
- * ランキングの種類
+ * Ranking type
  */
 export enum RankingMode {
-  /** デイリー */
+  /** Daily */
   DAY = 'day',
-  /** 男性向け */
+  /** For men */
   DAY_MALE = 'day_male',
-  /** 女性向け */
+  /** For women */
   DAY_FEMALE = 'day_female',
-  /** オリジナル */
+  /** Original */
   WEEK_ORIGINAL = 'week_original',
-  /** ルーキー */
+  /** Rookie */
   WEEK_ROOKIE = 'week_rookie',
-  /** ウィークリー */
+  /** Weekly */
   WEEK = 'week',
-  /** マンスリー */
+  /** Monthly */
   MONTH = 'month',
-  /** AI生成 */
+  /** AI-generated */
   DAY_AI = 'day_ai',
-  /** R18デイリー */
+  /** R-18 daily */
   DAY_R18 = 'day_r18',
-  /** R18ウィークリー */
+  /** R-18 weekly */
   WEEK_R18 = 'week_r18',
-  /** R18男性向け */
+  /** R-18 for men */
   DAY_MALE_R18 = 'day_male_r18',
-  /** R18女性向け */
+  /** R-18 for women */
   DAY_FEMALE_R18 = 'day_female_r18',
-  /** R-18 AI生成 */
+  /** R-18 AI-generated */
   DAY_R18_AI = 'day_r18_ai',
 }
 
 /**
- * ランキングの種類のチェック
+ * Check for ranking type
  */
 export class RankingModeCheck extends BaseSimpleCheck<RankingMode> {
   checks(): CheckFunctions<RankingMode> {
@@ -179,7 +179,7 @@ export class RankingModeCheck extends BaseSimpleCheck<RankingMode> {
 }
 
 /**
- * オブジェクトの一部を必須にし、それ以外はオプショナルにする
+ * Makes some properties of an object required while making the rest optional
  *
  * @see https://mongolyy.hatenablog.com/entry/2022/03/10/001139
  * @see https://qiita.com/yuu_1st/items/71c4fc9cc95a72fa4df9
@@ -188,7 +188,7 @@ type SomeRequired<T, K extends keyof T> = Partial<Omit<T, K>> &
   Required<Pick<T, K>>
 
 /**
- * オブジェクトの特定プロパティを上書きする
+ * Overwrites specific properties of an object
  *
  * @see https://qiita.com/ibaragi/items/2a6412aeaca5703694b1
  */
@@ -196,7 +196,7 @@ type Overwrite<T, U extends { [Key in keyof T]?: unknown }> = Omit<T, keyof U> &
   U
 
 /**
- * イラスト検索オプション
+ * Illust search options
  */
 export type SearchIllustOptions = SomeRequired<
   SnakeToCamel<GetV1SearchIllustRequest>,
@@ -204,31 +204,31 @@ export type SearchIllustOptions = SomeRequired<
 >
 
 /**
- * イラストランキング取得オプション
+ * Options for getting illust ranking
  */
 export type IllustRankingOptions = SnakeToCamel<
   Partial<GetV1IllustRankingRequest>
 >
 
 /**
- * イラスト詳細取得オプション
+ * Options for getting illust details
  */
 export type IllustDetailOptions = SnakeToCamel<GetV1IllustDetailRequest>
 
 /**
- * イラストの関連イラスト取得オプション
+ * Options for getting related illusts
  */
 export type IllustRelatedOptions = SnakeToCamel<GetV2IllustRelatedRequest>
 
 /**
- * おすすめイラスト取得オプション
+ * Options for getting recommended illusts
  */
 export type RecommendedIllustOptions = SnakeToCamel<
   Partial<GetV1IllustRecommendedRequest>
 >
 
 /**
- * イラストシリーズ取得オプション
+ * Options for getting illust series
  */
 export type IllustSeriesOptions = SomeRequired<
   SnakeToCamel<GetV1IllustSeriesRequest>,
@@ -236,7 +236,7 @@ export type IllustSeriesOptions = SomeRequired<
 >
 
 /**
- * イラストブックマーク追加オプション
+ * Options for adding an illust bookmark
  */
 export type IllustBookmarkAddOptions = SomeRequired<
   SnakeToCamel<PostV2IllustBookmarkAddRequest>,
@@ -244,40 +244,40 @@ export type IllustBookmarkAddOptions = SomeRequired<
 >
 
 /**
- * イラストブックマーク削除オプション
+ * Options for removing an illust bookmark
  */
 export type IllustBookmarkDeleteOptions =
   SnakeToCamel<PostV1IllustBookmarkDeleteRequest>
 
 /**
- * おすすめマンガ取得オプション
+ * Options for getting recommended manga
  */
 export type MangaRecommendedOptions = SnakeToCamel<
   Partial<GetV1MangaRecommendedRequest>
 >
 
 /**
- * うごイラ詳細取得オプション
+ * Options for getting ugoira details
  */
 export type UgoiraDetailOptions = SnakeToCamel<GetV1IllustUgoiraMetadataRequest>
 
 /**
- * 小説詳細取得オプション
+ * Options for getting novel details
  */
 export type NovelDetailOptions = SnakeToCamel<GetV2NovelDetailRequest>
 
 /**
- * 小説本文取得オプション
+ * Options for getting novel text
  */
 export type NovelTextOptions = SnakeToCamel<GetWebViewV2NovelRequest>
 
 /**
- * 小説の関連小説取得オプション
+ * Options for getting related novels
  */
 export type NovelRelatedOptions = SnakeToCamel<GetV1NovelRelatedRequest>
 
 /**
- * 小説検索オプション
+ * Novel search options
  */
 export type SearchNovelOptions = SomeRequired<
   SnakeToCamel<GetV1SearchNovelRequest>,
@@ -285,20 +285,20 @@ export type SearchNovelOptions = SomeRequired<
 >
 
 /**
- * 小説ランキング取得オプション
+ * Options for getting novel ranking
  */
 export type NovelRankingOptions = SnakeToCamel<
   Partial<GetV1NovelRankingRequest>
 >
 
 /**
- * おすすめ小説取得オプション
+ * Options for getting recommended novels
  */
 export type RecommendedNovelOptions = Overwrite<
   SnakeToCamel<Partial<GetV1NovelRecommendedRequest>>,
   {
     /**
-     * すでにおすすめした小説ID群 (?)
+     * IDs of novels already recommended (?)
      *
      * @default undefined
      * @beta
@@ -308,7 +308,7 @@ export type RecommendedNovelOptions = Overwrite<
 >
 
 /**
- * 小説シリーズ詳細取得オプション
+ * Options for getting novel series details
  */
 export type NovelSeriesOptions = SomeRequired<
   SnakeToCamel<GetV2NovelSeriesRequest>,
@@ -316,7 +316,7 @@ export type NovelSeriesOptions = SomeRequired<
 >
 
 /**
- * 小説ブックマーク追加オプション
+ * Options for adding a novel bookmark
  */
 export type NovelBookmarkAddOptions = SomeRequired<
   SnakeToCamel<PostV2NovelBookmarkAddRequest>,
@@ -324,18 +324,18 @@ export type NovelBookmarkAddOptions = SomeRequired<
 >
 
 /**
- * 小説ブックマーク削除オプション
+ * Options for removing a novel bookmark
  */
 export type NovelBookmarkDeleteOptions =
   SnakeToCamel<PostV1NovelBookmarkDeleteRequest>
 
 /**
- * ユーザ詳細取得オプション
+ * Options for getting user details
  */
 export type UserDetailOptions = SnakeToCamel<GetV1UserDetailRequest>
 
 /**
- * ユーザイラストブックマーク取得オプション
+ * Options for getting a user's illust bookmarks
  */
 export type UserBookmarksIllustOptions = SomeRequired<
   SnakeToCamel<GetV1UserBookmarksIllustRequest>,
@@ -343,7 +343,7 @@ export type UserBookmarksIllustOptions = SomeRequired<
 >
 
 /**
- * ユーザ小説ブックマーク取得オプション
+ * Options for getting a user's novel bookmarks
  */
 export type UserBookmarksNovelOptions = SomeRequired<
   SnakeToCamel<GetV1UserBookmarksNovelRequest>,

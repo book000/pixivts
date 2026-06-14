@@ -18,31 +18,31 @@ export interface AddResponseOptions {
 }
 
 /**
- * レスポンスを保存するデータベースのオプション
+ * Options for the database that stores responses
  */
 export interface ResponseDatabaseOptions {
   /**
-   * ホスト名 (MySQL のみ)
+   * Hostname (MySQL only)
    */
   hostname?: string
 
   /**
-   * ポート (MySQL のみ)
+   * Port (MySQL only)
    */
   port?: string
 
   /**
-   * ユーザー名 (MySQL のみ)
+   * Username (MySQL only)
    */
   username?: string
 
   /**
-   * パスワード (MySQL のみ)
+   * Password (MySQL only)
    */
   password?: string
 
   /**
-   * データベース名 (MySQL のみ)
+   * Database name (MySQL only)
    */
   database?: string
 }
@@ -60,7 +60,7 @@ interface GetResponseRangeOptions {
 }
 
 /**
- * レスポンスを保存するデータベース
+ * Database that stores responses
  */
 export class ResponseDatabase {
   private dataSource: DataSource
@@ -74,8 +74,8 @@ export class ResponseDatabase {
       DB_DATABASE: options.database ?? process.env.RESPONSE_DB_DATABASE,
     }
 
-    // DB_PORTがintパースできない場合はエラー
-    // DB_PORTがundefinedの場合はデフォルトポートを使用する
+    // An error occurs if DB_PORT cannot be parsed as an int
+    // If DB_PORT is undefined, the default port is used
     const port = this.parsePort(configuration.DB_PORT)
 
     this.dataSource = new DataSource({
@@ -98,9 +98,9 @@ export class ResponseDatabase {
   }
 
   /**
-   * データソースを初期化する
+   * Initializes the data source
    *
-   * @returns 初期化に成功したかどうか
+   * @returns Whether the initialization succeeded
    */
   public async init(): Promise<boolean> {
     if (this.dataSource.isInitialized) {
@@ -120,7 +120,7 @@ export class ResponseDatabase {
   }
 
   /**
-   * データソースをマイグレーションする
+   * Runs migrations on the data source
    */
   public async migrate(): Promise<void> {
     if (!this.dataSource.isInitialized) {
@@ -133,7 +133,7 @@ export class ResponseDatabase {
   }
 
   /**
-   * データソーススキーマを同期する
+   * Synchronizes the data source schema
    */
   public async sync(): Promise<void> {
     if (!this.dataSource.isInitialized) {
@@ -143,10 +143,10 @@ export class ResponseDatabase {
   }
 
   /**
-   * レスポンスを追加する
+   * Adds a response
    *
-   * @param options レスポンスの追加オプション
-   * @returns 追加されたレスポンス
+   * @param options Options for adding a response
+   * @returns The added response
    */
   public async addResponse(
     options: AddResponseOptions
@@ -173,12 +173,12 @@ export class ResponseDatabase {
   }
 
   /**
-   * レスポンスを取得する。但し直近90日間のレスポンスのみ取得可能
+   * Gets responses. Only responses from the last 90 days can be retrieved
    *
-   * @param endpoint エンドポイントの情報。指定しない場合はすべてのレスポンスを取得する
-   * @param rangeOptions 取得するレスポンスの範囲
+   * @param endpoint Endpoint information. If not specified, all responses are retrieved
+   * @param rangeOptions Range of responses to retrieve
    *
-   * @returns レスポンスの配列
+   * @returns Array of responses
    */
   public async getResponses(
     endpoint?: ResponseEndPoint | ResponseEndPoint[],
@@ -191,8 +191,8 @@ export class ResponseDatabase {
     const page = options.page
     const limit = options.limit
 
-    // ResponseEndPointWithCountで来る場合があるので、ResponseEndPointに変換する
-    // 配列でない場合は配列に変換する
+    // It may come in as ResponseEndPointWithCount, so convert it to ResponseEndPoint
+    // If it is not an array, convert it to an array
     const endpoints = endpoint
       ? Array.isArray(endpoint)
         ? endpoint.map((v) => ({
@@ -205,14 +205,14 @@ export class ResponseDatabase {
               method: endpoint.method,
               endpoint: endpoint.endpoint,
               statusCode: endpoint.statusCode,
-              // 90日前以降のレスポンスのみ取得する
+              // Only retrieve responses from 90 days ago or later
               createdAt: MoreThanOrEqual(
                 new Date(Date.now() - 1000 * 60 * 60 * 24 * 90)
               ),
             },
           ]
       : {
-          // 90日前以降のレスポンスのみ取得する
+          // Only retrieve responses from 90 days ago or later
           createdAt: MoreThanOrEqual(
             new Date(Date.now() - 1000 * 60 * 60 * 24 * 90)
           ),
@@ -236,10 +236,10 @@ export class ResponseDatabase {
   }
 
   /**
-   * レスポンスの数を取得する。但し直近90日間のレスポンスのみ取得可能
+   * Gets the number of responses. Only responses from the last 90 days can be retrieved
    *
-   * @param endpoint エンドポイントの情報。指定しない場合はすべてのレスポンスを取得する
-   * @returns レスポンスの数
+   * @param endpoint Endpoint information. If not specified, all responses are retrieved
+   * @returns The number of responses
    */
   public async getResponseCount(
     endpoint?: ResponseEndPoint | ResponseEndPoint[]
@@ -268,7 +268,7 @@ export class ResponseDatabase {
             },
           ]
       : {
-          // 90日前以降のレスポンスのみ取得する
+          // Only retrieve responses from 90 days ago or later
           createdAt: MoreThanOrEqual(
             new Date(Date.now() - 1000 * 60 * 60 * 24 * 90)
           ),
@@ -277,13 +277,13 @@ export class ResponseDatabase {
   }
 
   /**
-   * エンドポイントを取得する。但し直近90日間のレスポンスのみ取得可能
+   * Gets endpoints. Only responses from the last 90 days can be retrieved
    */
   public async getEndpoints(): Promise<ResponseEndPointWithCount[]> {
     if (!this.dataSource.isInitialized) {
       throw new Error('Responses database is not initialized')
     }
-    // method, endpointの組み合わせを取得する
+    // Get the combination of method and endpoint
     return DBResponse.createQueryBuilder()
       .where({
         responseType: 'JSON',
@@ -311,21 +311,21 @@ export class ResponseDatabase {
   }
 
   /**
-   * データソースを取得する
+   * Gets the data source
    *
-   * @returns データソース
+   * @returns The data source
    */
   public getDataSource(): DataSource {
     return this.dataSource
   }
 
   /**
-   * 環境変数で指定されたデータベースのポートをパースする。
-   * 数値にパースできない場合と1以上でない場合はエラーを投げる。
-   * undefinedの場合は、各データベースのデフォルトポートを使用する
+   * Parses the database port specified by the environment variable.
+   * Throws an error if it cannot be parsed as a number or is not 1 or greater.
+   * If it is undefined, the default port for each database is used
    *
-   * @param port データベースのポート
-   * @returns パースされたポート
+   * @param port Database port
+   * @returns The parsed port
    */
   private parsePort(port: string | undefined): number {
     if (port === undefined) {

@@ -247,12 +247,12 @@ export default class Pixiv {
   readonly http: PixivHttpClient
 
   /**
-   * コンストラクタ。外部からインスタンス化できないので、of メソッドを使うこと。
+   * Constructor. Cannot be instantiated externally; use the `of` method instead.
    *
-   * @param userId ユーザー ID
-   * @param accessToken アクセストークン
-   * @param refreshToken リフレッシュトークン
-   * @param pixivTsOptions Pixivts オプション
+   * @param userId User ID
+   * @param accessToken Access token
+   * @param refreshToken Refresh token
+   * @param pixivTsOptions Pixivts options
    */
   private constructor(
     userId: string,
@@ -276,10 +276,10 @@ export default class Pixiv {
   }
 
   /**
-   * リフレッシュトークンからインスタンスを生成する。
+   * Creates an instance from a refresh token.
    *
-   * @param refreshToken リフレッシュトークン
-   * @returns Pixiv インスタンス
+   * @param refreshToken Refresh token
+   * @returns Pixiv instance
    */
   public static async of(
     refreshToken: string,
@@ -287,7 +287,7 @@ export default class Pixiv {
   ) {
     // @see https://github.com/upbit/pixivpy/blob/master/pixivpy3/api.py#L120
 
-    // UTCで YYYY-MM-DDTHH:mm:ss+00:00 の形式で現在時刻を取得
+    // Get the current time in UTC, formatted as YYYY-MM-DDTHH:mm:ss+00:00
     const localTime = new Date().toISOString().replace(/Z$/, '+00:00')
 
     const headers = {
@@ -352,14 +352,14 @@ export default class Pixiv {
   }
 
   /**
-   * 画像取得用の `Response` を返す。
+   * Returns a `Response` for fetching an image.
    *
-   * 戻り値はストリームそのものではなく `Response` オブジェクトであり、
-   * ストリームとして読み取る場合は `response.body` を参照する。
-   * 必要に応じて `arrayBuffer()` などの `Response` の API も利用できる。
+   * The return value is a `Response` object, not the stream itself;
+   * to read it as a stream, refer to `response.body`.
+   * Other `Response` APIs such as `arrayBuffer()` can also be used as needed.
    *
-   * @param url 画像 URL
-   * @returns 画像取得結果の `Response`
+   * @param url Image URL
+   * @returns The `Response` from fetching the image
    */
   public static async getImageStream(url: string): Promise<Response> {
     return fetch(url, {
@@ -371,13 +371,13 @@ export default class Pixiv {
     })
   }
 
-  // ---------- イラスト ---------- //
+  // ---------- Illust ---------- //
 
   /**
-   * イラストの詳細情報を取得する。
+   * Gets the details of an illust.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async illustDetail(options: IllustDetailOptions) {
     type RequestType = GetV1IllustDetailRequest
@@ -394,10 +394,10 @@ export default class Pixiv {
   }
 
   /**
-   * イラストの関連イラストを取得する。
+   * Gets illusts related to an illust.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async illustRelated(options: IllustRelatedOptions) {
     type RequestType = GetV2IllustRelatedRequest
@@ -418,10 +418,10 @@ export default class Pixiv {
   }
 
   /**
-   * イラストを検索する。
+   * Searches for illusts.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async searchIllust(options: SearchIllustOptions) {
     this.checkRequiredOptions(options, ['word'])
@@ -449,10 +449,10 @@ export default class Pixiv {
   }
 
   /**
-   * イラストランキングを取得する。
+   * Gets the illust ranking.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async illustRanking(options: IllustRankingOptions = {}) {
     type RequestType = GetV1IllustRankingRequest
@@ -472,10 +472,10 @@ export default class Pixiv {
   }
 
   /**
-   * おすすめイラストを取得する。
+   * Gets recommended illusts.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async illustRecommended(options: RecommendedIllustOptions = {}) {
     type RequestType = GetV1IllustRecommendedRequest
@@ -499,10 +499,10 @@ export default class Pixiv {
   }
 
   /**
-   * イラストシリーズの詳細情報を取得する。
+   * Gets the details of an illust series.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async illustSeries(options: IllustSeriesOptions) {
     type RequestType = GetV1IllustSeriesRequest
@@ -522,10 +522,10 @@ export default class Pixiv {
   }
 
   /**
-   * イラストをブックマークする。
+   * Bookmarks an illust.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async illustBookmarkAdd(options: IllustBookmarkAddOptions) {
     type RequestType = PostV2IllustBookmarkAddRequest
@@ -545,10 +545,10 @@ export default class Pixiv {
   }
 
   /**
-   * イラストのブックマークを削除する。
+   * Removes an illust bookmark.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async illustBookmarkDelete(options: IllustBookmarkDeleteOptions) {
     type RequestType = PostV1IllustBookmarkDeleteRequest
@@ -565,7 +565,7 @@ export default class Pixiv {
     })
   }
 
-  // ---------- マンガ ---------- //
+  // ---------- Manga ---------- //
 
   public async mangaRecommended(options: MangaRecommendedOptions = {}) {
     type RequestType = GetV1MangaRecommendedRequest
@@ -585,13 +585,13 @@ export default class Pixiv {
     })
   }
 
-  // ---------- うごイラ ---------- //
+  // ---------- Ugoira ---------- //
 
   /**
-   * うごイラの詳細情報を取得する。
+   * Gets the details of an ugoira.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async ugoiraMetadata(options: UgoiraDetailOptions) {
     type RequestType = GetV1IllustUgoiraMetadataRequest
@@ -607,13 +607,13 @@ export default class Pixiv {
     })
   }
 
-  // ---------- 小説 ---------- //
+  // ---------- Novel ---------- //
 
   /**
-   * 小説の詳細情報を取得する。
+   * Gets the details of a novel.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async novelDetail(options: NovelDetailOptions) {
     type RequestType = GetV2NovelDetailRequest
@@ -631,10 +631,10 @@ export default class Pixiv {
   }
 
   /**
-   * 小説の本文を取得する。
+   * Gets the text of a novel.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async novelText(options: NovelTextOptions) {
     type RequestType = GetWebViewV2NovelRequest
@@ -652,10 +652,10 @@ export default class Pixiv {
   }
 
   /**
-   * 小説の関連小説を取得する。
+   * Gets novels related to a novel.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async novelRelated(options: NovelRelatedOptions) {
     type RequestType = GetV1NovelRelatedRequest
@@ -676,10 +676,10 @@ export default class Pixiv {
   }
 
   /**
-   * 小説を検索する。
+   * Searches for novels.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async searchNovel(options: SearchNovelOptions) {
     type RequestType = GetV1SearchNovelRequest
@@ -707,7 +707,7 @@ export default class Pixiv {
   }
 
   /**
-   * 小説ランキングを取得する。
+   * Gets the novel ranking.
    */
   public async novelRanking(options: NovelRankingOptions = {}) {
     type RequestType = GetV1NovelRankingRequest
@@ -726,10 +726,10 @@ export default class Pixiv {
   }
 
   /**
-   * おすすめ小説を取得する。
+   * Gets recommended novels.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async novelRecommended(options: RecommendedNovelOptions = {}) {
     type RequestType = GetV1NovelRecommendedRequest
@@ -754,10 +754,10 @@ export default class Pixiv {
   }
 
   /**
-   * 小説シリーズの詳細情報を取得する。
+   * Gets the details of a novel series.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async novelSeries(options: NovelSeriesOptions) {
     type RequestType = GetV2NovelSeriesRequest
@@ -777,10 +777,10 @@ export default class Pixiv {
   }
 
   /**
-   * 小説をブックマークする。
+   * Bookmarks a novel.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async novelBookmarkAdd(options: NovelBookmarkAddOptions) {
     type RequestType = PostV2NovelBookmarkAddRequest
@@ -800,10 +800,10 @@ export default class Pixiv {
   }
 
   /**
-   * 小説のブックマークを削除する。
+   * Removes a novel bookmark.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async novelBookmarkDelete(options: NovelBookmarkDeleteOptions) {
     type RequestType = PostV1NovelBookmarkDeleteRequest
@@ -820,13 +820,13 @@ export default class Pixiv {
     })
   }
 
-  // ---------- ユーザ ---------- //
+  // ---------- User ---------- //
 
   /**
-   * ユーザの詳細情報を取得する。
+   * Gets the details of a user.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async userDetail(options: UserDetailOptions) {
     type RequestType = GetV1UserDetailRequest
@@ -845,10 +845,10 @@ export default class Pixiv {
   }
 
   /**
-   * ユーザのイラストブックマークを取得する。
+   * Gets a user's illust bookmarks.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async userBookmarksIllust(options: UserBookmarksIllustOptions) {
     type RequestType = GetV1UserBookmarksIllustRequest
@@ -870,10 +870,10 @@ export default class Pixiv {
   }
 
   /**
-   * ユーザの小説ブックマークを取得する。
+   * Gets a user's novel bookmarks.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   public async userBookmarksNovel(options: UserBookmarksNovelOptions) {
     type RequestType = GetV1UserBookmarksNovelRequest
@@ -893,10 +893,10 @@ export default class Pixiv {
     })
   }
 
-  // ---------- その他 ---------- //
+  // ---------- Others ---------- //
 
   /**
-   * 接続を閉じる。
+   * Closes the connection.
    */
   public async close() {
     if (this.responseDatabase) {
@@ -904,13 +904,13 @@ export default class Pixiv {
     }
   }
 
-  // ---------- ユーティリティ ---------- //
+  // ---------- Utilities ---------- //
 
   /**
-   * クエリストリングをパースする。
+   * Parses a query string.
    *
    * @param url URL
-   * @returns パースしたクエリストリングオブジェクト
+   * @returns The parsed query string object
    */
   public static parseQueryString(url: string) {
     let query = url
@@ -922,10 +922,10 @@ export default class Pixiv {
   }
 
   /**
-   * レスポンスがエラーかどうかを判定する。
+   * Determines whether the response is an error.
    *
-   * @param response Axios レスポンス
-   * @returns エラーかどうか
+   * @param response Axios response
+   * @returns Whether it is an error
    */
   public static isError(response: any): response is PixivApiError {
     return (
@@ -941,10 +941,10 @@ export default class Pixiv {
   }
 
   /**
-   * MD5ハッシュを生成する。
+   * Generates an MD5 hash.
    *
-   * @param str 文字列
-   * @returns ハッシュ
+   * @param str String
+   * @returns Hash
    */
   private static hash(string: string) {
     const hash = crypto.createHash('md5')
@@ -952,12 +952,12 @@ export default class Pixiv {
   }
 
   /**
-   * リクエストを送信する。
+   * Sends a request.
    *
-   * ジェネリクスの順番は、T: リクエスト、U: レスポンス。
+   * The order of generics is T: request, U: response.
    *
-   * @param options オプション
-   * @returns レスポンス
+   * @param options Options
+   * @returns Response
    */
   private async request<T, U extends string | object>(
     options: RequestOptions<T>
@@ -1036,11 +1036,11 @@ export default class Pixiv {
   }
 
   /**
-   * 必須のオプションが含まれているかどうかをチェックする。
+   * Checks whether the required options are included.
    *
-   * @param options オプション
-   * @param required 必須のオプションキー
-   * @throws 必須のオプションが含まれていない場合
+   * @param options Options
+   * @param required Required option keys
+   * @throws If a required option is missing
    */
   private checkRequiredOptions(
     options: Record<string, any>,
@@ -1054,10 +1054,10 @@ export default class Pixiv {
   }
 
   /**
-   * キャメルケースのオブジェクトキーをスネークケースなオブジェクトキーに変換する。
+   * Converts camelCase object keys to snake_case object keys.
    *
-   * @param object オブジェクト
-   * @returns 変換後のオブジェクト
+   * @param object Object
+   * @returns The converted object
    */
   private convertCamelToSnake(object: Record<string, any>) {
     const result: Record<string, any> = {}

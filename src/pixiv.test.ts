@@ -26,7 +26,7 @@ describe('pixiv', () => {
   let pixiv: Pixiv
 
   beforeAll(async () => {
-    // .envファイルから環境変数を読み込む。dotenvなどを使用しない
+    // Load environment variables from the .env file. Does not use dotenv, etc.
     if (fs.existsSync('.env')) {
       const env = fs.readFileSync('.env', 'utf8')
       for (const line of env.split('\n')) {
@@ -516,19 +516,19 @@ describe('pixiv', () => {
   }
 
   it('illustBookmarkAdd and illustBookmarkDelete', async () => {
-    // テスト用のイラストID（実際に存在するイラストを使用）
-    const illustId = 107_565_629 // 正しい桁区切り
+    // Illust ID for testing (uses an illust that actually exists)
+    const illustId = 107_565_629 // correct digit grouping
 
-    // テスト前にブックマーク状態を確認
+    // Check the bookmark state before the test
     const initialDetail = await pixiv.illustDetail({
       illustId,
     })
     const wasBookmarked = initialDetail.data.illust.is_bookmarked
 
     try {
-      // ブックマーク状態に応じてテストを実行
+      // Run the test according to the bookmark state
       if (wasBookmarked) {
-        // すでにブックマークされている場合は削除→追加のテスト
+        // If already bookmarked, test removal -> addition
         const bookmarkDeleteResult = await pixiv.illustBookmarkDelete({
           illustId: String(illustId),
         })
@@ -541,7 +541,7 @@ describe('pixiv', () => {
         })
         expect(bookmarkAddResult.status).toBe(200)
       } else {
-        // ブックマークされていない場合は追加→削除のテスト
+        // If not bookmarked, test addition -> removal
         const bookmarkAddResult = await pixiv.illustBookmarkAdd({
           illustId,
           restrict: BookmarkRestrict.PUBLIC,
@@ -560,63 +560,63 @@ describe('pixiv', () => {
   })
 
   it('novelBookmarkAdd and novelBookmarkDelete', async () => {
-    // テスト用の小説ID（実際に存在する小説を使用）
-    const novelId = 13_574_875 // 数値型としてdetail取得用に定義（正しい桁区切り）
-    const novelIdStr = '13574875' // 文字列型としてブックマーク用に定義
+    // Novel ID for testing (uses a novel that actually exists)
+    const novelId = 13_574_875 // defined as a number for getting details (correct digit grouping)
+    const novelIdStr = '13574875' // defined as a string for bookmarking
 
-    // テスト前にブックマーク状態を確認
+    // Check the bookmark state before the test
     const initialDetail = await pixiv.novelDetail({
       novelId,
     })
     const wasBookmarked = initialDetail.data.novel.is_bookmarked
 
     try {
-      // ブックマーク状態に応じてテストを実行
+      // Run the test according to the bookmark state
       if (wasBookmarked) {
-        // すでにブックマークされている場合は削除→追加のテスト
+        // If already bookmarked, test removal -> addition
         const novelBookmarkDeleteResult = await pixiv.novelBookmarkDelete({
-          novelId: novelIdStr, // 文字列型を渡す
+          novelId: novelIdStr, // pass as a string
         })
         expect(novelBookmarkDeleteResult.status).toBe(200)
 
         const novelBookmarkAddResult = await pixiv.novelBookmarkAdd({
-          novelId: novelIdStr, // 文字列型を渡す
+          novelId: novelIdStr, // pass as a string
           restrict: BookmarkRestrict.PUBLIC,
           tags: ['テスト'],
         })
         expect(novelBookmarkAddResult.status).toBe(200)
       } else {
-        // ブックマークされていない場合は追加→削除のテスト
+        // If not bookmarked, test addition -> removal
         const novelBookmarkAddResult = await pixiv.novelBookmarkAdd({
-          novelId: novelIdStr, // 文字列型を渡す
+          novelId: novelIdStr, // pass as a string
           restrict: BookmarkRestrict.PUBLIC,
           tags: ['テスト'],
         })
         expect(novelBookmarkAddResult.status).toBe(200)
 
         const novelBookmarkDeleteResult = await pixiv.novelBookmarkDelete({
-          novelId: novelIdStr, // 文字列型を渡す
+          novelId: novelIdStr, // pass as a string
         })
         expect(novelBookmarkDeleteResult.status).toBe(200)
       }
     } finally {
-      // テスト後に元のブックマーク状態に戻す
+      // Restore the original bookmark state after the test
       if (wasBookmarked) {
-        // 元々ブックマークされていた場合、ブックマークを確実に追加
+        // If it was originally bookmarked, ensure the bookmark is added
         await pixiv.novelBookmarkAdd({
-          novelId: novelIdStr, // 文字列型を渡す
+          novelId: novelIdStr, // pass as a string
           restrict: BookmarkRestrict.PUBLIC,
           tags: [],
         })
       } else {
-        // 元々ブックマークされていなかった場合、ブックマークを確実に削除
+        // If it was not originally bookmarked, ensure the bookmark is removed
         try {
           await pixiv.novelBookmarkDelete({
-            novelId: novelIdStr, // 文字列型を渡す
+            novelId: novelIdStr, // pass as a string
           })
         } catch {
-          // すでに削除済みの場合はエラーを無視
-          // エラーハンドリング用のコメント
+          // Ignore the error if it has already been removed
+          // Comment for error handling
         }
       }
     }
@@ -652,7 +652,7 @@ describe('pixiv', () => {
     })
 
     it('checkRequiredOptions', () => {
-      // thisバインディングを持つアロー関数として定義（バインディング問題を解決）
+      // Defined as an arrow function with `this` binding (resolves binding issues)
       const pixivInstance = pixiv
       const checkRequiredOptions = (
         options: Record<string, unknown>,
@@ -686,7 +686,7 @@ describe('pixiv', () => {
     })
 
     it('convertCamelToSnake', () => {
-      // thisバインディングを持つアロー関数として定義
+      // Defined as an arrow function with `this` binding
       const pixivInstance = pixiv
       const convertCamelToSnake = (
         obj: Record<string, unknown>
@@ -719,7 +719,7 @@ describe('pixiv', () => {
     })
 
     it('isJSON', () => {
-      // thisバインディングを持つアロー関数として定義
+      // Defined as an arrow function with `this` binding
       const pixivInstance = pixiv
       const isJSON = (value: unknown): boolean => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
@@ -737,9 +737,9 @@ describe('pixiv', () => {
 
 describe('Pixiv class coverage tests', () => {
   describe('of method', () => {
-    // 行245のカバレッジ: トークンリフレッシュ失敗のテスト
+    // Coverage for line 245: test for token refresh failure
     it('should throw an error when refresh token fails', async () => {
-      // モック化してエラーを起こす
+      // Mock it to trigger an error
       const fetchSpy = jest
         .spyOn(globalThis, 'fetch')
         .mockResolvedValueOnce(
@@ -758,7 +758,7 @@ describe('Pixiv class coverage tests', () => {
       }
     })
 
-    // 行276のカバレッジ: データベースなしの場合
+    // Coverage for line 276: case without a database
     it('should initialize without response database', async () => {
       const fetchSpy = jest.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         Response.json(
@@ -774,7 +774,7 @@ describe('Pixiv class coverage tests', () => {
       )
 
       try {
-        // データベースオプションなしでインスタンス化
+        // Instantiate without database options
         const instance = await Pixiv.of('test_refresh_token', {
           debugOptions: {
             outputResponse: {
@@ -796,7 +796,7 @@ describe('Pixiv class coverage tests', () => {
     let requestSpy: jest.SpyInstance
 
     beforeAll(async () => {
-      // テスト用のPixivインスタンスを生成
+      // Create a Pixiv instance for testing
       const fetchSpy = jest.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         Response.json(
           {
@@ -818,7 +818,7 @@ describe('Pixiv class coverage tests', () => {
     })
 
     afterAll(async () => {
-      // テスト終了後にインスタンスをクリーンアップ
+      // Clean up the instance after the test ends
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (pixiv) {
         await pixiv.close()
@@ -826,18 +826,18 @@ describe('Pixiv class coverage tests', () => {
     })
 
     beforeEach(() => {
-      // requestメソッドをスパイ
+      // Spy on the request method
       requestSpy = jest.spyOn(pixiv as any, 'request')
     })
 
     afterEach(() => {
-      // スパイをリセット
+      // Reset the spy
       requestSpy.mockRestore()
     })
 
-    // 行898のカバレッジ: 無効なHTTPメソッド
+    // Coverage for line 898: invalid HTTP method
     it('should throw an error with invalid HTTP method', async () => {
-      // 基本的にrequest()は直接呼び出せないのでモックして内部で例外を投げさせる
+      // request() cannot normally be called directly, so mock it to throw an exception internally
       requestSpy.mockImplementationOnce(() => {
         throw new Error('Invalid method')
       })
@@ -847,16 +847,16 @@ describe('Pixiv class coverage tests', () => {
       )
     })
 
-    // 行906のカバレッジ: レスポンスURLフォールバック
+    // Coverage for line 906: response URL fallback
     it('should use fallback URL when responseUrl is undefined', async () => {
-      // saveResponseメソッドをスパイ
+      // Spy on the saveResponse method
       const saveResponseSpy = jest.spyOn(pixiv as any, 'saveResponse')
 
-      // 元のhttp.getをバックアップ
+      // Back up the original http.get
       const originalHttpGet = pixiv.http.get
 
       try {
-        // モック化
+        // Mock it
         pixiv.http.get = jest.fn().mockResolvedValueOnce({
           status: 200,
           data: { test: 'data' },
@@ -866,19 +866,19 @@ describe('Pixiv class coverage tests', () => {
           responseUrl: undefined,
         })
 
-        // レスポンスデータベースが設定されていれば実行
+        // Run only if the response database is configured
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if ((pixiv as any).responseDatabase) {
           await pixiv.illustDetail({ illustId: 123 })
 
-          // saveResponseが呼び出されたことを確認
+          // Confirm that saveResponse was called
           expect(saveResponseSpy).toHaveBeenCalled()
         } else {
-          // レスポンスデータベースがない場合はテストをスキップ
+          // Skip the test if there is no response database
           console.log('Test skipped: responseDatabase is not available')
         }
       } finally {
-        // モックを元に戻す
+        // Restore the mock
         pixiv.http.get = originalHttpGet
         saveResponseSpy.mockRestore()
       }

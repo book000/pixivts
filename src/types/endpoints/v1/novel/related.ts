@@ -5,36 +5,36 @@ import {
 } from '../../../../types/pixiv-novel'
 
 /**
- * GET /v1/novel/related のリクエスト
+ * Request for GET /v1/novel/related
  */
 export interface GetV1NovelRelatedRequest {
   /**
-   * 小説ID
+   * Novel ID
    */
   novel_id: number
 
   /**
-   * イラストID シード配列 (?)
+   * Array of seed illust IDs (?)
    */
   seed_novel_ids?: number[]
 
   /**
-   * 閲覧済みイラストID
+   * Viewed illust IDs
    */
   viewed?: number[]
 }
 
 /**
- * GET /v1/novel/related のレスポンス
+ * Response for GET /v1/novel/related
  */
 export interface GetV1NovelRelatedResponse {
   /**
-   * 小説の詳細情報
+   * Novel details
    */
   novels: PixivNovelItem[]
 
   /**
-   * 次のURL
+   * Next URL
    */
   next_url: string
 }

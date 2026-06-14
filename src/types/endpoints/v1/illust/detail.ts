@@ -2,21 +2,21 @@ import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
 import { PixivIllustItem, PixivIllustItemCheck } from '../../../pixiv-illust'
 
 /**
- * GET /v1/illust/detail のリクエスト
+ * Request for GET /v1/illust/detail
  */
 export interface GetV1IllustDetailRequest {
   /**
-   * イラストID
+   * Illust ID
    */
   illust_id: number
 }
 
 /**
- * GET /v1/illust/detail のレスポンス
+ * Response for GET /v1/illust/detail
  */
 export interface GetV1IllustDetailResponse {
   /**
-   * イラストの詳細情報
+   * Illust details
    */
   illust: PixivIllustItem
 }

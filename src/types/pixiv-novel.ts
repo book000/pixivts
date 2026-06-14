@@ -12,136 +12,137 @@ import {
 } from './pixiv-common'
 
 /**
- * pixiv 小説アイテム
+ * pixiv novel item
  */
 export interface PixivNovelItem {
   /**
-   * 作品 ID
+   * Work ID
    *
-   * イラスト・小説それぞれでIDの振り方が異なり、重複するので注意。
+   * Note that illusts and novels are numbered separately, so the same ID can appear in both.
    */
   id: number
 
   /**
-   * 作品タイトル
+   * Work title
    */
   title: string
 
   /**
-   * キャプション（説明文）
+   * Caption (description)
    */
   caption: string
 
   /**
-   * 公開範囲
+   * Visibility
    *
-   * 詳細不明。0 が公開なのは確定
+   * Details unknown. 0 is confirmed to mean public
    */
   restrict: number
 
   /**
-   * 年齢制限
+   * Age restriction
    *
-   * 0 が全年齢、1 が R-18、2 が R-18G
+   * 0 is all-ages, 1 is R-18, 2 is R-18G
    */
   x_restrict: number
 
   /**
-   * オリジナル作品かどうか
+   * Whether it is an original work
    */
   is_original: boolean
 
   /**
-   * 作品の画像URL群
+   * Image URLs for the work
    *
-   * 小説の場合は表紙の画像が入っている。
+   * For novels, this contains the cover image.
    */
   image_urls: ImageUrls
 
   /**
-   * 投稿日時
+   * Posted date and time
    *
-   * ISO 8601 形式。YYYY-MM-DD'T'HH:mm:ss+09:00
+   * ISO 8601 format. YYYY-MM-DD'T'HH:mm:ss+09:00
    */
   create_date: string
 
   /**
-   * 作品タグ
+   * Work tags
    */
   tags: Tag[]
 
   /**
-   * ページ数
+   * Number of pages
    */
   page_count: number
 
   /**
-   * 文字数
+   * Character count
    */
   text_length: number
 
   /**
-   * 作品投稿者情報
+   * Information about the work's poster
    */
   user: PixivUser
 
   /**
-   * シリーズ情報
+   * Series information
    *
-   * 小説の場合、シリーズに属していない場合空オブジェクトが入っている。
+   * For novels, this contains an empty object if the work does not belong to a series.
    */
   series: Series | Record<string, never>
 
   /**
-   * ブックマークしているかどうか
+   * Whether it is bookmarked
    */
   is_bookmarked: boolean
 
   /**
-   * ブックマーク数
+   * Bookmark count
    */
   total_bookmarks: number
 
   /**
-   * 閲覧数
+   * View count
    */
   total_view: number
 
   /**
-   * 閲覧可能かどうか
+   * Whether it is visible
    */
   visible: boolean
 
   /**
-   * コメント数
+   * Comment count
    */
   total_comments: number
 
   /**
-   * この作品をミュートしているかどうか
+   * Whether this work is muted
    */
   is_muted: boolean
 
   /**
-   * マイピクへの公開限定にしているかどうか
+   * Whether visibility is restricted to "mypixiv" users
    */
   is_mypixiv_only: boolean
 
   /**
-   * 不明 (公開制限をしているかどうか？)
+   * Unknown (whether visibility is restricted?)
    *
    * @beta
    */
   is_x_restricted: boolean
 
   /**
-   * AI使用フラグ
+   * AI usage flag
    *
-   * 0: 未使用
-   * 1: 補助的に使用
-   * 2: 使用
+   * 0: Not used
+   * 1: Used to a supplementary extent
+   * 2: Used
    *
-   * 2022/11/02時点で投稿画面に「補助的に使用」を選択できるUIは存在しないように見えるが、実際に 1 が入っている作品はある。
+   * As of 2022/11/02, the posting screen does not appear to have a UI to select "used to a supplementary extent",
+   * but there are works that actually have 1 set.
    *
    * @see https://www.pixiv.help/hc/ja/articles/11866194231577
    * @see https://github.com/ArkoClub/async-pixiv/blob/fa45c81093a5c6f4eabfcc942915fc479e42174f/src/async_pixiv/model/other.py#L40-L48

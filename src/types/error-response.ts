@@ -1,31 +1,31 @@
 interface Error {
   /**
-   * ユーザ向けのエラーメッセージ
+   * Error message for the user
    */
   user_message: string
 
   /**
-   * エラーメッセージ
+   * Error message
    */
   message: string
 
   /**
-   * エラーの原因
+   * Cause of the error
    */
   reason: string
 
   /**
-   * ユーザ向けのエラーメッセージ詳細
+   * Details of the error message for the user
    */
   user_message_details?: unknown
 }
 
 /**
- * pixiv が返すエラーレスポンス
+ * Error response returned by pixiv
  */
 export interface PixivApiError {
   /**
-   * エラーの詳細
+   * Error details
    */
   error: Error
 }

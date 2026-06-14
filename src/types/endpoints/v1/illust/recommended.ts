@@ -5,18 +5,18 @@ import { PrivacyPolicy, PrivacyPolicyCheck } from '../../../pixiv-common'
 import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
 
 /**
- * GET /v1/illust/recommended のリクエスト
+ * Request for GET /v1/illust/recommended
  */
 export interface GetV1IllustRecommendedRequest {
   /**
-   * OSフィルタ
+   * OS filter
    *
    * @default 'for_ios'
    */
   filter: OSFilter
 
   /**
-   * ランキングイラストを含めるか (?)
+   * Whether to include ranking illusts (?)
    *
    * @default true
    * @beta
@@ -24,7 +24,7 @@ export interface GetV1IllustRecommendedRequest {
   include_ranking_illusts: boolean
 
   /**
-   * 最近のイラストの最小ブックマークID (?)
+   * Minimum bookmark ID for recent illusts (?)
    *
    * @default undefined
    * @beta
@@ -32,7 +32,7 @@ export interface GetV1IllustRecommendedRequest {
   min_bookmark_id_for_recent_illust?: number
 
   /**
-   * おすすめイラストの最大ブックマークID (?)
+   * Maximum bookmark ID for recommended illusts (?)
    *
    * @default undefined
    * @beta
@@ -40,14 +40,14 @@ export interface GetV1IllustRecommendedRequest {
   max_bookmark_id_for_recommend?: number
 
   /**
-   * オフセット
+   * Offset
    *
    * @default undefined
    */
   offset?: number
 
   /**
-   * プライバシーポリシーを含めるか (?)
+   * Whether to include the privacy policy (?)
    *
    * @default true
    * @beta
@@ -55,42 +55,42 @@ export interface GetV1IllustRecommendedRequest {
   include_privacy_policy: boolean
 
   /**
-   * 閲覧済みのイラストID
+   * Viewed illust IDs
    */
-  // 面倒なので対応しない
+  // Not supported because it's cumbersome
   // viewed?: Record<string, string>
 }
 
 /**
- * GET /v1/illust/recommended のレスポンス
+ * Response for GET /v1/illust/recommended
  */
 export interface GetV1IllustRecommendedResponse {
   /**
-   * おすすめのイラスト群
+   * Recommended illusts
    */
   illusts: PixivIllustItem[]
 
   /**
-   * ランキングのイラスト群？
+   * Ranking illusts?
    *
    * @beta
    */
   ranking_illusts: PixivIllustItem[]
 
   /**
-   * コンテストが存在するか？
+   * Whether a contest exists?
    *
    * @beta
    */
   contest_exists: boolean
 
   /**
-   * プライバシーポリシー
+   * Privacy policy
    */
   privacy_policy?: PrivacyPolicy
 
   /**
-   * 次回のリクエストに使用する URL。
+   * URL to use for the next request.
    *
    * @see {Pixiv.parseQueryString}
    */
