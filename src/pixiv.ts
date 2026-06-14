@@ -480,7 +480,7 @@ export default class Pixiv {
 
     type RequestType = GetV1IllustRecommendedNologinRequest
     const parameters: RequestType = {
-      content_type: options.contentType,
+      content_type: options.contentType ?? IllustContentType.ILLUST,
       include_ranking_label: options.includeRankingLabel,
       filter: options.filter ?? OSFilter.FOR_IOS,
       max_bookmark_id_for_recommend: options.maxBookmarkIdForRecommend,
