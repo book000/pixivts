@@ -15,10 +15,11 @@ export interface MetaSinglePage {
   /**
    * Original image URL
    *
-   * Not present for manga (multi-page) works, since {@link PixivIllustItem.meta_single_page}
-   * is an empty object for those works.
+   * Always present when {@link PixivIllustItem.meta_single_page} is a {@link MetaSinglePage}
+   * (i.e. for single-page works). For manga (multi-page works), `meta_single_page` is typed as
+   * `Record<string, never>` (empty object) and this field is never accessed.
    */
-  original_image_url?: string
+  original_image_url: string
 }
 
 /** Multi-illust details */
@@ -252,6 +253,7 @@ export class PixivIllustItemCheck extends BaseSimpleCheck<PixivIllustItem> {
       meta_single_page: (data: PixivIllustItem): boolean =>
         typeof data.meta_single_page === 'object' &&
         (isEmptyObject(data.meta_single_page) ||
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           data.meta_single_page.original_image_url !== undefined),
       meta_pages: (data: PixivIllustItem): boolean =>
         typeof data.meta_pages === 'object' &&

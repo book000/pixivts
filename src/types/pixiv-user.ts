@@ -149,8 +149,8 @@ export interface PixivUserProfile {
   /**
    * Pawoo account URL
    *
-   * - Only present if linked with a Pawoo account and "Show link to Pawoo account" is checked.
-   * - Null if not linked or not displayed
+   * - Null if not linked with a Pawoo account, or if "Show link to Pawoo account" is unchecked
+   * - Non-null only when a Pawoo account is linked and the display setting is enabled
    */
   pawoo_url: string | null
 
