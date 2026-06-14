@@ -1,4 +1,5 @@
 import qs from 'qs'
+import { PixivRateLimitError } from './types/errors'
 
 /**
  * 429エラー時のリトライ設定。
@@ -188,6 +189,6 @@ export class PixivHttpClient {
       }
     }
 
-    throw new Error('Rate limit exceeded after maximum retries')
+    throw new PixivRateLimitError('Rate limit exceeded after maximum retries')
   }
 }
