@@ -921,7 +921,9 @@ describe('Pixiv class coverage tests', () => {
           .spyOn(globalThis, 'fetch')
           .mockResolvedValue(Response.json({}, { status: 429 }))
 
-        await expect(instance.http.get('/test')).rejects.toThrow(PixivRateLimitError)
+        await expect(instance.http.get('/test')).rejects.toThrow(
+          PixivRateLimitError
+        )
         // maxRetries: 1 のため、初回 + リトライ1回 = 計2回呼び出される
         expect(fetchSpy).toHaveBeenCalledTimes(2)
       } finally {
