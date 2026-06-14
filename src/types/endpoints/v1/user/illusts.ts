@@ -1,7 +1,7 @@
 import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
 import { OSFilter, OSFilterCheck } from '../../../../options'
+import { PixivUser, PixivUserCheck } from '../../../pixiv-common'
 import { PixivIllustItem, PixivIllustItemCheck } from '../../../pixiv-illust'
-import { PixivUserItem, PixivUserItemCheck } from '../../../pixiv-user'
 
 /**
  * Content type filter for user illusts
@@ -42,7 +42,7 @@ export interface GetV1UserIllustsResponse {
   /**
    * User details
    */
-  user: PixivUserItem
+  user: PixivUser
 
   /**
    * List of illusts or manga
@@ -74,7 +74,7 @@ export class GetV1UserIllustsCheck extends BaseMultipleCheck<
 
   responseChecks(): CheckFunctions<GetV1UserIllustsResponse> {
     return {
-      user: (data) => new PixivUserItemCheck().throwIfFailed(data.user),
+      user: (data) => new PixivUserCheck().throwIfFailed(data.user),
       illusts: (data) =>
         Array.isArray(data.illusts) &&
         data.illusts.every((illust) =>
