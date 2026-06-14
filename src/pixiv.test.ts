@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { BookmarkRestrict } from './options'
-import Pixiv from './pixiv'
+import Pixiv, { PixivHttpClient } from './pixiv'
 import { GetV1IllustDetailCheck } from './types/endpoints/v1/illust/detail'
 import { GetV1IllustRankingCheck } from './types/endpoints/v1/illust/ranking'
 import { GetV1IllustRecommendedCheck } from './types/endpoints/v1/illust/recommended'
@@ -881,6 +881,168 @@ describe('Pixiv class coverage tests', () => {
         // モックを元に戻す
         pixiv.http.get = originalHttpGet
         saveResponseSpy.mockRestore()
+      }
+    })
+  })
+
+  describe('rate limit retry', () => {
+    let setTimeoutSpy: jest.SpyInstance
+
+    beforeEach(() => {
+      // setTimeoutをモック化し、実際には待機せずコールバックを即時実行する
+      setTimeoutSpy = jest
+        .spyOn(globalThis, 'setTimeout')
+        .mockImplementation((callback: () => void) => {
+          callback()
+          return 0 as unknown as NodeJS.Timeout
+        })
+    })
+
+    afterEach(() => {
+      jest.restoreAllMocks()
+    })
+
+    it('should retry and return the response when a 429 is followed by a success', async () => {
+      const fetchSpy = jest
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce(Response.json({}, { status: 429 }))
+        .mockResolvedValueOnce(Response.json({ ok: true }, { status: 200 }))
+
+      const client = new PixivHttpClient('https://example.com', {})
+      const response = await client.get<{ ok: boolean }>('/test')
+
+      expect(response.status).toBe(200)
+      expect(response.data).toEqual({ ok: true })
+      expect(fetchSpy).toHaveBeenCalledTimes(2)
+      // デフォルトの待機時間 (10秒) で待機すること
+      expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 10_000)
+    })
+
+    it('should throw an error when 429 persists beyond maxRetries', async () => {
+      const fetchSpy = jest
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValue(Response.json({}, { status: 429 }))
+
+      const client = new PixivHttpClient(
+        'https://example.com',
+        {},
+        { maxRetries: 2, waitMs: 1 }
+      )
+
+      await expect(client.get('/test')).rejects.toThrow(
+        'Rate limit exceeded after maximum retries'
+      )
+      // 初回 + maxRetriesの2回 = 計3回呼び出される
+      expect(fetchSpy).toHaveBeenCalledTimes(3)
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(2)
+    })
+
+    it('should use the Retry-After header value (in seconds) as the wait time', async () => {
+      const fetchSpy = jest
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce(
+          Response.json({}, { status: 429, headers: { 'Retry-After': '5' } })
+        )
+        .mockResolvedValueOnce(Response.json({ ok: true }, { status: 200 }))
+
+      const client = new PixivHttpClient(
+        'https://example.com',
+        {},
+        { maxRetries: 3, waitMs: 10_000 }
+      )
+      await client.get('/test')
+
+      // Retry-Afterヘッダーの値(秒)をミリ秒に変換した値で待機すること
+      expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 5000)
+      expect(fetchSpy).toHaveBeenCalledTimes(2)
+    })
+
+    it('should throw immediately without waiting when maxRetries is 0', async () => {
+      const fetchSpy = jest
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValue(Response.json({}, { status: 429 }))
+
+      const client = new PixivHttpClient(
+        'https://example.com',
+        {},
+        { maxRetries: 0, waitMs: 10_000 }
+      )
+
+      await expect(client.get('/test')).rejects.toThrow(
+        'Rate limit exceeded after maximum retries'
+      )
+      expect(fetchSpy).toHaveBeenCalledTimes(1)
+      expect(setTimeoutSpy).not.toHaveBeenCalled()
+    })
+
+    it('should not retry when the response status is not 429', async () => {
+      const fetchSpy = jest
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValue(Response.json({}, { status: 500 }))
+
+      const client = new PixivHttpClient('https://example.com', {})
+      const response = await client.get('/test')
+
+      expect(response.status).toBe(500)
+      expect(fetchSpy).toHaveBeenCalledTimes(1)
+      expect(setTimeoutSpy).not.toHaveBeenCalled()
+    })
+
+    it('should retry on post() as well', async () => {
+      const fetchSpy = jest
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce(Response.json({}, { status: 429 }))
+        .mockResolvedValueOnce(Response.json({ ok: true }, { status: 200 }))
+
+      const client = new PixivHttpClient(
+        'https://example.com',
+        {},
+        { maxRetries: 1, waitMs: 1 }
+      )
+      const response = await client.post<{ ok: boolean }>('/test', 'body')
+
+      expect(response.status).toBe(200)
+      expect(response.data).toEqual({ ok: true })
+      expect(fetchSpy).toHaveBeenCalledTimes(2)
+    })
+
+    it('should propagate rateLimitRetryOptions from Pixiv.of to the http client', async () => {
+      const tokenFetchSpy = jest
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce(
+          Response.json(
+            {
+              user: { id: 'test_user_id' },
+              response: {
+                access_token: 'test_access_token',
+                refresh_token: 'test_refresh_token',
+              },
+            },
+            { status: 200 }
+          )
+        )
+
+      let instance: Pixiv
+      try {
+        instance = await Pixiv.of('test_refresh_token', {
+          rateLimitRetryOptions: { maxRetries: 1, waitMs: 1 },
+        })
+      } finally {
+        tokenFetchSpy.mockRestore()
+      }
+
+      try {
+        const fetchSpy = jest
+          .spyOn(globalThis, 'fetch')
+          .mockResolvedValue(Response.json({}, { status: 429 }))
+
+        await expect(instance.http.get('/test')).rejects.toThrow(
+          'Rate limit exceeded after maximum retries'
+        )
+        // maxRetries: 1 のため、初回 + リトライ1回 = 計2回呼び出される
+        expect(fetchSpy).toHaveBeenCalledTimes(2)
+      } finally {
+        await instance.close()
       }
     })
   })
