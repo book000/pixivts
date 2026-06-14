@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 // Checks whether a PR title/body is mostly written in Japanese.
 // Dependency-free Node.js ESM script intended to be run from CI via
 // `pull_request_target` (see .github/workflows/check-pr-language.yml).

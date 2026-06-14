@@ -17,6 +17,7 @@ import { GetV1UserDetailCheck } from './types/endpoints/v1/user/detail'
 import { GetV2IllustRelatedCheck } from './types/endpoints/v2/illust/related'
 import { GetV2NovelDetailCheck } from './types/endpoints/v2/novel/detail'
 import { GetV2NovelSeriesCheck } from './types/endpoints/v2/novel/series'
+import { PixivRateLimitError } from './types/errors'
 import { omit } from './utils'
 import fs from 'node:fs'
 
@@ -881,6 +882,52 @@ describe('Pixiv class coverage tests', () => {
         // Restore the mock
         pixiv.http.get = originalHttpGet
         saveResponseSpy.mockRestore()
+      }
+    })
+  })
+
+  describe('rate limit retry', () => {
+    afterEach(() => {
+      jest.restoreAllMocks()
+    })
+
+    it('should propagate rateLimitRetryOptions from Pixiv.of to the http client', async () => {
+      const tokenFetchSpy = jest
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce(
+          Response.json(
+            {
+              user: { id: 'test_user_id' },
+              response: {
+                access_token: 'test_access_token',
+                refresh_token: 'test_refresh_token',
+              },
+            },
+            { status: 200 }
+          )
+        )
+
+      let instance: Pixiv
+      try {
+        instance = await Pixiv.of('test_refresh_token', {
+          rateLimitRetryOptions: { maxRetries: 1, waitMs: 1 },
+        })
+      } finally {
+        tokenFetchSpy.mockRestore()
+      }
+
+      try {
+        const fetchSpy = jest
+          .spyOn(globalThis, 'fetch')
+          .mockResolvedValue(Response.json({}, { status: 429 }))
+
+        await expect(instance.http.get('/test')).rejects.toThrow(
+          PixivRateLimitError
+        )
+        // maxRetries: 1 のため、初回 + リトライ1回 = 計2回呼び出される
+        expect(fetchSpy).toHaveBeenCalledTimes(2)
+      } finally {
+        await instance.close()
       }
     })
   })

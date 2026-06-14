@@ -3,7 +3,10 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
 import { DBResponse } from './response-entity'
 import crypto from 'node:crypto'
 
-type HttpMethod = 'GET' | 'POST'
+/**
+ * HTTP method of the request
+ */
+export type HttpMethod = 'GET' | 'POST'
 
 export interface AddResponseOptions {
   method: HttpMethod
@@ -54,8 +57,18 @@ export interface ResponseEndPoint {
 }
 export type ResponseEndPointWithCount = ResponseEndPoint & { count: number }
 
-interface GetResponseRangeOptions {
+/**
+ * Range options for retrieving saved responses
+ */
+export interface GetResponseRangeOptions {
+  /**
+   * Page number
+   */
   page?: number
+
+  /**
+   * Number of items to retrieve per page
+   */
   limit?: number
 }
 

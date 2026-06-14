@@ -22,7 +22,10 @@ export class PixivUserItemCheck extends BaseSimpleCheck<PixivUserItem> {
   }
 }
 
-type Gender = 'male' | 'female' | 'unknown'
+/**
+ * Gender of the pixiv user
+ */
+export type Gender = 'male' | 'female' | 'unknown'
 
 /**
  * pixiv user profile
@@ -216,7 +219,10 @@ export class PixivUserProfileCheck extends BaseSimpleCheck<PixivUserProfile> {
   }
 }
 
-type Publicity = 'public' | 'private' | 'mypixiv'
+/**
+ * Visibility setting value for a pixiv user profile
+ */
+export type Publicity = 'public' | 'private' | 'mypixiv'
 
 /**
  * pixiv user profile visibility settings

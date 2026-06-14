@@ -594,7 +594,6 @@ describe('ResponseDatabase', () => {
     }
 
     it('should return default port when port is undefined', () => {
-      // eslint-disable-next-line unicorn/no-useless-undefined
       expect(testParsePort(undefined)).toBe(3306)
     })
 

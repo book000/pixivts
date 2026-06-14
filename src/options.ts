@@ -184,7 +184,7 @@ export class RankingModeCheck extends BaseSimpleCheck<RankingMode> {
  * @see https://mongolyy.hatenablog.com/entry/2022/03/10/001139
  * @see https://qiita.com/yuu_1st/items/71c4fc9cc95a72fa4df9
  */
-type SomeRequired<T, K extends keyof T> = Partial<Omit<T, K>> &
+export type SomeRequired<T, K extends keyof T> = Partial<Omit<T, K>> &
   Required<Pick<T, K>>
 
 /**
@@ -192,7 +192,10 @@ type SomeRequired<T, K extends keyof T> = Partial<Omit<T, K>> &
  *
  * @see https://qiita.com/ibaragi/items/2a6412aeaca5703694b1
  */
-type Overwrite<T, U extends { [Key in keyof T]?: unknown }> = Omit<T, keyof U> &
+export type Overwrite<T, U extends { [Key in keyof T]?: unknown }> = Omit<
+  T,
+  keyof U
+> &
   U
 
 /**

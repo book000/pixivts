@@ -1,4 +1,7 @@
-interface Error {
+/**
+ * Detailed error information returned by the pixiv API
+ */
+export interface PixivErrorDetail {
   /**
    * Error message for the user
    */
@@ -27,5 +30,5 @@ export interface PixivApiError {
   /**
    * Error details
    */
-  error: Error
+  error: PixivErrorDetail
 }

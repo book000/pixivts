@@ -29,6 +29,11 @@ import {
   RankingMode,
   NovelRankingOptions,
 } from './options'
+import {
+  PixivApiResponse,
+  PixivHttpClient,
+  PixivRateLimitRetryOptions,
+} from './http-client'
 import { PixivApiError } from './types/error-response'
 import {
   GetV1IllustDetailRequest,
@@ -134,87 +139,6 @@ interface PostRequestOptions<T> {
 
 type RequestOptions<T> = GetRequestOptions<T> | PostRequestOptions<T>
 
-export interface PixivApiResponse<T> {
-  data: T
-  status: number
-  headers: Record<string, string>
-  requestHeaders: Record<string, string>
-  requestBody: string | null
-  responseUrl: string | undefined
-}
-
-function headersToRecord(headers: Headers): Record<string, string> {
-  const result: Record<string, string> = {}
-  for (const [key, value] of headers) {
-    result[key] = value
-  }
-  return result
-}
-
-export class PixivHttpClient {
-  private readonly baseURL: string
-  private readonly defaultHeaders: Record<string, string>
-
-  constructor(baseURL: string, headers: Record<string, string>) {
-    this.baseURL = baseURL
-    this.defaultHeaders = headers
-  }
-
-  async get<U>(
-    path: string,
-    options: { params?: Record<string, any> } = {}
-  ): Promise<PixivApiResponse<U>> {
-    let url = `${this.baseURL}${path}`
-    if (options.params) {
-      const queryString = qs.stringify(options.params)
-      if (queryString) url += `?${queryString}`
-    }
-    const response = await fetch(url, {
-      headers: this.defaultHeaders,
-    })
-    const contentType = response.headers.get('content-type') ?? ''
-    const text = await response.text()
-    const data = (
-      contentType.includes('application/json') ? JSON.parse(text) : text
-    ) as U
-    return {
-      data,
-      status: response.status,
-      headers: headersToRecord(response.headers),
-      requestHeaders: this.defaultHeaders,
-      requestBody: null,
-      responseUrl: response.url || undefined,
-    }
-  }
-
-  async post<U>(
-    path: string,
-    body: string,
-    options: { headers?: Record<string, string> } = {}
-  ): Promise<PixivApiResponse<U>> {
-    const url = `${this.baseURL}${path}`
-    const headers = { ...this.defaultHeaders, ...options.headers }
-    const response = await fetch(url, {
-      method: 'POST',
-      headers,
-      body,
-    })
-    const contentType = response.headers.get('content-type') ?? ''
-    const text = await response.text()
-    const data = (
-      contentType.includes('application/json') ? JSON.parse(text) : text
-    ) as U
-    return {
-      data,
-      status: response.status,
-      headers: headersToRecord(response.headers),
-      requestHeaders: headers,
-      requestBody: body,
-      responseUrl: response.url || undefined,
-    }
-  }
-}
-
 export interface PixivDebugOutputResponseOptions {
   enable: boolean
 
@@ -227,6 +151,7 @@ export interface PixivDebugOptions {
 
 export interface PixivTsOptions {
   debugOptions?: PixivDebugOptions
+  rateLimitRetryOptions?: PixivRateLimitRetryOptions
 }
 
 /**
@@ -244,6 +169,7 @@ export default class Pixiv {
   readonly accessToken: string
   readonly refreshToken: string
   readonly responseDatabase: ResponseDatabase | null
+  readonly rateLimitRetryOptions: PixivRateLimitRetryOptions | null
   readonly http: PixivHttpClient
 
   /**
@@ -252,27 +178,34 @@ export default class Pixiv {
    * @param userId User ID
    * @param accessToken Access token
    * @param refreshToken Refresh token
-   * @param pixivTsOptions Pixivts options
+   * @param responseDatabase Database for saving responses (null if not used)
+   * @param rateLimitRetryOptions Retry settings for 429 errors
    */
   private constructor(
     userId: string,
     accessToken: string,
     refreshToken: string,
-    responseDatabase?: ResponseDatabase | null
+    responseDatabase?: ResponseDatabase | null,
+    rateLimitRetryOptions?: PixivRateLimitRetryOptions
   ) {
     this.userId = userId
     this.accessToken = accessToken
     this.refreshToken = refreshToken
     this.responseDatabase = responseDatabase ?? null
+    this.rateLimitRetryOptions = rateLimitRetryOptions ?? null
 
-    this.http = new PixivHttpClient(this.hosts, {
-      Host: 'app-api.pixiv.net',
-      'App-OS': 'ios',
-      'App-OS-Version': '14.6',
-      'User-Agent': 'PixivIOSApp/7.13.3 (iOS 14.6; iPhone13,2)',
-      'Accept-Language': 'ja',
-      Authorization: `Bearer ${this.accessToken}`,
-    })
+    this.http = new PixivHttpClient(
+      this.hosts,
+      {
+        Host: 'app-api.pixiv.net',
+        'App-OS': 'ios',
+        'App-OS-Version': '14.6',
+        'User-Agent': 'PixivIOSApp/7.13.3 (iOS 14.6; iPhone13,2)',
+        'Accept-Language': 'ja',
+        Authorization: `Bearer ${this.accessToken}`,
+      },
+      this.rateLimitRetryOptions
+    )
   }
 
   /**
@@ -347,7 +280,8 @@ export default class Pixiv {
       options.userId,
       options.accessToken,
       options.refreshToken,
-      responseDatabase
+      responseDatabase,
+      pixivTsOptions?.rateLimitRetryOptions
     )
   }
 
@@ -915,7 +849,7 @@ export default class Pixiv {
   public static parseQueryString(url: string) {
     let query = url
     if (url.includes('?')) {
-      query = url.split('?')[1]
+      query = url.split('?', 2)[1]
     }
 
     return qs.parse(query)
