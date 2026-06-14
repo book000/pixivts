@@ -1,4 +1,4 @@
-# Node.js でビルド・テストを実行する。バージョンは .node-version に記載されているものを利用する
+# Runs build and tests with Node.js. The version is taken from .node-version
 
 name: Node CI
 
@@ -7,11 +7,12 @@ on:
     branches:
       - main
       - master
-  # PR は pull_request_target に一本化する（pull_request と pull_request_target が
-  # 同時発火すると finished-node-ci の skipped が required check を誤通過させうるため）
-  # pull_request_target は同一リポジトリ PR・フォーク PR の両方で発火する
-  # 同一リポジトリ PR: environment: が空文字列になるため承認不要で実行
-  # フォーク PR:       environment: fork-pr-build の承認ゲートでブロック
+  # Consolidate PR events to pull_request_target only (using both pull_request and
+  # pull_request_target simultaneously can cause finished-node-ci's skipped result
+  # to incorrectly pass required checks)
+  # pull_request_target fires for both same-repo PRs and fork PRs
+  # Same-repo PR: environment: is empty string, so runs without approval
+  # Fork PR:      blocked by the approval gate of environment: fork-pr-build
   pull_request_target:
     branches:
       - main
@@ -25,21 +26,21 @@ on:
     - cron: '0 0 * * *'
 
 concurrency:
-  # 将来 pull_request トリガーが追加された場合でもイベント間で互いをキャンセルしないよう
-  # event_name を含めて防衛的に設定している
+  # Defensively includes event_name so that events do not cancel each other
+  # even if a pull_request trigger is added in the future
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-# ワークフロー全体のデフォルト権限を無効化（各ジョブで最小権限を明示する）
+# Disable default permissions for the entire workflow (each job explicitly sets minimum permissions)
 permissions: {}
 
 jobs:
   post-approval-request:
     name: Post approval request
     runs-on: ubuntu-latest
-    # フォーク PR のときのみ承認リクエストを投稿する（同一リポジトリからの PR は不要）
+    # Post an approval request only for fork PRs (not needed for same-repo PRs)
     if: github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository
-    # コメント投稿の失敗はワークフロー結論に影響させない（セキュリティゲートは environment: が担保する）
+    # Comment posting failures should not affect the workflow conclusion (the security gate is ensured by environment:)
     continue-on-error: true
     permissions:
       issues: write
@@ -51,7 +52,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: github-actions[bot]
-          body-includes: Environment 承認待ち
+          body-includes: Waiting for Environment approval
 
       - name: Post or update approval request comment
         uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5
@@ -60,17 +61,17 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           edit-mode: replace
           body: |
-            ## Environment 承認待ち
+            ## Waiting for Environment approval
 
-            この PR のビルドを実行するには、Environment `fork-pr-build` の承認が必要です。
+            To run the build for this PR, approval for the Environment `fork-pr-build` is required.
 
-            [Actions run を確認して承認してください](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}?pr=${{ github.event.pull_request.number }})
+            [Please review and approve the Actions run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}?pr=${{ github.event.pull_request.number }})
 
   node-ci:
     runs-on: ubuntu-latest
     needs: post-approval-request
-    # post-approval-request の結果に関わらず常に実行する
-    # セキュリティゲートは environment: が担保するため、コメント投稿の失敗でスキップされてはならない
+    # Always run regardless of the post-approval-request result
+    # Must not be skipped due to a comment posting failure, as the security gate is ensured by environment:
     if: >-
       always() && (
         github.event_name == 'push' ||
@@ -78,7 +79,7 @@ jobs:
         github.event_name == 'schedule' ||
         github.event_name == 'pull_request_target'
       )
-    # フォーク PR の場合のみ Environment で手動承認が必要（同一リポジトリからの PR は不要）
+    # Manual approval via Environment is required only for fork PRs (not needed for same-repo PRs)
     environment: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository && 'fork-pr-build' || '' }}
     permissions:
       contents: read
@@ -222,8 +223,8 @@ jobs:
   finished-node-ci:
     name: Check finished Node CI
     runs-on: ubuntu-latest
-    # node-ci ジョブがスキップされた場合（needs.node-ci.result == 'skipped' のとき）はこのジョブも実行しない
-    # 実際の CI チェックは node-ci ジョブの結果に基づいて行われる
+    # Do not run this job if the node-ci job was skipped (needs.node-ci.result == 'skipped')
+    # Actual CI checks are based on the result of the node-ci job
     if: always() && needs.node-ci.result != 'skipped'
     needs:
       - node-ci
@@ -231,8 +232,8 @@ jobs:
 
     steps:
       - name: Check finished Node CI
-        # post-approval-request は通知目的のため失敗しても CI に影響させない
-        # セキュリティゲートは node-ci の environment: が担保しているため、node-ci の結果のみを確認する
+        # post-approval-request is for notification only; its failure should not affect CI
+        # The security gate is ensured by node-ci's environment:, so only the node-ci result is checked
         run: |
           if [ "${{ needs.node-ci.result }}" != "success" ]; then
             echo "Build failed"
