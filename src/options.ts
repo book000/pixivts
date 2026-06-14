@@ -161,6 +161,54 @@ export class FollowRestrictCheck extends BaseSimpleCheck<FollowRestrict> {
 }
 
 /**
+ * AI content filter for search
+ */
+export enum SearchAiType {
+  /** Filter out AI-generated works */
+  FILTER_AI = 0,
+  /** Show AI-generated works */
+  SHOW_AI = 1,
+}
+
+/**
+ * Check for AI content filter type
+ */
+export class SearchAiTypeCheck extends BaseSimpleCheck<SearchAiType> {
+  checks(): CheckFunctions<SearchAiType> {
+    return {
+      main: (data) =>
+        typeof data === 'number' &&
+        Object.values(SearchAiType)
+          .filter((v): v is SearchAiType => typeof v === 'number')
+          .includes(data),
+    }
+  }
+}
+
+/**
+ * Content type for illust recommendations
+ */
+export enum IllustContentType {
+  /** Illustration */
+  ILLUST = 'illust',
+  /** Manga */
+  MANGA = 'manga',
+}
+
+/**
+ * Check for illust content type
+ */
+export class IllustContentTypeCheck extends BaseSimpleCheck<IllustContentType> {
+  checks(): CheckFunctions<IllustContentType> {
+    return {
+      main: (data) =>
+        typeof data === 'string' &&
+        Object.values(IllustContentType).includes(data),
+    }
+  }
+}
+
+/**
  * Ranking type
  */
 export enum RankingMode {

@@ -1,6 +1,7 @@
 import crypto from 'node:crypto'
 import qs from 'qs'
 import {
+  IllustContentType,
   IllustDetailOptions,
   SearchIllustOptions,
   RecommendedIllustOptions,
@@ -355,6 +356,7 @@ export default class Pixiv {
     const parameters: RequestType = {
       ...this.convertCamelToSnake(options),
       illust_id: options.illustId,
+      filter: options.filter ?? OSFilter.FOR_IOS,
       seed_illust_ids: options.seedIllustIds,
       viewed: options.viewed,
       offset: options.offset,
@@ -389,6 +391,8 @@ export default class Pixiv {
       merge_plain_keyword_results: options.mergePlainKeywordResults ?? true,
       include_translated_tag_results:
         options.includeTranslatedTagResults ?? true,
+      duration: options.duration,
+      search_ai_type: options.searchAiType,
     }
 
     return this.request<RequestType, GetV1SearchIllustResponse>({
@@ -431,6 +435,8 @@ export default class Pixiv {
     type RequestType = GetV1IllustRecommendedRequest
     const parameters: RequestType = {
       ...this.convertCamelToSnake(options),
+      content_type: options.contentType ?? IllustContentType.ILLUST,
+      include_ranking_label: options.includeRankingLabel ?? true,
       filter: options.filter ?? OSFilter.FOR_IOS,
       include_ranking_illusts: options.includeRankingIllusts ?? true,
       min_bookmark_id_for_recent_illust:
@@ -439,6 +445,7 @@ export default class Pixiv {
         options.maxBookmarkIdForRecommend ?? undefined,
       offset: options.offset ?? undefined,
       include_privacy_policy: options.includePrivacyPolicy ?? true,
+      viewed: options.viewed,
     }
 
     return this.request<RequestType, GetV1IllustRecommendedResponse>({
@@ -640,13 +647,14 @@ export default class Pixiv {
       search_target:
         options.searchTarget ?? SearchTarget.PARTIAL_MATCH_FOR_TAGS,
       sort: options.sort ?? SearchSort.DATE_DESC,
-      startDate: options.startDate,
-      endDate: options.endDate,
+      start_date: options.startDate,
+      end_date: options.endDate,
       filter: options.filter ?? OSFilter.FOR_IOS,
       offset: options.offset,
       merge_plain_keyword_results: options.mergePlainKeywordResults ?? true,
       include_translated_tag_results:
         options.includeTranslatedTagResults ?? true,
+      search_ai_type: options.searchAiType,
     }
 
     return this.request<RequestType, GetV1SearchNovelResponse>({

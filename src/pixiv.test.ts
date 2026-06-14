@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { BookmarkRestrict, FollowRestrict } from './options'
+import {
+  BookmarkRestrict,
+  FollowRestrict,
+  IllustContentType,
+  OSFilter,
+  SearchAiType,
+  SearchIllustDuration,
+} from './options'
 import Pixiv from './pixiv'
 import { GetV1IllustDetailCheck } from './types/endpoints/v1/illust/detail'
 import { GetV1IllustRankingCheck } from './types/endpoints/v1/illust/ranking'
@@ -198,6 +205,19 @@ describe('pixiv', () => {
     expect(() => check.throwIfResponseFailed(illustRelated.data)).not.toThrow()
   })
 
+  it('illustRelated:withFilter', async () => {
+    const illustRelated = await pixiv.illustRelated({
+      illustId: 107_565_629,
+      filter: OSFilter.FOR_IOS,
+    })
+    expect(illustRelated.status).toBe(200)
+    expect(illustRelated.data.illusts).toBeDefined()
+    expect(illustRelated.data.illusts.length).toBeGreaterThan(0)
+
+    const check = new GetV2IllustRelatedCheck()
+    expect(() => check.throwIfResponseFailed(illustRelated.data)).not.toThrow()
+  })
+
   it('ugoiraDetail:83638393[ugoira]', async () => {
     const ugoiraDetail = await pixiv.ugoiraMetadata({
       illustId: 83_638_393,
@@ -223,6 +243,30 @@ describe('pixiv', () => {
     expect(() => check.throwIfResponseFailed(searchIllust.data)).not.toThrow()
   })
 
+  it('searchIllust:withDuration', async () => {
+    const searchIllust = await pixiv.searchIllust({
+      word: 'ホロライブ',
+      duration: SearchIllustDuration.WITHIN_LAST_WEEK,
+    })
+    expect(searchIllust.status).toBe(200)
+    expect(searchIllust.data.illusts).toBeDefined()
+
+    const check = new GetV1SearchIllustCheck()
+    expect(() => check.throwIfResponseFailed(searchIllust.data)).not.toThrow()
+  })
+
+  it('searchIllust:withSearchAiType', async () => {
+    const searchIllust = await pixiv.searchIllust({
+      word: 'ホロライブ',
+      searchAiType: SearchAiType.SHOW_AI,
+    })
+    expect(searchIllust.status).toBe(200)
+    expect(searchIllust.data.illusts).toBeDefined()
+
+    const check = new GetV1SearchIllustCheck()
+    expect(() => check.throwIfResponseFailed(searchIllust.data)).not.toThrow()
+  })
+
   it('illustRanking', async () => {
     const illustRanking = await pixiv.illustRanking()
     expect(illustRanking.status).toBe(200)
@@ -240,6 +284,19 @@ describe('pixiv', () => {
     expect(recommendedIllust.data).toBeDefined()
     expect(recommendedIllust.data.illusts).toBeDefined()
     expect(recommendedIllust.data.illusts.length).toBeGreaterThan(0)
+
+    const check = new GetV1IllustRecommendedCheck()
+    expect(() =>
+      check.throwIfResponseFailed(recommendedIllust.data)
+    ).not.toThrow()
+  })
+
+  it('illustRecommended:withMangaContentType', async () => {
+    const recommendedIllust = await pixiv.illustRecommended({
+      contentType: IllustContentType.MANGA,
+    })
+    expect(recommendedIllust.status).toBe(200)
+    expect(recommendedIllust.data.illusts).toBeDefined()
 
     const check = new GetV1IllustRecommendedCheck()
     expect(() =>
@@ -399,6 +456,18 @@ describe('pixiv', () => {
     expect(searchNovel.data).toBeDefined()
     expect(searchNovel.data.novels).toBeDefined()
     expect(searchNovel.data.novels.length).toBeGreaterThan(0)
+
+    const check = new GetV1SearchNovelCheck()
+    expect(() => check.throwIfResponseFailed(searchNovel.data)).not.toThrow()
+  })
+
+  it('searchNovel:withSearchAiType', async () => {
+    const searchNovel = await pixiv.searchNovel({
+      word: 'ホロライブ',
+      searchAiType: SearchAiType.SHOW_AI,
+    })
+    expect(searchNovel.status).toBe(200)
+    expect(searchNovel.data.novels).toBeDefined()
 
     const check = new GetV1SearchNovelCheck()
     expect(() => check.throwIfResponseFailed(searchNovel.data)).not.toThrow()
