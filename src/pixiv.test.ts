@@ -978,7 +978,7 @@ describe('Pixiv class coverage tests', () => {
       expect(fetchSpy).toHaveBeenCalledTimes(2)
     })
 
-    it('should fall back to waitMs when the Retry-After header is not a numeric value', async () => {
+    it('should fall back to waitMs when the Retry-After header is neither a number nor a valid date', async () => {
       const fetchSpy = jest
         .spyOn(globalThis, 'fetch')
         .mockResolvedValueOnce(
@@ -986,8 +986,8 @@ describe('Pixiv class coverage tests', () => {
             {},
             {
               status: 429,
-              // HTTP-date形式など、秒数として解釈できないRetry-After
-              headers: { 'Retry-After': 'Wed, 21 Oct 2026 07:28:00 GMT' },
+              // 秒数・HTTP-dateいずれの形式としても解釈できないRetry-After
+              headers: { 'Retry-After': 'invalid-value' },
             }
           )
         )
@@ -1000,8 +1000,68 @@ describe('Pixiv class coverage tests', () => {
       )
       await client.get('/test')
 
-      // 秒数として解釈できないRetry-Afterの場合はwaitMsにフォールバックすること
+      // 秒数・HTTP-dateいずれとしても解釈できないRetry-Afterの場合はwaitMsにフォールバックすること
       expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 12_345)
+      expect(fetchSpy).toHaveBeenCalledTimes(2)
+    })
+
+    it('should use the Retry-After header value when given as an HTTP-date', async () => {
+      const now = Date.UTC(2026, 0, 1, 0, 0, 0)
+      jest.spyOn(Date, 'now').mockReturnValue(now)
+
+      const fetchSpy = jest
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce(
+          Response.json(
+            {},
+            {
+              status: 429,
+              // 現在時刻 (2026-01-01T00:00:00Z) から7秒後のHTTP-date
+              headers: { 'Retry-After': 'Thu, 01 Jan 2026 00:00:07 GMT' },
+            }
+          )
+        )
+        .mockResolvedValueOnce(Response.json({ ok: true }, { status: 200 }))
+
+      const client = new PixivHttpClient(
+        'https://example.com',
+        {},
+        { maxRetries: 3, waitMs: 10_000 }
+      )
+      await client.get('/test')
+
+      // HTTP-dateと現在時刻の差分(ミリ秒)で待機すること
+      expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 7000)
+      expect(fetchSpy).toHaveBeenCalledTimes(2)
+    })
+
+    it('should not wait a negative time when the Retry-After HTTP-date is in the past', async () => {
+      const now = Date.UTC(2026, 0, 1, 0, 0, 10)
+      jest.spyOn(Date, 'now').mockReturnValue(now)
+
+      const fetchSpy = jest
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce(
+          Response.json(
+            {},
+            {
+              status: 429,
+              // 現在時刻 (2026-01-01T00:00:10Z) より過去のHTTP-date
+              headers: { 'Retry-After': 'Thu, 01 Jan 2026 00:00:00 GMT' },
+            }
+          )
+        )
+        .mockResolvedValueOnce(Response.json({ ok: true }, { status: 200 }))
+
+      const client = new PixivHttpClient(
+        'https://example.com',
+        {},
+        { maxRetries: 3, waitMs: 10_000 }
+      )
+      await client.get('/test')
+
+      // 過去日時の場合は待機時間を0にクランプすること
+      expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 0)
       expect(fetchSpy).toHaveBeenCalledTimes(2)
     })
 

@@ -163,6 +163,36 @@ function headersToRecord(headers: Headers): Record<string, string> {
   return result
 }
 
+/**
+ * Retry-Afterヘッダーの値から待機時間（ミリ秒）を算出する。
+ * 秒数形式 (delay-seconds) と HTTP-date 形式の両方に対応し、
+ * いずれの形式でも解釈できない場合はデフォルトの待機時間 (waitMs) を返す。
+ * @param retryAfter - Retry-Afterヘッダーの値（未指定の場合は null）
+ * @param waitMs - デフォルトの待機時間（ミリ秒）
+ * @returns 待機時間（ミリ秒）
+ */
+function getRetryAfterWaitTime(
+  retryAfter: string | null,
+  waitMs: number
+): number {
+  if (!retryAfter) {
+    return waitMs
+  }
+
+  // 秒数形式 (delay-seconds)
+  if (/^\d+$/.test(retryAfter.trim())) {
+    return Number.parseInt(retryAfter, 10) * 1000
+  }
+
+  // HTTP-date形式 (例: "Wed, 21 Oct 2026 07:28:00 GMT")
+  const retryDate = Date.parse(retryAfter)
+  if (!Number.isNaN(retryDate)) {
+    return Math.max(0, retryDate - Date.now())
+  }
+
+  return waitMs
+}
+
 export class PixivHttpClient {
   private readonly baseURL: string
   private readonly defaultHeaders: Record<string, string>
@@ -245,15 +275,8 @@ export class PixivHttpClient {
         return response
       }
       if (attempt < maxRetries) {
-        // Retry-Afterヘッダーは秒数形式を想定する。値が存在しない、または
-        // HTTP-date形式などで秒数として解釈できない場合はwaitMsにフォールバックする
         const retryAfter = response.headers.get('Retry-After')
-        const retryAfterSeconds = retryAfter
-          ? Number.parseInt(retryAfter, 10)
-          : Number.NaN
-        const waitTime = Number.isNaN(retryAfterSeconds)
-          ? waitMs
-          : retryAfterSeconds * 1000
+        const waitTime = getRetryAfterWaitTime(retryAfter, waitMs)
 
         await new Promise((resolve) => setTimeout(resolve, waitTime))
       }
