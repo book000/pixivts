@@ -33,6 +33,7 @@ import {
   UserFollowingOptions,
   UserFollowAddOptions,
   UserFollowDeleteOptions,
+  UserIllustsOptions,
 } from './options'
 import {
   PixivApiResponse,
@@ -141,6 +142,10 @@ import {
   PostV1UserFollowDeleteRequest,
   PostV1UserFollowDeleteResponse,
 } from './types/endpoints/v1/user/follow/delete'
+import {
+  GetV1UserIllustsRequest,
+  GetV1UserIllustsResponse,
+} from './types/endpoints/v1/user/illusts'
 
 interface GetRequestOptions<T> {
   method: 'GET'
@@ -798,6 +803,30 @@ export default class Pixiv {
     return this.request<RequestType, GetV1UserDetailResponse>({
       method: 'GET',
       path: '/v1/user/detail',
+      params: parameters,
+    })
+  }
+
+  /**
+   * Gets a user's illusts or manga.
+   *
+   * @param options Options
+   * @returns Response
+   */
+  public async userIllusts(options: UserIllustsOptions) {
+    type RequestType = GetV1UserIllustsRequest
+    this.checkRequiredOptions(options, ['userId'])
+    const parameters: RequestType = {
+      ...this.convertCamelToSnake(options),
+      user_id: options.userId,
+      type: options.type ?? undefined,
+      filter: options.filter ?? OSFilter.FOR_IOS,
+      offset: options.offset ?? undefined,
+    }
+
+    return this.request<RequestType, GetV1UserIllustsResponse>({
+      method: 'GET',
+      path: '/v1/user/illusts',
       params: parameters,
     })
   }

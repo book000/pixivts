@@ -25,6 +25,7 @@ import { GetWebViewV2NovelRequest } from './types/endpoints/webview/v2/novel'
 import { GetV1UserFollowingRequest } from './types/endpoints/v1/user/following'
 import { PostV1UserFollowAddRequest } from './types/endpoints/v1/user/follow/add'
 import { PostV1UserFollowDeleteRequest } from './types/endpoints/v1/user/follow/delete'
+import { GetV1UserIllustsRequest } from './types/endpoints/v1/user/illusts'
 
 /**
  * Search target
@@ -448,3 +449,11 @@ export type UserFollowAddOptions = SomeRequired<
  */
 export type UserFollowDeleteOptions =
   SnakeToCamel<PostV1UserFollowDeleteRequest>
+
+/**
+ * Options for getting a user's illusts
+ */
+export type UserIllustsOptions = SomeRequired<
+  SnakeToCamel<GetV1UserIllustsRequest>,
+  'userId'
+>
