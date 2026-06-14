@@ -134,6 +134,18 @@ interface PostRequestOptions<T> {
 
 type RequestOptions<T> = GetRequestOptions<T> | PostRequestOptions<T>
 
+export interface PixivRateLimitRetryOptions {
+  /**
+   * リクエストがレートリミットに達した場合の最大リトライ回数。
+   */
+  maxRetries: number
+
+  /**
+   * リクエストがレートリミットに達した場合のリトライまでの待機時間（ミリ秒）。
+   */
+  waitMs: number
+}
+
 export interface PixivApiResponse<T> {
   data: T
   status: number
@@ -154,10 +166,16 @@ function headersToRecord(headers: Headers): Record<string, string> {
 export class PixivHttpClient {
   private readonly baseURL: string
   private readonly defaultHeaders: Record<string, string>
+  private readonly ratelimitRetryOptions: PixivRateLimitRetryOptions | null
 
-  constructor(baseURL: string, headers: Record<string, string>) {
+  constructor(
+    baseURL: string,
+    headers: Record<string, string>,
+    rateLimitRetryOptions?: PixivRateLimitRetryOptions | null
+  ) {
     this.baseURL = baseURL
     this.defaultHeaders = headers
+    this.ratelimitRetryOptions = rateLimitRetryOptions ?? null
   }
 
   async get<U>(
@@ -169,7 +187,7 @@ export class PixivHttpClient {
       const queryString = qs.stringify(options.params)
       if (queryString) url += `?${queryString}`
     }
-    const response = await fetch(url, {
+    const response = await this.fetchWithRetry(url, {
       headers: this.defaultHeaders,
     })
     const contentType = response.headers.get('content-type') ?? ''
@@ -194,7 +212,7 @@ export class PixivHttpClient {
   ): Promise<PixivApiResponse<U>> {
     const url = `${this.baseURL}${path}`
     const headers = { ...this.defaultHeaders, ...options.headers }
-    const response = await fetch(url, {
+    const response = await this.fetchWithRetry(url, {
       method: 'POST',
       headers,
       body,
@@ -213,6 +231,31 @@ export class PixivHttpClient {
       responseUrl: response.url || undefined,
     }
   }
+
+  private async fetchWithRetry(
+    url: string,
+    options: RequestInit
+  ): Promise<Response> {
+    const maxRetries = this.ratelimitRetryOptions?.maxRetries ?? 3
+    const waitMs = this.ratelimitRetryOptions?.waitMs ?? 10_000 // default 10 sec
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      const response = await fetch(url, options)
+      if (response.status !== 429) {
+        return response
+      }
+      if (attempt < maxRetries) {
+        const retryAfter = response.headers.get('Retry-After')
+        const waitTime = retryAfter
+          ? Number.parseInt(retryAfter, 10) * 1000
+          : waitMs
+
+        await new Promise((resolve) => setTimeout(resolve, waitTime))
+      }
+    }
+
+    throw new Error('Rate limit exceeded after maximum retries')
+  }
 }
 
 export interface PixivDebugOutputResponseOptions {
@@ -227,6 +270,7 @@ export interface PixivDebugOptions {
 
 export interface PixivTsOptions {
   debugOptions?: PixivDebugOptions
+  rateLimitRetryOptions?: PixivRateLimitRetryOptions
 }
 
 /**
@@ -244,6 +288,7 @@ export default class Pixiv {
   readonly accessToken: string
   readonly refreshToken: string
   readonly responseDatabase: ResponseDatabase | null
+  readonly ratelimitRetryOptions: PixivRateLimitRetryOptions | null
   readonly http: PixivHttpClient
 
   /**
@@ -258,21 +303,27 @@ export default class Pixiv {
     userId: string,
     accessToken: string,
     refreshToken: string,
-    responseDatabase?: ResponseDatabase | null
+    responseDatabase?: ResponseDatabase | null,
+    rateLimitRetryOptions?: PixivRateLimitRetryOptions
   ) {
     this.userId = userId
     this.accessToken = accessToken
     this.refreshToken = refreshToken
     this.responseDatabase = responseDatabase ?? null
+    this.ratelimitRetryOptions = rateLimitRetryOptions ?? null
 
-    this.http = new PixivHttpClient(this.hosts, {
-      Host: 'app-api.pixiv.net',
-      'App-OS': 'ios',
-      'App-OS-Version': '14.6',
-      'User-Agent': 'PixivIOSApp/7.13.3 (iOS 14.6; iPhone13,2)',
-      'Accept-Language': 'ja',
-      Authorization: `Bearer ${this.accessToken}`,
-    })
+    this.http = new PixivHttpClient(
+      this.hosts,
+      {
+        Host: 'app-api.pixiv.net',
+        'App-OS': 'ios',
+        'App-OS-Version': '14.6',
+        'User-Agent': 'PixivIOSApp/7.13.3 (iOS 14.6; iPhone13,2)',
+        'Accept-Language': 'ja',
+        Authorization: `Bearer ${this.accessToken}`,
+      },
+      this.ratelimitRetryOptions
+    )
   }
 
   /**
@@ -347,7 +398,8 @@ export default class Pixiv {
       options.userId,
       options.accessToken,
       options.refreshToken,
-      responseDatabase
+      responseDatabase,
+      pixivTsOptions?.rateLimitRetryOptions
     )
   }
 
