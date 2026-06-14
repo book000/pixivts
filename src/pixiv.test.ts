@@ -973,7 +973,7 @@ describe('Pixiv class coverage tests', () => {
       )
       await client.get('/test')
 
-      // Retry-Afterヘッダーの値(秒)をミリ秒に変換した値で待機すること
+      // Retry-After ヘッダーの値(秒)をミリ秒に変換した値で待機すること
       expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 5000)
       expect(fetchSpy).toHaveBeenCalledTimes(2)
     })
@@ -986,7 +986,7 @@ describe('Pixiv class coverage tests', () => {
             {},
             {
               status: 429,
-              // 秒数・HTTP-dateいずれの形式としても解釈できないRetry-After
+              // 秒数・HTTP-date いずれの形式としても解釈できない Retry-After
               headers: { 'Retry-After': 'invalid-value' },
             }
           )
@@ -1000,7 +1000,7 @@ describe('Pixiv class coverage tests', () => {
       )
       await client.get('/test')
 
-      // 秒数・HTTP-dateいずれとしても解釈できないRetry-Afterの場合はwaitMsにフォールバックすること
+      // 秒数・HTTP-date いずれとしても解釈できない Retry-After の場合は waitMs にフォールバックすること
       expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 12_345)
       expect(fetchSpy).toHaveBeenCalledTimes(2)
     })

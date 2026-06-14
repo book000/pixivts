@@ -164,10 +164,10 @@ function headersToRecord(headers: Headers): Record<string, string> {
 }
 
 /**
- * Retry-Afterヘッダーの値から待機時間（ミリ秒）を算出する。
+ * Retry-After ヘッダーの値から待機時間（ミリ秒）を算出する。
  * 秒数形式 (delay-seconds) と HTTP-date 形式の両方に対応し、
  * いずれの形式でも解釈できない場合はデフォルトの待機時間 (waitMs) を返す。
- * @param retryAfter - Retry-Afterヘッダーの値（未指定の場合は null）
+ * @param retryAfter - Retry-After ヘッダーの値（未指定の場合は null）
  * @param waitMs - デフォルトの待機時間（ミリ秒）
  * @returns 待機時間（ミリ秒）
  */
@@ -184,7 +184,7 @@ function getRetryAfterWaitTime(
     return Number.parseInt(retryAfter, 10) * 1000
   }
 
-  // HTTP-date形式 (例: "Wed, 21 Oct 2026 07:28:00 GMT")
+  // HTTP-date 形式 (例: "Wed, 21 Oct 2026 07:28:00 GMT")
   const retryDate = Date.parse(retryAfter)
   if (!Number.isNaN(retryDate)) {
     return Math.max(0, retryDate - Date.now())
@@ -196,7 +196,7 @@ function getRetryAfterWaitTime(
 export class PixivHttpClient {
   private readonly baseURL: string
   private readonly defaultHeaders: Record<string, string>
-  private readonly ratelimitRetryOptions: PixivRateLimitRetryOptions | null
+  private readonly rateLimitRetryOptions: PixivRateLimitRetryOptions | null
 
   constructor(
     baseURL: string,
@@ -205,7 +205,7 @@ export class PixivHttpClient {
   ) {
     this.baseURL = baseURL
     this.defaultHeaders = headers
-    this.ratelimitRetryOptions = rateLimitRetryOptions ?? null
+    this.rateLimitRetryOptions = rateLimitRetryOptions ?? null
   }
 
   async get<U>(
@@ -266,14 +266,20 @@ export class PixivHttpClient {
     url: string,
     options: RequestInit
   ): Promise<Response> {
-    const maxRetries = this.ratelimitRetryOptions?.maxRetries ?? 3
-    const waitMs = this.ratelimitRetryOptions?.waitMs ?? 10_000 // default 10 sec
+    // 負の値が渡された場合でもループが必ず1回以上実行されるよう0以上にクランプする
+    const maxRetries = Math.max(0, this.rateLimitRetryOptions?.maxRetries ?? 3)
+    // 負の値が渡された場合に setTimeout への待機時間が負値にならないよう0以上にクランプする
+    const waitMs = Math.max(0, this.rateLimitRetryOptions?.waitMs ?? 10_000) // default 10 sec
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       const response = await fetch(url, options)
       if (response.status !== 429) {
         return response
       }
+
+      // 429のレスポンスボディは使用しないため、コネクション解放のため破棄する
+      await response.body?.cancel()
+
       if (attempt < maxRetries) {
         const retryAfter = response.headers.get('Retry-After')
         const waitTime = getRetryAfterWaitTime(retryAfter, waitMs)
@@ -316,7 +322,7 @@ export default class Pixiv {
   readonly accessToken: string
   readonly refreshToken: string
   readonly responseDatabase: ResponseDatabase | null
-  readonly ratelimitRetryOptions: PixivRateLimitRetryOptions | null
+  readonly rateLimitRetryOptions: PixivRateLimitRetryOptions | null
   readonly http: PixivHttpClient
 
   /**
@@ -325,7 +331,8 @@ export default class Pixiv {
    * @param userId ユーザー ID
    * @param accessToken アクセストークン
    * @param refreshToken リフレッシュトークン
-   * @param pixivTsOptions Pixivts オプション
+   * @param responseDatabase レスポンス保存用データベース（使用しない場合は null）
+   * @param rateLimitRetryOptions 429エラー時のリトライ設定
    */
   private constructor(
     userId: string,
@@ -338,7 +345,7 @@ export default class Pixiv {
     this.accessToken = accessToken
     this.refreshToken = refreshToken
     this.responseDatabase = responseDatabase ?? null
-    this.ratelimitRetryOptions = rateLimitRetryOptions ?? null
+    this.rateLimitRetryOptions = rateLimitRetryOptions ?? null
 
     this.http = new PixivHttpClient(
       this.hosts,
@@ -350,7 +357,7 @@ export default class Pixiv {
         'Accept-Language': 'ja',
         Authorization: `Bearer ${this.accessToken}`,
       },
-      this.ratelimitRetryOptions
+      this.rateLimitRetryOptions
     )
   }
 
