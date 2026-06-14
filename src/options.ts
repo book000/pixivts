@@ -1,9 +1,6 @@
 import { GetV1IllustDetailRequest } from './types/endpoints/v1/illust/detail'
 import { SnakeToCamel } from 'snake-camel-types'
-import {
-  GetV1IllustRecommendedNologinRequest,
-  GetV1IllustRecommendedRequest,
-} from './types/endpoints/v1/illust/recommended'
+import { GetV1IllustRecommendedRequest } from './types/endpoints/v1/illust/recommended'
 import { GetV1SearchIllustRequest } from './types/endpoints/v1/search/illust'
 import { PostV2IllustBookmarkAddRequest } from './types/endpoints/v2/illust/bookmark/add'
 import { GetV1IllustSeriesRequest } from './types/endpoints/v1/illust/series'
@@ -305,21 +302,6 @@ export type IllustRelatedOptions = SnakeToCamel<GetV2IllustRelatedRequest>
  */
 export type RecommendedIllustOptions = SnakeToCamel<
   Partial<GetV1IllustRecommendedRequest>
->
-
-/**
- * Options for getting recommended illusts without authentication
- */
-export type RecommendedIllustNologinOptions = Overwrite<
-  SnakeToCamel<Partial<GetV1IllustRecommendedNologinRequest>>,
-  {
-    /**
-     * IDs of bookmarked illusts to base recommendations on (unauthenticated only)
-     *
-     * @default undefined
-     */
-    bookmarkIllustIds?: number[]
-  }
 >
 
 /**

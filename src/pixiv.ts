@@ -5,7 +5,6 @@ import {
   IllustDetailOptions,
   SearchIllustOptions,
   RecommendedIllustOptions,
-  RecommendedIllustNologinOptions,
   IllustBookmarkAddOptions,
   NovelDetailOptions,
   SearchNovelOptions,
@@ -50,7 +49,6 @@ import {
   GetV1SearchIllustResponse,
 } from './types/endpoints/v1/search/illust'
 import {
-  GetV1IllustRecommendedNologinRequest,
   GetV1IllustRecommendedRequest,
   GetV1IllustRecommendedResponse,
 } from './types/endpoints/v1/illust/recommended'
@@ -455,49 +453,6 @@ export default class Pixiv {
       path: '/v1/illust/recommended',
       params: parameters,
     })
-  }
-
-  /**
-   * Gets recommended illusts without authentication.
-   *
-   * Uses the unauthenticated endpoint /v1/illust/recommended-nologin.
-   * This is a static method that does not require a Pixiv instance.
-   *
-   * @param options Options
-   * @returns Response
-   */
-  public static async illustRecommendedNologin(
-    options: RecommendedIllustNologinOptions = {}
-  ): Promise<PixivApiResponse<GetV1IllustRecommendedResponse>> {
-    const hosts = 'https://app-api.pixiv.net'
-    const http = new PixivHttpClient(hosts, {
-      Host: 'app-api.pixiv.net',
-      'App-OS': 'ios',
-      'App-OS-Version': '14.6',
-      'User-Agent': 'PixivIOSApp/7.13.3 (iOS 14.6; iPhone13,2)',
-      'Accept-Language': 'ja',
-    })
-
-    type RequestType = GetV1IllustRecommendedNologinRequest
-    const parameters: RequestType = {
-      content_type: options.contentType ?? IllustContentType.ILLUST,
-      include_ranking_label: options.includeRankingLabel,
-      filter: options.filter ?? OSFilter.FOR_IOS,
-      max_bookmark_id_for_recommend: options.maxBookmarkIdForRecommend,
-      min_bookmark_id_for_recent_illust: options.minBookmarkIdForRecentIllust,
-      offset: options.offset,
-      include_ranking_illusts: options.includeRankingIllusts,
-      bookmark_illust_ids:
-        options.bookmarkIllustIds && options.bookmarkIllustIds.length > 0
-          ? options.bookmarkIllustIds.join(',')
-          : undefined,
-      include_privacy_policy: options.includePrivacyPolicy,
-    }
-
-    return http.get<GetV1IllustRecommendedResponse>(
-      '/v1/illust/recommended-nologin',
-      { params: parameters }
-    )
   }
 
   /**

@@ -304,18 +304,6 @@ describe('pixiv', () => {
     ).not.toThrow()
   })
 
-  // Skipped: /v1/illust/recommended-nologin returns 404 in CI.
-  // The endpoint may have been removed or requires different parameters.
-  it.skip('illustRecommendedNologin', async () => {
-    const recommendedIllust = await Pixiv.illustRecommendedNologin()
-    expect(recommendedIllust.status).toBe(200)
-    expect(recommendedIllust.data).toBeDefined()
-    // The nologin endpoint may return an empty ranking_illusts array,
-    // so we only verify the presence of the illusts field here
-    expect(recommendedIllust.data.illusts).toBeDefined()
-    expect(Array.isArray(recommendedIllust.data.illusts)).toBe(true)
-  })
-
   it('illustSeries', async () => {
     const illustSeries = await pixiv.illustSeries({
       illustSeriesId: 147_483,
