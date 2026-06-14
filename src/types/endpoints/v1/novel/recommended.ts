@@ -3,11 +3,11 @@ import { PrivacyPolicy, PrivacyPolicyCheck } from '../../../pixiv-common'
 import { PixivNovelItem, PixivNovelItemCheck } from '../../../pixiv-novel'
 
 /**
- * GET /v1/novel/recommended のリクエスト
+ * Request for GET /v1/novel/recommended
  */
 export interface GetV1NovelRecommendedRequest {
   /**
-   * ランキング小説を含めるか (?)
+   * Whether to include ranking novels (?)
    *
    * @default true
    * @beta
@@ -15,7 +15,7 @@ export interface GetV1NovelRecommendedRequest {
   include_ranking_novels: boolean
 
   /**
-   * すでにおすすめした小説ID群。カンマ区切り (?)
+   * IDs of novels already recommended. Comma-separated (?)
    *
    * @default undefined
    * @beta
@@ -23,7 +23,7 @@ export interface GetV1NovelRecommendedRequest {
   already_recommended?: string
 
   /**
-   * おすすめイラストの最大ブックマークID (?)
+   * Maximum bookmark ID for recommended novels (?)
    *
    * @default undefined
    * @beta
@@ -31,14 +31,14 @@ export interface GetV1NovelRecommendedRequest {
   max_bookmark_id_for_recommend?: number
 
   /**
-   * オフセット
+   * Offset
    *
    * @default undefined
    */
   offset?: number
 
   /**
-   * プライバシーポリシーを含めるか (?)
+   * Whether to include the privacy policy (?)
    *
    * @default true
    * @beta
@@ -47,28 +47,28 @@ export interface GetV1NovelRecommendedRequest {
 }
 
 /**
- * GET /v1/novel/recommended のレスポンス
+ * Response for GET /v1/novel/recommended
  */
 export interface GetV1NovelRecommendedResponse {
   /**
-   * おすすめの小説群
+   * Recommended novels
    */
   novels: PixivNovelItem[]
 
   /**
-   * ランキングの小説群？
+   * Ranking novels?
    *
    * @beta
    */
   ranking_novels: PixivNovelItem[]
 
   /**
-   * プライバシーポリシー
+   * Privacy policy
    */
   privacy_policy?: PrivacyPolicy
 
   /**
-   * 次回のリクエストに使用する URL。
+   * URL to use for the next request.
    *
    * @see {Pixiv.parseQueryString}
    */

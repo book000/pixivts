@@ -3,26 +3,26 @@ import { BookmarkRestrict, BookmarkRestrictCheck } from '../../../../../options'
 import { PixivNovelItem, PixivNovelItemCheck } from '../../../../pixiv-novel'
 
 /**
- * GET /v1/user/bookmarks/novel のリクエスト
+ * Request for GET /v1/user/bookmarks/novel
  */
 export interface GetV1UserBookmarksNovelRequest {
   /**
-   * ユーザーID
+   * User ID
    */
   user_id: number
 
   /**
-   * ブックマーク公開範囲
+   * Bookmark visibility
    */
   restrict: BookmarkRestrict
 
   /**
-   * ブックマークタグ
+   * Bookmark tag
    */
   tag?: string
 
   /**
-   * ブックマークIDの最大値（ページネーション？）
+   * Maximum bookmark ID (pagination?)
    *
    * @beta
    */
@@ -30,16 +30,16 @@ export interface GetV1UserBookmarksNovelRequest {
 }
 
 /**
- * GET /v1/user/bookmarks/novel のレスポンス
+ * Response for GET /v1/user/bookmarks/novel
  */
 export interface GetV1UserBookmarksNovelResponse {
   /**
-   * ブックマークした小説群
+   * Bookmarked novels
    */
   novels: PixivNovelItem[]
 
   /**
-   * 次 URL
+   * Next URL
    */
   next_url: string | null
 }

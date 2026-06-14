@@ -1,5 +1,5 @@
 /**
- * レートリミットエラー時、規定回数以上リトライしてもエラーが解消されない場合にスローされるエラー
+ * Error thrown when a rate limit error is not resolved even after retrying the configured number of times
  */
 export class PixivRateLimitError extends Error {
   constructor(message: string) {

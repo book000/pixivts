@@ -1,43 +1,43 @@
 import { BaseSimpleCheck, CheckFunctions } from '../checks'
 
 /**
- * 圧縮されたフレームのURL
+ * URL of the compressed frames
  *
- * ここのURLも {@link ImageUrls} と同様に、適切なリファラを付与する必要がある
+ * As with {@link ImageUrls}, an appropriate referer must be set for these URLs
  */
 export interface ZipUrls {
   /**
-   * 長辺が最大 600px
+   * Long side is at most 600px
    *
-   * "600x600" を "1920x1080" に変換したらオリジナル画像が得られる？
+   * Converting "600x600" to "1920x1080" may yield the original image?
    */
   medium: string
 }
 
 /**
- * フレーム情報
+ * Frame information
  */
 export interface Frames {
   /**
-   * フレームのファイル名
+   * Frame file name
    */
   file: string
   /**
-   * フレームの表示時間(ms)
+   * Frame display duration (ms)
    */
   delay: number
 }
 
 /**
- * pixiv うごイラアイテム
+ * pixiv ugoira item
  */
 export interface PixivUgoiraItem {
   /**
-   * 圧縮されたフレームのURL
+   * URL of the compressed frames
    */
   zip_urls: ZipUrls
   /**
-   * フレーム情報
+   * Frame information
    */
   frames: Frames[]
 }

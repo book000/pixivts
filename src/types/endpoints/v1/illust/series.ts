@@ -7,45 +7,45 @@ import { OSFilter, OSFilterCheck } from '../../../../options'
 import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
 
 /**
- * GET /v1/illust/series のリクエスト
+ * Request for GET /v1/illust/series
  */
 export interface GetV1IllustSeriesRequest {
   /**
-   * イラストシリーズID
+   * Illust series ID
    */
   illust_series_id: number
 
   /**
-   * OSフィルタ
+   * OS filter
    *
    * @default 'for_ios'
    */
   filter: OSFilter
 
-  // offset: number があるかもしれない。要確認
+  // TODO: There may be an offset: number. Needs verification
 }
 
 /**
- * GET /v1/illust/series のレスポンス
+ * Response for GET /v1/illust/series
  */
 export interface GetV1IllustSeriesResponse {
   /**
-   * シリーズ詳細
+   * Series details
    */
   illust_series_detail: IllustSeriesDetail
 
   /**
-   * シリーズの最初のイラスト
+   * First illust in the series
    */
   illust_series_first_illust: PixivIllustItem
 
   /**
-   * シリーズに含まれているイラスト群
+   * Illusts included in the series
    */
   illusts: PixivIllustItem[]
 
   /**
-   * 次 URL
+   * Next URL
    */
   next_url: string | null
 }

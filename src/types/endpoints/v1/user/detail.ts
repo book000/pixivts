@@ -12,16 +12,16 @@ import { OSFilter, OSFilterCheck } from '../../../../options'
 import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
 
 /**
- * GET /v1/user/detail のリクエスト
+ * Request for GET /v1/user/detail
  */
 export interface GetV1UserDetailRequest {
   /**
-   * ユーザーID
+   * User ID
    */
   user_id: number
 
   /**
-   * OSフィルタ
+   * OS filter
    *
    * @default 'for_ios'
    */
@@ -29,26 +29,26 @@ export interface GetV1UserDetailRequest {
 }
 
 /**
- * GET /v1/user/detail のレスポンス
+ * Response for GET /v1/user/detail
  */
 export interface GetV1UserDetailResponse {
   /**
-   * ユーザーの詳細情報
+   * User details
    */
   user: PixivUserItem
 
   /**
-   * ユーザーのプロフィール情報
+   * User profile information
    */
   profile: PixivUserProfile
 
   /**
-   * ユーザーの公開プロフィール情報
+   * User public profile information
    */
   profile_publicity: PixivUserProfilePublicity
 
   /**
-   * ユーザーの作業環境情報
+   * User workspace information
    */
   workspace: PixivUserProfileWorkspace
 }

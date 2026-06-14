@@ -1,233 +1,233 @@
-# Claude Code 作業方針
+# Claude Code Working Guidelines
 
-## 目的
+## Purpose
 
-このドキュメントは、Claude Code（Claude を用いたコード支援エージェント）が pixivts プロジェクトで作業を行う際の方針とルールを定義します。
+This document defines the policies and rules for Claude Code (an AI coding assistant) when working on the pixivts project.
 
-## 判断記録のルール
+## Decision Recording Rules
 
-判断は必ずレビュー可能な形で記録すること：
+Decisions must always be recorded in a reviewable form:
 
-1. 判断内容の要約
-2. 検討した代替案
-3. 採用しなかった案とその理由
-4. 前提条件・仮定・不確実性
-5. 他エージェントによるレビュー可否
+1. Summary of the decision
+2. Alternatives considered
+3. Alternatives not adopted and the reasons why
+4. Assumptions, premises, and uncertainties
+5. Whether the decision can be reviewed by another agent
 
-前提・仮定・不確実性を明示すること。仮定を事実のように扱ってはならない。
+Assumptions, premises, and uncertainties must be stated explicitly. Assumptions must never be treated as facts.
 
-## プロジェクト概要
+## Project Overview
 
-- 目的: pixiv Unofficial API Library for TypeScript
-- 主な機能:
-  - pixiv の iOS アプリが使用するプライベート API を TypeScript でラップ
-  - イラスト、マンガ、小説の検索・取得
-  - ユーザー情報の取得
-  - ブックマークの追加・削除
-  - ランキング情報の取得
-  - うごイラメタデータの取得
-  - レスポンスの MySQL データベースへの保存機能
+- Purpose: pixiv Unofficial API Library for TypeScript
+- Main features:
+  - Wraps the private API used by the pixiv iOS app in TypeScript
+  - Search and retrieval of illusts, manga, and novels
+  - Retrieval of user information
+  - Adding and removing bookmarks
+  - Retrieval of ranking information
+  - Retrieval of ugoira (animated illust) metadata
+  - Saving responses to a MySQL database
 
-## 重要ルール
+## Important Rules
 
-- 会話言語: 日本語
-- コード内コメント: 日本語
-- エラーメッセージ: 英語
-- 日本語と英数字の間には半角スペースを挿入
+- Project language: English is the primary language for all project artifacts (code, comments, commit messages, PR titles/bodies, and documentation). The only exception is direct conversation with Claude Code itself, which follows the user's personal/global instructions.
+- Code comments: English
+- Error messages: English
+- Insert a half-width space between Japanese and alphanumeric characters (applies only where Japanese text is unavoidable, e.g. quoting real-world Japanese data)
 
-## 環境のルール
+## Environment Rules
 
-- コミットメッセージ: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) に従う
-  - `<type>(<scope>): <description>` 形式
-  - `<description>` は日本語で記載
-- ブランチ命名: [Conventional Branch](https://conventional-branch.github.io) に従う
-  - `<type>/<description>` 形式
-  - `<type>` は短縮形 (feat, fix) を使用
-- GitHub リポジトリを調査のために参照する場合、テンポラリディレクトリに git clone して、そこでコード検索する
-- Renovate が作成した既存のプルリクエストに対して、追加コミットや更新を行ってはならない
+- Commit messages: follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+  - `<type>(<scope>): <description>` format
+  - `<description>` is written in English
+- Branch naming: follow [Conventional Branch](https://conventional-branch.github.io)
+  - `<type>/<description>` format
+  - Use the short form of `<type>` (feat, fix)
+- When researching a GitHub repository, clone it into a temporary directory and search there
+- Do not add commits or updates to existing Renovate-created pull requests
 
-## コード改修時のルール
+## Code Change Rules
 
-- 日本語と英数字の間には、半角スペースを挿入しなければならない
-- TypeScript プロジェクトにおいて、skipLibCheck を有効にして回避することは絶対にしてはならない
-- 関数やインターフェースには、docstring (JSDoc) を記載・更新する。日本語で記載する必要がある
+- Insert a half-width space between Japanese and alphanumeric characters whenever Japanese text is unavoidable
+- Never enable `skipLibCheck` in a TypeScript project to work around type errors
+- Add and update docstrings (JSDoc) for functions and interfaces, written in English
 
-## 相談ルール
+## Consultation Rules
 
-Codex CLI や Gemini CLI といった他エージェント型の AI 開発支援ツールに相談することができる。以下の観点で使い分ける：
+Claude Code can consult other agent-based AI development assistant tools such as Codex CLI and Gemini CLI. Use them according to the following:
 
-- Codex CLI (ask-codex): ソースコードレビューや実装方針検討に特化した AI 開発支援エージェント
-  - 実装コードに対するソースコードレビュー
-  - 関数設計、モジュール内部の実装方針などの局所的な技術判断
-  - アーキテクチャ、モジュール間契約、パフォーマンス／セキュリティといった全体影響の判断
-  - 実装の正当性確認、機械的ミスの検出、既存コードとの整合性確認
-- Gemini CLI (ask-gemini): 外部サービス仕様や最新情報の調査に特化した AI リサーチエージェント
-  - SaaS 仕様、言語・ランタイムのバージョン差、料金・制限・クォータといった、最新の適切な情報が必要な外部依存の判断
-  - 外部一次情報の確認、最新仕様の調査、外部前提条件の検証
+- Codex CLI (ask-codex): an AI development assistant agent specialized in source code review and implementation strategy
+  - Source code review of implementation code
+  - Local technical decisions such as function design and module-internal implementation strategy
+  - Decisions with broader impact, such as architecture, inter-module contracts, performance, and security
+  - Verifying implementation correctness, detecting mechanical mistakes, and checking consistency with existing code
+- Gemini CLI (ask-gemini): an AI research agent specialized in investigating external service specifications and the latest information
+  - Decisions about external dependencies that require up-to-date information, such as SaaS specifications, language/runtime version differences, and pricing/limits/quotas
+  - Verifying primary external sources, researching the latest specifications, and validating external assumptions
 
-他エージェントが指摘・異議を提示した場合、Claude Code は必ず以下のいずれかを行う。黙殺・無言での不採用は禁止する：
+If another agent raises a point or objection, Claude Code must always do one of the following. Silently ignoring or rejecting it without comment is prohibited:
 
-- 指摘を受け入れ、判断を修正する
-- 指摘を退け、その理由を明示する
+- Accept the feedback and revise the decision
+- Reject the feedback and clearly state the reason
 
-以下は必ず実施する：
+The following must always be done:
 
-- 他エージェントの提案を鵜呑みにせず、その根拠や理由を理解する
-- 自身の分析結果と他エージェントの意見が異なる場合は、双方の視点を比較検討する
-- 最終的な判断は、両者の意見を総合的に評価した上で、自身で下す
+- Do not blindly accept another agent's suggestion; understand its rationale and reasoning
+- If your own analysis differs from another agent's opinion, compare both viewpoints
+- Make the final decision yourself, after comprehensively evaluating both viewpoints
 
-## 開発コマンド
+## Development Commands
 
 ```bash
-# 依存関係のインストール
+# Install dependencies
 pnpm install
 
-# ビルド (clean, ctix, compile, generate-docs を順に実行)
+# Build (runs clean, ctix, compile, generate-docs in order)
 pnpm build
 
-# クリーン
+# Clean
 pnpm clean
 
-# コンパイル
+# Compile
 pnpm compile
 
-# ctix によるインデックスファイル自動生成
+# Auto-generate the index file with ctix
 pnpm ctix
 
-# TypeDoc によるドキュメント生成
+# Generate documentation with TypeDoc
 pnpm generate-docs
 
-# テスト (カバレッジ付き)
+# Run tests (with coverage)
 pnpm test
 
-# Lint チェック (prettier, eslint, tsc を順に実行)
+# Lint check (runs prettier, eslint, tsc in order)
 pnpm lint
 
-# Lint 修正 (prettier, eslint, ctix を順に実行)
+# Lint fix (runs prettier, eslint, ctix in order)
 pnpm fix
 
-# Prettier チェック
+# Prettier check
 pnpm lint:prettier
 
-# Prettier 修正
+# Prettier fix
 pnpm fix:prettier
 
-# ESLint チェック
+# ESLint check
 pnpm lint:eslint
 
-# ESLint 修正
+# ESLint fix
 pnpm fix:eslint
 
-# TypeScript 型チェック
+# TypeScript type check
 pnpm lint:tsc
 ```
 
-## アーキテクチャと主要ファイル
+## Architecture and Key Files
 
-### アーキテクチャサマリー
+### Architecture Summary
 
-- `src/pixiv.ts`: メインクラス Pixiv を定義。API リクエストメソッドを提供
-- `src/types/`: API レスポンスの型定義
-  - `pixiv-*.ts`: 共通の型定義（イラスト、小説、ユーザーなど）
-  - `endpoints/`: エンドポイント別のリクエスト・レスポンス型定義
-- `src/saving-responses/`: レスポンスをデータベースに保存する機能
-- `src/options.ts`: Pixiv クラスのオプション定義
-- `src/utils.ts`: ユーティリティ関数
-- `src/checks.ts`: チェック関数
-- `src/index.ts`: エクスポートファイル (ctix で自動生成)
+- `src/pixiv.ts`: Defines the main `Pixiv` class. Provides API request methods
+- `src/types/`: Type definitions for API responses
+  - `pixiv-*.ts`: Common type definitions (illusts, novels, users, etc.)
+  - `endpoints/`: Request/response type definitions per endpoint
+- `src/saving-responses/`: Functionality for saving responses to the database
+- `src/options.ts`: Option definitions for the `Pixiv` class
+- `src/utils.ts`: Utility functions
+- `src/checks.ts`: Check functions
+- `src/index.ts`: Export file (auto-generated by ctix)
 
-### 主要ディレクトリ
+### Key Directories
 
-- `src/`: ソースコード
-- `src/types/`: 型定義
-- `src/types/endpoints/`: エンドポイント別の型定義
-- `src/saving-responses/`: レスポンス保存機能
-- `dist/`: ビルド成果物
-- `docs/`: TypeDoc 生成ドキュメント
+- `src/`: Source code
+- `src/types/`: Type definitions
+- `src/types/endpoints/`: Type definitions per endpoint
+- `src/saving-responses/`: Response-saving functionality
+- `dist/`: Build output
+- `docs/`: TypeDoc-generated documentation
 
-## 実装パターン
+## Implementation Patterns
 
-### 推奨パターン
+### Recommended Patterns
 
-- API リクエストメソッドは axios の AxiosResponse を返す
-- 型定義は snake_case から camelCase へのマッピングを snake-camel-types で行う
-- レスポンスの型は `src/types/endpoints/` 以下に配置
-- テストは `*.test.ts` ファイルに記載
-- 公開 API には JSDoc コメントを日本語で記載
+- API request methods return an axios `AxiosResponse`
+- Type definitions map snake_case to camelCase via snake-camel-types
+- Response types are placed under `src/types/endpoints/`
+- Tests are written in `*.test.ts` files
+- Public APIs have JSDoc comments written in English
 
-### 非推奨パターン
+### Discouraged Patterns
 
-- `skipLibCheck` を有効にして型エラーを回避する
-- エラーメッセージを日本語で記載する
-- セミコロンを使用する (Prettier 設定で `semi: false`)
+- Enabling `skipLibCheck` to work around type errors
+- Writing error messages in Japanese
+- Using semicolons (Prettier is configured with `semi: false`)
 
-## テスト
+## Testing
 
-### テスト方針
+### Testing Policy
 
-- テストフレームワーク: Jest
-- カバレッジ収集: `src/**/*.ts` (ただし `src/index.ts`, `src/**/*.test.ts`, `src/types/**` を除く)
-- スナップショットテスト: `src/__snapshots__/` に配置
+- Test framework: Jest
+- Coverage collection: `src/**/*.ts` (excluding `src/index.ts`, `src/**/*.test.ts`, and `src/types/**`)
+- Snapshot tests: placed under `src/__snapshots__/`
 
-### 追加テスト条件
+### Additional Testing Requirements
 
-- 新しい API メソッドを追加する場合、対応するテストを追加する
-- エッジケースや例外処理のテストも記載する
+- When adding a new API method, add a corresponding test
+- Include tests for edge cases and exception handling
 
-## ドキュメント更新ルール
+## Documentation Update Rules
 
-### 更新対象
+### Targets
 
-- README.md: 機能追加や使用方法の変更時
-- TypeDoc コメント (JSDoc): 公開 API の変更時
-- src/index.ts: ctix で自動生成されるため手動編集不要
+- README.md: when adding features or changing usage
+- TypeDoc comments (JSDoc): when changing public APIs
+- src/index.ts: auto-generated by ctix, no manual edits needed
 
-### 更新タイミング
+### Timing
 
-- API メソッドの追加・変更時: 対応する JSDoc コメントを更新
-- 機能追加時: README.md の Features セクションを更新
-- 型定義の追加・変更時: 対応する JSDoc コメントを追加・更新
+- When adding/changing an API method: update the corresponding JSDoc comments
+- When adding a feature: update the Features section of README.md
+- When adding/changing type definitions: add/update the corresponding JSDoc comments
 
-## 作業チェックリスト
+## Work Checklist
 
-### 新規改修時
+### Before New Work
 
-1. プロジェクトについて詳細に探索し理解すること
-2. 作業を行うブランチが適切であること。すでに PR を提出しクローズされたブランチでないこと
-3. 最新のリモートブランチに基づいた新規ブランチであること
-4. PR がクローズされ、不要となったブランチは削除されていること
-5. `pnpm install` により依存パッケージをインストールしたこと
+1. Thoroughly explore and understand the project
+2. Verify the working branch is appropriate — not a branch with a closed PR
+3. Verify it is a new branch based on the latest remote branch
+4. Verify that closed/unnecessary branches have been deleted
+5. Install dependencies with `pnpm install`
 
-### コミット・プッシュ前
+### Before Commit/Push
 
-1. コミットメッセージが Conventional Commits に従っていること（`<description>` は日本語）
-2. コミット内容にセンシティブな情報が含まれていないこと
-3. `pnpm lint` でエラーが発生しないこと
-4. `pnpm test` で全テストがパスすること
-5. 動作確認を行い、期待通り動作すること
+1. Commit message follows Conventional Commits (`<description>` in English)
+2. No sensitive information in the commit
+3. `pnpm lint` runs without errors
+4. `pnpm test` passes all tests
+5. Verify the change works as expected
 
-### PR 作成前
+### Before Creating a PR
 
-1. プルリクエストの作成をユーザーから依頼されていること
-2. コミット内容にセンシティブな情報が含まれていないこと
-3. コンフリクトする恐れが無いこと
+1. The user has requested that a PR be created
+2. No sensitive information in the commit
+3. No risk of conflicts
 
-### PR 作成後
+### After Creating a PR
 
-1. コンフリクトが発生していないこと
-2. PR 本文の内容は、ブランチの現在の状態を、今までのこの PR での更新履歴を含むことなく、最新の状態のみ、漏れなく日本語で記載されていること
-3. `gh pr checks <PR ID> --watch` で GitHub Actions CI を待ち、その結果がエラーとなっていないこと
-4. `request-review-copilot` コマンド（このリポジトリ／開発環境で用意されている、GitHub Copilot へのレビュー依頼用の補助コマンド）が存在する場合、それを使用して GitHub Copilot へレビューを依頼すること
-5. 10 分以内に投稿される GitHub Copilot レビューへの対応を行うこと。対応したら、レビューコメントそれぞれに対して返信を行うこと
-6. Claude Code のコマンド `/code-review:code-review` を実行し、コードレビューを実施したこと。スコアが 50 以上の指摘事項に対して対応すること
+1. Confirm no conflicts have occurred
+2. Update the PR body to reflect only the current state of the branch, in English, without including the update history of this PR
+3. Wait for GitHub Actions CI with `gh pr checks <PR ID> --watch` and confirm it does not fail
+4. If the `request-review-copilot` command (a helper command available in this repository/development environment for requesting GitHub Copilot reviews) exists, use it to request a review from GitHub Copilot
+5. Respond to GitHub Copilot review comments posted within 10 minutes. After addressing them, reply to each review comment
+6. Run the Claude Code command `/code-review:code-review` to perform a code review. Address all findings with a score of 50 or higher
 
-## リポジトリ固有
+## Repository-Specific Notes
 
-- このプロジェクトは npm パッケージ `@book000/pixivts` として公開されている
-- API ドキュメントは GitHub Pages (https://book000.github.io/pixivts/) でホスティングされている
-- TypeDoc のドキュメント生成は master ブランチの内容を参照する (`--gitRevision master`)
-- ctix を使用して `src/index.ts` を自動生成している。手動編集してはならない
-- TypeORM を使用してレスポンスを MySQL データベースに保存する機能 (`src/saving-responses/`) がある
-- Renovate による依存関係の自動更新が有効になっている
-- パッケージマネージャーは pnpm 10.28.1 を使用
-- Node.js のバージョンは `.node-version` ファイルで管理されている
+- This project is published as the npm package `@book000/pixivts`
+- API documentation is hosted on GitHub Pages (https://book000.github.io/pixivts/)
+- TypeDoc documentation generation references the content of the `master` branch (`--gitRevision master`)
+- `src/index.ts` is auto-generated using ctix. Do not edit it manually
+- There is a feature using TypeORM to save responses to a MySQL database (`src/saving-responses/`)
+- Renovate is enabled for automatic dependency updates
+- The package manager is pnpm 10.28.1
+- The Node.js version is managed via the `.node-version` file

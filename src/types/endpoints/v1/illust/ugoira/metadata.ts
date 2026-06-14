@@ -2,21 +2,21 @@ import { BaseMultipleCheck, CheckFunctions } from '../../../../../checks'
 import { PixivUgoiraItem, PixivUgoiraItemCheck } from '../../../../pixiv-ugoira'
 
 /**
- * GET /v1/illust/ugoira/detail のリクエスト
+ * Request for GET /v1/illust/ugoira/detail
  */
 export interface GetV1IllustUgoiraMetadataRequest {
   /**
-   * イラストID
+   * Illust ID
    */
   illust_id: number
 }
 
 /**
- * GET /v1/illust/ugoira/detail のレスポンス
+ * Response for GET /v1/illust/ugoira/detail
  */
 export interface GetV1IllustUgoiraMetadataResponse {
   /**
-   * うごイラの詳細情報
+   * Ugoira details
    */
   ugoira_metadata: PixivUgoiraItem
 }

@@ -7,14 +7,14 @@ export abstract class BaseSimpleCheck<T> {
   getFailedChecks(data: T, reThrow = false): string[] {
     const checks = this.checks()
     return Object.keys(checks).filter((key) => {
-      // 失敗ならtrueを返す
+      // Returns true if it failed
       try {
-        return !checks[key](data) // Trueかつ例外が発生しない場合は成功 (falseを返す)
+        return !checks[key](data) // Success if it returns true without throwing (returns false)
       } catch (error) {
         if (reThrow) {
           throw error
         }
-        return true // 例外の場合は失敗 (true)
+        return true // An exception means failure (true)
       }
     })
   }
@@ -40,14 +40,14 @@ export abstract class BaseMultipleCheck<T, U> {
   getFailureRequestChecks(data: T, reThrow = false): string[] {
     const checks = this.requestChecks()
     return Object.keys(checks).filter((key) => {
-      // 失敗ならtrueを返す
+      // Returns true if it failed
       try {
-        return !checks[key](data) // Trueかつ例外が発生しない場合は成功 (falseを返す)
+        return !checks[key](data) // Success if it returns true without throwing (returns false)
       } catch (error) {
         if (reThrow) {
           throw error
         }
-        return true // 例外の場合は失敗 (true)
+        return true // An exception means failure (true)
       }
     })
   }
@@ -67,14 +67,14 @@ export abstract class BaseMultipleCheck<T, U> {
   getFailedResponseChecks(data: U, reThrow = false): string[] {
     const checks = this.responseChecks()
     return Object.keys(checks).filter((key) => {
-      // 失敗ならtrueを返す
+      // Returns true if it failed
       try {
-        return !checks[key](data) // Trueかつ例外が発生しない場合は成功 (falseを返す)
+        return !checks[key](data) // Success if it returns true without throwing (returns false)
       } catch (error) {
         if (reThrow) {
           throw error
         }
-        return true // 例外の場合は失敗 (true)
+        return true // An exception means failure (true)
       }
     })
   }

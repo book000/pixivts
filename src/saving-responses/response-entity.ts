@@ -13,27 +13,27 @@ import {
 export class DBResponse extends BaseEntity {
   @PrimaryGeneratedColumn('increment', {
     type: 'int',
-    comment: 'レスポンスID',
+    comment: 'Response ID',
   })
   id!: number
 
   @Column({
     type: 'varchar',
     length: 10,
-    comment: 'エンドポイントのメソッド',
+    comment: 'Endpoint method',
   })
   method!: string
 
   @Column({
     type: 'varchar',
     length: 255,
-    comment: 'エンドポイントの名前',
+    comment: 'Endpoint name',
   })
   endpoint!: string
 
   @Column({
     type: 'text',
-    comment: 'リクエストURL',
+    comment: 'Request URL',
     nullable: true,
   })
   url!: string | null
@@ -41,20 +41,20 @@ export class DBResponse extends BaseEntity {
   @Column({
     type: 'varchar',
     length: 255,
-    comment: 'リクエストURLのハッシュ値',
+    comment: 'Hash value of the request URL',
   })
   urlHash!: string
 
   @Column({
     type: 'longtext',
-    comment: 'リクエストヘッダー',
+    comment: 'Request headers',
     nullable: true,
   })
   requestHeaders!: string | null
 
   @Column({
     type: 'longtext',
-    comment: 'リクエストボディ',
+    comment: 'Request body',
     nullable: true,
   })
   requestBody!: string | null
@@ -62,32 +62,32 @@ export class DBResponse extends BaseEntity {
   @Column({
     type: 'varchar',
     length: 10,
-    comment: 'レスポンスの種別',
+    comment: 'Response type',
   })
   responseType!: string
 
   @Column({
     type: 'int',
-    comment: 'レスポンスのステータスコード',
+    comment: 'Response status code',
   })
   statusCode!: number
 
   @Column({
     type: 'longtext',
-    comment: 'レスポンスヘッダー',
+    comment: 'Response headers',
     nullable: true,
   })
   responseHeaders!: string | null
 
   @Column({
     type: 'longtext',
-    comment: 'レスポンスボディ',
+    comment: 'Response body',
   })
   responseBody!: string
 
   @Column({
     type: 'datetime',
-    comment: 'データ登録日時',
+    comment: 'Date and time the record was created',
     precision: 3,
   })
   createdAt!: Date

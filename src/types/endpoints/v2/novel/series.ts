@@ -6,16 +6,16 @@ import {
 } from '../../../pixiv-novel-series'
 
 /**
- * GET /v2/novel/series のリクエスト
+ * Request for GET /v2/novel/series
  */
 export interface GetV2NovelSeriesRequest {
   /**
-   * 小説シリーズID
+   * Novel series ID
    */
   series_id: number
 
   /**
-   * 小説のオフセット？1リクエストにつき30個ずつ取得できるっぽい
+   * Novel offset? It seems 30 items can be retrieved per request
    *
    * @default undefined
    * @beta
@@ -24,31 +24,31 @@ export interface GetV2NovelSeriesRequest {
 }
 
 /**
- * GET /v2/novel/series のレスポンス
+ * Response for GET /v2/novel/series
  */
 export interface GetV2NovelSeriesResponse {
   /**
-   * シリーズ詳細
+   * Series details
    */
   novel_series_detail: NovelSeriesDetail
 
   /**
-   * シリーズの1個目の小説データ
+   * First novel data in the series
    */
   novel_series_first_novel: PixivNovelItem
 
   /**
-   * シリーズの最新の小説データ
+   * Latest novel data in the series
    */
   novel_series_latest_novel: PixivNovelItem
 
   /**
-   * シリーズにある小説一覧
+   * List of novels in the series
    */
   novels: PixivNovelItem[]
 
   /**
-   * 次 URL
+   * Next URL
    */
   next_url: string | null
 }

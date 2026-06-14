@@ -2,13 +2,13 @@ import { BaseSimpleCheck, CheckFunctions } from '../checks'
 import { PixivUser, PixivUserCheck } from './pixiv-common'
 
 /**
- * pixiv ユーザーアイテム
+ * pixiv user item
  */
 export type PixivUserItem = PixivUser & {
   /**
-   * 自己紹介
+   * Self-introduction
    *
-   * 改行は \r\n っぽい。
+   * Line breaks appear to be \r\n.
    */
   comment: string
 }
@@ -23,135 +23,135 @@ export class PixivUserItemCheck extends BaseSimpleCheck<PixivUserItem> {
 }
 
 /**
- * pixiv ユーザーの性別
+ * Gender of the pixiv user
  */
 export type Gender = 'male' | 'female' | 'unknown'
 
 /**
- * pixiv ユーザープロフィール
+ * pixiv user profile
  */
 export interface PixivUserProfile {
-  /** ウェブサイト */
+  /** Website */
   webpage: string | null
 
-  /** 性別 */
+  /** Gender */
   gender: Gender
 
-  /** 生年月日（YYYY-MM-DD） */
+  /** Date of birth (YYYY-MM-DD) */
   birth: string
 
-  /** 誕生日（MM-DD） */
+  /** Birthday (MM-DD) */
   birth_day: string
 
-  /** 誕生年（YYYY） */
+  /** Birth year (YYYY) */
   birth_year: number
 
-  /** 住所（国名と公開なら都道府県。スペース区切り） */
+  /** Address (country name, and prefecture if public, space-separated) */
   region: string
 
   /**
-   * 都道府県番号
+   * Prefecture number
    *
-   * ・0: 非公開
-   * ・1～47: 都道府県番号
-   * ・48: 日本国外？
+   * - 0: Private
+   * - 1-47: Prefecture number
+   * - 48: Outside Japan?
    */
   address_id: number
 
   /**
-   * 国名コード
+   * Country code
    *
-   * ・日本の場合は空文字列
-   * ・ISO 3166-1 alpha-2 形式
+   * - Empty string for Japan
+   * - ISO 3166-1 alpha-2 format
    */
   country_code: string
 
-  /** 職業 */
+  /** Occupation */
   job: string
 
   /**
-   * 職業ID
+   * Occupation ID
    *
-   * ナンバリングは以下の通り。
-   * 0: 未指定、または非公開
-   * 1: IT関係
-   * 2: 事務系
-   * 3: 技術系
-   * 4: 営業・企画系
-   * 5: クリエーター系
-   * 6: 販売系
-   * 7: サービス業
-   * 8: ガテン系
-   * 9: 役員・管理職
-   * 10: 専門職
-   * 11: 公務員
-   * 12: 教員
-   * 13: 自営業
-   * 14: アーティスト
-   * 15: フリーター
-   * 16: 小学生
-   * 17: 中学生
-   * 18: 高校生
-   * 19: 大学生・院生
-   * 20: 専門学校生
-   * 21: 主婦
-   * 22: 求職中
-   * 23: その他
+   * The numbering is as follows.
+   * 0: Unspecified or private
+   * 1: IT-related
+   * 2: Office work
+   * 3: Technical
+   * 4: Sales / planning
+   * 5: Creator
+   * 6: Sales
+   * 7: Service industry
+   * 8: Manual labor
+   * 9: Executive / manager
+   * 10: Specialist
+   * 11: Civil servant
+   * 12: Teacher
+   * 13: Self-employed
+   * 14: Artist
+   * 15: Freeter (part-time worker)
+   * 16: Elementary school student
+   * 17: Junior high school student
+   * 18: High school student
+   * 19: University / graduate student
+   * 20: Vocational school student
+   * 21: Homemaker
+   * 22: Job seeker
+   * 23: Other
    */
   job_id: number
 
-  /** フォロー中のユーザ数 */
+  /** Number of users being followed */
   total_follow_users: number
 
-  /** マイピクのユーザ数 */
+  /** Number of "mypixiv" users */
   total_mypixiv_users: number
 
-  /** 投稿イラスト数 */
+  /** Number of posted illusts */
   total_illusts: number
 
-  /** 投稿マンガ数 */
+  /** Number of posted manga */
   total_manga: number
 
-  /** 投稿小説数 */
+  /** Number of posted novels */
   total_novels: number
 
-  /** 公開でのブックマーク数 */
+  /** Number of public bookmarks */
   total_illust_bookmarks_public: number
 
-  /** 作成イラストシリーズ数 */
+  /** Number of created illust series */
   total_illust_series: number
 
-  /** 作成小説シリーズ数 */
+  /** Number of created novel series */
   total_novel_series: number
 
-  /** 背景画像 URL */
+  /** Background image URL */
   background_image_url: string | null
 
   /**
-   * Twitter アカウントのスクリーンネーム
+   * Twitter account screen name
    *
-   * ・未設定の場合は空文字列
-   * ・@ は含まない
-   * ・連携しているわけではなく手動入力なので、スクリーンネーム変更やアカウント削除などによって存在しない可能性あり
-   * ・Twitter 以外の Instagram や Tumblr などは取得できない
+   * - Empty string if not set
+   * - Does not include @
+   * - This is manually entered rather than linked, so it may not exist due to a screen name change, account deletion, etc.
+   * - Other services such as Instagram or Tumblr cannot be retrieved
    */
   twitter_account: string
 
-  /** Twitter アカウント URL */
+  /** Twitter account URL */
   twitter_url: string
 
   /**
-   * Pawoo アカウント URL
+   * Pawoo account URL
    *
-   * ・Pawoo でアカウント連携をしており、「Pawooアカウントへのリンクを表示」にチェックが入っている場合のみ。
-   * ・連携していない場合や表示させていない場合は空文字列
+   * - Only present if linked with a Pawoo account and "Show link to Pawoo account" is checked.
+   * - Empty string if not linked or not displayed
    */
   pawoo_url: string
 
-  /** プレミアムアカウントかどうか */
+  /** Whether it is a premium account */
   is_premium: boolean
 
-  /** カスタムプロフィール画像を使用しているかどうか */
+  /** Whether a custom profile image is used */
   is_using_custom_profile_image: boolean
 }
 
@@ -220,28 +220,28 @@ export class PixivUserProfileCheck extends BaseSimpleCheck<PixivUserProfile> {
 }
 
 /**
- * pixiv ユーザープロフィールの公開設定値
+ * Visibility setting value for a pixiv user profile
  */
 export type Publicity = 'public' | 'private' | 'mypixiv'
 
 /**
- * pixiv ユーザープロフィール公開設定
+ * pixiv user profile visibility settings
  *
- * 基本として public, private, mypixiv のいずれか。
- * public は公開、private は非公開、mypixiv はマイピクのみ公開。
+ * Basically one of public, private, or mypixiv.
+ * public means visible to everyone, private means hidden, and mypixiv means visible only to "mypixiv" users.
  */
 export interface PixivUserProfilePublicity {
-  /** 性別 */
+  /** Gender */
   gender: Publicity
-  /** 住所（都道府県） */
+  /** Address (prefecture) */
   region: Publicity
-  /** 誕生日 */
+  /** Birthday */
   birth_day: Publicity
-  /** 誕生年 */
+  /** Birth year */
   birth_year: Publicity
-  /** 職業 */
+  /** Occupation */
   job: Publicity
-  /** Pawoo アカウントへのリンクを表示するか */
+  /** Whether to show a link to the Pawoo account */
   pawoo: boolean
 }
 
@@ -261,34 +261,34 @@ export class PixivUserProfilePublicityCheck extends BaseSimpleCheck<PixivUserPro
 }
 
 /**
- * pixiv ユーザー作業環境情報
+ * pixiv user workspace information
  */
 export interface PixivUserProfileWorkspace {
-  /** コンピュータ */
+  /** Computer */
   pc: string
-  /** モニター */
+  /** Monitor */
   monitor: string
-  /** ソフト */
+  /** Software */
   tool: string
-  /** スキャナー */
+  /** Scanner */
   scanner: string
-  /** タブレット */
+  /** Tablet */
   tablet: string
-  /** マウス */
+  /** Mouse */
   mouse: string
-  /** プリンター */
+  /** Printer */
   printer: string
-  /** 机の上にあるもの */
+  /** Items on the desk */
   desktop: string
-  /** 絵を描く時に聴く音楽 */
+  /** Music listened to while drawing */
   music: string
-  /** 机 */
+  /** Desk */
   desk: string
-  /** 椅子 */
+  /** Chair */
   chair: string
-  /** その他 */
+  /** Other */
   comment: string
-  /** 画像 */
+  /** Image */
   workspace_image_url: string | null
 }
 

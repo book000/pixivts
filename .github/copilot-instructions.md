@@ -1,114 +1,114 @@
 # GitHub Copilot Instructions
 
-## プロジェクト概要
+## Project Overview
 
-- 目的: pixiv Unofficial API Library for TypeScript
-- 主な機能: pixiv の iOS アプリが使用するプライベート API を利用した TypeScript ライブラリを提供
-- 対象ユーザー: pixiv API を利用したい TypeScript/Node.js 開発者
+- Purpose: pixiv Unofficial API Library for TypeScript
+- Main features: provides a TypeScript library using the private API used by the pixiv iOS app
+- Target users: TypeScript/Node.js developers who want to use the pixiv API
 
-## 共通ルール
+## Common Rules
 
-- 会話は日本語で行う。
-- PR とコミットは Conventional Commits に従う（`<description>` は日本語で記載）。
-- 日本語と英数字の間には半角スペースを入れる。
+- Project language: English is the primary language for all project artifacts (code, comments, commit messages, PR titles/bodies, and documentation). The only exception is direct conversation with Claude Code itself, which follows the user's personal/global instructions.
+- PRs and commits follow Conventional Commits (`<description>` written in English).
+- Insert a half-width space between Japanese and alphanumeric characters whenever Japanese text is unavoidable.
 
-## 技術スタック
+## Tech Stack
 
-- 言語: TypeScript (es2020)
-- パッケージマネージャー: pnpm
-- テストフレームワーク: Jest
+- Language: TypeScript (es2020)
+- Package manager: pnpm
+- Test framework: Jest
 - Lint: ESLint (@book000/eslint-config)
 - Format: Prettier
-- ドキュメント生成: TypeDoc
-- 主要な依存関係: axios, mysql2, typeorm
+- Documentation generation: TypeDoc
+- Main dependencies: axios, mysql2, typeorm
 
-## コーディング規約
+## Coding Conventions
 
-- フォーマット: Prettier を使用
-  - セミコロンなし (`semi: false`)
-  - シングルクォート使用 (`singleQuote: true`)
-  - タブ幅 2 (`tabWidth: 2`)
-  - 改行コード: LF
-- 命名規則:
-  - クラス: PascalCase
-  - 関数・変数: camelCase
-  - 定数: UPPER_SNAKE_CASE
+- Formatting: use Prettier
+  - No semicolons (`semi: false`)
+  - Single quotes (`singleQuote: true`)
+  - Tab width 2 (`tabWidth: 2`)
+  - Line endings: LF
+- Naming conventions:
+  - Classes: PascalCase
+  - Functions/variables: camelCase
+  - Constants: UPPER_SNAKE_CASE
 - TypeScript:
-  - strict モード有効
-  - `skipLibCheck` での回避は禁止
-  - 関数とインターフェースには docstring (JSDoc) を日本語で記載
-- コメント: 日本語で記載
-- エラーメッセージ: 英語で記載
+  - strict mode enabled
+  - Working around issues with `skipLibCheck` is prohibited
+  - Functions and interfaces have docstrings (JSDoc) written in English
+- Comments: written in English
+- Error messages: written in English
 
-## 開発コマンド
+## Development Commands
 
 ```bash
-# 依存関係のインストール
+# Install dependencies
 pnpm install
 
-# ビルド
+# Build
 pnpm build
 
-# クリーン
+# Clean
 pnpm clean
 
-# コンパイル
+# Compile
 pnpm compile
 
-# テスト
+# Run tests
 pnpm test
 
-# Lint チェック
+# Lint check
 pnpm lint
 
-# Lint 修正
+# Lint fix
 pnpm fix
 
-# Prettier チェック
+# Prettier check
 pnpm lint:prettier
 
-# Prettier 修正
+# Prettier fix
 pnpm fix:prettier
 
-# ESLint チェック
+# ESLint check
 pnpm lint:eslint
 
-# ESLint 修正
+# ESLint fix
 pnpm fix:eslint
 
-# TypeScript 型チェック
+# TypeScript type check
 pnpm lint:tsc
 
-# ドキュメント生成
+# Generate documentation
 pnpm generate-docs
 ```
 
-## テスト方針
+## Testing Policy
 
-- テストフレームワーク: Jest
-- テストファイル: `*.test.ts`
-- カバレッジ収集対象: `src/**/*.ts` (ただし `src/index.ts`, `src/**/*.test.ts`, `src/types/**` を除く)
-- 新しい機能を追加する場合は、対応するテストを追加すること
+- Test framework: Jest
+- Test files: `*.test.ts`
+- Coverage collection target: `src/**/*.ts` (excluding `src/index.ts`, `src/**/*.test.ts`, and `src/types/**`)
+- When adding a new feature, add a corresponding test
 
-## セキュリティ / 機密情報
+## Security / Sensitive Information
 
-- API キーや認証情報は Git にコミットしない。
-- ログに個人情報や認証情報を出力しない。
-- テストコードでは実際の認証情報を使用せず、モックやダミーデータを使用すること。
+- Do not commit API keys or credentials to Git.
+- Do not output personal information or credentials to logs.
+- Do not use real credentials in test code; use mocks or dummy data.
 
-## ドキュメント更新
+## Documentation Updates
 
-以下のドキュメントは適宜更新すること：
+Update the following documents as needed:
 
-- README.md: 機能追加や使用方法の変更時
-- TypeDoc コメント: 公開 API の変更時
-- CHANGELOG (存在する場合): バージョンアップ時
+- README.md: when adding features or changing usage
+- TypeDoc comments: when changing public APIs
+- CHANGELOG (if present): on version bumps
 
-## リポジトリ固有
+## Repository-Specific Notes
 
-- このプロジェクトは npm パッケージとして公開されている。
-- API ドキュメントは GitHub Pages でホスティングされている。
-- TypeDoc のドキュメント生成は master ブランチの内容を参照する。
-- ctix を使用してインデックスファイルを自動生成している。
-- TypeORM を使用してレスポンスを MySQL データベースに保存する機能がある。
-- Renovate による依存関係の自動更新が有効になっている。
+- This project is published as an npm package.
+- API documentation is hosted on GitHub Pages.
+- TypeDoc documentation generation references the content of the `master` branch.
+- The index file is auto-generated using ctix.
+- There is a feature using TypeORM to save responses to a MySQL database.
+- Renovate is enabled for automatic dependency updates.

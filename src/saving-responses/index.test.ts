@@ -4,7 +4,7 @@ import { DataSource } from 'typeorm'
 import { ResponseDatabase, ResponseEndPoint } from './index'
 import { DBResponse } from './response-entity'
 
-// インターフェース定義を追加
+// Add interface definition
 interface MockDataSource {
   initialize: jest.Mock
   runMigrations: jest.Mock
@@ -37,7 +37,7 @@ interface MockQueryBuilder {
   getRawMany: jest.Mock
 }
 
-// モック用のJestの型拡張
+// Jest type extension for mocking
 interface MockDBResponseClass {
   new (): MockResponse
   find: jest.Mock
@@ -45,7 +45,7 @@ interface MockDBResponseClass {
   createQueryBuilder: jest.Mock
 }
 
-// DataSourceをモック化する
+// Mock the DataSource
 jest.mock('typeorm', () => {
   const originalModule = jest.requireActual('typeorm')
   const mockDataSource: MockDataSource = {
@@ -65,9 +65,9 @@ jest.mock('typeorm', () => {
   }
 })
 
-// DBResponseをモック化する
+// Mock the DBResponse
 jest.mock('./response-entity', () => {
-  // モックの応答オブジェクト
+  // Mock response object
   const mockResponseObj: Omit<MockResponse, 'save'> = {
     id: 1,
     method: 'GET',
@@ -83,10 +83,10 @@ jest.mock('./response-entity', () => {
     createdAt: new Date(),
   }
 
-  // saveメソッドをモック
+  // Mock the save method
   const mockSave = jest.fn().mockResolvedValue({ ...mockResponseObj })
 
-  // モックのクエリビルダー
+  // Mock query builder
   const mockQueryBuilder: MockQueryBuilder = {
     where: jest.fn().mockReturnThis(),
     groupBy: jest.fn().mockReturnThis(),
@@ -97,7 +97,7 @@ jest.mock('./response-entity', () => {
     ]),
   }
 
-  // コンストラクタとクラスメソッドの両方を持つモックオブジェクトを作成
+  // Create a mock object that has both a constructor and class methods
   const MockDBResponseClass = jest.fn().mockImplementation(function () {
     return {
       ...mockResponseObj,
@@ -105,7 +105,7 @@ jest.mock('./response-entity', () => {
     }
   }) as unknown as MockDBResponseClass
 
-  // 静的メソッドを追加
+  // Add static methods
   MockDBResponseClass.find = jest
     .fn()
     .mockResolvedValue([{ ...mockResponseObj }])
@@ -127,7 +127,7 @@ describe('ResponseDatabase', () => {
   beforeEach(() => {
     jest.clearAllMocks()
 
-    // テスト用の環境変数をクリア
+    // Clear environment variables used for testing
     delete process.env.RESPONSE_DB_HOSTNAME
     delete process.env.RESPONSE_DB_PORT
     delete process.env.RESPONSE_DB_USERNAME
@@ -142,13 +142,13 @@ describe('ResponseDatabase', () => {
       database: 'testdb',
     })
 
-    // モックされたDataSourceを取得
+    // Get the mocked DataSource
     mockDataSource = responseDB.getDataSource() as unknown as MockDataSource
   })
 
   describe('constructor', () => {
     it('should use options from constructor parameters', () => {
-      // 副作用のためだけにnewを使わないように変数を宣言して結果を検証する
+      // Declare a variable and verify the result instead of using new only for the side effect
       const testDB = new ResponseDatabase({
         hostname: 'custom-host',
         port: '1234',
@@ -176,7 +176,7 @@ describe('ResponseDatabase', () => {
       process.env.RESPONSE_DB_PASSWORD = 'env-pass'
       process.env.RESPONSE_DB_DATABASE = 'env-db'
 
-      // 副作用のためだけにnewを使わないように変数を宣言して結果を検証する
+      // Declare a variable and verify the result instead of using new only for the side effect
       const testDB = new ResponseDatabase()
 
       expect(testDB).toBeDefined()
@@ -208,13 +208,13 @@ describe('ResponseDatabase', () => {
     let originalPrintDebug: any
 
     beforeEach(() => {
-      // テスト中のログ出力を抑制するためにprintDebugをモック化
+      // Mock printDebug to suppress log output during the test
       originalPrintDebug = ResponseDatabase.printDebug
       ResponseDatabase.printDebug = jest.fn()
     })
 
     afterEach(() => {
-      // テスト後に元に戻す
+      // Restore after the test
       ResponseDatabase.printDebug = originalPrintDebug
     })
 
@@ -247,21 +247,21 @@ describe('ResponseDatabase', () => {
       expect(result).toBe(false)
     })
 
-    // カバレッジ向上のための追加テスト - 行252を実行するケース
+    // Additional test to improve coverage - the case that executes line 252
     it('should correctly handle initialization error and return false', async () => {
       mockDataSource.isInitialized = false
       const initError = new Error('Database connection failed')
       mockDataSource.initialize.mockRejectedValueOnce(initError)
 
-      // printDebugをさらにスパイして実際に呼び出されたことを確認
+      // Further spy on printDebug to confirm it was actually called
       const printDebugSpy = jest.spyOn(ResponseDatabase, 'printDebug')
 
       const result = await responseDB.init()
 
-      // ケース内で失敗し、falseを返すことを確認
+      // Confirm it fails within the case and returns false
       expect(result).toBe(false)
 
-      // エラーメッセージでprintDebugが呼ばれたことを確認
+      // Confirm printDebug was called with the error message
       expect(printDebugSpy).toHaveBeenCalledWith(
         'Responses database initialization failed',
         initError
@@ -368,7 +368,7 @@ describe('ResponseDatabase', () => {
         { id: 2, method: 'POST', endpoint: '/test2', statusCode: 201 },
       ]
 
-      // DBResponse.findをモック
+      // Mock DBResponse.find
       jest.spyOn(DBResponse, 'find').mockResolvedValue(mockResponses as any)
     })
 
@@ -587,9 +587,9 @@ describe('ResponseDatabase', () => {
   })
 
   describe('parsePort', () => {
-    // プライベートメソッドをテストするためのヘルパー関数
+    // Helper function for testing private methods
     const testParsePort = (port?: string): number => {
-      // @ts-expect-error プライベートメソッドへのアクセス
+      // @ts-expect-error access to a private method
       return responseDB.parsePort(port)
     }
 

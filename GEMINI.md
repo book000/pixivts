@@ -1,104 +1,104 @@
-# Gemini CLI 作業方針
+# Gemini CLI Working Guidelines
 
-## 目的
+## Purpose
 
-このドキュメントは、Google が提供する AI エージェント用コマンドラインツールである Gemini CLI（参考: https://ai.google.dev/gemini-api/docs/developer-tools?hl=ja） が pixivts プロジェクトで作業を行う際のコンテキストと作業方針を定義します。
+This document defines the context and working policy for Gemini CLI (a command-line AI agent tool provided by Google; see https://ai.google.dev/gemini-api/docs/developer-tools) when working on the pixivts project.
 
-## 出力スタイル
+## Output Style
 
-- 言語: 日本語
-- トーン: 簡潔で技術的
-- 形式: Markdown
+- Language: English
+- Tone: concise and technical
+- Format: Markdown
 
-## 共通ルール
+## Common Rules
 
-- 会話は日本語で行う
-- PR とコミットは Conventional Commits に従う（`<description>` は日本語で記載）
-- 日本語と英数字の間には半角スペースを入れる
+- Conduct conversations in English
+- PRs and commits follow Conventional Commits (`<description>` written in English)
+- Insert a half-width space between Japanese and alphanumeric characters whenever Japanese text is unavoidable
 
-## プロジェクト概要
+## Project Overview
 
-- 目的: pixiv Unofficial API Library for TypeScript
-- 主な機能:
-  - pixiv の iOS アプリが使用するプライベート API を TypeScript でラップ
-  - イラスト、マンガ、小説の検索・取得
-  - ユーザー情報の取得
-  - ブックマークの追加・削除
-  - ランキング情報の取得
-  - うごイラメタデータの取得
-  - レスポンスの MySQL データベースへの保存機能
+- Purpose: pixiv Unofficial API Library for TypeScript
+- Main features:
+  - Wraps the private API used by the pixiv iOS app in TypeScript
+  - Search and retrieval of illusts, manga, and novels
+  - Retrieval of user information
+  - Adding and removing bookmarks
+  - Retrieval of ranking information
+  - Retrieval of ugoira (animated illust) metadata
+  - Saving responses to a MySQL database
 
-## コーディング規約
+## Coding Conventions
 
-- フォーマット: Prettier
-  - セミコロンなし (`semi: false`)
-  - シングルクォート (`singleQuote: true`)
-  - タブ幅 2 (`tabWidth: 2`)
-  - 改行コード: LF
-- 命名規則:
-  - クラス: PascalCase
-  - 関数・変数: camelCase
-  - 定数: UPPER_SNAKE_CASE
-- コメント: 日本語で記載
-- エラーメッセージ: 英語で記載
+- Formatting: Prettier
+  - No semicolons (`semi: false`)
+  - Single quotes (`singleQuote: true`)
+  - Tab width 2 (`tabWidth: 2`)
+  - Line endings: LF
+- Naming conventions:
+  - Classes: PascalCase
+  - Functions/variables: camelCase
+  - Constants: UPPER_SNAKE_CASE
+- Comments: written in English
+- Error messages: written in English
 - TypeScript:
-  - strict モード有効
-  - `skipLibCheck` での回避は禁止
-  - 関数とインターフェースには docstring (JSDoc) を日本語で記載
+  - strict mode enabled
+  - Working around issues with `skipLibCheck` is prohibited
+  - Functions and interfaces have docstrings (JSDoc) written in English
 
-## 開発コマンド
+## Development Commands
 
 ```bash
-# 依存関係のインストール
+# Install dependencies
 pnpm install
 
-# ビルド
+# Build
 pnpm build
 
-# テスト
+# Run tests
 pnpm test
 
-# Lint チェック
+# Lint check
 pnpm lint
 
-# Lint 修正
+# Lint fix
 pnpm fix
 
-# Prettier チェック
+# Prettier check
 pnpm lint:prettier
 
-# Prettier 修正
+# Prettier fix
 pnpm fix:prettier
 
-# ESLint チェック
+# ESLint check
 pnpm lint:eslint
 
-# ESLint 修正
+# ESLint fix
 pnpm fix:eslint
 
-# TypeScript 型チェック
+# TypeScript type check
 pnpm lint:tsc
 
-# ドキュメント生成
+# Generate documentation
 pnpm generate-docs
 
-# クリーン
+# Clean
 pnpm clean
 ```
 
-## 注意事項
+## Notes
 
-- API キーや認証情報は Git にコミットしない
-- ログに個人情報や認証情報を出力しない
-- 既存のコーディングルールとパターンを優先する
-- Renovate が作成した既存のプルリクエストに対して、追加コミットや更新を行ってはならない
+- Do not commit API keys or credentials to Git
+- Do not output personal information or credentials to logs
+- Prefer existing coding rules and patterns
+- Do not add commits or updates to existing Renovate-created pull requests
 
-## リポジトリ固有
+## Repository-Specific Notes
 
-- このプロジェクトは npm パッケージ `@book000/pixivts` として公開されている
-- API ドキュメントは GitHub Pages (https://book000.github.io/pixivts/) でホスティングされている
-- ctix を使用して `src/index.ts` を自動生成している。手動編集してはならない
-- TypeORM を使用してレスポンスを MySQL データベースに保存する機能がある
-- パッケージマネージャーは pnpm 10.28.1 を使用
-- テストフレームワークは Jest を使用
-- Renovate による依存関係の自動更新が有効
+- This project is published as the npm package `@book000/pixivts`
+- API documentation is hosted on GitHub Pages (https://book000.github.io/pixivts/)
+- `src/index.ts` is auto-generated using ctix. Do not edit it manually
+- There is a feature using TypeORM to save responses to a MySQL database
+- The package manager is pnpm 10.28.1
+- The test framework is Jest
+- Renovate is enabled for automatic dependency updates

@@ -8,18 +8,18 @@ import Pixiv from '../../../pixiv'
 import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
 
 /**
- * GET /v1/manga/recommended のリクエスト
+ * Request for GET /v1/manga/recommended
  */
 export interface GetV1MangaRecommendedRequest {
   /**
-   * OSフィルタ
+   * OS filter
    *
    * @default 'for_ios'
    */
   filter: OSFilter
 
   /**
-   * ランキングイラストを含めるか (?)
+   * Whether to include ranking illusts (?)
    *
    * @default true
    * @beta
@@ -27,7 +27,7 @@ export interface GetV1MangaRecommendedRequest {
   include_ranking_illusts: boolean
 
   /**
-   * 最大ブックマークID (?)
+   * Maximum bookmark ID (?)
    *
    * @default undefined
    * @beta
@@ -35,14 +35,14 @@ export interface GetV1MangaRecommendedRequest {
   max_bookmark_id?: number
 
   /**
-   * オフセット
+   * Offset
    *
    * @default undefined
    */
   offset?: string
 
   /**
-   * プライバシーポリシーを含めるか (?)
+   * Whether to include the privacy policy (?)
    *
    * @default true
    * @beta
@@ -50,35 +50,35 @@ export interface GetV1MangaRecommendedRequest {
   include_privacy_policy: boolean
 
   /**
-   * 閲覧済みのイラストID
+   * Viewed illust IDs
    */
-  // 面倒なので対応しない
+  // TODO: Not supported because it's cumbersome
   // viewed?: Record<string, string>
 }
 
 /**
- * GET /v1/manga/recommended のレスポンス
+ * Response for GET /v1/manga/recommended
  */
 export interface GetV1MangaRecommendedResponse {
   /**
-   * おすすめのイラスト群
+   * Recommended illusts
    */
   illusts: PixivIllustItem[]
 
   /**
-   * ランキングのイラスト群？
+   * Ranking illusts?
    *
    * @beta
    */
   ranking_illusts: PixivIllustItem[]
 
   /**
-   * プライバシーポリシー
+   * Privacy policy
    */
   privacy_policy?: PrivacyPolicy
 
   /**
-   * 次回のリクエストに使用する URL。
+   * URL to use for the next request.
    *
    * @see {Pixiv.parseQueryString}
    */

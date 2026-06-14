@@ -8,41 +8,41 @@ import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
 import { PixivIllustItem, PixivIllustItemCheck } from '../../../pixiv-illust'
 
 /**
- * GET /v1/illust/ranking のリクエスト
+ * Request for GET /v1/illust/ranking
  */
 export interface GetV1IllustRankingRequest {
   /**
-   * ランキングの種類
+   * Ranking type
    */
   mode: RankingMode
 
   /**
-   * OSフィルタ
+   * OS filter
    */
   filter: OSFilter
 
   /**
-   * 対象日付 (YYYY-MM-DD。未指定の場合は本日の日付)
+   * Target date (YYYY-MM-DD. Defaults to today's date if unspecified)
    */
   date?: string
 
   /**
-   * オフセット
+   * Offset
    */
   offset?: number
 }
 
 /**
- * GET /v1/illust/ranking のレスポンス
+ * Response for GET /v1/illust/ranking
  */
 export interface GetV1IllustRankingResponse {
   /**
-   * イラストの詳細情報
+   * Illust details
    */
   illusts: PixivIllustItem[]
 
   /**
-   * 次回のリクエストに使用する URL
+   * URL to use for the next request
    *
    * @see {Pixiv.parseQueryString}
    */
@@ -80,10 +80,10 @@ export class GetV1IllustRankingCheck extends BaseMultipleCheck<
   }
 
   /**
-   * 日付が YYYY-MM-DD 形式かどうかをチェックする
+   * Checks whether the date is in YYYY-MM-DD format
    *
-   * @param date チェックする日付
-   * @returns YYYY-MM-DD 形式なら true
+   * @param date The date to check
+   * @returns true if it is in YYYY-MM-DD format
    */
   checkDate(date: string): boolean {
     const regex = /^\d{4}-\d{2}-\d{2}$/

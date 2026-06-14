@@ -6,7 +6,7 @@ describe('PixivHttpClient', () => {
     let setTimeoutSpy: jest.SpyInstance
 
     beforeEach(() => {
-      // setTimeoutをモック化し、実際には待機せずコールバックを即時実行する
+      // Mock setTimeout so the callback runs immediately without actually waiting
       setTimeoutSpy = jest
         .spyOn(globalThis, 'setTimeout')
         .mockImplementation((callback: () => void) => {
@@ -31,7 +31,7 @@ describe('PixivHttpClient', () => {
       expect(response.status).toBe(200)
       expect(response.data).toEqual({ ok: true })
       expect(fetchSpy).toHaveBeenCalledTimes(2)
-      // デフォルトの待機時間 (10秒) で待機すること
+      // Should wait for the default wait time (10 seconds)
       expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 10_000)
     })
 
@@ -47,7 +47,7 @@ describe('PixivHttpClient', () => {
       )
 
       await expect(client.get('/test')).rejects.toThrow(PixivRateLimitError)
-      // 初回 + maxRetriesの2回 = 計3回呼び出される
+      // Called 3 times in total: the initial attempt + 2 retries (maxRetries)
       expect(fetchSpy).toHaveBeenCalledTimes(3)
       expect(setTimeoutSpy).toHaveBeenCalledTimes(2)
     })
@@ -68,7 +68,7 @@ describe('PixivHttpClient', () => {
 
       expect(response.status).toBe(200)
       expect(response.data).toEqual({ ok: true })
-      // 429が2回続いた後に成功するため、計3回呼び出される
+      // Called 3 times in total: two consecutive 429s followed by a success
       expect(fetchSpy).toHaveBeenCalledTimes(3)
       expect(setTimeoutSpy).toHaveBeenCalledTimes(2)
     })
@@ -88,7 +88,7 @@ describe('PixivHttpClient', () => {
       )
       await client.get('/test')
 
-      // Retry-After ヘッダーの値(秒)をミリ秒に変換した値で待機すること
+      // Should wait for the Retry-After header value (in seconds) converted to milliseconds
       expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 5000)
       expect(fetchSpy).toHaveBeenCalledTimes(2)
     })
@@ -101,7 +101,7 @@ describe('PixivHttpClient', () => {
             {},
             {
               status: 429,
-              // 秒数・HTTP-date いずれの形式としても解釈できない Retry-After
+              // Retry-After that cannot be parsed as either a seconds value or an HTTP-date
               headers: { 'Retry-After': 'invalid-value' },
             }
           )
@@ -115,7 +115,7 @@ describe('PixivHttpClient', () => {
       )
       await client.get('/test')
 
-      // 秒数・HTTP-date いずれとしても解釈できない Retry-After の場合は waitMs にフォールバックすること
+      // Should fall back to waitMs when Retry-After cannot be parsed as either a seconds value or an HTTP-date
       expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 12_345)
       expect(fetchSpy).toHaveBeenCalledTimes(2)
     })
@@ -131,7 +131,7 @@ describe('PixivHttpClient', () => {
             {},
             {
               status: 429,
-              // 現在時刻 (2026-01-01T00:00:00Z) から7秒後のHTTP-date
+              // HTTP-date 7 seconds after the current time (2026-01-01T00:00:00Z)
               headers: { 'Retry-After': 'Thu, 01 Jan 2026 00:00:07 GMT' },
             }
           )
@@ -145,7 +145,7 @@ describe('PixivHttpClient', () => {
       )
       await client.get('/test')
 
-      // HTTP-dateと現在時刻の差分(ミリ秒)で待機すること
+      // Should wait for the difference (in milliseconds) between the HTTP-date and the current time
       expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 7000)
       expect(fetchSpy).toHaveBeenCalledTimes(2)
     })
@@ -161,7 +161,7 @@ describe('PixivHttpClient', () => {
             {},
             {
               status: 429,
-              // 現在時刻 (2026-01-01T00:00:10Z) より過去のHTTP-date
+              // HTTP-date that is earlier than the current time (2026-01-01T00:00:10Z)
               headers: { 'Retry-After': 'Thu, 01 Jan 2026 00:00:00 GMT' },
             }
           )
@@ -175,7 +175,7 @@ describe('PixivHttpClient', () => {
       )
       await client.get('/test')
 
-      // 過去日時の場合は待機時間を0にクランプすること
+      // Should clamp the wait time to 0 for a date/time in the past
       expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 0)
       expect(fetchSpy).toHaveBeenCalledTimes(2)
     })

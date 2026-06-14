@@ -10,175 +10,176 @@ import {
   TagCheck,
 } from './pixiv-common'
 
-/** 単一イラスト詳細情報 */
+/** Single-illust details */
 export interface MetaSinglePage {
-  /** オリジナル画像URL */
+  /** Original image URL */
   original_image_url: string
 }
 
-/** 複数イラスト詳細情報 */
+/** Multi-illust details */
 export interface MetaPages {
-  /** 画像URL群 */
+  /** Image URLs */
   image_urls: Required<ImageUrls>
 }
 
 /**
- * pixiv イラストアイテム
+ * pixiv illust item
  */
 export interface PixivIllustItem {
   /**
-   * 作品 ID
+   * Work ID
    *
-   * イラスト・小説それぞれでIDの振り方が異なり、重複するので注意。
+   * Note that illusts and novels are numbered separately, so the same ID can appear in both.
    */
   id: number
 
   /**
-   * 作品タイトル
+   * Work title
    */
   title: string
 
   /**
-   * 作品種別
+   * Work type
    *
-   * illust: イラスト
-   * manga: マンガ
-   * ugoira: うごイラ
+   * illust: Illust
+   * manga: Manga
+   * ugoira: Ugoira
    */
   type: 'illust' | 'manga' | 'ugoira'
 
   /**
-   * 作品の画像URL群
+   * Image URLs for the work
    *
-   * イラスト・マンガの場合は1枚目の画像が入っている。
-   * 2枚目以降の画像は {@link meta_pages} に入っている。
+   * For illusts and manga, this contains the first image.
+   * The second and subsequent images are contained in {@link meta_pages}.
    */
   image_urls: ImageUrls
 
   /**
-   * キャプション（説明文）
+   * Caption (description)
    */
   caption: string
 
   /**
-   * 公開範囲
+   * Visibility
    *
-   * 詳細不明。0 が公開なのは確定
+   * Details unknown. 0 is confirmed to mean public
    */
   restrict: number
 
   /**
-   * 作品投稿者情報
+   * Information about the work's poster
    */
   user: PixivUser
 
   /**
-   * 作品タグ
+   * Work tags
    */
   tags: Tag[]
 
   /**
-   * 使用ツール
+   * Tools used
    *
-   * SAI, CLIP STUDIO PAINT など。投稿者は最大3つまで登録できる。選択式。
+   * Such as SAI, CLIP STUDIO PAINT, etc. The poster can register up to 3, selected from a list.
    */
   tools: string[]
 
   /**
-   * 投稿日時
+   * Posted date and time
    *
-   * ISO 8601 形式。YYYY-MM-DD'T'HH:mm:ss+09:00
+   * ISO 8601 format. YYYY-MM-DD'T'HH:mm:ss+09:00
    */
   create_date: string
 
   /**
-   * ページ数
+   * Number of pages
    */
   page_count: number
 
-  /** 画像の横幅 */
+  /** Image width */
   width: number
 
-  /** 画像の縦幅 */
+  /** Image height */
   height: number
 
   /**
-   * 正気度? (表現内容設定？)
+   * Sanity level? (Content rating setting?)
    *
-   * 詳細不明。2, 4, 6 をとりうる。2 は全年齢、6 は R-18？
+   * Details unknown. Can be 2, 4, or 6. 2 is all-ages, 6 is R-18?
    *
    * @beta
    */
   sanity_level: number
 
   /**
-   * 年齢制限
+   * Age restriction
    *
-   * 0 が全年齢、1 が R-18、2 が R-18G
+   * 0 is all-ages, 1 is R-18, 2 is R-18G
    */
   x_restrict: number
 
   /**
-   * シリーズ情報
+   * Series information
    *
-   * イラスト・マンガの場合、シリーズに属していない場合 null が入っている。
+   * For illusts and manga, this is null if the work does not belong to a series.
    */
   series: Series | null
 
   /**
-   * 単一イラスト詳細情報
+   * Single-illust details
    *
-   * 単一ページの場合のみ利用。複数ページの場合は {@link meta_pages} を利用する。
-   * 複数ページの場合、このプロパティには空オブジェクトが入っている。
+   * Used only for single-page works. For multi-page works, use {@link meta_pages}.
+   * For multi-page works, this property contains an empty object.
    */
   meta_single_page: MetaSinglePage | Record<string, never>
 
   /**
-   * 複数イラスト詳細情報
+   * Multi-illust details
    *
-   * 複数ページの場合のみ利用。単一ページの場合は {@link meta_single_page} を利用する。
-   * 単一ページの場合、このプロパティには空配列が入っている。
+   * Used only for multi-page works. For single-page works, use {@link meta_single_page}.
+   * For single-page works, this property contains an empty array.
    */
   meta_pages: MetaPages[]
 
   /**
-   * 閲覧数
+   * View count
    */
   total_view: number
 
   /**
-   * ブックマーク数
+   * Bookmark count
    */
   total_bookmarks: number
 
   /**
-   * ブックマークしているかどうか
+   * Whether it is bookmarked
    */
   is_bookmarked: boolean
 
   /**
-   * 閲覧可能かどうか
+   * Whether it is visible
    */
   visible: boolean
 
   /**
-   * この作品をミュートしているかどうか
+   * Whether this work is muted
    */
   is_muted: boolean
 
   /**
-   * この作品にコメントしたユーザーの数
+   * Number of users who commented on this work
    */
   total_comments?: number
 
   /**
-   * AI使用フラグ
+   * AI usage flag
    *
-   * 0: 未使用
-   * 1: 補助的に使用
-   * 2: 使用
+   * 0: Not used
+   * 1: Used to a supplementary extent
+   * 2: Used
    *
-   * 2022/11/02時点で投稿画面に「補助的に使用」を選択できるUIは存在しないように見えるが、実際に 1 が入っている作品はある。
+   * As of 2022/11/02, the posting screen does not appear to have a UI to select "used to a supplementary extent",
+   * but there are works that actually have 1 set.
    *
    * @see https://www.pixiv.help/hc/ja/articles/11866194231577
    * @see https://github.com/ArkoClub/async-pixiv/blob/fa45c81093a5c6f4eabfcc942915fc479e42174f/src/async_pixiv/model/other.py#L40-L48
@@ -186,14 +187,14 @@ export interface PixivIllustItem {
   illust_ai_type: number
 
   /**
-   * 作品のスタイル？
+   * The work's style?
    *
    * @beta
    */
   illust_book_style: number
 
   /**
-   * コメントの閲覧制御？
+   * Comment visibility control?
    *
    * @beta
    */

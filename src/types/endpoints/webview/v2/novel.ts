@@ -1,19 +1,19 @@
 import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
 
 /**
- * GET /webview/v2/novel のリクエスト
+ * Request for GET /webview/v2/novel
  */
 export interface GetWebViewV2NovelRequest {
   /**
-   * 小説ID
+   * Novel ID
    */
   id: number
 }
 
 /**
- * GET /webview/v2/novel のレスポンス
+ * Response for GET /webview/v2/novel
  *
- * HTMLが返る。
+ * Returns HTML.
  */
 export type GetWebViewV2NovelResponse = string
 

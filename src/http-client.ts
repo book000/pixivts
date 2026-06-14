@@ -2,22 +2,22 @@ import qs from 'qs'
 import { PixivRateLimitError } from './types/errors'
 
 /**
- * 429エラー時のリトライ設定。
+ * Retry settings for 429 errors.
  */
 export interface PixivRateLimitRetryOptions {
   /**
-   * リクエストがレートリミットに達した場合の最大リトライ回数。
+   * Maximum number of retries when a request hits the rate limit.
    */
   maxRetries: number
 
   /**
-   * リクエストがレートリミットに達した場合のリトライまでの待機時間（ミリ秒）。
+   * Wait time (in milliseconds) before retrying when a request hits the rate limit.
    */
   waitMs: number
 }
 
 /**
- * pixiv API へのリクエストに対するレスポンス。
+ * Response to a request to the pixiv API.
  */
 export interface PixivApiResponse<T> {
   data: T
@@ -37,12 +37,13 @@ function headersToRecord(headers: Headers): Record<string, string> {
 }
 
 /**
- * Retry-After ヘッダーの値から待機時間（ミリ秒）を算出する。
- * 秒数形式 (delay-seconds) と HTTP-date 形式の両方に対応し、
- * いずれの形式でも解釈できない場合はデフォルトの待機時間 (waitMs) を返す。
- * @param retryAfter - Retry-After ヘッダーの値（未指定の場合は null）
- * @param waitMs - デフォルトの待機時間（ミリ秒）
- * @returns 待機時間（ミリ秒）
+ * Calculates the wait time (in milliseconds) from the value of the Retry-After header.
+ * Supports both the delay-seconds format and the HTTP-date format,
+ * and returns the default wait time (waitMs) if neither format can be parsed.
+ *
+ * @param retryAfter - Value of the Retry-After header (null if not specified)
+ * @param waitMs - Default wait time (in milliseconds)
+ * @returns Wait time (in milliseconds)
  */
 function getRetryAfterWaitTime(
   retryAfter: string | null,
@@ -52,12 +53,12 @@ function getRetryAfterWaitTime(
     return waitMs
   }
 
-  // 秒数形式 (delay-seconds)
+  // delay-seconds format
   if (/^\d+$/.test(retryAfter.trim())) {
     return Number.parseInt(retryAfter, 10) * 1000
   }
 
-  // HTTP-date 形式 (例: "Wed, 21 Oct 2026 07:28:00 GMT")
+  // HTTP-date format (e.g. "Wed, 21 Oct 2026 07:28:00 GMT")
   const retryDate = Date.parse(retryAfter)
   if (!Number.isNaN(retryDate)) {
     return Math.max(0, retryDate - Date.now())
@@ -67,10 +68,10 @@ function getRetryAfterWaitTime(
 }
 
 /**
- * pixiv API への HTTP リクエストを行うクライアント。
+ * Client that performs HTTP requests to the pixiv API.
  *
- * 429 (レートリミット) のレスポンスを受け取った場合、
- * Retry-After ヘッダーまたは設定された待機時間に基づいて自動的にリトライする。
+ * When a 429 (rate limit) response is received, it automatically retries
+ * based on the Retry-After header or the configured wait time.
  */
 export class PixivHttpClient {
   private readonly baseURL: string
@@ -78,11 +79,11 @@ export class PixivHttpClient {
   private readonly rateLimitRetryOptions: PixivRateLimitRetryOptions | null
 
   /**
-   * コンストラクタ。
+   * Constructor.
    *
-   * @param baseURL リクエスト先のベース URL
-   * @param headers 全リクエストに付与するデフォルトヘッダー
-   * @param rateLimitRetryOptions 429エラー時のリトライ設定
+   * @param baseURL Base URL for requests
+   * @param headers Default headers to attach to all requests
+   * @param rateLimitRetryOptions Retry settings for 429 errors
    */
   constructor(
     baseURL: string,
@@ -95,11 +96,11 @@ export class PixivHttpClient {
   }
 
   /**
-   * GET リクエストを送信する。
+   * Sends a GET request.
    *
-   * @param path リクエストパス
-   * @param options クエリパラメータなどのオプション
-   * @returns レスポンス
+   * @param path Request path
+   * @param options Options such as query parameters
+   * @returns Response
    */
   async get<U>(
     path: string,
@@ -129,12 +130,12 @@ export class PixivHttpClient {
   }
 
   /**
-   * POST リクエストを送信する。
+   * Sends a POST request.
    *
-   * @param path リクエストパス
-   * @param body リクエストボディ
-   * @param options ヘッダーなどのオプション
-   * @returns レスポンス
+   * @param path Request path
+   * @param body Request body
+   * @param options Options such as headers
+   * @returns Response
    */
   async post<U>(
     path: string,
@@ -167,9 +168,9 @@ export class PixivHttpClient {
     url: string,
     options: RequestInit
   ): Promise<Response> {
-    // 負の値が渡された場合でもループが必ず1回以上実行されるよう0以上にクランプする
+    // Clamp to 0 or higher so the loop always runs at least once, even if a negative value is passed
     const maxRetries = Math.max(0, this.rateLimitRetryOptions?.maxRetries ?? 3)
-    // 負の値が渡された場合に setTimeout への待機時間が負値にならないよう0以上にクランプする
+    // Clamp to 0 or higher so the setTimeout wait time is never negative, even if a negative value is passed
     const waitMs = Math.max(0, this.rateLimitRetryOptions?.waitMs ?? 10_000) // default 10 sec
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -178,7 +179,7 @@ export class PixivHttpClient {
         return response
       }
 
-      // 429のレスポンスボディは使用しないため、コネクション解放のため破棄する
+      // The response body of a 429 is unused, so discard it to release the connection
       await response.body?.cancel()
 
       if (attempt < maxRetries) {

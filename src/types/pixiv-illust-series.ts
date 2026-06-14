@@ -2,61 +2,61 @@ import { BaseSimpleCheck, CheckFunctions } from '../checks'
 import { PixivUser, PixivUserCheck } from './pixiv-common'
 
 /**
- * pixiv イラストシリーズ詳細情報
+ * pixiv illust series details
  */
 export interface IllustSeriesDetail {
   /**
-   * シリーズ ID
+   * Series ID
    */
   id: number
 
   /**
-   * シリーズタイトル
+   * Series title
    */
   title: string
 
   /**
-   * シリーズの説明文
+   * Series description
    */
   caption: string
 
   /**
-   * カバー画像 URL群
+   * Cover image URLs
    */
   cover_image_urls: {
     /**
-     * 中サイズカバー画像 URL
+     * Medium-sized cover image URL
      */
     medium: string
   }
 
   /**
-   * シリーズ作品数
+   * Number of works in the series
    */
   series_work_count: number
 
   /**
-   * シリーズ作成日時
+   * Series creation date and time
    */
   create_date: string
 
   /**
-   * シリーズカバー画像の幅
+   * Width of the series cover image
    */
   width: number
 
   /**
-   * シリーズカバー画像の高さ
+   * Height of the series cover image
    */
   height: number
 
   /**
-   * シリーズ作成者情報
+   * Series creator information
    */
   user: PixivUser
 
   /**
-   * ウォッチリストに追加済みかどうか
+   * Whether it has been added to the watchlist
    */
   watchlist_added: boolean
 }

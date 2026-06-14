@@ -1,14 +1,14 @@
 /**
- * POST /v1/novel/bookmark/delete のリクエスト
+ * Request for POST /v1/novel/bookmark/delete
  */
 export interface PostV1NovelBookmarkDeleteRequest {
   /**
-   * 小説ID
+   * Novel ID
    */
   novel_id: string
 }
 
 /**
- * POST /v1/novel/bookmark/delete のレスポンス
+ * Response for POST /v1/novel/bookmark/delete
  */
 export type PostV1NovelBookmarkDeleteResponse = Record<string, never>

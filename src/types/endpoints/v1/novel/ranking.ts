@@ -3,36 +3,36 @@ import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
 import { PixivNovelItem, PixivNovelItemCheck } from '../../../pixiv-novel'
 
 /**
- * GET /v1/novel/ranking のリクエスト
+ * Request for GET /v1/novel/ranking
  */
 export interface GetV1NovelRankingRequest {
   /**
-   * ランキングの種類
+   * Ranking type
    */
   mode: RankingMode
 
   /**
-   * 対象日付 (YYYY-MM-DD。未指定の場合は本日の日付)
+   * Target date (YYYY-MM-DD. Defaults to today's date if unspecified)
    */
   date?: string
 
   /**
-   * オフセット
+   * Offset
    */
   offset?: number
 }
 
 /**
- * GET /v1/novel/ranking のレスポンス
+ * Response for GET /v1/novel/ranking
  */
 export interface GetV1NovelRankingResponse {
   /**
-   * イラストの詳細情報
+   * Novel details
    */
   novels: PixivNovelItem[]
 
   /**
-   * 次回のリクエストに使用する URL
+   * URL to use for the next request
    *
    * @see {Pixiv.parseQueryString}
    */
@@ -69,10 +69,10 @@ export class GetV1NovelRankingCheck extends BaseMultipleCheck<
   }
 
   /**
-   * 日付が YYYY-MM-DD 形式かどうかをチェックする
+   * Checks whether the date is in YYYY-MM-DD format
    *
-   * @param date チェックする日付
-   * @returns YYYY-MM-DD 形式なら true
+   * @param date The date to check
+   * @returns true if it is in YYYY-MM-DD format
    */
   checkDate(date: string): boolean {
     const regex = /^\d{4}-\d{2}-\d{2}$/
