@@ -108,8 +108,10 @@ export interface GetV1SearchIllustResponse {
 
   /**
    * Whether AI-generated works are shown in the search results
+   *
+   * Not consistently present in all API responses.
    */
-  show_ai: boolean
+  show_ai?: boolean
 }
 
 export class GetV1SearchIllustCheck extends BaseMultipleCheck<
@@ -151,7 +153,8 @@ export class GetV1SearchIllustCheck extends BaseMultipleCheck<
         data.next_url === null ||
         (typeof data.next_url === 'string' && data.next_url.length > 0),
       search_span_limit: (data) => typeof data.search_span_limit === 'number',
-      show_ai: (data) => typeof data.show_ai === 'boolean',
+      show_ai: (data) =>
+        data.show_ai === undefined || typeof data.show_ai === 'boolean',
     }
   }
 }
