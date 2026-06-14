@@ -2,6 +2,8 @@ import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
 import {
   OSFilter,
   OSFilterCheck,
+  SearchAiType,
+  SearchAiTypeCheck,
   SearchSort,
   SearchSortCheck,
   SearchTarget,
@@ -75,6 +77,14 @@ export interface GetV1SearchNovelRequest {
    * @beta
    */
   include_translated_tag_results: boolean
+
+  /**
+   * AI content filter type.
+   * 0 = filter out AI-generated works, 1 = show AI-generated works
+   *
+   * @default undefined
+   */
+  search_ai_type?: SearchAiType
 }
 
 /**
@@ -135,6 +145,9 @@ export class GetV1SearchNovelCheck extends BaseMultipleCheck<
         typeof data.merge_plain_keyword_results === 'boolean',
       include_translated_tag_results: (data) =>
         typeof data.include_translated_tag_results === 'boolean',
+      search_ai_type: (data) =>
+        data.search_ai_type === undefined ||
+        new SearchAiTypeCheck().throwIfFailed(data.search_ai_type),
     }
   }
 

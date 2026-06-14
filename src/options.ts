@@ -1,6 +1,9 @@
 import { GetV1IllustDetailRequest } from './types/endpoints/v1/illust/detail'
 import { SnakeToCamel } from 'snake-camel-types'
-import { GetV1IllustRecommendedRequest } from './types/endpoints/v1/illust/recommended'
+import {
+  GetV1IllustRecommendedNologinRequest,
+  GetV1IllustRecommendedRequest,
+} from './types/endpoints/v1/illust/recommended'
 import { GetV1SearchIllustRequest } from './types/endpoints/v1/search/illust'
 import { PostV2IllustBookmarkAddRequest } from './types/endpoints/v2/illust/bookmark/add'
 import { GetV1IllustSeriesRequest } from './types/endpoints/v1/illust/series'
@@ -161,6 +164,46 @@ export class FollowRestrictCheck extends BaseSimpleCheck<FollowRestrict> {
 }
 
 /**
+ * AI content filter for search
+ */
+export enum SearchAiType {
+  /** Filter out AI-generated works */
+  FILTER_AI = 0,
+  /** Show AI-generated works */
+  SHOW_AI = 1,
+}
+
+export class SearchAiTypeCheck extends BaseSimpleCheck<SearchAiType> {
+  checks(): CheckFunctions<SearchAiType> {
+    return {
+      main: (data) =>
+        typeof data === 'number' &&
+        (Object.values(SearchAiType) as number[]).includes(data),
+    }
+  }
+}
+
+/**
+ * Content type for illust recommendations
+ */
+export enum IllustContentType {
+  /** Illustration */
+  ILLUST = 'illust',
+  /** Manga */
+  MANGA = 'manga',
+}
+
+export class IllustContentTypeCheck extends BaseSimpleCheck<IllustContentType> {
+  checks(): CheckFunctions<IllustContentType> {
+    return {
+      main: (data) =>
+        typeof data === 'string' &&
+        Object.values(IllustContentType).includes(data),
+    }
+  }
+}
+
+/**
  * Ranking type
  */
 export enum RankingMode {
@@ -254,6 +297,21 @@ export type IllustRelatedOptions = SnakeToCamel<GetV2IllustRelatedRequest>
  */
 export type RecommendedIllustOptions = SnakeToCamel<
   Partial<GetV1IllustRecommendedRequest>
+>
+
+/**
+ * Options for getting recommended illusts without authentication
+ */
+export type RecommendedIllustNologinOptions = Overwrite<
+  SnakeToCamel<Partial<GetV1IllustRecommendedNologinRequest>>,
+  {
+    /**
+     * IDs of bookmarked illusts to base recommendations on (unauthenticated only)
+     *
+     * @default undefined
+     */
+    bookmarkIllustIds?: number[]
+  }
 >
 
 /**

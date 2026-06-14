@@ -1,4 +1,5 @@
 import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
+import { OSFilter, OSFilterCheck } from '../../../../options'
 import { PixivIllustItem, PixivIllustItemCheck } from '../../../pixiv-illust'
 
 /**
@@ -9,6 +10,13 @@ export interface GetV2IllustRelatedRequest {
    * Illust ID
    */
   illust_id: number
+
+  /**
+   * OS filter
+   *
+   * @default 'for_ios'
+   */
+  filter?: OSFilter
 
   /**
    * Array of seed illust IDs (?)
@@ -48,6 +56,9 @@ export class GetV2IllustRelatedCheck extends BaseMultipleCheck<
   requestChecks(): CheckFunctions<GetV2IllustRelatedRequest> {
     return {
       illust_id: (data) => typeof data.illust_id === 'number',
+      filter: (data) =>
+        data.filter === undefined ||
+        new OSFilterCheck().throwIfFailed(data.filter),
       seed_illust_ids: (data) =>
         data.seed_illust_ids === undefined ||
         (Array.isArray(data.seed_illust_ids) &&

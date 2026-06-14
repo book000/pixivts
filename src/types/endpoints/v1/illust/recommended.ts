@@ -1,5 +1,10 @@
 import { PixivIllustItem, PixivIllustItemCheck } from '../../../pixiv-illust'
-import { OSFilter, OSFilterCheck } from '../../../../options'
+import {
+  IllustContentType,
+  IllustContentTypeCheck,
+  OSFilter,
+  OSFilterCheck,
+} from '../../../../options'
 import { PrivacyPolicy, PrivacyPolicyCheck } from '../../../pixiv-common'
 
 import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
@@ -8,6 +13,21 @@ import { BaseMultipleCheck, CheckFunctions } from '../../../../checks'
  * Request for GET /v1/illust/recommended
  */
 export interface GetV1IllustRecommendedRequest {
+  /**
+   * Content type to recommend
+   *
+   * @default 'illust'
+   */
+  content_type?: IllustContentType
+
+  /**
+   * Whether to include ranking label (?)
+   *
+   * @default true
+   * @beta
+   */
+  include_ranking_label?: boolean
+
   /**
    * OS filter
    *
@@ -55,10 +75,84 @@ export interface GetV1IllustRecommendedRequest {
   include_privacy_policy: boolean
 
   /**
-   * Viewed illust IDs
+   * Viewed illust IDs to exclude from recommendations
+   *
+   * @default undefined
    */
-  // TODO: Not supported because it's cumbersome
-  // viewed?: Record<string, string>
+  viewed?: number[]
+}
+
+/**
+ * Request for GET /v1/illust/recommended-nologin
+ */
+export interface GetV1IllustRecommendedNologinRequest {
+  /**
+   * Content type to recommend
+   *
+   * @default 'illust'
+   */
+  content_type?: IllustContentType
+
+  /**
+   * Whether to include ranking label (?)
+   *
+   * @default true
+   * @beta
+   */
+  include_ranking_label?: boolean
+
+  /**
+   * OS filter
+   *
+   * @default 'for_ios'
+   */
+  filter?: OSFilter
+
+  /**
+   * Maximum bookmark ID for recommended illusts (?)
+   *
+   * @default undefined
+   * @beta
+   */
+  max_bookmark_id_for_recommend?: number
+
+  /**
+   * Minimum bookmark ID for recent illusts (?)
+   *
+   * @default undefined
+   * @beta
+   */
+  min_bookmark_id_for_recent_illust?: number
+
+  /**
+   * Offset
+   *
+   * @default undefined
+   */
+  offset?: number
+
+  /**
+   * Whether to include ranking illusts (?)
+   *
+   * @default undefined
+   * @beta
+   */
+  include_ranking_illusts?: boolean
+
+  /**
+   * Comma-separated illust IDs to base recommendations on
+   *
+   * @default undefined
+   */
+  bookmark_illust_ids?: string
+
+  /**
+   * Whether to include the privacy policy (?)
+   *
+   * @default undefined
+   * @beta
+   */
+  include_privacy_policy?: boolean
 }
 
 /**
@@ -103,6 +197,12 @@ export class GetV1IllustRecommendedCheck extends BaseMultipleCheck<
 > {
   requestChecks(): CheckFunctions<GetV1IllustRecommendedRequest> {
     return {
+      content_type: (data) =>
+        data.content_type === undefined ||
+        new IllustContentTypeCheck().throwIfFailed(data.content_type),
+      include_ranking_label: (data) =>
+        data.include_ranking_label === undefined ||
+        typeof data.include_ranking_label === 'boolean',
       filter: (data) => new OSFilterCheck().throwIfFailed(data.filter),
       include_ranking_illusts: (data) =>
         typeof data.include_ranking_illusts === 'boolean',
@@ -116,6 +216,10 @@ export class GetV1IllustRecommendedCheck extends BaseMultipleCheck<
         data.offset === undefined || typeof data.offset === 'number',
       include_privacy_policy: (data) =>
         typeof data.include_privacy_policy === 'boolean',
+      viewed: (data) =>
+        data.viewed === undefined ||
+        (Array.isArray(data.viewed) &&
+          data.viewed.every((id) => typeof id === 'number')),
     }
   }
 
