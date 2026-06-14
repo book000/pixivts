@@ -573,7 +573,6 @@ describe('pixiv', () => {
           })
         } catch {
           // Ignore the error if it has already been unfollowed
-          // Comment for error handling
         }
       }
     }
