@@ -105,7 +105,7 @@ export interface GetV1SearchNovelResponse {
   /**
    * Whether AI-generated works are shown in the search results
    *
-   * Not present in all API responses (e.g. absent from novel search).
+   * Not consistently present in all API responses.
    */
   show_ai?: boolean
 }
