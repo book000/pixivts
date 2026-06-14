@@ -487,7 +487,10 @@ export default class Pixiv {
       min_bookmark_id_for_recent_illust: options.minBookmarkIdForRecentIllust,
       offset: options.offset,
       include_ranking_illusts: options.includeRankingIllusts,
-      bookmark_illust_ids: options.bookmarkIllustIds?.join(','),
+      bookmark_illust_ids:
+        options.bookmarkIllustIds && options.bookmarkIllustIds.length > 0
+          ? options.bookmarkIllustIds.join(',')
+          : undefined,
       include_privacy_policy: options.includePrivacyPolicy,
     }
 

@@ -173,12 +173,17 @@ export enum SearchAiType {
   SHOW_AI = 1,
 }
 
+/**
+ * Check for AI content filter type
+ */
 export class SearchAiTypeCheck extends BaseSimpleCheck<SearchAiType> {
   checks(): CheckFunctions<SearchAiType> {
     return {
       main: (data) =>
         typeof data === 'number' &&
-        (Object.values(SearchAiType) as number[]).includes(data),
+        Object.values(SearchAiType)
+          .filter((v): v is SearchAiType => typeof v === 'number')
+          .includes(data),
     }
   }
 }
@@ -193,6 +198,9 @@ export enum IllustContentType {
   MANGA = 'manga',
 }
 
+/**
+ * Check for illust content type
+ */
 export class IllustContentTypeCheck extends BaseSimpleCheck<IllustContentType> {
   checks(): CheckFunctions<IllustContentType> {
     return {
