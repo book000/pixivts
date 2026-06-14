@@ -25,7 +25,7 @@
     "build": "run-z clean ctix compile generate-docs",
     "clean": "rimraf dist output docs tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
     "compile": "tsc -p tsconfig.build.json",
-    "ctix": "ctix single -w --noBackup -o src -s false",
+    "ctix": "ctix build --mode bundle -o src -w --backup false --use-semicolon false --generation-style default-alias-named-star",
     "generate-docs": "typedoc --gitRevision master src/index.ts",
     "fix": "run-z fix:prettier fix:eslint ctix",
     "fix:eslint": "eslint . -c eslint.config.mjs --fix",
