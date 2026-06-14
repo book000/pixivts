@@ -11,8 +11,8 @@ on:
   # pull_request_target simultaneously can cause finished-node-ci's skipped result
   # to incorrectly pass required checks)
   # pull_request_target fires for both same-repo PRs and fork PRs
-  # Same-repo PR: environment: is empty string, so runs without approval
-  # Fork PR:      blocked by the approval gate of environment: fork-pr-build
+  # Same-repo PR: environment: is an empty string, so runs without approval
+  # Fork PR:      blocked by the environment: fork-pr-build approval gate
   pull_request_target:
     branches:
       - main
@@ -52,7 +52,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: github-actions[bot]
-          body-includes: Waiting for Environment approval
+          body-includes: fork-pr-build
 
       - name: Post or update approval request comment
         uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5
