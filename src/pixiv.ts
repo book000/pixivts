@@ -245,10 +245,15 @@ export class PixivHttpClient {
         return response
       }
       if (attempt < maxRetries) {
+        // Retry-Afterヘッダーは秒数形式を想定する。値が存在しない、または
+        // HTTP-date形式などで秒数として解釈できない場合はwaitMsにフォールバックする
         const retryAfter = response.headers.get('Retry-After')
-        const waitTime = retryAfter
-          ? Number.parseInt(retryAfter, 10) * 1000
-          : waitMs
+        const retryAfterSeconds = retryAfter
+          ? Number.parseInt(retryAfter, 10)
+          : Number.NaN
+        const waitTime = Number.isNaN(retryAfterSeconds)
+          ? waitMs
+          : retryAfterSeconds * 1000
 
         await new Promise((resolve) => setTimeout(resolve, waitTime))
       }

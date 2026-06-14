@@ -937,6 +937,27 @@ describe('Pixiv class coverage tests', () => {
       expect(setTimeoutSpy).toHaveBeenCalledTimes(2)
     })
 
+    it('should retry multiple times in a row and succeed once 429 stops', async () => {
+      const fetchSpy = jest
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce(Response.json({}, { status: 429 }))
+        .mockResolvedValueOnce(Response.json({}, { status: 429 }))
+        .mockResolvedValueOnce(Response.json({ ok: true }, { status: 200 }))
+
+      const client = new PixivHttpClient(
+        'https://example.com',
+        {},
+        { maxRetries: 3, waitMs: 1 }
+      )
+      const response = await client.get<{ ok: boolean }>('/test')
+
+      expect(response.status).toBe(200)
+      expect(response.data).toEqual({ ok: true })
+      // 429が2回続いた後に成功するため、計3回呼び出される
+      expect(fetchSpy).toHaveBeenCalledTimes(3)
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(2)
+    })
+
     it('should use the Retry-After header value (in seconds) as the wait time', async () => {
       const fetchSpy = jest
         .spyOn(globalThis, 'fetch')
@@ -954,6 +975,33 @@ describe('Pixiv class coverage tests', () => {
 
       // Retry-Afterヘッダーの値(秒)をミリ秒に変換した値で待機すること
       expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 5000)
+      expect(fetchSpy).toHaveBeenCalledTimes(2)
+    })
+
+    it('should fall back to waitMs when the Retry-After header is not a numeric value', async () => {
+      const fetchSpy = jest
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce(
+          Response.json(
+            {},
+            {
+              status: 429,
+              // HTTP-date形式など、秒数として解釈できないRetry-After
+              headers: { 'Retry-After': 'Wed, 21 Oct 2026 07:28:00 GMT' },
+            }
+          )
+        )
+        .mockResolvedValueOnce(Response.json({ ok: true }, { status: 200 }))
+
+      const client = new PixivHttpClient(
+        'https://example.com',
+        {},
+        { maxRetries: 3, waitMs: 12_345 }
+      )
+      await client.get('/test')
+
+      // 秒数として解釈できないRetry-Afterの場合はwaitMsにフォールバックすること
+      expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 12_345)
       expect(fetchSpy).toHaveBeenCalledTimes(2)
     })
 
