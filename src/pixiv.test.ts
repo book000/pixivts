@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { BookmarkRestrict } from './options'
+import { BookmarkRestrict, FollowRestrict } from './options'
 import Pixiv from './pixiv'
 import { GetV1IllustDetailCheck } from './types/endpoints/v1/illust/detail'
 import { GetV1IllustRankingCheck } from './types/endpoints/v1/illust/ranking'
@@ -14,6 +14,7 @@ import { GetV1SearchNovelCheck } from './types/endpoints/v1/search/novel'
 import { GetV1UserBookmarksIllustCheck } from './types/endpoints/v1/user/bookmarks/illust'
 import { GetV1UserBookmarksNovelCheck } from './types/endpoints/v1/user/bookmarks/novel'
 import { GetV1UserDetailCheck } from './types/endpoints/v1/user/detail'
+import { GetV1UserFollowingCheck } from './types/endpoints/v1/user/following'
 import { GetV2IllustRelatedCheck } from './types/endpoints/v2/illust/related'
 import { GetV2NovelDetailCheck } from './types/endpoints/v2/novel/detail'
 import { GetV2NovelSeriesCheck } from './types/endpoints/v2/novel/series'
@@ -506,6 +507,76 @@ describe('pixiv', () => {
     expect(() =>
       check.throwIfResponseFailed(userBookmarksNovel.data)
     ).not.toThrow()
+  })
+
+  it('userFollowing', async () => {
+    const userFollowing = await pixiv.userFollowing({
+      userId: Number(pixiv.userId),
+      restrict: FollowRestrict.PUBLIC,
+    })
+    expect(userFollowing.status).toBe(200)
+    expect(userFollowing.data).toBeDefined()
+    expect(userFollowing.data.user_previews).toBeDefined()
+
+    const check = new GetV1UserFollowingCheck()
+    expect(() => check.throwIfResponseFailed(userFollowing.data)).not.toThrow()
+  })
+
+  it('userFollowAdd and userFollowDelete', async () => {
+    // User ID for testing (pixiv staff account, which is unlikely to be deleted)
+    const userId = 11
+
+    // Check the follow state before the test
+    const initialDetail = await pixiv.userDetail({
+      userId,
+    })
+    const wasFollowed = initialDetail.data.user.is_followed ?? false
+
+    try {
+      // Run the test according to the follow state
+      if (wasFollowed) {
+        // If already followed, test unfollow -> follow
+        const followDeleteResult = await pixiv.userFollowDelete({
+          userId,
+        })
+        expect(followDeleteResult.status).toBe(200)
+
+        const followAddResult = await pixiv.userFollowAdd({
+          userId,
+          restrict: FollowRestrict.PUBLIC,
+        })
+        expect(followAddResult.status).toBe(200)
+      } else {
+        // If not followed, test follow -> unfollow
+        const followAddResult = await pixiv.userFollowAdd({
+          userId,
+          restrict: FollowRestrict.PUBLIC,
+        })
+        expect(followAddResult.status).toBe(200)
+
+        const followDeleteResult = await pixiv.userFollowDelete({
+          userId,
+        })
+        expect(followDeleteResult.status).toBe(200)
+      }
+    } finally {
+      // Restore the original follow state after the test
+      if (wasFollowed) {
+        await pixiv.userFollowAdd({
+          userId,
+          restrict: FollowRestrict.PUBLIC,
+        })
+      } else {
+        try {
+          await pixiv.userFollowDelete({
+            userId,
+          })
+        } catch {
+          // Ignore the error if it has already been unfollowed
+          // Comment for error handling
+        }
+      }
+    }
   })
 
   async function restoreBookmarkState(illustId: number) {

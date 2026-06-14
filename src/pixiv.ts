@@ -28,6 +28,10 @@ import {
   IllustRankingOptions,
   RankingMode,
   NovelRankingOptions,
+  FollowRestrict,
+  UserFollowingOptions,
+  UserFollowAddOptions,
+  UserFollowDeleteOptions,
 } from './options'
 import {
   PixivApiResponse,
@@ -124,6 +128,18 @@ import {
   GetWebViewV2NovelRequest,
   GetWebViewV2NovelResponse,
 } from './types/endpoints/webview/v2/novel'
+import {
+  GetV1UserFollowingRequest,
+  GetV1UserFollowingResponse,
+} from './types/endpoints/v1/user/following'
+import {
+  PostV1UserFollowAddRequest,
+  PostV1UserFollowAddResponse,
+} from './types/endpoints/v1/user/follow/add'
+import {
+  PostV1UserFollowDeleteRequest,
+  PostV1UserFollowDeleteResponse,
+} from './types/endpoints/v1/user/follow/delete'
 
 interface GetRequestOptions<T> {
   method: 'GET'
@@ -824,6 +840,72 @@ export default class Pixiv {
       method: 'GET',
       path: '/v1/user/bookmarks/novel',
       params: parameters,
+    })
+  }
+
+  /**
+   * Gets the list of users a user is following.
+   *
+   * @param options Options
+   * @returns Response
+   */
+  public async userFollowing(options: UserFollowingOptions) {
+    type RequestType = GetV1UserFollowingRequest
+    this.checkRequiredOptions(options, ['userId'])
+    const parameters: RequestType = {
+      ...this.convertCamelToSnake(options),
+      user_id: options.userId,
+      restrict: options.restrict ?? FollowRestrict.PUBLIC,
+      offset: options.offset ?? undefined,
+    }
+
+    return this.request<RequestType, GetV1UserFollowingResponse>({
+      method: 'GET',
+      path: '/v1/user/following',
+      params: parameters,
+    })
+  }
+
+  /**
+   * Follows a user.
+   *
+   * @param options Options
+   * @returns Response
+   */
+  public async userFollowAdd(options: UserFollowAddOptions) {
+    type RequestType = PostV1UserFollowAddRequest
+    this.checkRequiredOptions(options, ['userId'])
+    const data: RequestType = {
+      ...this.convertCamelToSnake(options),
+      user_id: options.userId,
+      restrict: options.restrict ?? FollowRestrict.PUBLIC,
+    }
+
+    return this.request<RequestType, PostV1UserFollowAddResponse>({
+      method: 'POST',
+      path: '/v1/user/follow/add',
+      data,
+    })
+  }
+
+  /**
+   * Unfollows a user.
+   *
+   * @param options Options
+   * @returns Response
+   */
+  public async userFollowDelete(options: UserFollowDeleteOptions) {
+    type RequestType = PostV1UserFollowDeleteRequest
+    this.checkRequiredOptions(options, ['userId'])
+    const data: RequestType = {
+      ...this.convertCamelToSnake(options),
+      user_id: options.userId,
+    }
+
+    return this.request<RequestType, PostV1UserFollowDeleteResponse>({
+      method: 'POST',
+      path: '/v1/user/follow/delete',
+      data,
     })
   }
 

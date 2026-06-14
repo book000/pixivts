@@ -1,5 +1,7 @@
 import { BaseSimpleCheck, CheckFunctions } from '../checks'
 import { PixivUser, PixivUserCheck } from './pixiv-common'
+import { PixivIllustItem, PixivIllustItemCheck } from './pixiv-illust'
+import { PixivNovelItem, PixivNovelItemCheck } from './pixiv-novel'
 
 /**
  * pixiv user item
@@ -311,6 +313,43 @@ export class PixivUserProfileWorkspaceCheck extends BaseSimpleCheck<PixivUserPro
         typeof data.workspace_image_url === 'string' ||
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         data.workspace_image_url === null,
+    }
+  }
+}
+
+/**
+ * Preview information for a user, included in the response of the
+ * `userFollowing` (`/v1/user/following`) endpoint.
+ */
+export interface PixivUserPreviewItem {
+  /** User information */
+  user: PixivUser
+
+  /** Some of the user's illusts/manga */
+  illusts: PixivIllustItem[]
+
+  /** Some of the user's novels */
+  novels: PixivNovelItem[]
+
+  /** Whether the user is muted */
+  is_muted: boolean
+}
+
+export class PixivUserPreviewItemCheck extends BaseSimpleCheck<PixivUserPreviewItem> {
+  checks(): CheckFunctions<PixivUserPreviewItem> {
+    return {
+      user: (data) => new PixivUserCheck().throwIfFailed(data.user),
+      illusts: (data) =>
+        Array.isArray(data.illusts) &&
+        data.illusts.every((illust) =>
+          new PixivIllustItemCheck().throwIfFailed(illust)
+        ),
+      novels: (data) =>
+        Array.isArray(data.novels) &&
+        data.novels.every((novel) =>
+          new PixivNovelItemCheck().throwIfFailed(novel)
+        ),
+      is_muted: (data) => typeof data.is_muted === 'boolean',
     }
   }
 }

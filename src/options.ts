@@ -22,6 +22,9 @@ import { GetV1NovelRelatedRequest } from './types/endpoints/v1/novel/related'
 import { GetV1IllustRankingRequest } from './types/endpoints/v1/illust/ranking'
 import { GetV1NovelRankingRequest } from './types/endpoints/v1/novel/ranking'
 import { GetWebViewV2NovelRequest } from './types/endpoints/webview/v2/novel'
+import { GetV1UserFollowingRequest } from './types/endpoints/v1/user/following'
+import { PostV1UserFollowAddRequest } from './types/endpoints/v1/user/follow/add'
+import { PostV1UserFollowDeleteRequest } from './types/endpoints/v1/user/follow/delete'
 
 /**
  * Search target
@@ -130,6 +133,29 @@ export class BookmarkRestrictCheck extends BaseSimpleCheck<BookmarkRestrict> {
       main: (data) =>
         typeof data === 'string' &&
         Object.values(BookmarkRestrict).includes(data),
+    }
+  }
+}
+
+/**
+ * Follow visibility
+ */
+export enum FollowRestrict {
+  /** Public */
+  PUBLIC = 'public',
+  /** Private */
+  PRIVATE = 'private',
+}
+
+/**
+ * Check for follow visibility
+ */
+export class FollowRestrictCheck extends BaseSimpleCheck<FollowRestrict> {
+  checks(): CheckFunctions<FollowRestrict> {
+    return {
+      main: (data) =>
+        typeof data === 'string' &&
+        Object.values(FollowRestrict).includes(data),
     }
   }
 }
@@ -352,3 +378,25 @@ export type UserBookmarksNovelOptions = SomeRequired<
   SnakeToCamel<GetV1UserBookmarksNovelRequest>,
   'userId'
 >
+
+/**
+ * Options for getting the list of users a user is following
+ */
+export type UserFollowingOptions = SomeRequired<
+  SnakeToCamel<GetV1UserFollowingRequest>,
+  'userId'
+>
+
+/**
+ * Options for following a user
+ */
+export type UserFollowAddOptions = SomeRequired<
+  SnakeToCamel<PostV1UserFollowAddRequest>,
+  'userId'
+>
+
+/**
+ * Options for unfollowing a user
+ */
+export type UserFollowDeleteOptions =
+  SnakeToCamel<PostV1UserFollowDeleteRequest>
