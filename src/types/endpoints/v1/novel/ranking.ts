@@ -27,7 +27,7 @@ export interface GetV1NovelRankingRequest {
  */
 export interface GetV1NovelRankingResponse {
   /**
-   * Illust details
+   * Novel details
    */
   novels: PixivNovelItem[]
 

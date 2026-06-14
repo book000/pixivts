@@ -22,7 +22,7 @@ export interface GetV1IllustSeriesRequest {
    */
   filter: OSFilter
 
-  // There may be an offset: number. Needs verification
+  // TODO: There may be an offset: number. Needs verification
 }
 
 /**

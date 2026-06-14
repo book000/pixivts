@@ -27,7 +27,7 @@ export interface GetV2IllustRelatedRequest {
 }
 
 /**
- * Response for GET /v1/illust/related
+ * Response for GET /v2/illust/related
  */
 export interface GetV2IllustRelatedResponse {
   /**

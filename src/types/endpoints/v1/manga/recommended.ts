@@ -52,7 +52,7 @@ export interface GetV1MangaRecommendedRequest {
   /**
    * Viewed illust IDs
    */
-  // Not supported because it's cumbersome
+  // TODO: Not supported because it's cumbersome
   // viewed?: Record<string, string>
 }
 

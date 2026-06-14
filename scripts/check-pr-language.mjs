@@ -2,10 +2,8 @@
 // Dependency-free Node.js ESM script intended to be run from CI via
 // `pull_request_target` (see .github/workflows/check-pr-language.yml).
 
-import { fileURLToPath } from 'node:url'
-
-/** Threshold (inclusive) above which the text is considered "mostly Japanese". */
-export const JAPANESE_RATIO_THRESHOLD = 0.8
+// Threshold (inclusive) above which the text is considered "mostly Japanese".
+const JAPANESE_RATIO_THRESHOLD = 0.8
 
 // Hiragana, katakana, and CJK Unified Ideographs (incl. extension A).
 const JAPANESE_PATTERN = /[぀-ゟ゠-ヿ㐀-䶿一-鿿]/gu
@@ -20,7 +18,7 @@ const LATIN_PATTERN = /[A-Za-z0-9]/gu
  * @returns A ratio between 0 and 1. Returns 0 if the text contains neither
  *   Japanese nor Latin alphanumeric characters.
  */
-export function calculateJapaneseRatio(text) {
+function calculateJapaneseRatio(text) {
   const japaneseCount = (text.match(JAPANESE_PATTERN) ?? []).length
   const latinCount = (text.match(LATIN_PATTERN) ?? []).length
   const total = japaneseCount + latinCount
@@ -42,7 +40,7 @@ export function calculateJapaneseRatio(text) {
  * @returns An array of human-readable failure messages. Empty if both the
  *   title and body pass the check.
  */
-export function checkPrLanguage(title, body) {
+function checkPullRequestLanguage(title, body) {
   const failures = []
 
   const titleRatio = calculateJapaneseRatio(title ?? '')
@@ -65,27 +63,14 @@ export function checkPrLanguage(title, body) {
   return failures
 }
 
-/**
- * CLI entry point. Reads `PR_TITLE`/`PR_BODY` from the environment, runs
- * {@link checkPrLanguage}, prints any failures to stderr, and sets the
- * process exit code to 1 if there is at least one failure.
- */
-function main() {
-  const title = process.env.PR_TITLE ?? ''
-  const body = process.env.PR_BODY ?? ''
+const title = process.env.PR_TITLE ?? ''
+const body = process.env.PR_BODY ?? ''
 
-  const failures = checkPrLanguage(title, body)
-  for (const failure of failures) {
-    console.error(failure)
-  }
-
-  if (failures.length > 0) {
-    process.exitCode = 1
-  }
+const failures = checkPullRequestLanguage(title, body)
+for (const failure of failures) {
+  console.error(failure)
 }
 
-// Only run the CLI entry point when this file is executed directly
-// (not when imported for testing).
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  main()
+if (failures.length > 0) {
+  process.exitCode = 1
 }

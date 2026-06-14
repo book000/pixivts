@@ -57,7 +57,7 @@ export interface GetV1IllustRecommendedRequest {
   /**
    * Viewed illust IDs
    */
-  // Not supported because it's cumbersome
+  // TODO: Not supported because it's cumbersome
   // viewed?: Record<string, string>
 }
 

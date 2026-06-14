@@ -14,12 +14,12 @@ export interface GetV1NovelRelatedRequest {
   novel_id: number
 
   /**
-   * Array of seed illust IDs (?)
+   * Array of seed novel IDs (?)
    */
   seed_novel_ids?: number[]
 
   /**
-   * Viewed illust IDs
+   * Viewed novel IDs
    */
   viewed?: number[]
 }
