@@ -28,8 +28,7 @@ yarn add @book000/pixivts
 
 ## 📚 API Document
 
-The API documentation for this library is hosted on GitHub Pages and can be found [here](https://book000.github.io/pixivts/).  
-Please note that many of the comments in the document are written in Japanese!
+The API documentation for this library is hosted on GitHub Pages and can be found [here](https://book000.github.io/pixivts/).
 
 ## 📑 License
 
