@@ -17,6 +17,7 @@ import { GetV1UserDetailCheck } from './types/endpoints/v1/user/detail'
 import { GetV2IllustRelatedCheck } from './types/endpoints/v2/illust/related'
 import { GetV2NovelDetailCheck } from './types/endpoints/v2/novel/detail'
 import { GetV2NovelSeriesCheck } from './types/endpoints/v2/novel/series'
+import { PixivRateLimitError } from './types/errors'
 import { omit } from './utils'
 import fs from 'node:fs'
 
@@ -920,9 +921,7 @@ describe('Pixiv class coverage tests', () => {
           .spyOn(globalThis, 'fetch')
           .mockResolvedValue(Response.json({}, { status: 429 }))
 
-        await expect(instance.http.get('/test')).rejects.toThrow(
-          'Rate limit exceeded after maximum retries'
-        )
+        await expect(instance.http.get('/test')).rejects.toThrow(PixivRateLimitError)
         // maxRetries: 1 のため、初回 + リトライ1回 = 計2回呼び出される
         expect(fetchSpy).toHaveBeenCalledTimes(2)
       } finally {

@@ -1,4 +1,5 @@
 import { PixivHttpClient } from './http-client'
+import { PixivRateLimitError } from './types/errors'
 
 describe('PixivHttpClient', () => {
   describe('rate limit retry', () => {
@@ -45,9 +46,7 @@ describe('PixivHttpClient', () => {
         { maxRetries: 2, waitMs: 1 }
       )
 
-      await expect(client.get('/test')).rejects.toThrow(
-        'Rate limit exceeded after maximum retries'
-      )
+      await expect(client.get('/test')).rejects.toThrow(PixivRateLimitError)
       // 初回 + maxRetriesの2回 = 計3回呼び出される
       expect(fetchSpy).toHaveBeenCalledTimes(3)
       expect(setTimeoutSpy).toHaveBeenCalledTimes(2)
@@ -192,9 +191,7 @@ describe('PixivHttpClient', () => {
         { maxRetries: 0, waitMs: 10_000 }
       )
 
-      await expect(client.get('/test')).rejects.toThrow(
-        'Rate limit exceeded after maximum retries'
-      )
+      await expect(client.get('/test')).rejects.toThrow(PixivRateLimitError)
       expect(fetchSpy).toHaveBeenCalledTimes(1)
       expect(setTimeoutSpy).not.toHaveBeenCalled()
     })
