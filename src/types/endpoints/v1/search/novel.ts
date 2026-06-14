@@ -104,8 +104,10 @@ export interface GetV1SearchNovelResponse {
 
   /**
    * Whether AI-generated works are shown in the search results
+   *
+   * Not present in all API responses (e.g. absent from novel search).
    */
-  show_ai: boolean
+  show_ai?: boolean
 }
 
 export class GetV1SearchNovelCheck extends BaseMultipleCheck<
@@ -147,7 +149,8 @@ export class GetV1SearchNovelCheck extends BaseMultipleCheck<
         data.next_url === null ||
         (typeof data.next_url === 'string' && data.next_url.length > 0),
       search_span_limit: (data) => typeof data.search_span_limit === 'number',
-      show_ai: (data) => typeof data.show_ai === 'boolean',
+      show_ai: (data) =>
+        data.show_ai === undefined || typeof data.show_ai === 'boolean',
     }
   }
 }

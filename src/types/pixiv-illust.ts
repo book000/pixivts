@@ -208,9 +208,9 @@ export interface PixivIllustItem {
   /**
    * Restriction attributes
    *
-   * Purpose unknown. Defaults to an empty array.
+   * Purpose unknown. Not always present in API responses.
    */
-  restriction_attributes: string[]
+  restriction_attributes?: string[]
 }
 
 export class PixivIllustItemCheck extends BaseSimpleCheck<PixivIllustItem> {
@@ -279,8 +279,11 @@ export class PixivIllustItemCheck extends BaseSimpleCheck<PixivIllustItem> {
       illust_book_style: (data: PixivIllustItem): boolean =>
         typeof data.illust_book_style === 'number',
       restriction_attributes: (data: PixivIllustItem): boolean =>
-        Array.isArray(data.restriction_attributes) &&
-        data.restriction_attributes.every((attr) => typeof attr === 'string'),
+        data.restriction_attributes === undefined ||
+        (Array.isArray(data.restriction_attributes) &&
+          data.restriction_attributes.every(
+            (attr) => typeof attr === 'string'
+          )),
     }
   }
 }
