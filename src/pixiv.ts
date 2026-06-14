@@ -915,7 +915,7 @@ export default class Pixiv {
   public static parseQueryString(url: string) {
     let query = url
     if (url.includes('?')) {
-      query = url.split('?')[1]
+      query = url.split('?', 2)[1]
     }
 
     return qs.parse(query)
