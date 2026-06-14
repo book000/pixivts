@@ -23,7 +23,7 @@ export interface GetV1NovelRecommendedRequest {
   already_recommended?: string
 
   /**
-   * Maximum bookmark ID for recommended illusts (?)
+   * Maximum bookmark ID for recommended novels (?)
    *
    * @default undefined
    * @beta

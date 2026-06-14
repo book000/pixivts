@@ -924,7 +924,7 @@ describe('Pixiv class coverage tests', () => {
         await expect(instance.http.get('/test')).rejects.toThrow(
           PixivRateLimitError
         )
-        // maxRetries: 1 のため、初回 + リトライ1回 = 計2回呼び出される
+        // Called twice in total: the initial attempt + 1 retry (maxRetries: 1)
         expect(fetchSpy).toHaveBeenCalledTimes(2)
       } finally {
         await instance.close()
