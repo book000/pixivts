@@ -7,7 +7,7 @@
  * @example
  * ```ts
  * const r = ok(42)
- * if (r.isOk()) console.log(r.value) // 42
+ * if (r.isOk) console.log(r.value) // 42
  *
  * const a = ResultAsync.fromPromise(fetch('/api'), (e) => networkError(e))
  * const text = await a

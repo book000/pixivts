@@ -89,20 +89,20 @@ await close()
 
 The `responses` table stores one row per API call:
 
-| Column | Type | Description |
-|---|---|---|
-| `id` | `BIGINT UNSIGNED AUTO_INCREMENT` | Primary key |
-| `method` | `VARCHAR(10)` | HTTP method |
-| `endpoint` | `VARCHAR(255)` | API path |
-| `url` | `TEXT` | Full request URL |
-| `url_hash` | `CHAR(64)` | SHA-256 of URL (for deduplication) |
-| `request_headers` | `LONGTEXT` | JSON |
-| `request_body` | `LONGTEXT` | JSON |
-| `response_type` | `VARCHAR(50)` | MIME type |
-| `status_code` | `SMALLINT UNSIGNED` | HTTP status |
-| `response_headers` | `LONGTEXT` | JSON |
-| `response_body` | `LONGTEXT` | JSON |
-| `created_at` | `DATETIME` | UTC timestamp |
+| Column | Type | Nullable | Description |
+|---|---|---|---|
+| `id` | `INT AUTO_INCREMENT` | NO | Primary key |
+| `method` | `VARCHAR(10)` | NO | HTTP method |
+| `endpoint` | `VARCHAR(255)` | NO | API path |
+| `url` | `TEXT` | YES | Full request URL |
+| `url_hash` | `VARCHAR(255)` | NO | SHA-256 hex of URL (for deduplication) |
+| `request_headers` | `LONGTEXT` | YES | Serialised request headers (JSON) |
+| `request_body` | `LONGTEXT` | YES | Request body (null for GET) |
+| `response_type` | `VARCHAR(10)` | NO | Response content type (`"JSON"` or `"TEXT"`) |
+| `status_code` | `INT` | NO | HTTP status code |
+| `response_headers` | `LONGTEXT` | YES | Serialised response headers (JSON) |
+| `response_body` | `LONGTEXT` | NO | Raw response body |
+| `created_at` | `DATETIME(3)` | NO | Timestamp (millisecond precision) |
 
 Duplicate rows (same method + endpoint + statusCode + createdAt + urlHash) are silently ignored via `ON DUPLICATE KEY UPDATE`.
 

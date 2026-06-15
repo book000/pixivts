@@ -33,13 +33,13 @@ const client = await PixivClient.of(process.env.PIXIV_REFRESH_TOKEN!)
 
 // Fetch a single illust
 const result = await client.illusts.detail({ illustId: 12345 })
-if (result.isOk()) {
+if (result.isOk) {
   console.log(result.value.illust.title)
 }
 
 // Search illusts (single page)
 const searchResult = await client.illusts.search({ word: 'hatsune miku' })
-if (searchResult.isOk()) {
+if (searchResult.isOk) {
   for (const illust of searchResult.value.illusts) {
     console.log(illust.id, illust.title)
   }
@@ -52,10 +52,9 @@ for await (const page of client.illusts.search({ word: 'hatsune miku' }).pages()
   }
 }
 
-// Collect all items across pages
-const items = await client.illusts.search({ word: 'hatsune miku' }).items()
-if (items.isOk()) {
-  console.log(`Found ${items.value.length} illusts`)
+// Iterate over all items across pages (async generator — throws on fetch error)
+for await (const illust of client.illusts.search({ word: 'hatsune miku' }).items()) {
+  console.log(illust.id, illust.title)
 }
 ```
 
@@ -68,7 +67,8 @@ Creates a `PixivClient` by exchanging the given refresh token for an access toke
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `refreshToken` | `string` | — | pixiv OAuth refresh token |
-| `opts.maxRetries` | `number` | `3` | Max 429 retry attempts |
+| `opts.retry.maxRetries` | `number` | `3` | Max 429 retry attempts |
+| `opts.retry.waitMs` | `number` | `10000` | Default wait (ms) when no `Retry-After` header is present |
 | `opts.onResponse` | `ResponseInterceptor` | — | Called after every API response (used by `@book000/pixivts-db-mysql`) |
 
 ### Resources
@@ -90,7 +90,7 @@ import type { PixivError } from '@book000/pixivts'
 
 const result = await client.illusts.detail({ illustId: 12345 })
 
-if (result.isErr()) {
+if (result.isErr) {
   const err: PixivError = result.error
   switch (err.type) {
     case 'rate_limit':

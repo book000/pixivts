@@ -38,7 +38,7 @@ try {
 
 // v2
 const result = await client.illusts.detail({ illustId })
-if (result.isOk()) {
+if (result.isOk) {
   console.log(result.value.illust.title)
 } else {
   console.error(result.error.type)
@@ -96,10 +96,9 @@ for await (const page of client.illusts.search({ word: 'hatsune miku' }).pages()
   // process page.illusts
 }
 
-// v2 — collect all items at once (use with care on large result sets)
-const result = await client.illusts.search({ word: 'hatsune miku' }).items()
-if (result.isOk()) {
-  console.log(result.value) // IllustSimple[]
+// v2 — iterate all items across pages (async generator — throws on fetch error)
+for await (const illust of client.illusts.search({ word: 'hatsune miku' }).items()) {
+  console.log(illust) // IllustSimple
 }
 ```
 
@@ -114,7 +113,7 @@ console.log(res.data.illust.title)  // .data because it's AxiosResponse
 
 // v2
 const result = await client.illusts.detail({ illustId })
-if (result.isOk()) {
+if (result.isOk) {
   console.log(result.value.illust.title)  // no .data — value is the response body
 }
 ```

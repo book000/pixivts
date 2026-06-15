@@ -8,7 +8,7 @@
  * Usage:
  * ```ts
  * import { createResponseRecorder } from '@book000/pixivts-db-mysql'
- * const { interceptor, close } = createResponseRecorder({ ... })
+ * const { interceptor, close } = await createResponseRecorder({ ... })
  * const client = await PixivClient.of(token, { onResponse: interceptor })
  * ```
  */

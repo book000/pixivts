@@ -26,7 +26,7 @@ import { PixivClient } from '@book000/pixivts'
 const client = await PixivClient.of(process.env.PIXIV_REFRESH_TOKEN!)
 
 const result = await client.illusts.detail({ illustId: 12345 })
-if (result.isOk()) {
+if (result.isOk) {
   console.log(result.value.illust.title)
 }
 
