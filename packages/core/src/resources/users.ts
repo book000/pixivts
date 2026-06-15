@@ -7,7 +7,6 @@ import { buildParams } from '../params'
 import { PaginatedResultAsync } from '../paginated'
 import type { ResultAsync } from '../result'
 import type {
-  BookmarkRestrict,
   FollowRestrict,
   OSFilter,
   UserIllustType,
@@ -31,7 +30,7 @@ export interface UserBookmarksIllustParams {
   /** ID of the user whose bookmarks to fetch. */
   userId: number
   /** Visibility of the bookmarks to return (default: `"public"`). */
-  restrict?: BookmarkRestrict
+  restrict?: 'public' | 'private'
   /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
   /** Limit results to bookmarks with this tag. */
@@ -47,7 +46,7 @@ export interface UserBookmarksNovelParams {
   /** ID of the user whose bookmarks to fetch. */
   userId: number
   /** Visibility of the bookmarks to return (default: `"public"`). */
-  restrict?: BookmarkRestrict
+  restrict?: 'public' | 'private'
   /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
   /** Limit results to bookmarks with this tag. */

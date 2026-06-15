@@ -7,7 +7,6 @@ import { buildParams } from '../params'
 import { PaginatedResultAsync } from '../paginated'
 import type { ResultAsync } from '../result'
 import type {
-  BookmarkRestrict,
   OSFilter,
   RankingMode,
   SearchDuration,
@@ -106,7 +105,7 @@ export interface IllustBookmarkAddParams {
   /** ID of the illust to bookmark. */
   illustId: number
   /** Bookmark visibility (default: `"public"`). */
-  restrict?: BookmarkRestrict
+  restrict?: 'public' | 'private'
   /** Tags to attach to the bookmark. */
   tags?: string[]
 }

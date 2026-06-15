@@ -1,9 +1,9 @@
 /**
- * Public option types for @book000/pixivts.
+ * Public option constants for @book000/pixivts.
  *
- * Each option is exported as both a runtime `const` object (for enum-like
- * access, e.g. `BookmarkRestrict.PUBLIC`) and a TypeScript `type` (so plain
- * string literals such as `'public'` are also accepted).
+ * Each option is exported as a runtime `const` object for enum-like access
+ * (e.g. `BookmarkRestrict.PUBLIC`). Plain string literals are also accepted
+ * wherever these values are used as parameters.
  *
  * @example
  * ```ts
@@ -108,7 +108,6 @@ export const BookmarkRestrict = {
   PUBLIC: 'public',
   PRIVATE: 'private',
 } as const
-export type BookmarkRestrict = (typeof BookmarkRestrict)[keyof typeof BookmarkRestrict]
 
 /**
  * Visibility restriction for follows.

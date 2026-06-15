@@ -7,7 +7,6 @@ import { buildParams } from '../params'
 import { PaginatedResultAsync } from '../paginated'
 import type { ResultAsync } from '../result'
 import type {
-  BookmarkRestrict,
   NovelRankingMode,
   OSFilter,
   SearchDuration,
@@ -102,7 +101,7 @@ export interface NovelBookmarkAddParams {
   /** ID of the novel to bookmark. */
   novelId: number
   /** Bookmark visibility (default: `"public"`). */
-  restrict?: BookmarkRestrict
+  restrict?: 'public' | 'private'
   /** Tags to attach to the bookmark. */
   tags?: string[]
 }
