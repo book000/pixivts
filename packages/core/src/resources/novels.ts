@@ -6,7 +6,8 @@ import type { PixivError } from '../errors'
 import { buildParams } from '../params'
 import { PaginatedResultAsync } from '../paginated'
 import type { ResultAsync } from '../result'
-import type {
+import {
+  BookmarkRestrict,
   NovelRankingMode,
   OSFilter,
   SearchDuration,
@@ -46,13 +47,13 @@ export interface NovelSearchParams {
   /** Search keyword. */
   word: string
   /** How to match the keyword against works (default: `"partial_match_for_tags"`). */
-  searchTarget?: SearchTarget
+  searchTarget?: (typeof SearchTarget)[keyof typeof SearchTarget]
   /** Sort order for results (default: `"date_desc"`). */
-  sort?: SearchSort
+  sort?: (typeof SearchSort)[keyof typeof SearchSort]
   /** OS filter to apply (default: `"for_ios"`). */
-  filter?: OSFilter
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
   /** Date range preset filter (omit for no restriction). */
-  duration?: SearchDuration
+  duration?: (typeof SearchDuration)[keyof typeof SearchDuration]
   /** Start date for a custom date range (YYYY-MM-DD; requires `endDate`). */
   startDate?: string
   /** End date for a custom date range (YYYY-MM-DD; requires `startDate`). */
@@ -66,9 +67,9 @@ export interface NovelSearchParams {
 /** Parameters for fetching the novel ranking. */
 export interface NovelRankingParams {
   /** Ranking category (default: `"day"`). */
-  mode?: NovelRankingMode
+  mode?: (typeof NovelRankingMode)[keyof typeof NovelRankingMode]
   /** OS filter to apply (default: `"for_ios"`). */
-  filter?: OSFilter
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
   /** Specific date to fetch rankings for (YYYY-MM-DD; omit for the latest). */
   date?: string
   /** Zero-based offset for pagination. */
@@ -78,7 +79,7 @@ export interface NovelRankingParams {
 /** Parameters for fetching recommended novels. */
 export interface NovelRecommendedParams {
   /** OS filter to apply (default: `"for_ios"`). */
-  filter?: OSFilter
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
   /** Zero-based offset for pagination. */
   offset?: number
   /**
@@ -101,7 +102,7 @@ export interface NovelBookmarkAddParams {
   /** ID of the novel to bookmark. */
   novelId: number
   /** Bookmark visibility (default: `"public"`). */
-  restrict?: 'public' | 'private'
+  restrict?: (typeof BookmarkRestrict)[keyof typeof BookmarkRestrict]
   /** Tags to attach to the bookmark. */
   tags?: string[]
 }

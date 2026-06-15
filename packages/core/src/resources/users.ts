@@ -6,7 +6,8 @@ import type { PixivError } from '../errors'
 import { buildParams } from '../params'
 import { PaginatedResultAsync } from '../paginated'
 import type { ResultAsync } from '../result'
-import type {
+import {
+  BookmarkRestrict,
   FollowRestrict,
   OSFilter,
   UserIllustType,
@@ -30,9 +31,9 @@ export interface UserBookmarksIllustParams {
   /** ID of the user whose bookmarks to fetch. */
   userId: number
   /** Visibility of the bookmarks to return (default: `"public"`). */
-  restrict?: 'public' | 'private'
+  restrict?: (typeof BookmarkRestrict)[keyof typeof BookmarkRestrict]
   /** OS filter to apply (default: `"for_ios"`). */
-  filter?: OSFilter
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
   /** Limit results to bookmarks with this tag. */
   tag?: string
   /** Fetch bookmarks older than this bookmark ID (cursor-based pagination). */
@@ -46,9 +47,9 @@ export interface UserBookmarksNovelParams {
   /** ID of the user whose bookmarks to fetch. */
   userId: number
   /** Visibility of the bookmarks to return (default: `"public"`). */
-  restrict?: 'public' | 'private'
+  restrict?: (typeof BookmarkRestrict)[keyof typeof BookmarkRestrict]
   /** OS filter to apply (default: `"for_ios"`). */
-  filter?: OSFilter
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
   /** Limit results to bookmarks with this tag. */
   tag?: string
   /** Fetch bookmarks older than this bookmark ID (cursor-based pagination). */
@@ -62,7 +63,7 @@ export interface UserDetailParams {
   /** ID of the user to fetch. */
   userId: number
   /** OS filter to apply (default: `"for_ios"`). */
-  filter?: OSFilter
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
 }
 
 /** Parameters for fetching a user's illusts. */
@@ -70,9 +71,9 @@ export interface UserIllustsParams {
   /** ID of the user whose illusts to fetch. */
   userId: number
   /** Work type to filter by (omit to return both illusts and manga). */
-  type?: UserIllustType
+  type?: (typeof UserIllustType)[keyof typeof UserIllustType]
   /** OS filter to apply (default: `"for_ios"`). */
-  filter?: OSFilter
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
   /** Zero-based offset for pagination. */
   offset?: number
 }
@@ -82,7 +83,7 @@ export interface UserNovelsParams {
   /** ID of the user whose novels to fetch. */
   userId: number
   /** OS filter to apply (default: `"for_ios"`). */
-  filter?: OSFilter
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
   /** Zero-based offset for pagination. */
   offset?: number
 }
@@ -92,7 +93,7 @@ export interface UserFollowingParams {
   /** ID of the user whose following list to fetch. */
   userId: number
   /** Visibility of the follows to return (default: `"public"`). */
-  restrict?: FollowRestrict
+  restrict?: (typeof FollowRestrict)[keyof typeof FollowRestrict]
   /** Zero-based offset for pagination. */
   offset?: number
 }
@@ -102,7 +103,7 @@ export interface UserFollowAddParams {
   /** ID of the user to follow. */
   userId: number
   /** Visibility of the follow (default: `"public"`). */
-  restrict?: FollowRestrict
+  restrict?: (typeof FollowRestrict)[keyof typeof FollowRestrict]
 }
 
 /** Parameters for unfollowing a user. */
