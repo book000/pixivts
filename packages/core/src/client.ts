@@ -61,12 +61,21 @@ export class PixivClient {
   }
 
   /**
-   * Numeric user ID of the authenticated account, as a string.
+   * Numeric user ID of the authenticated account.
    *
    * Available immediately after {@link PixivClient.of} resolves.
+   * The pixiv OAuth endpoint returns the ID as a string; this getter
+   * normalises it to `number` for consistency with resource method params
+   * (e.g. `UserBookmarksIllustParams.userId`).
+   *
+   * @example
+   * ```ts
+   * const client = await PixivClient.of(refreshToken)
+   * const bookmarks = await client.users.bookmarks.illusts({ userId: client.userId })
+   * ```
    */
-  get userId(): string {
-    return this.#auth.userId
+  get userId(): number {
+    return Number(this.#auth.userId)
   }
 
   /**

@@ -19,6 +19,10 @@ export type { Result, OkResult, ErrResult } from './result'
 export { PaginatedResultAsync, failedPaginated } from './paginated'
 export type { PagedResponse } from './paginated'
 
+// URL utilities
+export { parseNextUrl } from './params'
+export type { ParsedNextUrl } from './params'
+
 // Error types
 export { rateLimitError, authFailedError, networkError, apiError, PixivFetchError } from './errors'
 export type { PixivError } from './errors'
@@ -26,8 +30,8 @@ export type { PixivError } from './errors'
 // Interceptor (DB seam)
 export type { ResponseRecord, ResponseInterceptor, HttpMethod } from './interceptor'
 
-// Option types
-export type {
+// Option constants and types (exported as values so callers can use e.g. BookmarkRestrict.PUBLIC)
+export {
   SearchTarget,
   SearchSort,
   SearchDuration,

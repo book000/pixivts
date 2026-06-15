@@ -82,6 +82,11 @@ export interface NovelRecommendedParams {
   filter?: OSFilter
   /** Zero-based offset for pagination. */
   offset?: number
+  /**
+   * Cursor for resuming pagination: the `maxBookmarkIdForRecommend` value
+   * extracted from a previous page's `next_url` via {@link parseNextUrl}.
+   */
+  maxBookmarkIdForRecommend?: number
 }
 
 /** Parameters for fetching a novel series. */
@@ -121,6 +126,16 @@ export class NovelResource {
    * GET /v2/novel/detail
    *
    * @param params - Request parameters
+   *
+   * @example
+   * ```ts
+   * const result = await client.novels.detail({ novelId: 67890 })
+   * if (result.isOk) {
+   *   console.log(result.value.novel.title)
+   * } else {
+   *   console.error(result.error)
+   * }
+   * ```
    */
   detail(
     params: NovelDetailParams
@@ -172,6 +187,20 @@ export class NovelResource {
    * GET /v1/search/novel
    *
    * @param params - Request parameters
+   *
+   * @example
+   * ```ts
+   * // Iterate all results across pages
+   * for await (const novel of client.novels.search({ word: 'fantasy' }).items()) {
+   *   console.log(novel.title)
+   * }
+   *
+   * // Fetch only the first page
+   * const page = await client.novels.search({ word: 'fantasy' })
+   * if (page.isOk) {
+   *   console.log(page.value.novels.length)
+   * }
+   * ```
    */
   search(
     params: NovelSearchParams
@@ -237,6 +266,7 @@ export class NovelResource {
           includeRankingNovels: true,
           includePrivacyPolicy: true,
           offset: params.offset,
+          maxBookmarkIdForRecommend: params.maxBookmarkIdForRecommend,
         })
       ),
       this.#http,
