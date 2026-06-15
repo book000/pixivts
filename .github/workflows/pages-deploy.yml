@@ -2,10 +2,8 @@ name: Deploy
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-      - master
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -44,6 +42,12 @@ jobs:
 
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile --prefer-frozen-lockfile
+
+      - name: 🏷 Set version from latest git tag
+        run: |
+          VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
+          echo "Using version: $VERSION"
+          (cd packages/core && npm version --no-git-tag-version "$VERSION")
 
       - name: 📄 Generate API documentation
         run: pnpm --filter @book000/pixivts run generate-docs
