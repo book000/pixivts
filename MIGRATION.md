@@ -1,34 +1,34 @@
-# Migration Guide: v1 → v2
+# Migration Guide: ≤ 0.55.1 → ≥ 0.56.2
 
-Version 2 is a **breaking rewrite**. This guide maps v1 patterns to v2 equivalents.
+Version 0.56.2 is a **breaking rewrite**. This guide maps patterns from 0.55.1 and earlier to the current API.
 
 ## Package Structure
 
-v1 was a single package. v2 is a pnpm monorepo with two packages:
+The previous version was a single package. The current version is a pnpm monorepo with two packages:
 
-| v1 | v2 |
+| ≤ 0.55.1 | ≥ 0.56.2 |
 |---|---|
-| `@book000/pixivts` (axios-based, CJS) | `@book000/pixivts` (fetch-based, ESM+CJS) |
+| `@book000/pixivts` (fetch-based, CJS) | `@book000/pixivts` (fetch-based, ESM+CJS) |
 | `saving-responses/` (TypeORM + MySQL built-in) | `@book000/pixivts-db-mysql` (optional, Drizzle + MySQL) |
 
 ## Creating a Client
 
 ```typescript
-// v1
+// ≤ 0.55.1
 import { Pixiv } from '@book000/pixivts'
 const pixiv = await Pixiv.of(refreshToken)
 
-// v2
+// ≥ 0.56.2
 import { PixivClient } from '@book000/pixivts'
 const client = await PixivClient.of(refreshToken)
 ```
 
 ## Error Handling
 
-v1 threw errors on failure. v2 returns `Result<T, PixivError>` — no thrown exceptions.
+The previous version threw errors on failure. The current version returns `Result<T, PixivError>` — no thrown exceptions.
 
 ```typescript
-// v1
+// ≤ 0.55.1
 try {
   const res = await pixiv.illustDetail({ illustId })
   console.log(res.data.illust.title)
@@ -36,7 +36,7 @@ try {
   console.error(err)
 }
 
-// v2
+// ≥ 0.56.2
 const result = await client.illusts.detail({ illustId })
 if (result.isOk) {
   console.log(result.value.illust.title)
@@ -47,7 +47,7 @@ if (result.isOk) {
 
 ## Method Mapping
 
-| v1 method | v2 method |
+| ≤ 0.55.1 method | ≥ 0.56.2 method |
 |---|---|
 | `pixiv.illustDetail({ illustId })` | `client.illusts.detail({ illustId })` |
 | `pixiv.illustRelated({ illustId })` | `client.illusts.related({ illustId })` |
@@ -63,7 +63,7 @@ if (result.isOk) {
 | `pixiv.searchNovel({ word })` | `client.novels.search({ word })` |
 | `pixiv.novelRanking(opts)` | `client.novels.ranking(opts)` |
 | `pixiv.novelRecommended(opts)` | `client.novels.recommended(opts)` |
-| `pixiv.novelSeries({ novelSeriesId })` | `client.novels.series({ novelSeriesId })` |
+| `pixiv.novelSeries({ seriesId })` | `client.novels.series({ seriesId })` |
 | `pixiv.novelBookmarkAdd(opts)` | `client.novels.bookmarkAdd(opts)` |
 | `pixiv.novelBookmarkDelete(opts)` | `client.novels.bookmarkDelete(opts)` |
 | `pixiv.userDetail({ userId })` | `client.users.detail({ userId })` |
@@ -80,23 +80,24 @@ if (result.isOk) {
 
 ## Pagination
 
-v1 returned the raw API response including `next_url`. v2 provides a `PaginatedResultAsync` with async generators.
+The previous version returned the raw API response including `next_url`. The current version provides a `PaginatedResultAsync` with async generators.
 
 ```typescript
-// v1
-let nextUrl: string | null = null
-do {
-  const res = await pixiv.searchIllust({ word: 'hatsune miku', nextUrl })
+// ≤ 0.55.1
+let offset = 0
+while (true) {
+  const res = await pixiv.searchIllust({ word: 'hatsune miku', offset })
   // process res.data.illusts
-  nextUrl = res.data.next_url
-} while (nextUrl)
+  if (!res.data.next_url) break
+  offset += res.data.illusts.length
+}
 
-// v2 — iterate pages
+// ≥ 0.56.2 — iterate pages
 for await (const page of client.illusts.search({ word: 'hatsune miku' }).pages()) {
   // process page.illusts
 }
 
-// v2 — iterate all items across pages (async generator — throws on fetch error)
+// ≥ 0.56.2 — iterate all items across pages (async generator — throws on fetch error)
 for await (const illust of client.illusts.search({ word: 'hatsune miku' }).items()) {
   console.log(illust) // IllustSimple
 }
@@ -104,14 +105,14 @@ for await (const illust of client.illusts.search({ word: 'hatsune miku' }).items
 
 ## Response Type
 
-v1 returned `AxiosResponse<T>` — you accessed data via `.data`. v2 returns the unwrapped response body directly.
+The previous version returned a custom `PixivApiResponse<T>` — you accessed the body via `.data`. The current version returns the unwrapped response body directly.
 
 ```typescript
-// v1
+// ≤ 0.55.1
 const res = await pixiv.illustDetail({ illustId })
-console.log(res.data.illust.title)  // .data because it's AxiosResponse
+console.log(res.data.illust.title)  // .data because it's PixivApiResponse<T>
 
-// v2
+// ≥ 0.56.2
 const result = await client.illusts.detail({ illustId })
 if (result.isOk) {
   console.log(result.value.illust.title)  // no .data — value is the response body
@@ -120,10 +121,10 @@ if (result.isOk) {
 
 ## MySQL Response Saving
 
-v1 had response saving built into the core package via TypeORM. v2 moves this to the optional `@book000/pixivts-db-mysql` package using Drizzle ORM.
+The previous version had response saving built into the core package via TypeORM. The current version moves this to the optional `@book000/pixivts-db-mysql` package using Drizzle ORM.
 
 ```typescript
-// v1
+// ≤ 0.55.1
 import { Pixiv } from '@book000/pixivts'
 const pixiv = await Pixiv.of(refreshToken, {
   responseDatabase: {
@@ -135,7 +136,7 @@ const pixiv = await Pixiv.of(refreshToken, {
   },
 })
 
-// v2
+// ≥ 0.56.2
 import { PixivClient } from '@book000/pixivts'
 import { createResponseRecorder } from '@book000/pixivts-db-mysql'
 
@@ -153,13 +154,11 @@ await close()
 
 ## Dependencies Removed
 
-The following dependencies from v1 are no longer required:
+The following dependencies from ≤ 0.55.1 are no longer required:
 
 | Removed | Reason |
 |---|---|
-| `axios` | Replaced by native `fetch` |
 | `qs` | Replaced by `URLSearchParams` |
 | `typeorm` | Moved to `@book000/pixivts-db-mysql` (Drizzle) |
 | `typeorm-naming-strategies` | Same as above |
 | `snake-camel-types` | Replaced by local type utilities |
-| `reflect-metadata` | TypeORM no longer used in core |
