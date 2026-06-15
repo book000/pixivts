@@ -14,6 +14,10 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          # For release events, check out the exact tagged commit so that the
+          # generated docs match the released code. For workflow_dispatch there
+          # is no release tag, so fall back to the default branch HEAD.
+          ref: ${{ github.event.release.tag_name || github.ref }}
 
       - name: 🏗 Setup node
         uses: actions/setup-node@v6
@@ -43,9 +47,17 @@ jobs:
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile --prefer-frozen-lockfile
 
-      - name: 🏷 Set version from latest git tag
+      - name: 🏷 Set version from release tag
         run: |
-          VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
+          # For release events, use the tag name from the event payload directly
+          # to avoid any reliance on git history ordering.
+          # For workflow_dispatch, fall back to the latest git tag.
+          TAG="${{ github.event.release.tag_name }}"
+          if [[ -n "$TAG" ]]; then
+            VERSION="${TAG#v}"
+          else
+            VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
+          fi
           echo "Using version: $VERSION"
           (cd packages/core && npm version --no-git-tag-version "$VERSION")
 
