@@ -42,7 +42,7 @@
   "devDependencies": {
     "@types/node": "24.13.2",
     "@vitest/coverage-v8": "3.2.4",
-    "msw": "2.7.4",
+    "msw": "2.14.6",
     "tsup": "8.5.0",
     "typedoc": "^0.28.19",
     "typescript": "6.0.3",
@@ -54,7 +54,7 @@
     "build:dts-guard": "node ../../scripts/check-dts-no-zod.mjs",
     "clean": "rimraf dist",
     "generate-docs": "typedoc",
-    "lint": "tsc --noEmit",
+    "lint": "tsc -p tsconfig.test.json",
     "fix": "echo 'no fix needed'",
     "test:e2e": "vitest run --config vitest.e2e.config.ts"
   }
