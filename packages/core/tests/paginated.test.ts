@@ -41,7 +41,7 @@ const BASE = 'https://app-api.pixiv.net'
 
 describe('PaginatedResultAsync — single page', () => {
   it('awaiting returns Ok(firstPage)', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
     server.use(
       http.get(`${BASE}/v1/p-single-await`, () =>
         HttpResponse.json({
@@ -51,10 +51,10 @@ describe('PaginatedResultAsync — single page', () => {
       )
     )
 
-    const firstPage = http_.get<ItemPage>('/v1/p-single-await')
+    const firstPage = httpClient.get<ItemPage>('/v1/p-single-await')
     const paginated = PaginatedResultAsync.fromResultAsync(
       firstPage,
-      http_,
+      httpClient,
       (page) => page.items
     )
 
@@ -67,7 +67,7 @@ describe('PaginatedResultAsync — single page', () => {
   })
 
   it('pages() yields the single page then stops', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
     server.use(
       http.get(`${BASE}/v1/p-single-pages`, () =>
         HttpResponse.json({
@@ -78,8 +78,8 @@ describe('PaginatedResultAsync — single page', () => {
     )
 
     const paginated = PaginatedResultAsync.fromResultAsync(
-      http_.get<ItemPage>('/v1/p-single-pages'),
-      http_,
+      httpClient.get<ItemPage>('/v1/p-single-pages'),
+      httpClient,
       (page) => page.items
     )
 
@@ -92,7 +92,7 @@ describe('PaginatedResultAsync — single page', () => {
   })
 
   it('items() yields all items from the single page', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
     server.use(
       http.get(`${BASE}/v1/p-single-items`, () =>
         HttpResponse.json({
@@ -106,8 +106,8 @@ describe('PaginatedResultAsync — single page', () => {
     )
 
     const paginated = PaginatedResultAsync.fromResultAsync(
-      http_.get<ItemPage>('/v1/p-single-items'),
-      http_,
+      httpClient.get<ItemPage>('/v1/p-single-items'),
+      httpClient,
       (page) => page.items
     )
 
@@ -129,7 +129,7 @@ describe('PaginatedResultAsync — single page', () => {
 
 describe('PaginatedResultAsync — multiple pages', () => {
   it('pages() follows next_url across three pages', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
 
     // Register each page at a distinct path
     server.use(
@@ -154,8 +154,8 @@ describe('PaginatedResultAsync — multiple pages', () => {
     )
 
     const paginated = PaginatedResultAsync.fromResultAsync(
-      http_.get<ItemPage>('/v1/multi-p1'),
-      http_,
+      httpClient.get<ItemPage>('/v1/multi-p1'),
+      httpClient,
       (page) => page.items
     )
 
@@ -167,7 +167,7 @@ describe('PaginatedResultAsync — multiple pages', () => {
   })
 
   it('items() flattens items across all pages', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
 
     server.use(
       http.get(`${BASE}/v1/flat-p1`, () =>
@@ -191,8 +191,8 @@ describe('PaginatedResultAsync — multiple pages', () => {
     )
 
     const paginated = PaginatedResultAsync.fromResultAsync(
-      http_.get<ItemPage>('/v1/flat-p1'),
-      http_,
+      httpClient.get<ItemPage>('/v1/flat-p1'),
+      httpClient,
       (page) => page.items
     )
 
@@ -204,7 +204,7 @@ describe('PaginatedResultAsync — multiple pages', () => {
   })
 
   it('items() early-exits correctly via break before fetching next page', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
 
     // Only the first page is registered — fetching next_url would throw an MSW unhandled error
     server.use(
@@ -221,8 +221,8 @@ describe('PaginatedResultAsync — multiple pages', () => {
     )
 
     const paginated = PaginatedResultAsync.fromResultAsync(
-      http_.get<ItemPage>('/v1/break-p1'),
-      http_,
+      httpClient.get<ItemPage>('/v1/break-p1'),
+      httpClient,
       (page) => page.items
     )
 
@@ -236,7 +236,7 @@ describe('PaginatedResultAsync — multiple pages', () => {
   })
 
   it('pages() correctly counts page fetches', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
     let fetchCount = 0
 
     server.use(
@@ -257,8 +257,8 @@ describe('PaginatedResultAsync — multiple pages', () => {
     )
 
     const paginated = PaginatedResultAsync.fromResultAsync(
-      http_.get<ItemPage>('/v1/count-p1'),
-      http_,
+      httpClient.get<ItemPage>('/v1/count-p1'),
+      httpClient,
       (page) => page.items
     )
 
@@ -278,15 +278,15 @@ describe('PaginatedResultAsync — multiple pages', () => {
 
 describe('PaginatedResultAsync — error handling', () => {
   it('awaiting a failed first page returns Err', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
     server.use(
       http.get(`${BASE}/v1/err-first`, () =>
         HttpResponse.json({ error: 'gone' }, { status: 410 })
       )
     )
     const paginated = PaginatedResultAsync.fromResultAsync(
-      http_.get<ItemPage>('/v1/err-first'),
-      http_,
+      httpClient.get<ItemPage>('/v1/err-first'),
+      httpClient,
       (page) => page.items
     )
 
@@ -296,15 +296,15 @@ describe('PaginatedResultAsync — error handling', () => {
   })
 
   it('pages() throws PixivError when first page fails', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
     server.use(
       http.get(`${BASE}/v1/err-pages`, () =>
         HttpResponse.json({ error: 'nope' }, { status: 403 })
       )
     )
     const paginated = PaginatedResultAsync.fromResultAsync(
-      http_.get<ItemPage>('/v1/err-pages'),
-      http_,
+      httpClient.get<ItemPage>('/v1/err-pages'),
+      httpClient,
       (page) => page.items
     )
 
@@ -317,7 +317,7 @@ describe('PaginatedResultAsync — error handling', () => {
   })
 
   it('pages() throws when a subsequent page fails', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
     server.use(
       http.get(`${BASE}/v1/ok-then-err`, () =>
         HttpResponse.json({
@@ -330,8 +330,8 @@ describe('PaginatedResultAsync — error handling', () => {
       )
     )
     const paginated = PaginatedResultAsync.fromResultAsync(
-      http_.get<ItemPage>('/v1/ok-then-err'),
-      http_,
+      httpClient.get<ItemPage>('/v1/ok-then-err'),
+      httpClient,
       (page) => page.items
     )
 
@@ -347,7 +347,7 @@ describe('PaginatedResultAsync — error handling', () => {
   })
 
   it('items() throws when a subsequent page fails', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
     server.use(
       http.get(`${BASE}/v1/items-then-err`, () =>
         HttpResponse.json({
@@ -360,8 +360,8 @@ describe('PaginatedResultAsync — error handling', () => {
       )
     )
     const paginated = PaginatedResultAsync.fromResultAsync(
-      http_.get<ItemPage>('/v1/items-then-err'),
-      http_,
+      httpClient.get<ItemPage>('/v1/items-then-err'),
+      httpClient,
       (page) => page.items
     )
 
@@ -376,11 +376,11 @@ describe('PaginatedResultAsync — error handling', () => {
   })
 
   it('failedPaginated() returns Err immediately', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
     const error = apiError(401, { message: 'unauthorized' })
     const paginated = failedPaginated<ItemPage, Item>(
       error,
-      http_,
+      httpClient,
       (page) => page.items
     )
 
@@ -392,11 +392,11 @@ describe('PaginatedResultAsync — error handling', () => {
   })
 
   it('failedPaginated() pages() throws immediately', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
     const error = apiError(429, null)
     const paginated = failedPaginated<ItemPage, Item>(
       error,
-      http_,
+      httpClient,
       (page) => page.items
     )
 
@@ -415,7 +415,7 @@ describe('PaginatedResultAsync — error handling', () => {
 
 describe('PaginatedResultAsync — inherits ResultAsync', () => {
   it('supports .map()', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
     server.use(
       http.get(`${BASE}/v1/map-test`, () =>
         HttpResponse.json({
@@ -425,8 +425,8 @@ describe('PaginatedResultAsync — inherits ResultAsync', () => {
       )
     )
     const paginated = PaginatedResultAsync.fromResultAsync(
-      http_.get<ItemPage>('/v1/map-test'),
-      http_,
+      httpClient.get<ItemPage>('/v1/map-test'),
+      httpClient,
       (page) => page.items
     )
 
@@ -439,15 +439,15 @@ describe('PaginatedResultAsync — inherits ResultAsync', () => {
   })
 
   it('supports .unwrapOr() on failure', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
     server.use(
       http.get(`${BASE}/v1/unwrap-test`, () =>
         HttpResponse.json({ error: 'gone' }, { status: 410 })
       )
     )
     const paginated = PaginatedResultAsync.fromResultAsync(
-      http_.get<ItemPage>('/v1/unwrap-test'),
-      http_,
+      httpClient.get<ItemPage>('/v1/unwrap-test'),
+      httpClient,
       (page) => page.items
     )
 
@@ -457,7 +457,7 @@ describe('PaginatedResultAsync — inherits ResultAsync', () => {
   })
 
   it('supports .andThen() chaining', async () => {
-    const http_ = makeHttp()
+    const httpClient = makeHttp()
     server.use(
       http.get(`${BASE}/v1/andthen-test`, () =>
         HttpResponse.json({
@@ -467,8 +467,8 @@ describe('PaginatedResultAsync — inherits ResultAsync', () => {
       )
     )
     const paginated = PaginatedResultAsync.fromResultAsync(
-      http_.get<ItemPage>('/v1/andthen-test'),
-      http_,
+      httpClient.get<ItemPage>('/v1/andthen-test'),
+      httpClient,
       (page) => page.items
     )
 
