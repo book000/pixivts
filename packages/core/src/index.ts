@@ -15,6 +15,10 @@
 export { ok, err, ResultAsync } from './result.js'
 export type { Result, OkResult, ErrResult } from './result.js'
 
+// Pagination
+export { PaginatedResultAsync, failedPaginated } from './paginated.js'
+export type { PagedResponse } from './paginated.js'
+
 // Error types
 export { rateLimitError, authFailedError, networkError, apiError } from './errors.js'
 export type { PixivError } from './errors.js'
