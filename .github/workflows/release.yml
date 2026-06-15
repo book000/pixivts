@@ -9,12 +9,6 @@ on:
 concurrency:
   group: ${{ github.workflow }}
 
-# TODO(monorepo): This workflow was written for the legacy flat package structure.
-# It must be updated for independent package versioning and publishing from
-# packages/core and packages/db-mysql. The steps below have been minimally
-# updated to not reference the deleted src/ directory, but the publish step
-# still needs a per-package implementation.
-
 jobs:
   release:
     name: Release
@@ -90,14 +84,19 @@ jobs:
           custom_release_rules: 'feat:minor:✨ Features,fix:patch:🐛 Fixes,docs:patch:📰 Docs,chore:patch:🎨 Chore,pref:patch:🎈 Performance improvements,refactor:patch:🧹 Refactoring,build:patch:🔍 Build,ci:patch:🔍 CI,revert:patch:⏪ Revert,style:patch:🧹 Style,test:patch:👀 Test,release:major:📦 Release'
 
       - name: 📝 Update package.json versions
+        # npm version is used instead of pnpm --filter ... version because
+        # `pnpm --filter <pkg> version` would run a `version` npm script (if any),
+        # whereas `npm version` directly edits package.json.
         run: |
-          pnpm --filter @book000/pixivts version --no-git-tag-version ${{ steps.tag-version.outputs.new_version }}
-          pnpm --filter @book000/pixivts-db-mysql version --no-git-tag-version ${{ steps.tag-version.outputs.new_version }}
+          (cd packages/core && npm version --no-git-tag-version ${{ steps.tag-version.outputs.new_version }})
+          (cd packages/db-mysql && npm version --no-git-tag-version ${{ steps.tag-version.outputs.new_version }})
 
       - name: 🔬 Lint
         run: pnpm run lint
 
       - name: 📦 Publish packages
+        # pnpm automatically replaces workspace:* peer dependencies with the
+        # resolved version when publishing.
         run: |
           pnpm --filter @book000/pixivts publish --access public --no-git-checks --ignore-scripts
           pnpm --filter @book000/pixivts-db-mysql publish --access public --no-git-checks --ignore-scripts

@@ -84,6 +84,22 @@ jobs:
     permissions:
       contents: read
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: pixiv-ts
+          MYSQL_PASSWORD: pixiv-ts-test
+          MYSQL_DATABASE: pixiv-ts
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root --password=root"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: 🛎 Checkout
         uses: actions/checkout@v6
@@ -126,6 +142,22 @@ jobs:
 
       - name: 🧪 Run tests
         run: pnpm run test
+
+      - name: 🧪 Run db-mysql integration tests
+        run: pnpm --filter @book000/pixivts-db-mysql run test:integration
+        env:
+          RESPONSE_DB_HOSTNAME: 127.0.0.1
+          RESPONSE_DB_PORT: 3306
+          RESPONSE_DB_USERNAME: pixiv-ts
+          RESPONSE_DB_PASSWORD: pixiv-ts-test
+          RESPONSE_DB_DATABASE: pixiv-ts
+
+      - name: 🧪 Run core e2e tests
+        # Tests skip themselves when PIXIV_REFRESH_TOKEN is empty; they are
+        # included here so they run automatically when the secret is configured.
+        run: pnpm --filter @book000/pixivts run test:e2e
+        env:
+          PIXIV_REFRESH_TOKEN: ${{ secrets.PIXIV_REFRESH_TOKEN }}
 
       - name: 🛡 dts:guard — verify no zod in dist .d.ts
         run: node scripts/check-dts-no-zod.mjs
