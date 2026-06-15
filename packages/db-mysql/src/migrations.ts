@@ -35,7 +35,7 @@ export async function bootstrapSchema(db: DbInstance): Promise<void> {
       response_headers LONGTEXT   NULL     COMMENT 'Response headers (JSON)',
       response_body    LONGTEXT   NOT NULL COMMENT 'Response body',
       created_at       DATETIME(3) NOT NULL COMMENT 'Record creation timestamp',
-      UNIQUE INDEX idx_unique (method, endpoint, status_code, created_at, url_hash)
+      UNIQUE INDEX idx_unique (method, endpoint, status_code, url_hash)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `)
 }

@@ -20,7 +20,7 @@ export { PaginatedResultAsync, failedPaginated } from './paginated'
 export type { PagedResponse } from './paginated'
 
 // Error types
-export { rateLimitError, authFailedError, networkError, apiError } from './errors'
+export { rateLimitError, authFailedError, networkError, apiError, PixivFetchError } from './errors'
 export type { PixivError } from './errors'
 
 // Interceptor (DB seam)
