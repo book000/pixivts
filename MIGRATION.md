@@ -157,9 +157,7 @@ The following dependencies from ≤ 0.55.1 are no longer required:
 
 | Removed | Reason |
 |---|---|
-| `axios` | Replaced by native `fetch` |
 | `qs` | Replaced by `URLSearchParams` |
 | `typeorm` | Moved to `@book000/pixivts-db-mysql` (Drizzle) |
 | `typeorm-naming-strategies` | Same as above |
 | `snake-camel-types` | Replaced by local type utilities |
-| `reflect-metadata` | TypeORM no longer used in core |
