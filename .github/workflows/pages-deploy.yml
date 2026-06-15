@@ -3,11 +3,8 @@ name: Deploy
 on:
   workflow_dispatch:
   workflow_run:
-    # Triggered after the Release workflow completes. Using workflow_run instead
-    # of release:published because GitHub Actions intentionally does not
-    # propagate events created by GITHUB_TOKEN (the token release.yml uses to
-    # publish the GitHub Release), so release:published never fires from an
-    # automated release workflow.
+    # release:published does not fire when the release is created by GITHUB_TOKEN;
+    # workflow_run bypasses that restriction.
     workflows: ["Release"]
     types: [completed]
     branches: [main, master]
@@ -15,7 +12,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Skip if triggered by a failed Release run.
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
 
     steps:
@@ -23,11 +19,8 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          # For workflow_run: pin to the exact commit the Release workflow ran
-          # on (head_sha) so docs always match the tagged release, even if more
-          # commits land on master before this job starts.
-          # For workflow_dispatch: use github.ref (the ref selected when
-          # dispatching).
+          # Pin to the exact commit the Release workflow ran on so docs always
+          # match the tagged release. Falls back to github.ref for workflow_dispatch.
           ref: ${{ github.event.workflow_run.head_sha || github.ref }}
 
       - name: 🏗 Setup node
@@ -60,18 +53,11 @@ jobs:
 
       - name: 🏷 Set version from release tag
         run: |
-          # The checkout is pinned to the released commit (head_sha for
-          # workflow_run, github.ref for workflow_dispatch), so git describe
-          # deterministically finds the tag at that exact commit without any
-          # API call.
-          # Avoid piping through sed: if git describe fails, sed still exits 0
-          # and the || fallback never runs, leaving VERSION empty.
+          # Capture in subshell so || applies to git describe, not to sed.
           TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           VERSION="${TAG#v}"
           echo "Using version: $VERSION"
-          # Skip npm version when VERSION is 0.0.0: package.json is already at
-          # 0.0.0 in the repository and npm errors with "Version not changed"
-          # when setting the same version.
+          # npm errors "Version not changed" when setting the same version.
           if [[ "$VERSION" != "0.0.0" ]]; then
             (cd packages/core && npm version --no-git-tag-version "$VERSION")
           fi
