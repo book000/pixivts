@@ -454,10 +454,14 @@ export interface PixivUgoiraItem {
 // ---------------------------------------------------------------------------
 
 /**
- * Shape of the JSON body returned by the pixiv API on error.
+ * Camelized shape of the JSON error body returned by the pixiv API.
+ *
+ * The pixiv wire format uses `snake_case` field names (e.g. `user_message`);
+ * `HttpClient` applies `camelizeKeys()` before returning, so all fields here
+ * are `lowerCamelCase`.
  */
 export interface PixivApiErrorBody {
-  /** Error payload returned by the pixiv API. */
+  /** Error payload returned by the pixiv API (keys camelized). */
   error: {
     /** Localised error message intended for end users. */
     userMessage: string
