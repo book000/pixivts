@@ -19,28 +19,16 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
 
     steps:
-      - name: 🔍 Resolve release tag
-        id: release
-        # For workflow_run: fetch the tag of the release that just completed via
-        # the GitHub API before checkout. This tag is then used as the checkout
-        # ref so that the generated docs always match the released code, even if
-        # another PR was merged to master while the release workflow was running.
-        # For workflow_dispatch: skip this step and let checkout use github.ref
-        # (the ref selected when dispatching).
-        if: github.event_name == 'workflow_run'
-        run: |
-          TAG=$(gh release view --repo "${{ github.repository }}" --json tagName --jq '.tagName' 2>/dev/null || echo "")
-          echo "tag=${TAG}" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ github.token }}
-
       - name: 🛎 Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          # Pin to the exact tagged commit so docs match the released package.
-          # Falls back to github.ref for workflow_dispatch (no release tag).
-          ref: ${{ steps.release.outputs.tag || github.ref }}
+          # For workflow_run: pin to the exact commit the Release workflow ran
+          # on (head_sha) so docs always match the tagged release, even if more
+          # commits land on master before this job starts.
+          # For workflow_dispatch: use github.ref (the ref selected when
+          # dispatching).
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
 
       - name: 🏗 Setup node
         uses: actions/setup-node@v6
@@ -72,15 +60,13 @@ jobs:
 
       - name: 🏷 Set version from release tag
         run: |
-          # For workflow_run: tag is already resolved in the resolve-release-tag
-          # step; read it directly to avoid a second API call.
-          # For workflow_dispatch: fall back to git describe.
+          # The checkout is pinned to the released commit (head_sha for
+          # workflow_run, github.ref for workflow_dispatch), so git describe
+          # deterministically finds the tag at that exact commit without any
+          # API call.
           # Avoid piping through sed: if git describe fails, sed still exits 0
           # and the || fallback never runs, leaving VERSION empty.
-          TAG="${{ steps.release.outputs.tag }}"
-          if [[ -z "$TAG" ]]; then
-            TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          fi
+          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           VERSION="${TAG#v}"
           echo "Using version: $VERSION"
           # Skip npm version when VERSION is 0.0.0: package.json is already at
