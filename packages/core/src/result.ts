@@ -159,7 +159,8 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
       | null,
     onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
   ): PromiseLike<TResult1 | TResult2> {
-    return this._promise.then(onfulfilled, onrejected)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this._promise.then(onfulfilled as any, onrejected as any)
   }
 
   /**
@@ -260,6 +261,9 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
    */
   async unwrapOr(fallback: T): Promise<T> {
     const r = await this._promise
-    return r.unwrapOr(fallback)
+    // Avoid calling r.unwrapOr(fallback) directly to work around TypeScript 6
+    // Awaited<T> inference issues with union method signatures.
+    if (r.isOk) return r.value
+    return fallback
   }
 }
