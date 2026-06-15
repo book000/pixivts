@@ -55,7 +55,7 @@ export const PixivIllustItemSchema = z.object({
    * For single-page works this is `{ originalImageUrl: string }`.
    * For multi-page works this is an empty object `{}`.
    */
-  metaSinglePage: z.union([MetaSinglePageSchema, z.record(z.never())]),
+  metaSinglePage: z.union([MetaSinglePageSchema, z.record(z.string(), z.never())]),
   metaPages: z.array(MetaPagesSchema),
   totalView: z.number(),
   totalBookmarks: z.number(),

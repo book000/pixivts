@@ -35,7 +35,7 @@ export const PixivNovelItemSchema = z.object({
    *
    * Contains `{}` (empty object) if the novel does not belong to a series.
    */
-  series: z.union([SeriesSchema, z.record(z.never())]),
+  series: z.union([SeriesSchema, z.record(z.string(), z.never())]),
   isBookmarked: z.boolean(),
   totalBookmarks: z.number(),
   totalView: z.number(),
