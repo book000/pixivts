@@ -487,6 +487,12 @@ export interface IllustDetailResponse {
 export interface IllustListPage {
   /** Illusts on this page. */
   illusts: PixivIllustItem[]
+  /**
+   * Whether AI-generated works are shown in the results.
+   *
+   * Only present on search responses; absent on related/ranking/recommended endpoints.
+   */
+  show_ai?: boolean
   /** URL to the next page, or `null` when this is the last page. */
   next_url: string | null
 }
@@ -551,6 +557,12 @@ export interface NovelDetailResponse {
 export interface NovelListPage {
   /** Novels on this page. */
   novels: PixivNovelItem[]
+  /**
+   * Whether AI-generated works are shown in the results.
+   *
+   * Only present on search responses; absent on related/ranking/recommended endpoints.
+   */
+  show_ai?: boolean
   /** URL to the next page, or `null` when this is the last page. */
   next_url: string | null
 }
