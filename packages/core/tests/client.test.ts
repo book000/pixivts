@@ -404,6 +404,48 @@ describe('users.following()', () => {
   })
 })
 
+describe('users.bookmarks.novels()', () => {
+  it('returns Ok with bookmarked novels', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/user/bookmarks/novel', () =>
+        HttpResponse.json({ novels: [NOVEL], next_url: null })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.bookmarks.novels({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.novels).toHaveLength(1)
+      expect(result.value.novels[0].id).toBe(100)
+    }
+  })
+
+  it('sends max_bookmark_id when maxBookmarkId is specified', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/user/bookmarks/novel',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({ novels: [NOVEL], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.bookmarks.novels({ userId: 42, maxBookmarkId: 9999 })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('max_bookmark_id')).toBe('9999')
+  })
+})
+
 describe('ugoira.metadata()', () => {
   it('returns Ok with ugoira frames', async () => {
     server.use(

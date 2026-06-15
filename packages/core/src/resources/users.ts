@@ -52,6 +52,8 @@ export interface UserBookmarksNovelParams {
   filter?: OSFilter
   /** Limit results to bookmarks with this tag. */
   tag?: string
+  /** Fetch bookmarks older than this bookmark ID (cursor-based pagination). */
+  maxBookmarkId?: number
   /** Zero-based offset for pagination. */
   offset?: number
 }
@@ -161,6 +163,7 @@ export class UserBookmarksResource {
           restrict: params.restrict ?? 'public',
           filter: params.filter ?? 'for_ios',
           tag: params.tag,
+          maxBookmarkId: params.maxBookmarkId,
           offset: params.offset,
         })
       ),
