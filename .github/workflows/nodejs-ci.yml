@@ -84,22 +84,6 @@ jobs:
     permissions:
       contents: read
 
-    services:
-      mysql:
-        image: mysql:9.7
-        env:
-          MYSQL_ROOT_PASSWORD: rootPassword
-          MYSQL_USER: pixiv-ts
-          MYSQL_PASSWORD: pixiv-ts-test
-          MYSQL_DATABASE: pixiv-ts
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
       - name: 🛎 Checkout
         uses: actions/checkout@v6
@@ -117,30 +101,6 @@ jobs:
         with:
           run_install: false
 
-      - name: 📃 Check package.json definition
-        id: package-json
-        run: |
-          compile=$(jq '.scripts | has("compile")' package.json)
-          build=$(jq '.scripts | has("build")' package.json)
-          generate=$(jq '.scripts | has("generate")' package.json)
-          package=$(jq '.scripts | has("package")' package.json)
-          lint=$(jq '.scripts | has("lint")' package.json)
-          test=$(jq '.scripts | has("test")' package.json)
-
-          echo "compile: $compile"
-          echo "build: $build"
-          echo "generate: $generate"
-          echo "package: $package"
-          echo "lint: $lint"
-          echo "test: $test"
-
-          echo "compile=$compile" >> $GITHUB_OUTPUT
-          echo "build=$build" >> $GITHUB_OUTPUT
-          echo "generate=$generate" >> $GITHUB_OUTPUT
-          echo "package=$package" >> $GITHUB_OUTPUT
-          echo "lint=$lint" >> $GITHUB_OUTPUT
-          echo "test=$test" >> $GITHUB_OUTPUT
-
       - name: 📂 Get pnpm store directory
         id: pnpm-cache
         shell: bash
@@ -155,65 +115,45 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: 👨🏻‍💻 Install dependencies
-        run: |
-          pnpm install --frozen-lockfile --prefer-frozen-lockfile
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-frozen-lockfile
+
+      - name: 🏗 Build
+        run: pnpm run build
 
       - name: 👀 Run linter
-        if: steps.package-json.outputs.lint == 'true'
         run: pnpm run lint
 
-      - name: 🎁 Run package
-        if: steps.package-json.outputs.package == 'true'
-        run: pnpm run package
-
-      - name: 🏃 Run compile
-        if: steps.package-json.outputs.compile == 'true'
-        run: pnpm run compile
-
       - name: 🧪 Run tests
-        if: steps.package-json.outputs.test == 'true'
         run: pnpm run test
-        env:
-          PIXIV_REFRESH_TOKEN: ${{ secrets.PIXIV_REFRESH_TOKEN }}
-          NODE_ENV: test
-          RESPONSE_DB_HOSTNAME: localhost
-          RESPONSE_DB_USERNAME: pixiv-ts
-          RESPONSE_DB_PASSWORD: pixiv-ts-test
-          RESPONSE_DB_DATABASE: pixiv-ts
-          RESPONSE_DB_PORT: 3306
 
-      - name: ☑️ Check Dependencies
-        if: steps.package-json.outputs.disabled-depcheck == 'false'
-        run: npx depcheck
+      - name: 🛡 dts:guard — verify no zod in dist .d.ts
+        run: node scripts/check-dts-no-zod.mjs
 
-      - name: Check exists dist directory
-        id: check-dist
+      - name: 🔍 Smoke — verify no zod in dist JS
         run: |
-          IS_DIRECTORY=$(test -d dist && echo true || echo false)
-          IS_SYMLINK=$(test -L dist && echo true || echo false)
-          echo "exists=$(test $IS_DIRECTORY = true && $IS_NOT_SYMLINK = false && echo true || echo false)" >> $GITHUB_OUTPUT
+          if grep -rqE "from ['\"]zod['\"]|require\(['\"]zod" packages/core/dist/*.js 2>/dev/null; then
+            echo "ERROR: zod reference found in packages/core/dist JS"
+            exit 1
+          fi
+          echo "OK: no zod in dist JS"
 
-      - name: 📦 Upload dist artifact
-        if: steps.check-dist.outputs.exists == 'true'
-        uses: actions/upload-artifact@v7
-        with:
-          name: dist
-          path: dist
-
-      - name: Check exists output directory
-        id: check-output
+      - name: 🔍 Smoke — ESM import
         run: |
-          IS_DIRECTORY=$(test -d output && echo true || echo false)
-          IS_SYMLINK=$(test -L output && echo true || echo false)
-          echo "exists=$(test $IS_DIRECTORY = true && $IS_NOT_SYMLINK = false && echo true || echo false)" >> $GITHUB_OUTPUT
+          node -e "
+            import('./packages/core/dist/index.js').then(m => {
+              if (!m.PixivClient) throw new Error('PixivClient not exported');
+              console.log('ESM smoke OK');
+            }).catch(e => { console.error(e); process.exit(1); });
+          "
 
-      - name: 📦 Upload output artifact
-        if: steps.check-output.outputs.exists == 'true'
-        uses: actions/upload-artifact@v7
-        with:
-          name: output
-          path: output
+      - name: 🔍 Smoke — CJS require
+        run: |
+          node --input-type=commonjs -e "
+            const m = require('./packages/core/dist/index.cjs');
+            if (!m.PixivClient) throw new Error('PixivClient not exported');
+            console.log('CJS smoke OK');
+          "
 
       - name: 👀 Check git status
         run: |

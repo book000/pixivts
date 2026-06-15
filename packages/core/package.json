@@ -39,12 +39,12 @@
       }
     }
   },
-  "dependencies": {},
   "devDependencies": {
     "@types/node": "24.13.2",
     "@vitest/coverage-v8": "3.2.4",
     "msw": "2.7.4",
     "tsup": "8.5.0",
+    "typedoc": "^0.28.19",
     "typescript": "6.0.3",
     "vitest": "3.2.4",
     "zod": "3.24.1"
@@ -53,6 +53,7 @@
     "build": "tsup",
     "build:dts-guard": "node ../../scripts/check-dts-no-zod.mjs",
     "clean": "rimraf dist",
+    "generate-docs": "typedoc",
     "lint": "tsc --noEmit",
     "fix": "echo 'no fix needed'"
   }
