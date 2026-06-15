@@ -7,4 +7,5 @@ allowBuilds:
   unrs-resolver: true
 minimumReleaseAgeExclude:
   - '@book000/*'
-patchedDependencies: { drizzle-orm@0.45.2: patches/drizzle-orm@0.45.2.patch }
+patchedDependencies:
+  drizzle-orm@0.45.2: patches/drizzle-orm@0.45.2.patch
