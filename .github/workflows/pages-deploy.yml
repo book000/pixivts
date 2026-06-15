@@ -2,22 +2,26 @@ name: Deploy
 
 on:
   workflow_dispatch:
-  release:
-    types: [published]
+  workflow_run:
+    # release:published does not fire when the release is created by GITHUB_TOKEN;
+    # workflow_run bypasses that restriction.
+    workflows: ["Release"]
+    types: [completed]
+    branches: [main, master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: 🛎 Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          # For release events, check out the exact tagged commit so that the
-          # generated docs match the released code. For workflow_dispatch there
-          # is no release tag, so fall back to the default branch HEAD.
-          ref: ${{ github.event.release.tag_name || github.ref }}
+          # Pin to the exact commit the Release workflow ran on so docs always
+          # match the tagged release. Falls back to github.ref for workflow_dispatch.
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
 
       - name: 🏗 Setup node
         uses: actions/setup-node@v6
@@ -49,23 +53,11 @@ jobs:
 
       - name: 🏷 Set version from release tag
         run: |
-          # For release events, use the tag name from the event payload directly
-          # to avoid any reliance on git history ordering.
-          # For workflow_dispatch, fall back to the latest git tag.
-          TAG="${{ github.event.release.tag_name }}"
-          if [[ -n "$TAG" ]]; then
-            VERSION="${TAG#v}"
-          else
-            # Avoid piping through sed: if git describe fails, sed still exits 0
-            # and the || fallback never runs, leaving VERSION empty.
-            # Capture the raw tag with || on the subshell, then strip the v prefix.
-            RAW=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-            VERSION="${RAW#v}"
-          fi
+          # Capture in subshell so || applies to git describe, not to sed.
+          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          VERSION="${TAG#v}"
           echo "Using version: $VERSION"
-          # Skip npm version when VERSION is 0.0.0: package.json is already at
-          # 0.0.0 in the repository and npm errors with "Version not changed"
-          # when setting the same version.
+          # npm errors "Version not changed" when setting the same version.
           if [[ "$VERSION" != "0.0.0" ]]; then
             (cd packages/core && npm version --no-git-tag-version "$VERSION")
           fi
