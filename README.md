@@ -45,7 +45,7 @@ for await (const page of client.illusts.search({ word: 'hatsune miku' }).pages()
 }
 ```
 
-## 🔄 Migration from v0.55.1 and earlier
+## 🔄 Migration from 0.55.1 and earlier
 
 If you are migrating from the previous version of `@book000/pixivts`, see [MIGRATION.md](MIGRATION.md).
 
