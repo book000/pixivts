@@ -1,12 +1,12 @@
-# Migration Guide: ≤ 0.55.1 → ≥ 0.56.0
+# Migration Guide: ≤ 0.55.1 → ≥ 0.56.2
 
-Version 0.56.0 is a **breaking rewrite**. This guide maps patterns from 0.55.1 and earlier to the current API.
+Version 0.56.2 is a **breaking rewrite**. This guide maps patterns from 0.55.1 and earlier to the current API.
 
 ## Package Structure
 
 The previous version was a single package. The current version is a pnpm monorepo with two packages:
 
-| ≤ 0.55.1 | ≥ 0.56.0 |
+| ≤ 0.55.1 | ≥ 0.56.2 |
 |---|---|
 | `@book000/pixivts` (axios-based, CJS) | `@book000/pixivts` (fetch-based, ESM+CJS) |
 | `saving-responses/` (TypeORM + MySQL built-in) | `@book000/pixivts-db-mysql` (optional, Drizzle + MySQL) |
@@ -18,7 +18,7 @@ The previous version was a single package. The current version is a pnpm monorep
 import { Pixiv } from '@book000/pixivts'
 const pixiv = await Pixiv.of(refreshToken)
 
-// ≥ 0.56.0
+// ≥ 0.56.2
 import { PixivClient } from '@book000/pixivts'
 const client = await PixivClient.of(refreshToken)
 ```
@@ -36,7 +36,7 @@ try {
   console.error(err)
 }
 
-// ≥ 0.56.0
+// ≥ 0.56.2
 const result = await client.illusts.detail({ illustId })
 if (result.isOk) {
   console.log(result.value.illust.title)
@@ -47,7 +47,7 @@ if (result.isOk) {
 
 ## Method Mapping
 
-| ≤ 0.55.1 method | ≥ 0.56.0 method |
+| ≤ 0.55.1 method | ≥ 0.56.2 method |
 |---|---|
 | `pixiv.illustDetail({ illustId })` | `client.illusts.detail({ illustId })` |
 | `pixiv.illustRelated({ illustId })` | `client.illusts.related({ illustId })` |
@@ -91,12 +91,12 @@ do {
   nextUrl = res.data.next_url
 } while (nextUrl)
 
-// ≥ 0.56.0 — iterate pages
+// ≥ 0.56.2 — iterate pages
 for await (const page of client.illusts.search({ word: 'hatsune miku' }).pages()) {
   // process page.illusts
 }
 
-// ≥ 0.56.0 — iterate all items across pages (async generator — throws on fetch error)
+// ≥ 0.56.2 — iterate all items across pages (async generator — throws on fetch error)
 for await (const illust of client.illusts.search({ word: 'hatsune miku' }).items()) {
   console.log(illust) // IllustSimple
 }
@@ -111,7 +111,7 @@ The previous version returned `AxiosResponse<T>` — you accessed data via `.dat
 const res = await pixiv.illustDetail({ illustId })
 console.log(res.data.illust.title)  // .data because it's AxiosResponse
 
-// ≥ 0.56.0
+// ≥ 0.56.2
 const result = await client.illusts.detail({ illustId })
 if (result.isOk) {
   console.log(result.value.illust.title)  // no .data — value is the response body
@@ -135,7 +135,7 @@ const pixiv = await Pixiv.of(refreshToken, {
   },
 })
 
-// ≥ 0.56.0
+// ≥ 0.56.2
 import { PixivClient } from '@book000/pixivts'
 import { createResponseRecorder } from '@book000/pixivts-db-mysql'
 
