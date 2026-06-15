@@ -20,12 +20,11 @@ export default [
       parserOptions: {
         project: false,
         projectService: {
-          // Files outside src/ (tests, configs) are not in any package tsconfig,
-          // so they fall back to the default project. Glob patterns (via minimatch)
-          // are supported — no need to list each file individually.
+          // Files outside any discovered tsconfig fall back to the default project.
+          // Test files are covered by packages/*/tests/tsconfig.json (auto-discovered
+          // by projectService) and no longer need to be listed here.
+          // Glob patterns (via minimatch) are supported.
           allowDefaultProject: [
-            'packages/*/tests/*.ts',
-            'packages/*/tests/*/*.ts',
             'packages/*/*.config.ts',
             '*.mjs',
             '*.ts',

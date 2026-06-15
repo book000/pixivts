@@ -1,12 +1,12 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDir": "..",
     "noEmit": true,
     // Explicitly include @types/node so that node: protocol imports and process
     // global are available in tests. vitest v3 included this transitively, but
     // vitest v4 dropped the transitive dependency.
     "types": ["node"]
   },
-  "include": ["src/**/*", "tests/**/*"]
+  "include": ["../src/**/*", "./**/*"]
 }
