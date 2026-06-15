@@ -94,6 +94,7 @@ describe('createRecorderBundle()', () => {
 
     expect(typeof bundle.interceptor).toBe('function')
     expect(bundle.db).toBe(db)
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(bundle.close).toBe(close)
   })
 
@@ -106,15 +107,17 @@ describe('createRecorderBundle()', () => {
     expect(close).toHaveBeenCalledOnce()
   })
 
-  it('interceptor is a function that returns a Promise', () => {
+  it('interceptor is a function that returns a Promise', async () => {
     const db = drizzle.mock({ schema, mode: 'default' })
     const bundle = createRecorderBundle(db as never, vi.fn())
     const record = makeRecord()
 
     const result = bundle.interceptor(record)
     expect(result).toBeInstanceOf(Promise)
-    // Swallow any rejection from the mock db (no real session)
-    void result.catch(() => undefined)
+    // Swallow any rejection from the mock db (no real session).
+    // Cast to Promise<unknown> because the Drizzle mock's return type is not
+    // fully resolved in the default TypeScript project (no tsconfig include).
+    await (result as Promise<unknown>).catch(() => undefined)
   })
 })
 
@@ -141,8 +144,12 @@ describe('addResponse()', () => {
     // The error (if any) should come from Drizzle's mock client, not from
     // our urlHash logic or other preprocessing.
     if (caughtError !== null) {
-      expect(String(caughtError)).not.toContain('urlHash')
-      expect(String(caughtError)).not.toContain('Cannot read')
+      const errMsg =
+        caughtError instanceof Error
+          ? caughtError.message
+          : JSON.stringify(caughtError)
+      expect(errMsg).not.toContain('urlHash')
+      expect(errMsg).not.toContain('Cannot read')
     }
   })
 })
@@ -205,7 +212,7 @@ describe('createResponseRecorder()', () => {
       const arg = args[0]
       if (typeof arg === 'string') return arg.toLowerCase()
       if (arg && typeof arg === 'object' && 'sql' in arg) {
-        return String((arg as { sql: string }).sql).toLowerCase()
+        return (arg as { sql: string }).sql.toLowerCase()
       }
       return JSON.stringify(arg).toLowerCase()
     })

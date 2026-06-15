@@ -16,23 +16,23 @@
  */
 
 import { readFileSync, readdirSync, statSync } from 'node:fs'
-import { join, relative } from 'node:path'
+import nodePath from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
-const CORE_DIST = join(__dirname, '..', 'packages', 'core', 'dist')
+const CORE_DIST = nodePath.join(__dirname, '..', 'packages', 'core', 'dist')
 
 /**
  * Recursively collects .d.ts files from a directory.
  *
- * @param {string} dir - Directory to search
+ * @param {string} directory - Directory to search
  * @returns {string[]} Absolute paths to .d.ts files
  */
-function collectDts(dir) {
+function collectDts(directory) {
   /** @type {string[]} */
   const results = []
-  for (const entry of readdirSync(dir)) {
-    const full = join(dir, entry)
+  for (const entry of readdirSync(directory)) {
+    const full = nodePath.join(directory, entry)
     if (statSync(full).isDirectory()) {
       results.push(...collectDts(full))
     } else if (entry.endsWith('.d.ts') || entry.endsWith('.d.cts')) {
@@ -55,7 +55,7 @@ for (const file of collectDts(CORE_DIST)) {
   for (const pattern of ZOD_PATTERNS) {
     if (pattern.test(content)) {
       console.error(
-        `ERROR: zod reference found in ${relative(process.cwd(), file)}`
+        `ERROR: zod reference found in ${nodePath.relative(process.cwd(), file)}`
       )
       console.error(`  Pattern: ${pattern}`)
       hadError = true

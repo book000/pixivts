@@ -38,6 +38,42 @@ export type PixivError =
     }
 
 // ---------------------------------------------------------------------------
+// PixivFetchError — a proper Error subclass wrapping PixivError
+// ---------------------------------------------------------------------------
+
+/**
+ * An `Error` subclass that wraps a `PixivError` for use in thrown contexts
+ * (e.g. async generators that must throw proper `Error` objects).
+ *
+ * All `PixivError` properties are spread directly onto this instance so that
+ * callers can use `instanceof PixivFetchError` or access `error.type` etc.
+ *
+ * @example
+ * ```ts
+ * try {
+ *   for await (const page of result.pages()) { ... }
+ * } catch (e) {
+ *   if (e instanceof PixivFetchError) {
+ *     console.error(e.pixivError.type)
+ *   }
+ * }
+ * ```
+ */
+export class PixivFetchError extends Error {
+  /** The underlying structured `PixivError`. */
+  readonly pixivError: PixivError
+
+  constructor(pixivError: PixivError) {
+    super(`pixiv API error: ${pixivError.type}`)
+    this.name = 'PixivFetchError'
+    this.pixivError = pixivError
+    // Spread PixivError fields onto this instance for backwards compatibility
+    // with code that matches thrown values via { type, status, ... }.
+    Object.assign(this, pixivError)
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Constructor helpers (not strictly required but improve call-sites)
 // ---------------------------------------------------------------------------
 

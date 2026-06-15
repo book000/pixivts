@@ -63,7 +63,7 @@ describe('buildSearchParams()', () => {
 
 describe('buildParams()', () => {
   it('converts keys to snake_case and builds URLSearchParams', () => {
-    const usp = buildParams({ illustId: 12345, filter: 'for_ios' })
+    const usp = buildParams({ illustId: 12_345, filter: 'for_ios' })
     expect(usp.get('illust_id')).toBe('12345')
     expect(usp.get('filter')).toBe('for_ios')
   })

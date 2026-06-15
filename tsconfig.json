@@ -1,0 +1,9 @@
+{
+  // Root tsconfig — used by ESLint (parserOptions.project) and tooling only.
+  // Actual compilation is handled by each package's own tsconfig.json via tsup.
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/db-mysql" }
+  ],
+  "files": []
+}

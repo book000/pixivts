@@ -158,7 +158,7 @@ export class HttpClient {
     ).andThen((response) => {
       if (!response.ok) {
         return ResultAsync.fromResult(
-          err(apiError(response.status, null)) as Result<Response, PixivError>
+          err(apiError(response.status, null))
         )
       }
       return ResultAsync.fromResult(ok(response) as Result<Response, PixivError>)
@@ -306,7 +306,7 @@ export class HttpClient {
           responseHeaders: JSON.stringify(responseHeaders),
           responseBody: isJson ? JSON.stringify(data) : text,
         }
-        void Promise.resolve(this.#interceptor(record)).catch(() => undefined)
+        Promise.resolve(this.#interceptor(record)).catch(() => undefined)
       }
 
       return ok(httpResponse.data)

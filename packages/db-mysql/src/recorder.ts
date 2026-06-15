@@ -73,34 +73,12 @@ export interface RecorderOptions extends ConnectionOptions {
  * await close()
  * ```
  */
-export async function createResponseRecorder(
-  opts: RecorderOptions
-): Promise<RecorderBundle> {
-  const { pool, db } = createDbConnection(opts)
+// ---------------------------------------------------------------------------
+// Internal helpers
+// ---------------------------------------------------------------------------
 
-  if (opts.bootstrap) {
-    await bootstrapSchema(db)
-  }
-
-  return createRecorderBundle(db, () => pool.end())
-}
-
-/**
- * Creates a `RecorderBundle` from an existing Drizzle instance.
- *
- * Useful for testing — pass a mock `db` and a no-op `close`.
- *
- * @param db - Drizzle ORM database instance
- * @param close - Function that closes the underlying connection
- */
-export function createRecorderBundle(
-  db: DbInstance,
-  close: () => Promise<void>
-): RecorderBundle {
-  const interceptor: ResponseInterceptor = (record) =>
-    addResponse(db, record)
-
-  return { interceptor, db, close }
+function ninetyDaysAgo(): Date {
+  return new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
 }
 
 // ---------------------------------------------------------------------------
@@ -143,6 +121,54 @@ export async function addResponse(
       createdAt: new Date(),
     })
     .onDuplicateKeyUpdate({ set: { id: sql`id` } })
+}
+
+/**
+ * Creates a `RecorderBundle` from an existing Drizzle instance.
+ *
+ * Useful for testing — pass a mock `db` and a no-op `close`.
+ *
+ * @param db - Drizzle ORM database instance
+ * @param close - Function that closes the underlying connection
+ */
+export function createRecorderBundle(
+  db: DbInstance,
+  close: () => Promise<void>
+): RecorderBundle {
+  const interceptor: ResponseInterceptor = (record) =>
+    addResponse(db, record)
+
+  return { interceptor, db, close }
+}
+
+/**
+ * Creates a response recorder that persists every pixiv API response to MySQL.
+ *
+ * @param opts - Connection and bootstrapping options
+ * @returns `{ interceptor, db, close }`
+ *
+ * @example
+ * ```ts
+ * const { interceptor, close } = await createResponseRecorder({
+ *   host: 'localhost',
+ *   database: 'pixivts',
+ *   bootstrap: true,
+ * })
+ * const client = await PixivClient.of(token, { onResponse: interceptor })
+ * // ...
+ * await close()
+ * ```
+ */
+export async function createResponseRecorder(
+  opts: RecorderOptions
+): Promise<RecorderBundle> {
+  const { pool, db } = createDbConnection(opts)
+
+  if (opts.bootstrap) {
+    await bootstrapSchema(db)
+  }
+
+  return createRecorderBundle(db, () => pool.end())
 }
 
 // ---------------------------------------------------------------------------
@@ -268,13 +294,5 @@ export async function getEndpoints(db: DbInstance): Promise<EndpointWithCount[]>
     )
     .orderBy(desc(count()))
 
-  return rows.map((r) => ({ ...r, count: Number(r.count) }))
-}
-
-// ---------------------------------------------------------------------------
-// Internal helpers
-// ---------------------------------------------------------------------------
-
-function ninetyDaysAgo(): Date {
-  return new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+  return rows.map((r) => ({ ...r, count: r.count }))
 }

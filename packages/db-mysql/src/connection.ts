@@ -48,6 +48,12 @@ export interface ConnectionOptions {
  */
 export type DbInstance = ReturnType<typeof drizzle<typeof schema>>
 
+function parsePort(value: string | undefined): number {
+  if (!value) return 3306
+  const parsed = Number.parseInt(value, 10)
+  return Number.isNaN(parsed) ? 3306 : parsed
+}
+
 /**
  * Creates a mysql2 connection pool and returns both the raw pool and the
  * Drizzle ORM wrapper.
@@ -60,11 +66,11 @@ export function createDbConnection(opts: ConnectionOptions): {
   db: DbInstance
 } {
   const pool = mysql.createPool({
-    host: opts.host ?? process.env['RESPONSE_DB_HOSTNAME'] ?? 'localhost',
-    port: opts.port ?? parsePort(process.env['RESPONSE_DB_PORT']),
-    user: opts.user ?? process.env['RESPONSE_DB_USERNAME'],
-    password: opts.password ?? process.env['RESPONSE_DB_PASSWORD'],
-    database: opts.database ?? process.env['RESPONSE_DB_DATABASE'],
+    host: opts.host ?? process.env.RESPONSE_DB_HOSTNAME ?? 'localhost',
+    port: opts.port ?? parsePort(process.env.RESPONSE_DB_PORT),
+    user: opts.user ?? process.env.RESPONSE_DB_USERNAME,
+    password: opts.password ?? process.env.RESPONSE_DB_PASSWORD,
+    database: opts.database ?? process.env.RESPONSE_DB_DATABASE,
     timezone: '+09:00',
     supportBigNumbers: true,
     bigNumberStrings: true,
@@ -75,10 +81,4 @@ export function createDbConnection(opts: ConnectionOptions): {
   // The runtime value is correct; only the declaration paths differ.
   const db = drizzle(pool, { schema, mode: 'default' }) as unknown as DbInstance
   return { pool, db }
-}
-
-function parsePort(value: string | undefined): number {
-  if (!value) return 3306
-  const parsed = Number.parseInt(value, 10)
-  return Number.isNaN(parsed) ? 3306 : parsed
 }

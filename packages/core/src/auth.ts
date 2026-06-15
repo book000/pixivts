@@ -20,38 +20,7 @@ export interface AuthCredentials {
 // Pure-TS MD5 for x-client-hash
 // ---------------------------------------------------------------------------
 
-/**
- * Produces a hex-encoded MD5 digest of `input`.
- *
- * This is a minimal, spec-compliant implementation (RFC 1321) that avoids
- * any runtime platform dependency.
- *
- * @param input - UTF-8 string to hash
- * @returns Lowercase hex-encoded MD5 digest
- */
-export function md5(input: string): string {
-  // Encode the input string as a sequence of bytes (UTF-8)
-  const bytes: number[] = []
-  for (let i = 0; i < input.length; i++) {
-    const code = input.charCodeAt(i)
-    if (code < 0x80) {
-      bytes.push(code)
-    } else if (code < 0x800) {
-      bytes.push(0xc0 | (code >> 6), 0x80 | (code & 0x3f))
-    } else {
-      bytes.push(
-        0xe0 | (code >> 12),
-        0x80 | ((code >> 6) & 0x3f),
-        0x80 | (code & 0x3f)
-      )
-    }
-  }
-
-  return md5Bytes(bytes)
-}
-
 // Per-round constants derived from sin (Table T in RFC 1321)
-/* eslint-disable @typescript-eslint/no-magic-numbers */
 const T: number[] = Array.from({ length: 64 }, (_, i) =>
   Math.floor(Math.abs(Math.sin(i + 1)) * 2 ** 32)
 )
@@ -77,10 +46,10 @@ function md5Bytes(bytes: number[]): string {
   }
 
   // Initial hash state
-  let a = 0x67452301
-  let b = 0xefcdab89
-  let c = 0x98badcfe
-  let d = 0x10325476
+  let a = 0x67_45_23_01
+  let b = 0xef_cd_ab_89
+  let c = 0x98_ba_dc_fe
+  let d = 0x10_32_54_76
 
   // Process each 64-byte chunk
   for (let chunk = 0; chunk < bytes.length; chunk += 64) {
@@ -121,28 +90,58 @@ function md5Bytes(bytes: number[]): string {
       const tmp = dd
       dd = cc
       cc = bb
-      const sum = (aa + f + M[g] + T[i]) | 0
+      const sum = Math.trunc(aa + f + M[g] + T[i])
       const rotated = (sum << S[i]) | (sum >>> (32 - S[i]))
-      bb = (bb + rotated) | 0
+      bb = Math.trunc(bb + rotated)
       aa = tmp
     }
 
-    a = (a + aa) | 0
-    b = (b + bb) | 0
-    c = (c + cc) | 0
-    d = (d + dd) | 0
+    a = Math.trunc(a + aa)
+    b = Math.trunc(b + bb)
+    c = Math.trunc(c + cc)
+    d = Math.trunc(d + dd)
   }
 
   // Convert the state to a hex string (little-endian)
   return [a, b, c, d]
     .map((n) =>
       [n & 0xff, (n >>> 8) & 0xff, (n >>> 16) & 0xff, (n >>> 24) & 0xff]
-        .map((b) => b.toString(16).padStart(2, '0'))
+        .map((byte) => byte.toString(16).padStart(2, '0'))
         .join('')
     )
     .join('')
 }
-/* eslint-enable @typescript-eslint/no-magic-numbers */
+
+/**
+ * Produces a hex-encoded MD5 digest of `input`.
+ *
+ * This is a minimal, spec-compliant implementation (RFC 1321) that avoids
+ * any runtime platform dependency.
+ *
+ * @param input - UTF-8 string to hash
+ * @returns Lowercase hex-encoded MD5 digest
+ */
+export function md5(input: string): string {
+  // Encode the input string as a sequence of bytes (UTF-8)
+  const bytes: number[] = []
+  for (let i = 0; i < input.length; i++) {
+    const code = input.codePointAt(i) ?? 0
+    if (code < 0x80) {
+      bytes.push(code)
+    } else if (code < 0x8_00) {
+      bytes.push(0xc0 | (code >> 6), 0x80 | (code & 0x3f))
+    } else {
+      bytes.push(
+        0xe0 | (code >> 12),
+        0x80 | ((code >> 6) & 0x3f),
+        0x80 | (code & 0x3f)
+      )
+    }
+  }
+
+  return md5Bytes(bytes)
+}
+
 
 // ---------------------------------------------------------------------------
 // AuthManager

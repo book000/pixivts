@@ -40,7 +40,7 @@ import type { ResponseRecord } from '@book000/pixivts'
 // Skip guard
 // ---------------------------------------------------------------------------
 
-const SKIP = !process.env['RESPONSE_DB_USERNAME']
+const SKIP = !process.env.RESPONSE_DB_USERNAME
 
 // ---------------------------------------------------------------------------
 // Test endpoints (isolated from production data via unusual paths)

@@ -13,6 +13,7 @@
 
 import type { HttpClient } from './http'
 import type { PixivError } from './errors'
+import { PixivFetchError } from './errors'
 import { err } from './result'
 import type { Result } from './result'
 import { ResultAsync } from './result'
@@ -62,7 +63,7 @@ export class PaginatedResultAsync<
     getItems: (page: TPage) => TItem[]
   ): PaginatedResultAsync<TPage, TItem> {
     // Access the inner promise via the PromiseLike contract (await the ResultAsync)
-    const promise = Promise.resolve(inner) as Promise<Result<TPage, PixivError>>
+    const promise = Promise.resolve(inner)
     return new PaginatedResultAsync<TPage, TItem>(promise, http, getItems)
   }
 
@@ -81,14 +82,14 @@ export class PaginatedResultAsync<
   async *pages(): AsyncGenerator<TPage, void, unknown> {
     // Yield first page
     const first = await Promise.resolve(this)
-    if (first.isErr) throw first.error
+    if (first.isErr) throw new PixivFetchError(first.error)
     yield first.value
 
     // Follow next_url chain
     let nextUrl: string | null = first.value.next_url
     while (nextUrl !== null) {
       const pageResult = await this.#http.getAbsolute<TPage>(nextUrl)
-      if (pageResult.isErr) throw pageResult.error
+      if (pageResult.isErr) throw new PixivFetchError(pageResult.error)
       yield pageResult.value
       nextUrl = pageResult.value.next_url
     }

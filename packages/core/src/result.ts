@@ -28,6 +28,7 @@ export interface OkResult<T> {
   /** Returns an `OkResult` with `fn(value)`. */
   map<U>(fn: (value: T) => U): OkResult<U>
   /** Returns `this` unchanged. */
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters -- F is part of the public API contract, symmetric with ErrResult.mapErr<F>
   mapErr<F>(_fn: (error: never) => F): OkResult<T>
   /** Calls `fn(value)` and returns its Result. */
   andThen<U, F>(fn: (value: T) => Result<U, F>): Result<U, F>
@@ -43,6 +44,7 @@ export interface ErrResult<E> {
   readonly isErr: true
   readonly error: E
   /** Returns `this` unchanged. */
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters -- U is part of the public API contract, symmetric with OkResult.map<U>
   map<U>(_fn: (value: never) => U): ErrResult<E>
   /** Returns an `ErrResult` with `fn(error)`. */
   mapErr<F>(fn: (error: E) => F): ErrResult<F>
@@ -67,6 +69,7 @@ class OkResultImpl<T> implements OkResult<T> {
     return new OkResultImpl(fn(this.value))
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters, @typescript-eslint/no-unused-vars -- F is part of the public API contract; _fn is intentionally unused (OkResult.mapErr is a no-op)
   mapErr<F>(_fn: (error: never) => F): OkResult<T> {
     return this
   }
@@ -75,10 +78,12 @@ class OkResultImpl<T> implements OkResult<T> {
     return fn(this.value)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- _onErr is intentionally unused: OkResult.match always calls onOk
   match<U>(onOk: (value: T) => U, _onErr: (error: never) => U): U {
     return onOk(this.value)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- _fallback is intentionally unused: OkResult.unwrapOr always returns value
   unwrapOr(_fallback: T): T {
     return this.value
   }
@@ -88,8 +93,10 @@ class ErrResultImpl<E> implements ErrResult<E> {
   readonly isOk = false as const
   readonly isErr = true as const
 
+  // eslint-disable-next-line n/handle-callback-err -- 'error' is a stored value, not a Node.js callback error parameter
   constructor(readonly error: E) {}
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters, @typescript-eslint/no-unused-vars -- U is part of the public API contract; _fn is intentionally unused (ErrResult.map is a no-op)
   map<U>(_fn: (value: never) => U): ErrResult<E> {
     return this
   }
@@ -98,6 +105,7 @@ class ErrResultImpl<E> implements ErrResult<E> {
     return new ErrResultImpl(fn(this.error))
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- _fn is intentionally unused: ErrResult.andThen is a no-op (the success path does not apply)
   andThen<U, F>(_fn: (value: never) => Result<U, F>): ErrResult<E> {
     return this
   }
@@ -153,14 +161,15 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
   }
 
   // PromiseLike contract — makes `await resultAsync` work
+  // eslint-disable-next-line unicorn/no-thenable -- ResultAsync intentionally implements PromiseLike to be directly awaitable
   then<TResult1 = Result<T, E>, TResult2 = never>(
     onfulfilled?:
       | ((value: Result<T, E>) => TResult1 | PromiseLike<TResult1>)
       | null,
     onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
   ): PromiseLike<TResult1 | TResult2> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return this._promise.then(onfulfilled as any, onrejected as any)
+
+    return this._promise.then(onfulfilled, onrejected as any)
   }
 
   /**
@@ -178,7 +187,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
     return new ResultAsync(
       promise.then(
         (v) => ok(v) as Result<T, E>,
-        (r: unknown) => err(onError(r)) as Result<T, E>
+        (error: unknown) => err(onError(error)) as Result<T, E>
       )
     )
   }
@@ -200,7 +209,10 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
    * @param fn - Synchronous mapper
    */
   map<U>(fn: (value: T) => U): ResultAsync<U, E> {
-    return new ResultAsync(this._promise.then((r) => r.map(fn) as Result<U, E>))
+    return new ResultAsync(
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- r.map(fn) is safe here; fn is a user-supplied mapper, not a DOM/Array method reference
+      this._promise.then((r) => r.map(fn) as Result<U, E>)
+    )
   }
 
   /**
@@ -228,12 +240,12 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
   ): ResultAsync<U, E | F> {
     return new ResultAsync(
       this._promise.then(async (r): Promise<Result<U, E | F>> => {
-        if (r.isErr) return r as ErrResult<E>
+        if (r.isErr) return r
         const next = fn(r.value)
         if (next instanceof ResultAsync) {
-          return next._promise as Promise<Result<U, F>>
+          return next._promise
         }
-        return next as Result<U, F>
+        return next
       })
     )
   }

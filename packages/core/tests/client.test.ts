@@ -440,7 +440,7 @@ describe('images.fetch()', () => {
         HttpResponse.json(AUTH_RESPONSE)
       ),
       http.get(imageUrl, () =>
-        new HttpResponse(new Uint8Array([0xff, 0xd8]).buffer as ArrayBuffer, {
+        new HttpResponse(new Uint8Array([0xff, 0xd8]).buffer, {
           headers: { 'Content-Type': 'image/jpeg' },
         })
       )

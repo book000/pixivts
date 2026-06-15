@@ -28,7 +28,7 @@ function loadToken(): string | undefined {
       if (key === 'PIXIV_REFRESH_TOKEN' && value) return value
     }
   }
-  return process.env['PIXIV_REFRESH_TOKEN']
+  return process.env.PIXIV_REFRESH_TOKEN
 }
 
 const REFRESH_TOKEN = loadToken()
@@ -62,7 +62,7 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
 
   beforeAll(async () => {
     // REFRESH_TOKEN is guaranteed non-empty here because of .skipIf(SKIP) above
-    client = await PixivClient.of(REFRESH_TOKEN!)
+    client = await PixivClient.of(REFRESH_TOKEN ?? '')
   })
 
   // -------------------------------------------------------------------------
@@ -180,15 +180,13 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
       }
     } finally {
       // Restore original state
-      if (wasBookmarked) {
-        await client.illusts.bookmarkAdd({
-          illustId: ILLUST_ID,
-          restrict: 'public',
-          tags: [],
-        })
-      } else {
-        await client.illusts.bookmarkDelete({ illustId: ILLUST_ID })
-      }
+      await (wasBookmarked
+        ? client.illusts.bookmarkAdd({
+            illustId: ILLUST_ID,
+            restrict: 'public',
+            tags: [],
+          })
+        : client.illusts.bookmarkDelete({ illustId: ILLUST_ID }))
     }
   })
 
@@ -301,15 +299,13 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
         expect(del.isOk).toBe(true)
       }
     } finally {
-      if (wasBookmarked) {
-        await client.novels.bookmarkAdd({
-          novelId: NOVEL_ID,
-          restrict: 'public',
-          tags: [],
-        })
-      } else {
-        await client.novels.bookmarkDelete({ novelId: NOVEL_ID })
-      }
+      await (wasBookmarked
+        ? client.novels.bookmarkAdd({
+            novelId: NOVEL_ID,
+            restrict: 'public',
+            tags: [],
+          })
+        : client.novels.bookmarkDelete({ novelId: NOVEL_ID }))
     }
   })
 
@@ -396,14 +392,12 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
         expect(del.isOk).toBe(true)
       }
     } finally {
-      if (wasFollowed) {
-        await client.users.followAdd({
-          userId: STAFF_USER_ID,
-          restrict: 'public',
-        })
-      } else {
-        await client.users.followDelete({ userId: STAFF_USER_ID })
-      }
+      await (wasFollowed
+        ? client.users.followAdd({
+            userId: STAFF_USER_ID,
+            restrict: 'public',
+          })
+        : client.users.followDelete({ userId: STAFF_USER_ID }))
     }
   })
 

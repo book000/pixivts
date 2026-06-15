@@ -309,7 +309,8 @@ describe('PaginatedResultAsync — error handling', () => {
     )
 
     await expect(async () => {
-      for await (const _page of paginated.pages()) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      for await (const _ of paginated.pages()) {
         // should throw before first yield
       }
     }).rejects.toMatchObject({ type: 'api_error', status: 403 })
@@ -400,7 +401,8 @@ describe('PaginatedResultAsync — error handling', () => {
     )
 
     await expect(async () => {
-      for await (const _page of paginated.pages()) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      for await (const _ of paginated.pages()) {
         // should throw
       }
     }).rejects.toMatchObject({ type: 'api_error', status: 429 })
