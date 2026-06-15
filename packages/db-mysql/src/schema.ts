@@ -18,9 +18,9 @@ import {
 /**
  * The `responses` table stores every HTTP response returned by the pixiv API.
  *
- * A unique composite index on (method, endpoint, status_code, created_at, url_hash)
- * prevents duplicate records for the same request/response pair within a
- * sub-millisecond window.
+ * A unique composite index on (method, endpoint, status_code, url_hash) ensures
+ * that each unique request/response combination is stored only once, regardless
+ * of when it was recorded.
  */
 export const responsesTable = mysqlTable(
   'responses',
@@ -55,7 +55,6 @@ export const responsesTable = mysqlTable(
       table.method,
       table.endpoint,
       table.statusCode,
-      table.createdAt,
       table.urlHash
     ),
   ]

@@ -9,7 +9,9 @@ import type { MangaRecommendedPage, PixivIllustItem } from '../types'
 
 /** Parameters for fetching recommended manga. */
 export interface MangaRecommendedParams {
+  /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
+  /** Zero-based offset for pagination. */
   offset?: number
 }
 

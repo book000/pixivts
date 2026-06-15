@@ -28,59 +28,85 @@ import type {
 
 /** Parameters for fetching a user's bookmarked illusts. */
 export interface UserBookmarksIllustParams {
+  /** ID of the user whose bookmarks to fetch. */
   userId: number
+  /** Visibility of the bookmarks to return (default: `"public"`). */
   restrict?: BookmarkRestrict
+  /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
+  /** Limit results to bookmarks with this tag. */
   tag?: string
+  /** Fetch bookmarks older than this bookmark ID (cursor-based pagination). */
   maxBookmarkId?: number
+  /** Zero-based offset for pagination. */
   offset?: number
 }
 
 /** Parameters for fetching a user's bookmarked novels. */
 export interface UserBookmarksNovelParams {
+  /** ID of the user whose bookmarks to fetch. */
   userId: number
+  /** Visibility of the bookmarks to return (default: `"public"`). */
   restrict?: BookmarkRestrict
+  /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
+  /** Limit results to bookmarks with this tag. */
   tag?: string
+  /** Zero-based offset for pagination. */
   offset?: number
 }
 
 /** Parameters for fetching a user's detail. */
 export interface UserDetailParams {
+  /** ID of the user to fetch. */
   userId: number
+  /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
 }
 
 /** Parameters for fetching a user's illusts. */
 export interface UserIllustsParams {
+  /** ID of the user whose illusts to fetch. */
   userId: number
+  /** Work type to filter by (omit to return both illusts and manga). */
   type?: UserIllustType
+  /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
+  /** Zero-based offset for pagination. */
   offset?: number
 }
 
 /** Parameters for fetching a user's novels. */
 export interface UserNovelsParams {
+  /** ID of the user whose novels to fetch. */
   userId: number
+  /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
+  /** Zero-based offset for pagination. */
   offset?: number
 }
 
 /** Parameters for fetching a user's following list. */
 export interface UserFollowingParams {
+  /** ID of the user whose following list to fetch. */
   userId: number
+  /** Visibility of the follows to return (default: `"public"`). */
   restrict?: FollowRestrict
+  /** Zero-based offset for pagination. */
   offset?: number
 }
 
 /** Parameters for following a user. */
 export interface UserFollowAddParams {
+  /** ID of the user to follow. */
   userId: number
+  /** Visibility of the follow (default: `"public"`). */
   restrict?: FollowRestrict
 }
 
 /** Parameters for unfollowing a user. */
 export interface UserFollowDeleteParams {
+  /** ID of the user to unfollow. */
   userId: number
 }
 

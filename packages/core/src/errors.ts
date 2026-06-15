@@ -3,7 +3,7 @@
  *
  * Use the `type` field to discriminate:
  * ```ts
- * if (result.isErr()) {
+ * if (result.isErr) {
  *   const err = result.error
  *   if (err.type === 'rate_limit') { ... }
  * }

@@ -3,18 +3,27 @@
 [pixiv](https://www.pixiv.net/) Unofficial API Library for TypeScript
 
 [![Node CI](https://github.com/book000/pixivts/actions/workflows/nodejs-ci.yml/badge.svg)](https://github.com/book000/pixivts/actions/workflows/nodejs-ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This is NOT a fork of [@ibaraki-douji/pixivts](https://www.npmjs.com/package/@ibaraki-douji/pixivts). However, it is used as a reference.
 
-## Packages
+## ✨ Features
+
+- **Zero runtime dependencies** — no axios, no zod at runtime; uses native `fetch`
+- **Result-typed API** — every method returns `Result<T, PixivError>`; no thrown exceptions for API errors
+- **Automatic token refresh** — exchanges the refresh token for an access token on startup, and retries on 401
+- **ESM + CJS dual output** — works in Node.js ESM/CJS and edge runtimes
+- **Paginated results** — `PaginatedResultAsync` with `.pages()` / `.items()` async generators for multi-page iteration
+- **Resource-based namespaces** — `illusts`, `novels`, `users`, `manga`, `ugoira`, `images`
+- **Optional MySQL recorder** — `@book000/pixivts-db-mysql` persists every API response via Drizzle ORM
+
+## 📦 Packages
 
 | Package | Description |
 |---|---|
 | [`@book000/pixivts`](packages/core) | Core API client — zero runtime dependencies, Result-typed, ESM + CJS |
 | [`@book000/pixivts-db-mysql`](packages/db-mysql) | Optional MySQL recorder using Drizzle ORM |
 
-## Quick Start
+## 🚀 Quick Start
 
 ```shell
 npm install @book000/pixivts
@@ -38,14 +47,14 @@ for await (const page of client.illusts.search({ word: 'hatsune miku' }).pages()
 }
 ```
 
-## Migration from v1
+## 🔄 Migration from v1
 
 If you are migrating from the previous version of `@book000/pixivts`, see [MIGRATION.md](MIGRATION.md).
 
-## API Documentation
+## 📚 API Documentation
 
 Full API reference: <https://book000.github.io/pixivts/>
 
-## License
+## 📑 License
 
 [MIT](LICENSE)

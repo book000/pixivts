@@ -19,32 +19,13 @@ export default [
       parserOptions: {
         project: false,
         projectService: {
-          // Files outside src/ (tests, configs) are not included in any
-          // package tsconfig, so they need the default project fallback.
+          // Files outside src/ (tests, configs) are not in any package tsconfig,
+          // so they fall back to the default project. Glob patterns (via minimatch)
+          // are supported — no need to list each file individually.
           allowDefaultProject: [
-            // core tests
-            'packages/core/tests/auth.test.ts',
-            'packages/core/tests/client.test.ts',
-            'packages/core/tests/http.test.ts',
-            'packages/core/tests/paginated.test.ts',
-            'packages/core/tests/params.test.ts',
-            'packages/core/tests/result.test.ts',
-            'packages/core/tests/setup.ts',
-            'packages/core/tests/e2e/pixiv.e2e.test.ts',
-            'packages/core/tests/msw/handlers.ts',
-            // core config
-            'packages/core/tsup.config.ts',
-            'packages/core/vitest.config.ts',
-            'packages/core/vitest.e2e.config.ts',
-            // db-mysql tests
-            'packages/db-mysql/tests/recorder.test.ts',
-            'packages/db-mysql/tests/integration/recorder.integration.test.ts',
-            // db-mysql config
-            'packages/db-mysql/drizzle.config.ts',
-            'packages/db-mysql/tsup.config.ts',
-            'packages/db-mysql/vitest.config.ts',
-            'packages/db-mysql/vitest.integration.config.ts',
-            // root
+            'packages/*/tests/*.ts',
+            'packages/*/tests/*/*.ts',
+            'packages/*/*.config.ts',
             '*.mjs',
             '*.ts',
           ],

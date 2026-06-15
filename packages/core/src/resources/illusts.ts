@@ -25,59 +25,85 @@ import type {
 
 /** Parameters for fetching a single illust by ID. */
 export interface IllustDetailParams {
+  /** ID of the illust to fetch. */
   illustId: number
+  /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
 }
 
 /** Parameters for fetching related illusts. */
 export interface IllustRelatedParams {
+  /** ID of the illust for which to fetch related works. */
   illustId: number
+  /** Additional seed illust IDs to influence recommendations. */
   seedIllustIds?: number[]
+  /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
 }
 
 /** Parameters for searching illusts. */
 export interface IllustSearchParams {
+  /** Search keyword. */
   word: string
+  /** How to match the keyword against works (default: `"partial_match_for_tags"`). */
   searchTarget?: SearchTarget
+  /** Sort order for results (default: `"date_desc"`). */
   sort?: SearchSort
+  /** Date range preset filter (omit for no restriction). */
   duration?: SearchDuration
+  /** Start date for a custom date range (YYYY-MM-DD; requires `endDate`). */
   startDate?: string
+  /** End date for a custom date range (YYYY-MM-DD; requires `startDate`). */
   endDate?: string
+  /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
+  /** AI-generated content filter: `0` = hide AI works, `1` = show only AI works. */
   searchAiType?: 0 | 1
+  /** Zero-based offset for pagination. */
   offset?: number
 }
 
 /** Parameters for fetching the illust ranking. */
 export interface IllustRankingParams {
+  /** Ranking category (default: `"day"`). */
   mode?: RankingMode
+  /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
+  /** Specific date to fetch rankings for (YYYY-MM-DD; omit for the latest). */
   date?: string
+  /** Zero-based offset for pagination. */
   offset?: number
 }
 
 /** Parameters for fetching recommended illusts. */
 export interface IllustRecommendedParams {
+  /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
+  /** Zero-based offset for pagination. */
   offset?: number
 }
 
 /** Parameters for fetching an illust series. */
 export interface IllustSeriesParams {
+  /** ID of the illust series to fetch. */
   illustSeriesId: number
+  /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
 }
 
 /** Parameters for adding an illust bookmark. */
 export interface IllustBookmarkAddParams {
+  /** ID of the illust to bookmark. */
   illustId: number
+  /** Bookmark visibility (default: `"public"`). */
   restrict?: BookmarkRestrict
+  /** Tags to attach to the bookmark. */
   tags?: string[]
 }
 
 /** Parameters for removing an illust bookmark. */
 export interface IllustBookmarkDeleteParams {
+  /** ID of the illust to remove from bookmarks. */
   illustId: number
 }
 

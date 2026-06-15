@@ -70,7 +70,7 @@ export class PaginatedResultAsync<
   /**
    * Async generator that yields each page starting from the first.
    *
-   * If any page fetch fails, the generator throws a `PixivError`.
+   * If any page fetch fails, the generator throws a `PixivFetchError`.
    *
    * @example
    * ```ts
@@ -98,7 +98,7 @@ export class PaginatedResultAsync<
   /**
    * Async generator that yields individual items across all pages.
    *
-   * If any page fetch fails, the generator throws a `PixivError`.
+   * If any page fetch fails, the generator throws a `PixivFetchError`.
    *
    * @example
    * ```ts

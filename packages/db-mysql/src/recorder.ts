@@ -7,7 +7,7 @@
  *   - `close()` — shuts down the connection pool
  *
  * The recorder uses Drizzle ORM's `onDuplicateKeyUpdate` to silently ignore
- * duplicate entries (same method + endpoint + statusCode + createdAt + urlHash).
+ * duplicate entries (same method + endpoint + statusCode + urlHash).
  */
 
 import crypto from 'node:crypto'
@@ -88,8 +88,8 @@ function ninetyDaysAgo(): Date {
 /**
  * Inserts a response record into the database.
  *
- * If the unique composite index fires (duplicate entry), the insert is
- * silently ignored via `ON DUPLICATE KEY UPDATE id = id`.
+ * If the unique composite index fires (duplicate method + endpoint + statusCode
+ * + urlHash), the insert is silently ignored via `ON DUPLICATE KEY UPDATE id = id`.
  *
  * @param db - Drizzle ORM database instance
  * @param record - Response record from the HTTP client interceptor

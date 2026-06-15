@@ -26,61 +26,85 @@ import type {
 
 /** Parameters for fetching a single novel by ID. */
 export interface NovelDetailParams {
+  /** ID of the novel to fetch. */
   novelId: number
 }
 
 /** Parameters for fetching novel text content. */
 export interface NovelTextParams {
+  /** ID of the novel whose text to fetch. */
   id: number
 }
 
 /** Parameters for fetching related novels. */
 export interface NovelRelatedParams {
+  /** ID of the novel for which to fetch related works. */
   novelId: number
 }
 
 /** Parameters for searching novels. */
 export interface NovelSearchParams {
+  /** Search keyword. */
   word: string
+  /** How to match the keyword against works (default: `"partial_match_for_tags"`). */
   searchTarget?: SearchTarget
+  /** Sort order for results (default: `"date_desc"`). */
   sort?: SearchSort
+  /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
+  /** Date range preset filter (omit for no restriction). */
   duration?: SearchDuration
+  /** Start date for a custom date range (YYYY-MM-DD; requires `endDate`). */
   startDate?: string
+  /** End date for a custom date range (YYYY-MM-DD; requires `startDate`). */
   endDate?: string
+  /** AI-generated content filter: `0` = hide AI works, `1` = show only AI works. */
   searchAiType?: 0 | 1
+  /** Zero-based offset for pagination. */
   offset?: number
 }
 
 /** Parameters for fetching the novel ranking. */
 export interface NovelRankingParams {
+  /** Ranking category (default: `"day"`). */
   mode?: NovelRankingMode
+  /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
+  /** Specific date to fetch rankings for (YYYY-MM-DD; omit for the latest). */
   date?: string
+  /** Zero-based offset for pagination. */
   offset?: number
 }
 
 /** Parameters for fetching recommended novels. */
 export interface NovelRecommendedParams {
+  /** OS filter to apply (default: `"for_ios"`). */
   filter?: OSFilter
+  /** Zero-based offset for pagination. */
   offset?: number
 }
 
 /** Parameters for fetching a novel series. */
 export interface NovelSeriesParams {
+  /** ID of the novel series to fetch. */
   seriesId: number
+  /** Order of the last novel already seen; used for cursor-based pagination. */
   lastOrder?: number
 }
 
 /** Parameters for adding a novel bookmark. */
 export interface NovelBookmarkAddParams {
+  /** ID of the novel to bookmark. */
   novelId: number
+  /** Bookmark visibility (default: `"public"`). */
   restrict?: BookmarkRestrict
+  /** Tags to attach to the bookmark. */
   tags?: string[]
 }
 
 /** Parameters for removing a novel bookmark. */
 export interface NovelBookmarkDeleteParams {
+  /** ID of the novel to remove from bookmarks. */
   novelId: number
 }
 

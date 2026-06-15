@@ -9,6 +9,7 @@ import type { UgoiraMetadataResponse } from '../types'
 
 /** Parameters for fetching ugoira metadata. */
 export interface UgoiraMetadataParams {
+  /** ID of the ugoira illust whose metadata to fetch. */
   illustId: number
 }
 

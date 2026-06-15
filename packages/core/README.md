@@ -94,7 +94,7 @@ if (result.isErr) {
   const err: PixivError = result.error
   switch (err.type) {
     case 'rate_limit':
-      console.error(`Rate limited. Retry after ${err.retryAfter}s`)
+      console.error(`Rate limited. Retry after ${err.retryAfter}ms`)
       break
     case 'auth_failed':
       console.error(`Auth failed with status ${err.status}`)
