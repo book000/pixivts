@@ -457,6 +457,7 @@ export interface PixivUgoiraItem {
  * Shape of the JSON body returned by the pixiv API on error.
  */
 export interface PixivApiErrorBody {
+  /** Error payload returned by the pixiv API. */
   error: {
     /** Localised error message intended for end users. */
     user_message: string

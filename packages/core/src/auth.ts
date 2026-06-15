@@ -11,8 +11,11 @@
 
 /** Auth credentials returned by the pixiv token endpoint. */
 export interface AuthCredentials {
+  /** Numeric user ID returned as a string by the token endpoint. */
   userId: string
+  /** Short-lived bearer token for API requests. */
   accessToken: string
+  /** Long-lived token used to obtain new access tokens. */
   refreshToken: string
 }
 

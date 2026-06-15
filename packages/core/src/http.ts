@@ -26,12 +26,19 @@ export interface RateLimitRetryOptions {
 
 /** Raw response data returned by the HTTP client. */
 export interface HttpResponse<T> {
+  /** Parsed response body. */
   data: T
+  /** HTTP response status code. */
   status: number
+  /** Response headers. */
   headers: Record<string, string>
+  /** Request headers that were sent. */
   requestHeaders: Record<string, string>
+  /** URL-encoded request body (null for GET requests). */
   requestBody: string | null
+  /** Final URL after any redirects (may be undefined if unavailable). */
   responseUrl: string | undefined
+  /** API endpoint path (e.g. `/v1/illust/detail`). */
   endpoint: string
 }
 

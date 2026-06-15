@@ -24,6 +24,7 @@ import { ResultAsync } from './result'
  * Must have a `next_url` field (null when there are no more pages).
  */
 export interface PagedResponse {
+  /** URL to the next page, or `null` when there are no more pages. */
   next_url: string | null
 }
 

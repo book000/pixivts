@@ -22,8 +22,11 @@
 
 /** Successful result carrying `value`. */
 export interface OkResult<T> {
+  /** Always `true` — use this to narrow the union to `OkResult<T>`. */
   readonly isOk: true
+  /** Always `false` — use this to narrow the union to `OkResult<T>`. */
   readonly isErr: false
+  /** The success value. */
   readonly value: T
   /** Returns an `OkResult` with `fn(value)`. */
   map<U>(fn: (value: T) => U): OkResult<U>
@@ -40,8 +43,11 @@ export interface OkResult<T> {
 
 /** Failed result carrying `error`. */
 export interface ErrResult<E> {
+  /** Always `false` — use this to narrow the union to `ErrResult<E>`. */
   readonly isOk: false
+  /** Always `true` — use this to narrow the union to `ErrResult<E>`. */
   readonly isErr: true
+  /** The error value. */
   readonly error: E
   /** Returns `this` unchanged. */
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters -- U is part of the public API contract, symmetric with OkResult.map<U>

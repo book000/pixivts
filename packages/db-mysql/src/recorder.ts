@@ -177,8 +177,11 @@ export async function createResponseRecorder(
 
 /** Filter criteria for response queries. */
 export interface ResponseFilter {
+  /** HTTP method to filter by (e.g. `"GET"`). Omit to match all methods. */
   method?: string
+  /** API endpoint path to filter by (e.g. `"/v1/illust/detail"`). Omit to match all endpoints. */
   endpoint?: string
+  /** HTTP status code to filter by (e.g. `200`). Omit to match all status codes. */
   statusCode?: number
 }
 
@@ -263,9 +266,13 @@ export async function getResponseCount(
 
 /** An endpoint with its response count. */
 export interface EndpointWithCount {
+  /** HTTP method (e.g. `"GET"` or `"POST"`). */
   method: string
+  /** API endpoint path (e.g. `"/v1/illust/detail"`). */
   endpoint: string
+  /** HTTP status code returned by the endpoint. */
   statusCode: number
+  /** Number of recorded responses for this (method, endpoint, statusCode) combination. */
   count: number
 }
 
