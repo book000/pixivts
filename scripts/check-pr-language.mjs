@@ -19,9 +19,9 @@ const LATIN_PATTERN = /[A-Za-z0-9]/gu
  */
 function stripMarkdownCode(text) {
   // Remove fenced code blocks (3 or more backticks, per CommonMark spec)
-  let stripped = text.replace(/`{3,}[\s\S]*?`{3,}/g, '')
+  let stripped = text.replaceAll(/`{3,}[\s\S]*?`{3,}/g, '')
   // Remove inline code (1 or more backticks as delimiter, no newline inside)
-  stripped = stripped.replace(/`+[^`\n]*`+/g, '')
+  stripped = stripped.replaceAll(/`+[^`\n]*`+/g, '')
   return stripped
 }
 
