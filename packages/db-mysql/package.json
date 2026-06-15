@@ -19,6 +19,9 @@
     "url": "git+https://github.com/book000/pixivts.git",
     "directory": "packages/db-mysql"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "files": [
     "dist"
