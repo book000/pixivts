@@ -50,9 +50,9 @@ const NOVEL_ID = 13_574_875
 const ILLUST_SERIES_ID = 147_483
 /**
  * A novel series used for stable assertions.
- * Title: 家が近所のバカップルのせいで燃えたらバビルス教師寮で暮らすことになった件
+ * Title: FGO夢まとめ (series ID 1458483, 58+ works, active since 2018)
  */
-const NOVEL_SERIES_ID = 16_003_416
+const NOVEL_SERIES_ID = 1_458_483
 /** pixiv staff account (ID: 11) — always exists, safe for follow tests. */
 const STAFF_USER_ID = 11
 
