@@ -153,10 +153,12 @@ jobs:
           RESPONSE_DB_DATABASE: pixiv-ts
 
       - name: 🧪 Run core e2e tests
-        # Run only on push (master) and scheduled/manual runs, not on PRs.
+        # Run on push (main/master), scheduled, and manual runs — not on PRs.
         # The e2e tests hit the real pixiv API and fail flakily due to API state
         # changes (deleted works, rate limits), which is unrelated to the PR changes.
         # Coverage is maintained by the daily scheduled run and master push runs.
+        # Using a denylist (not pull_request_target) rather than an allowlist so that
+        # any new event triggers also run e2e by default, which is the safe direction.
         if: github.event_name != 'pull_request_target'
         run: pnpm --filter @book000/pixivts run test:e2e
         env:
