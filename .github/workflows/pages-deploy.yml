@@ -56,7 +56,11 @@ jobs:
           if [[ -n "$TAG" ]]; then
             VERSION="${TAG#v}"
           else
-            VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
+            # Avoid piping through sed: if git describe fails, sed still exits 0
+            # and the || fallback never runs, leaving VERSION empty.
+            # Capture the raw tag with || on the subshell, then strip the v prefix.
+            RAW=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+            VERSION="${RAW#v}"
           fi
           echo "Using version: $VERSION"
           (cd packages/core && npm version --no-git-tag-version "$VERSION")
