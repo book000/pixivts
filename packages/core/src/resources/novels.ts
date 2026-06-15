@@ -30,9 +30,9 @@ export interface NovelDetailParams {
   novelId: number
 }
 
-/** Parameters for fetching novel text content. */
+/** Parameters for fetching the WebView HTML of a novel. */
 export interface NovelTextParams {
-  /** ID of the novel whose text to fetch. */
+  /** ID of the novel whose WebView HTML to fetch. */
   novelId: number
 }
 
