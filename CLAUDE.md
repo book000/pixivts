@@ -215,7 +215,7 @@ pnpm lint:tsc
 ### After Creating a PR
 
 1. Confirm no conflicts have occurred
-2. Update the PR body to reflect only the current state of the branch, in English, without including the update history of this PR
+2. Update the PR body to reflect only the current state of the branch, **in English** (overrides the global default of Japanese), without including the update history of this PR
 3. Wait for GitHub Actions CI with `gh pr checks <PR ID> --watch` and confirm it does not fail
 4. If the `request-review-copilot` command (a helper command available in this repository/development environment for requesting GitHub Copilot reviews) exists, use it to request a review from GitHub Copilot
 5. Respond to GitHub Copilot review comments posted within 10 minutes. After addressing them, reply to each review comment

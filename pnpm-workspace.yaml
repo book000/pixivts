@@ -1,4 +1,9 @@
+packages:
+  - 'packages/*'
+
 allowBuilds:
+  esbuild: true
+  msw: true
   unrs-resolver: true
 minimumReleaseAgeExclude:
   - '@book000/*'
