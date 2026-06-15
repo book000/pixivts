@@ -4,9 +4,6 @@ MySQL response recorder for [`@book000/pixivts`](https://www.npmjs.com/package/@
 
 Persists every pixiv API response to a MySQL database using [Drizzle ORM](https://orm.drizzle.team/).
 
-[![npm](https://img.shields.io/npm/v/@book000/pixivts-db-mysql)](https://www.npmjs.com/package/@book000/pixivts-db-mysql)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 ## Installation
 
 ```shell

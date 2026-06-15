@@ -2,9 +2,6 @@
 
 [pixiv](https://www.pixiv.net/) Unofficial API Library for TypeScript.
 
-[![npm](https://img.shields.io/npm/v/@book000/pixivts)](https://www.npmjs.com/package/@book000/pixivts)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 ## Installation
 
 ```shell
