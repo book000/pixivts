@@ -1,37 +1,9 @@
 {
-  "compilerOptions": {
-    "target": "es2020",
-    "module": "commonjs",
-    "moduleResolution": "bundler",
-    "lib": [
-      "ESNext",
-      "esnext.AsyncIterable"
-    ],
-    "types": [
-      "node",
-      "jest"
-    ],
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "removeComments": false,
-    "esModuleInterop": true,
-    "allowJs": true,
-    "checkJs": true,
-    "incremental": true,
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "strictBindCallApply": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "experimentalDecorators": true,
-    "newLine": "LF"
-  },
-  "include": [
-    "src/**/*"
-  ]
+  // Root tsconfig — used by ESLint (parserOptions.project) and tooling only.
+  // Actual compilation is handled by each package's own tsconfig.json via tsup.
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/db-mysql" }
+  ],
+  "files": []
 }

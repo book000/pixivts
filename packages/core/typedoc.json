@@ -1,0 +1,15 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.ts"],
+  "out": "../../docs",
+  "name": "@book000/pixivts",
+  "readme": "README.md",
+  "gitRevision": "master",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "navigationLinks": {
+    "npm": "https://www.npmjs.com/package/@book000/pixivts",
+    "GitHub": "https://github.com/book000/pixivts"
+  }
+}

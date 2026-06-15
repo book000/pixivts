@@ -1,0 +1,63 @@
+{
+  "name": "@book000/pixivts-db-mysql",
+  "version": "0.0.0",
+  "description": "MySQL response recorder for @book000/pixivts (Drizzle ORM)",
+  "keywords": [
+    "pixiv",
+    "typescript",
+    "mysql",
+    "drizzle"
+  ],
+  "homepage": "https://www.npmjs.com/package/@book000/pixivts-db-mysql",
+  "bugs": {
+    "url": "https://github.com/book000/pixivts/issues"
+  },
+  "license": "MIT",
+  "author": "Tomachi <tomachi@tomacheese.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/book000/pixivts.git",
+    "directory": "packages/db-mysql"
+  },
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "dependencies": {
+    "drizzle-orm": "0.38.4",
+    "mysql2": "3.22.5"
+  },
+  "peerDependencies": {
+    "@book000/pixivts": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.2",
+    "@vitest/coverage-v8": "3.2.4",
+    "drizzle-kit": "0.29.1",
+    "tsup": "8.5.0",
+    "typescript": "6.0.3",
+    "vitest": "3.2.4"
+  },
+  "scripts": {
+    "build": "tsup",
+    "clean": "rimraf dist",
+    "lint": "tsc --noEmit",
+    "fix": "echo 'no fix needed'",
+    "test:integration": "vitest run --config vitest.integration.config.ts"
+  }
+}

@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: 🛎 Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
@@ -42,12 +42,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: 👨🏻‍💻 Install dependencies
-        run: |
-          pnpm install --frozen-lockfile --prefer-frozen-lockfile
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-frozen-lockfile
 
-      - name: 🚀 Build
-        run: pnpm run build
+      - name: 📄 Generate API documentation
+        run: pnpm --filter @book000/pixivts run generate-docs
 
       - name: Upload Pages-artifact
         uses: actions/upload-pages-artifact@v5

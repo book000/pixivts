@@ -2,34 +2,57 @@
 
 [pixiv](https://www.pixiv.net/) Unofficial API Library for TypeScript
 
-This is NOT a fork of [@ibaraki-douji/pixivts](https://www.npmjs.com/package/@ibaraki-douji/pixivts). However, I do use it as a reference.
+This is NOT a fork of [@ibaraki-douji/pixivts](https://www.npmjs.com/package/@ibaraki-douji/pixivts). However, it is used as a reference.
 
-## 🚀 Install
+## ✨ Features
 
-This library is available at npm: [@book000/pixivts](https://www.npmjs.com/package/@book000/pixivts)
+- **Zero runtime dependencies** — no axios, no zod at runtime; uses native `fetch`
+- **Result-typed API** — every method returns `Result<T, PixivError>`; no thrown exceptions for API errors
+- **Automatic token refresh** — exchanges the refresh token for an access token on startup, and retries on 401
+- **ESM + CJS dual output** — works in Node.js ESM/CJS and edge runtimes
+- **Paginated results** — `PaginatedResultAsync` with `.pages()` / `.items()` async generators for multi-page iteration
+- **Resource-based namespaces** — `illusts`, `novels`, `users`, `manga`, `ugoira`, `images`
+- **Optional MySQL recorder** — `@book000/pixivts-db-mysql` persists every API response via Drizzle ORM
 
-If you are using npm:
+## 📦 Packages
+
+| Package | Description |
+|---|---|
+| [`@book000/pixivts`](packages/core) | Core API client — zero runtime dependencies, Result-typed, ESM + CJS |
+| [`@book000/pixivts-db-mysql`](packages/db-mysql) | Optional MySQL recorder using Drizzle ORM |
+
+## 🚀 Quick Start
 
 ```shell
 npm install @book000/pixivts
 ```
 
-or if you are using yarn:
+```typescript
+import { PixivClient } from '@book000/pixivts'
 
-```shell
-yarn add @book000/pixivts
+const client = await PixivClient.of(process.env.PIXIV_REFRESH_TOKEN!)
+
+const result = await client.illusts.detail({ illustId: 12345 })
+if (result.isOk) {
+  console.log(result.value.illust.title)
+}
+
+// Iterate over all pages
+for await (const page of client.illusts.search({ word: 'hatsune miku' }).pages()) {
+  for (const illust of page.illusts) {
+    console.log(illust.id, illust.title)
+  }
+}
 ```
 
-## ✨ Features
+## 🔄 Migration from v1
 
-- It mainly uses the private API that the iOS pixiv app communicates with. Inspired by [pixivpy](https://github.com/upbit/pixivpy).
-- All API request methods return an [axios](https://www.npmjs.com/package/axios) response.
-  This allows this library users to use all responses, without having to wait for library updates if the API response changes.
+If you are migrating from the previous version of `@book000/pixivts`, see [MIGRATION.md](MIGRATION.md).
 
-## 📚 API Document
+## 📚 API Documentation
 
-The API documentation for this library is hosted on GitHub Pages and can be found [here](https://book000.github.io/pixivts/).
+Full API reference: <https://book000.github.io/pixivts/>
 
 ## 📑 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE)

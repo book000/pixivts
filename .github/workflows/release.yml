@@ -52,25 +52,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: 👨🏻‍💻 Install dependencies
-        run: |
-          pnpm install --frozen-lockfile --prefer-frozen-lockfile
-
-      - name: 🗑️ Remove examples directory
-        run: rm -rfv src/examples
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-frozen-lockfile
 
       - name: 🏃 Build
         run: pnpm run build
 
       - name: 🔍 Verify dist contents
         run: |
-          test -f dist/index.js
-          test -f dist/index.d.ts
+          test -f packages/core/dist/index.js
+          test -f packages/core/dist/index.d.ts
+          test -f packages/core/dist/index.cjs
+          test -f packages/core/dist/index.d.cts
 
-      - name: 📦 Verify pack contents
+      - name: 📦 Verify core pack contents
         run: |
           mkdir -p /tmp/pack-check
-          pnpm pack --pack-destination /tmp/pack-check
+          pnpm --filter @book000/pixivts pack --pack-destination /tmp/pack-check
           TARBALL=$(ls /tmp/pack-check/*.tgz | head -1)
           echo "Inspecting $TARBALL"
           tar -tzf "$TARBALL" | tee /tmp/pack-files.txt
@@ -85,16 +83,23 @@ jobs:
           default_bump: 'minor'
           custom_release_rules: 'feat:minor:✨ Features,fix:patch:🐛 Fixes,docs:patch:📰 Docs,chore:patch:🎨 Chore,pref:patch:🎈 Performance improvements,refactor:patch:🧹 Refactoring,build:patch:🔍 Build,ci:patch:🔍 CI,revert:patch:⏪ Revert,style:patch:🧹 Style,test:patch:👀 Test,release:major:📦 Release'
 
-      - name: 📝 Update package.json version
+      - name: 📝 Update package.json versions
+        # npm version is used instead of pnpm --filter ... version because
+        # `pnpm --filter <pkg> version` would run a `version` npm script (if any),
+        # whereas `npm version` directly edits package.json.
         run: |
-          pnpm version --no-git-tag-version ${{ steps.tag-version.outputs.new_version }}
+          (cd packages/core && npm version --no-git-tag-version ${{ steps.tag-version.outputs.new_version }})
+          (cd packages/db-mysql && npm version --no-git-tag-version ${{ steps.tag-version.outputs.new_version }})
 
       - name: 🔬 Lint
         run: pnpm run lint
 
-      - name: 📦 Publish
+      - name: 📦 Publish packages
+        # pnpm automatically replaces workspace:* peer dependencies with the
+        # resolved version when publishing.
         run: |
-          pnpm publish --access public --no-git-checks --ignore-scripts
+          pnpm --filter @book000/pixivts publish --access public --no-git-checks --ignore-scripts
+          pnpm --filter @book000/pixivts-db-mysql publish --access public --no-git-checks --ignore-scripts
 
       - name: 📃 Create Release
         id: create_release

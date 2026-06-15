@@ -1,4 +1,11 @@
+packages:
+  - 'packages/*'
+
 allowBuilds:
+  esbuild: true
+  msw: true
   unrs-resolver: true
 minimumReleaseAgeExclude:
   - '@book000/*'
+patchedDependencies:
+  drizzle-orm@0.38.4: patches/drizzle-orm@0.38.4.patch
