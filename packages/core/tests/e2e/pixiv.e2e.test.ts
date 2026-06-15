@@ -270,8 +270,12 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
 
     const seriesInfo = detailResult.value.novel.series
     if (!('id' in seriesInfo)) {
-      // The test novel does not belong to a series; nothing to test.
-      return
+      // NOVEL_ID must belong to a series for this test to be meaningful.
+      // If this assertion fails, update NOVEL_ID to a novel that is part of a series.
+      throw new Error(
+        `NOVEL_ID ${NOVEL_ID} does not belong to a series. ` +
+          'Update the NOVEL_ID constant to a novel that belongs to a series.'
+      )
     }
     const seriesId = seriesInfo.id
 

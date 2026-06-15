@@ -74,4 +74,19 @@ describe('buildParams()', () => {
     expect(usp.get('illust_id')).toBe('12345')
     expect(usp.get('filter')).toBe('for_ios')
   })
+
+  it('converts camelCase array keys to snake_case with bracket suffix', () => {
+    const usp = buildParams({ seedIllustIds: [1, 2, 3] })
+    // camelCase → snake_case: seedIllustIds → seed_illust_ids
+    // array → bracket suffix: seed_illust_ids → seed_illust_ids[]
+    expect(usp.getAll('seed_illust_ids[]')).toEqual(['1', '2', '3'])
+    expect(usp.has('seed_illust_ids')).toBe(false)
+    expect(usp.has('seedIllustIds')).toBe(false)
+  })
+
+  it('converts camelCase string array keys (tags) to snake_case with bracket suffix', () => {
+    const usp = buildParams({ tags: ['foo', 'bar'] })
+    expect(usp.getAll('tags[]')).toEqual(['foo', 'bar'])
+    expect(usp.has('tags')).toBe(false)
+  })
 })
