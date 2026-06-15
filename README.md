@@ -2,8 +2,6 @@
 
 [pixiv](https://www.pixiv.net/) Unofficial API Library for TypeScript
 
-[![Node CI](https://github.com/book000/pixivts/actions/workflows/nodejs-ci.yml/badge.svg)](https://github.com/book000/pixivts/actions/workflows/nodejs-ci.yml)
-
 This is NOT a fork of [@ibaraki-douji/pixivts](https://www.npmjs.com/package/@ibaraki-douji/pixivts). However, it is used as a reference.
 
 ## ✨ Features
@@ -57,4 +55,4 @@ Full API reference: <https://book000.github.io/pixivts/>
 
 ## 📑 License
 
-[MIT](LICENSE)
+This project is licensed under the [MIT License](LICENSE)

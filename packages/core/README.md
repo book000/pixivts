@@ -131,4 +131,4 @@ Full API reference: <https://book000.github.io/pixivts/>
 
 ## License
 
-[MIT](../../LICENSE)
+This project is licensed under the [MIT License](../../LICENSE)
