@@ -333,3 +333,127 @@ export interface PixivApiErrorBody {
     user_message_details?: Record<string, unknown>
   }
 }
+
+// ---------------------------------------------------------------------------
+// Response types for API endpoints
+// (PagedResponse extends are compatible with PaginatedResultAsync)
+// ---------------------------------------------------------------------------
+
+// Illust endpoint responses
+
+/** Response shape for GET /v1/illust/detail. */
+export interface IllustDetailResponse {
+  illust: PixivIllustItem
+}
+
+/** Page response for illust list endpoints (search, related, ranking, etc.). */
+export interface IllustListPage {
+  illusts: PixivIllustItem[]
+  next_url: string | null
+}
+
+/** Page response for GET /v1/illust/recommended. */
+export interface IllustRecommendedPage {
+  illusts: PixivIllustItem[]
+  ranking_illusts: PixivIllustItem[]
+  contest_exists: boolean
+  privacy_policy?: PrivacyPolicy
+  next_url: string | null
+}
+
+/** Page response for GET /v1/illust/series. */
+export interface IllustSeriesPage {
+  illust_series_detail: IllustSeriesDetail
+  illust_series_first_illust: PixivIllustItem
+  illusts: PixivIllustItem[]
+  next_url: string | null
+}
+
+// Manga endpoint responses
+
+/** Page response for GET /v1/manga/recommended. */
+export interface MangaRecommendedPage {
+  illusts: PixivIllustItem[]
+  ranking_illusts: PixivIllustItem[]
+  privacy_policy?: PrivacyPolicy
+  next_url: string | null
+}
+
+// Ugoira endpoint responses
+
+/** Response shape for GET /v1/ugoira/metadata. */
+export interface UgoiraMetadataResponse {
+  ugoira_metadata: PixivUgoiraItem
+}
+
+// Novel endpoint responses
+
+/** Response shape for GET /v2/novel/detail. */
+export interface NovelDetailResponse {
+  novel: PixivNovelItem
+}
+
+/** Page response for novel list endpoints (search, related, ranking, etc.). */
+export interface NovelListPage {
+  novels: PixivNovelItem[]
+  next_url: string | null
+}
+
+/** Page response for GET /v1/novel/recommended. */
+export interface NovelRecommendedPage {
+  novels: PixivNovelItem[]
+  ranking_novels: PixivNovelItem[]
+  privacy_policy?: PrivacyPolicy
+  next_url: string | null
+}
+
+/** Page response for GET /v2/novel/series. */
+export interface NovelSeriesPage {
+  novel_series_detail: NovelSeriesDetail
+  novel_series_first_novel: PixivNovelItem
+  novel_series_latest_novel: PixivNovelItem
+  novels: PixivNovelItem[]
+  next_url: string | null
+}
+
+// User endpoint responses
+
+/** Response shape for GET /v1/user/detail. */
+export interface UserDetailResponse {
+  user: PixivUserItem
+  profile: PixivUserProfile
+  profile_publicity: PixivUserProfilePublicity
+  workspace: PixivUserProfileWorkspace
+}
+
+/** Page response for GET /v1/user/illusts. */
+export interface UserIllustsPage {
+  user: PixivUser
+  illusts: PixivIllustItem[]
+  next_url: string | null
+}
+
+/** Page response for GET /v1/user/novels. */
+export interface UserNovelsPage {
+  user: PixivUser
+  novels: PixivNovelItem[]
+  next_url: string | null
+}
+
+/** Page response for GET /v1/user/bookmarks/illust. */
+export interface UserBookmarksIllustPage {
+  illusts: PixivIllustItem[]
+  next_url: string | null
+}
+
+/** Page response for GET /v1/user/bookmarks/novel. */
+export interface UserBookmarksNovelPage {
+  novels: PixivNovelItem[]
+  next_url: string | null
+}
+
+/** Page response for GET /v1/user/following. */
+export interface UserFollowingPage {
+  user_previews: PixivUserPreviewItem[]
+  next_url: string | null
+}
