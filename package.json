@@ -7,8 +7,8 @@
     "build": "pnpm -r build",
     "clean": "pnpm -r clean",
     "test": "vitest run",
-    "lint": "pnpm -r lint",
-    "fix": "pnpm -r fix"
+    "lint": "pnpm -r lint && eslint .",
+    "fix": "pnpm -r fix && eslint . --fix"
   },
   "devDependencies": {
     "@book000/eslint-config": "1.15.2",
