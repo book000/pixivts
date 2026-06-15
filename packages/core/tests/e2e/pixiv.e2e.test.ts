@@ -11,7 +11,7 @@
 
 import fs from 'node:fs'
 import { beforeAll, describe, expect, it } from 'vitest'
-import { PixivClient } from '../../src/client.js'
+import { PixivClient } from '../../src/client'
 
 // ---------------------------------------------------------------------------
 // Environment / skip guard

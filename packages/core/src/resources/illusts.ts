@@ -1,11 +1,11 @@
 /**
  * IllustResource — methods for the illust API namespace.
  */
-import type { HttpClient } from '../http.js'
-import type { PixivError } from '../errors.js'
-import { buildParams } from '../params.js'
-import { PaginatedResultAsync } from '../paginated.js'
-import type { ResultAsync } from '../result.js'
+import type { HttpClient } from '../http'
+import type { PixivError } from '../errors'
+import { buildParams } from '../params'
+import { PaginatedResultAsync } from '../paginated'
+import type { ResultAsync } from '../result'
 import type {
   BookmarkRestrict,
   OSFilter,
@@ -13,13 +13,13 @@ import type {
   SearchDuration,
   SearchSort,
   SearchTarget,
-} from '../options.js'
+} from '../options'
 import type {
   IllustDetailResponse,
   IllustListPage,
   IllustRecommendedPage,
   IllustSeriesPage,
-} from '../types.js'
+} from '../types'
 
 // === Request param types ===
 

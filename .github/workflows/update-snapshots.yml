@@ -1,0 +1,97 @@
+# Updates vitest snapshots against the real pixiv API and MySQL, then opens a PR.
+# Runs daily and can be triggered manually.
+
+name: Update Snapshots
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-snapshots:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: pixiv-ts
+          MYSQL_PASSWORD: pixiv-ts-test
+          MYSQL_DATABASE: pixiv-ts
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root --password=root"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: 🛎 Checkout
+        uses: actions/checkout@v6
+
+      - name: 🏗 Setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        id: pnpm-install
+        with:
+          run_install: false
+
+      - name: 📂 Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: 📂 Setup pnpm cache
+        uses: actions/cache@v5
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-frozen-lockfile
+
+      - name: 🏗 Build
+        run: pnpm run build
+
+      - name: 🔄 Update unit/mock snapshots
+        run: pnpm run test --update
+
+      - name: 🔄 Update db-mysql integration snapshots
+        run: pnpm --filter @book000/pixivts-db-mysql run test:integration --update
+        env:
+          RESPONSE_DB_HOSTNAME: 127.0.0.1
+          RESPONSE_DB_PORT: 3306
+          RESPONSE_DB_USERNAME: pixiv-ts
+          RESPONSE_DB_PASSWORD: pixiv-ts-test
+          RESPONSE_DB_DATABASE: pixiv-ts
+
+      - name: 🔄 Update core e2e snapshots
+        # Skips automatically when PIXIV_REFRESH_TOKEN is not configured
+        run: pnpm --filter @book000/pixivts run test:e2e --update
+        env:
+          PIXIV_REFRESH_TOKEN: ${{ secrets.PIXIV_REFRESH_TOKEN }}
+
+      - name: 📬 Create Pull Request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: update-snapshots
+          base: master
+          commit-message: 'test: update snapshots'
+          title: 'test: update snapshots'
+          body: 'This PR updates vitest snapshots generated against the real pixiv API and MySQL.'
+          assignees: 'book000'

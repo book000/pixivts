@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildParams, buildSearchParams, camelToSnake, toSnakeKeys } from '../src/params.js'
+import { buildParams, buildSearchParams, camelToSnake, toSnakeKeys } from '../src/params'
 
 describe('camelToSnake()', () => {
   it('converts a single uppercase letter', () => {

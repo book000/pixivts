@@ -1,11 +1,11 @@
 /**
  * NovelResource — methods for the novel API namespace.
  */
-import type { HttpClient } from '../http.js'
-import type { PixivError } from '../errors.js'
-import { buildParams } from '../params.js'
-import { PaginatedResultAsync } from '../paginated.js'
-import type { ResultAsync } from '../result.js'
+import type { HttpClient } from '../http'
+import type { PixivError } from '../errors'
+import { buildParams } from '../params'
+import { PaginatedResultAsync } from '../paginated'
+import type { ResultAsync } from '../result'
 import type {
   BookmarkRestrict,
   NovelRankingMode,
@@ -13,14 +13,14 @@ import type {
   SearchDuration,
   SearchSort,
   SearchTarget,
-} from '../options.js'
+} from '../options'
 import type {
   NovelDetailResponse,
   NovelListPage,
   NovelRecommendedPage,
   NovelSeriesPage,
   PixivNovelItem,
-} from '../types.js'
+} from '../types'
 
 // === Request param types ===
 

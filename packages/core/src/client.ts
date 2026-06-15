@@ -9,16 +9,16 @@
  * ```
  */
 
-import { AuthManager } from './auth.js'
-import { HttpClient } from './http.js'
-import type { ResponseInterceptor } from './interceptor.js'
-import type { RateLimitRetryOptions } from './http.js'
-import { IllustResource } from './resources/illusts.js'
-import { NovelResource } from './resources/novels.js'
-import { UserResource } from './resources/users.js'
-import { MangaResource } from './resources/manga.js'
-import { UgoiraResource } from './resources/ugoira.js'
-import { ImageResource } from './resources/images.js'
+import { AuthManager } from './auth'
+import { HttpClient } from './http'
+import type { ResponseInterceptor } from './interceptor'
+import type { RateLimitRetryOptions } from './http'
+import { IllustResource } from './resources/illusts'
+import { NovelResource } from './resources/novels'
+import { UserResource } from './resources/users'
+import { MangaResource } from './resources/manga'
+import { UgoiraResource } from './resources/ugoira'
+import { ImageResource } from './resources/images'
 
 /** Options for constructing a {@link PixivClient}. */
 export interface PixivClientOptions {

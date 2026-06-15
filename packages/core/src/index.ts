@@ -12,19 +12,19 @@
  */
 
 // Result primitives
-export { ok, err, ResultAsync } from './result.js'
-export type { Result, OkResult, ErrResult } from './result.js'
+export { ok, err, ResultAsync } from './result'
+export type { Result, OkResult, ErrResult } from './result'
 
 // Pagination
-export { PaginatedResultAsync, failedPaginated } from './paginated.js'
-export type { PagedResponse } from './paginated.js'
+export { PaginatedResultAsync, failedPaginated } from './paginated'
+export type { PagedResponse } from './paginated'
 
 // Error types
-export { rateLimitError, authFailedError, networkError, apiError } from './errors.js'
-export type { PixivError } from './errors.js'
+export { rateLimitError, authFailedError, networkError, apiError } from './errors'
+export type { PixivError } from './errors'
 
 // Interceptor (DB seam)
-export type { ResponseRecord, ResponseInterceptor, HttpMethod } from './interceptor.js'
+export type { ResponseRecord, ResponseInterceptor, HttpMethod } from './interceptor'
 
 // Option types
 export type {
@@ -37,7 +37,7 @@ export type {
   FollowRestrict,
   OSFilter,
   UserIllustType,
-} from './options.js'
+} from './options'
 
 // Public API types (zod stripped at runtime — see types.ts)
 export type {
@@ -79,7 +79,7 @@ export type {
   UserBookmarksIllustPage,
   UserBookmarksNovelPage,
   UserFollowingPage,
-} from './types.js'
+} from './types'
 
 // Resource param types
 export type {
@@ -91,7 +91,7 @@ export type {
   IllustSeriesParams,
   IllustBookmarkAddParams,
   IllustBookmarkDeleteParams,
-} from './resources/illusts.js'
+} from './resources/illusts'
 
 export type {
   NovelDetailParams,
@@ -103,7 +103,7 @@ export type {
   NovelSeriesParams,
   NovelBookmarkAddParams,
   NovelBookmarkDeleteParams,
-} from './resources/novels.js'
+} from './resources/novels'
 
 export type {
   UserBookmarksIllustParams,
@@ -114,8 +114,8 @@ export type {
   UserFollowingParams,
   UserFollowAddParams,
   UserFollowDeleteParams,
-} from './resources/users.js'
+} from './resources/users'
 
 // PixivClient
-export { PixivClient } from './client.js'
-export type { PixivClientOptions } from './client.js'
+export { PixivClient } from './client'
+export type { PixivClientOptions } from './client'

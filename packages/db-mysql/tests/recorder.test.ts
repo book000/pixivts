@@ -9,8 +9,8 @@ import crypto from 'node:crypto'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { drizzle } from 'drizzle-orm/mysql2'
 import type { ResponseRecord } from '@book000/pixivts'
-import * as schema from '../src/schema.js'
-import { addResponse, createRecorderBundle } from '../src/recorder.js'
+import * as schema from '../src/schema'
+import { addResponse, createRecorderBundle } from '../src/recorder'
 
 // ---------------------------------------------------------------------------
 // Hoisted mock state — created before vi.mock() factory runs

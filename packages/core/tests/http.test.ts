@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw'
-import { server } from './msw/handlers.js'
-import { AuthManager } from '../src/auth.js'
-import { HttpClient, parseRetryAfter } from '../src/http.js'
+import { server } from './msw/handlers'
+import { AuthManager } from '../src/auth'
+import { HttpClient, parseRetryAfter } from '../src/http'
 
 // ---------------------------------------------------------------------------
 // Helpers

@@ -21,12 +21,12 @@
  */
 
 // Connection
-export { createDbConnection } from './connection.js'
-export type { ConnectionOptions, DbInstance } from './connection.js'
+export { createDbConnection } from './connection'
+export type { ConnectionOptions, DbInstance } from './connection'
 
 // Schema
-export { responsesTable } from './schema.js'
-export type { NewResponse, ResponseRow } from './schema.js'
+export { responsesTable } from './schema'
+export type { NewResponse, ResponseRow } from './schema'
 
 // Recorder
 export {
@@ -36,14 +36,14 @@ export {
   getResponses,
   getResponseCount,
   getEndpoints,
-} from './recorder.js'
+} from './recorder'
 export type {
   RecorderBundle,
   RecorderOptions,
   ResponseFilter,
   RangeOptions,
   EndpointWithCount,
-} from './recorder.js'
+} from './recorder'
 
 // Migrations
-export { bootstrapSchema } from './migrations.js'
+export { bootstrapSchema } from './migrations'

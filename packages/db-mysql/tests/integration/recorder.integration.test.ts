@@ -31,9 +31,9 @@ import {
   getResponseCount,
   getResponses,
   type RecorderBundle,
-} from '../../src/recorder.js'
-import { bootstrapSchema } from '../../src/migrations.js'
-import { responsesTable } from '../../src/schema.js'
+} from '../../src/recorder'
+import { bootstrapSchema } from '../../src/migrations'
+import { responsesTable } from '../../src/schema'
 import type { ResponseRecord } from '@book000/pixivts'
 
 // ---------------------------------------------------------------------------

@@ -8,13 +8,13 @@
  *   - Image fetch helper (browser UA, Referer, no auth)
  */
 
-import type { AuthManager } from './auth.js'
-import { apiError, authFailedError, networkError, rateLimitError } from './errors.js'
-import type { ResponseInterceptor } from './interceptor.js'
-import { type HttpMethod, type ResponseRecord } from './interceptor.js'
-import { err, ok, ResultAsync } from './result.js'
-import type { PixivError } from './errors.js'
-import type { Result } from './result.js'
+import type { AuthManager } from './auth'
+import { apiError, authFailedError, networkError, rateLimitError } from './errors'
+import type { ResponseInterceptor } from './interceptor'
+import { type HttpMethod, type ResponseRecord } from './interceptor'
+import { err, ok, ResultAsync } from './result'
+import type { PixivError } from './errors'
+import type { Result } from './result'
 
 /** Options for controlling retry behaviour on rate-limited requests. */
 export interface RateLimitRetryOptions {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw'
-import { server } from './msw/handlers.js'
-import { PixivClient } from '../src/client.js'
+import { server } from './msw/handlers'
+import { PixivClient } from '../src/client'
 
 // ---------------------------------------------------------------------------
 // Fixtures

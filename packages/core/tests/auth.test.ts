@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { md5, buildClientHash } from '../src/auth.js'
+import { md5, buildClientHash } from '../src/auth'
 
 describe('md5()', () => {
   // Reference vectors from RFC 1321 and well-known test cases

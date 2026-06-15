@@ -1,17 +1,17 @@
 /**
  * UserResource — methods for the user API namespace.
  */
-import type { HttpClient } from '../http.js'
-import type { PixivError } from '../errors.js'
-import { buildParams } from '../params.js'
-import { PaginatedResultAsync } from '../paginated.js'
-import type { ResultAsync } from '../result.js'
+import type { HttpClient } from '../http'
+import type { PixivError } from '../errors'
+import { buildParams } from '../params'
+import { PaginatedResultAsync } from '../paginated'
+import type { ResultAsync } from '../result'
 import type {
   BookmarkRestrict,
   FollowRestrict,
   OSFilter,
   UserIllustType,
-} from '../options.js'
+} from '../options'
 import type {
   PixivIllustItem,
   PixivNovelItem,
@@ -22,7 +22,7 @@ import type {
   UserFollowingPage,
   UserIllustsPage,
   UserNovelsPage,
-} from '../types.js'
+} from '../types'
 
 // === Request param types ===
 

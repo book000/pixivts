@@ -11,11 +11,11 @@
  * interceptor pipeline as regular requests.
  */
 
-import type { HttpClient } from './http.js'
-import type { PixivError } from './errors.js'
-import { err } from './result.js'
-import type { Result } from './result.js'
-import { ResultAsync } from './result.js'
+import type { HttpClient } from './http'
+import type { PixivError } from './errors'
+import { err } from './result'
+import type { Result } from './result'
+import { ResultAsync } from './result'
 
 /**
  * A page returned by a pixiv list endpoint.

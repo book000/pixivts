@@ -1,11 +1,11 @@
 /**
  * MangaResource — methods for the manga API namespace.
  */
-import type { HttpClient } from '../http.js'
-import { buildParams } from '../params.js'
-import { PaginatedResultAsync } from '../paginated.js'
-import type { OSFilter } from '../options.js'
-import type { MangaRecommendedPage, PixivIllustItem } from '../types.js'
+import type { HttpClient } from '../http'
+import { buildParams } from '../params'
+import { PaginatedResultAsync } from '../paginated'
+import type { OSFilter } from '../options'
+import type { MangaRecommendedPage, PixivIllustItem } from '../types'
 
 /** Parameters for fetching recommended manga. */
 export interface MangaRecommendedParams {

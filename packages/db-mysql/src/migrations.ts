@@ -10,7 +10,7 @@
  */
 
 import { sql } from 'drizzle-orm'
-import type { DbInstance } from './connection.js'
+import type { DbInstance } from './connection'
 
 /**
  * Creates the `responses` table if it does not already exist.

@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { err, ok, Result, ResultAsync } from '../src/result.js'
+import { err, ok, Result, ResultAsync } from '../src/result'
 import {
   apiError,
   authFailedError,
   networkError,
   PixivError,
   rateLimitError,
-} from '../src/errors.js'
+} from '../src/errors'
 
 // ---------------------------------------------------------------------------
 // Result<T, E>

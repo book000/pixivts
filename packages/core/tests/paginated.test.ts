@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw'
-import { server } from './msw/handlers.js'
-import { AuthManager } from '../src/auth.js'
-import { HttpClient } from '../src/http.js'
-import { PaginatedResultAsync, failedPaginated } from '../src/paginated.js'
-import type { PagedResponse } from '../src/paginated.js'
-import { apiError } from '../src/errors.js'
-import { ResultAsync } from '../src/result.js'
+import { server } from './msw/handlers'
+import { AuthManager } from '../src/auth'
+import { HttpClient } from '../src/http'
+import { PaginatedResultAsync, failedPaginated } from '../src/paginated'
+import type { PagedResponse } from '../src/paginated'
+import { apiError } from '../src/errors'
+import { ResultAsync } from '../src/result'
 
 // ---------------------------------------------------------------------------
 // Fixtures

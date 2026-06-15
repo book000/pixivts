@@ -5,9 +5,9 @@
  */
 
 import { z } from 'zod'
-import { PixivUserSchema } from './common.js'
-import { PixivIllustItemSchema } from './illust.js'
-import { PixivNovelItemSchema } from './novel.js'
+import { PixivUserSchema } from './common'
+import { PixivIllustItemSchema } from './illust'
+import { PixivNovelItemSchema } from './novel'
 
 /**
  * User item — minimal user info plus self-introduction comment.

@@ -13,9 +13,9 @@
 import crypto from 'node:crypto'
 import { and, count, desc, eq, gte, sql } from 'drizzle-orm'
 import type { ResponseInterceptor, ResponseRecord } from '@book000/pixivts'
-import { createDbConnection, type ConnectionOptions, type DbInstance } from './connection.js'
-import { responsesTable, type ResponseRow } from './schema.js'
-import { bootstrapSchema } from './migrations.js'
+import { createDbConnection, type ConnectionOptions, type DbInstance } from './connection'
+import { responsesTable, type ResponseRow } from './schema'
+import { bootstrapSchema } from './migrations'
 
 // ---------------------------------------------------------------------------
 // Result bundle

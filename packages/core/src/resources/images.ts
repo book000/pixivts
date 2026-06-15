@@ -1,9 +1,9 @@
 /**
  * ImageResource — helpers for fetching pixiv CDN images.
  */
-import type { HttpClient } from '../http.js'
-import type { PixivError } from '../errors.js'
-import type { ResultAsync } from '../result.js'
+import type { HttpClient } from '../http'
+import type { PixivError } from '../errors'
+import type { ResultAsync } from '../result'
 
 /** Methods for fetching pixiv images. */
 export class ImageResource {

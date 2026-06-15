@@ -1,11 +1,11 @@
 /**
  * UgoiraResource — methods for the ugoira API namespace.
  */
-import type { HttpClient } from '../http.js'
-import type { PixivError } from '../errors.js'
-import { buildParams } from '../params.js'
-import type { ResultAsync } from '../result.js'
-import type { UgoiraMetadataResponse } from '../types.js'
+import type { HttpClient } from '../http'
+import type { PixivError } from '../errors'
+import { buildParams } from '../params'
+import type { ResultAsync } from '../result'
+import type { UgoiraMetadataResponse } from '../types'
 
 /** Parameters for fetching ugoira metadata. */
 export interface UgoiraMetadataParams {

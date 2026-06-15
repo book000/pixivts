@@ -10,7 +10,7 @@ import {
   PixivUserSchema,
   SeriesSchema,
   TagSchema,
-} from './common.js'
+} from './common'
 
 /** Single-page illust detail (original_image_url). */
 export const MetaSinglePageSchema = z.object({
