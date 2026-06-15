@@ -33,7 +33,7 @@ export interface NovelDetailParams {
 /** Parameters for fetching novel text content. */
 export interface NovelTextParams {
   /** ID of the novel whose text to fetch. */
-  id: number
+  novelId: number
 }
 
 /** Parameters for fetching related novels. */
@@ -132,15 +132,19 @@ export class NovelResource {
   }
 
   /**
-   * Fetches the full text of a novel.
+   * Fetches the WebView HTML for a novel.
    * GET /webview/v2/novel
+   *
+   * Returns the raw HTML page that the pixiv app renders in a WebView.
+   * To extract the plain text, parse the returned HTML (e.g. strip tags).
    *
    * @param params - Request parameters
    */
   text(params: NovelTextParams): ResultAsync<string, PixivError> {
     return this.#http.get<string>(
       '/webview/v2/novel',
-      buildParams({ id: params.id })
+      // The webview endpoint uses the query parameter 'id', not 'novel_id'
+      buildParams({ id: params.novelId })
     )
   }
 

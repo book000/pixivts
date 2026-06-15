@@ -56,7 +56,7 @@
   "scripts": {
     "build": "tsup",
     "clean": "rimraf dist",
-    "lint": "tsc --noEmit",
+    "lint": "tsc -p tsconfig.test.json",
     "fix": "echo 'no fix needed'",
     "test:integration": "vitest run --config vitest.integration.config.ts"
   }
