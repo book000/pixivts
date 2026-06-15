@@ -27,7 +27,7 @@ export const FrameSchema = z.object({
 
 /** Ugoira metadata as returned by GET /v1/ugoira/metadata. */
 export const PixivUgoiraItemSchema = z.object({
-  zip_urls: ZipUrlsSchema,
+  zipUrls: ZipUrlsSchema,
   frames: z.array(FrameSchema),
 })
 

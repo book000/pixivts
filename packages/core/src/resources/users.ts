@@ -136,8 +136,8 @@ export class UserBookmarksResource {
    * // Resume from a saved cursor
    * import { parseNextUrl } from '@book000/pixivts'
    * const page = await client.users.bookmarks.illusts({ userId: client.userId })
-   * if (page.isOk && page.value.next_url) {
-   *   const cursor = parseNextUrl(page.value.next_url)
+   * if (page.isOk && page.value.nextUrl) {
+   *   const cursor = parseNextUrl(page.value.nextUrl)
    *   const next = await client.users.bookmarks.illusts({
    *     userId: client.userId,
    *     maxBookmarkId: cursor.maxBookmarkId,
@@ -293,7 +293,7 @@ export class UserResource {
         })
       ),
       this.#http,
-      (page) => page.user_previews
+      (page) => page.userPreviews
     )
   }
 

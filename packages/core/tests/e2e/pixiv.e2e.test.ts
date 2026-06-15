@@ -80,13 +80,13 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
     expect(illust.id).toBe(ILLUST_ID)
     expect(illust.type).toBe('illust')
     expect(illust.user.id).toBe(16_668_308)
-    expect(illust.page_count).toBe(1)
+    expect(illust.pageCount).toBe(1)
     expect(illust.tags.length).toBeGreaterThan(0)
-    expect(illust.image_urls.square_medium).toMatch(
+    expect(illust.imageUrls.squareMedium).toMatch(
       /^https:\/\/i\.pximg\.net\/.+\.jpg$/
     )
-    expect(illust.total_bookmarks).toBeGreaterThan(0)
-    expect(illust.total_view).toBeGreaterThan(0)
+    expect(illust.totalBookmarks).toBeGreaterThan(0)
+    expect(illust.totalView).toBeGreaterThan(0)
   })
 
   it('illusts.detail — manga type', async () => {
@@ -96,8 +96,8 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
     const { illust } = result.value
     expect(illust.id).toBe(MANGA_ID)
     expect(illust.type).toBe('manga')
-    expect(illust.page_count).toBeGreaterThan(1)
-    expect(illust.meta_pages.length).toBeGreaterThan(1)
+    expect(illust.pageCount).toBeGreaterThan(1)
+    expect(illust.metaPages.length).toBeGreaterThan(1)
   })
 
   it('illusts.related', async () => {
@@ -144,7 +144,7 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
     })
     expect(result.isOk).toBe(true)
     if (!result.isOk) return
-    expect(result.value.illust_series_detail.title.length).toBeGreaterThan(0)
+    expect(result.value.illustSeriesDetail.title.length).toBeGreaterThan(0)
     expect(result.value.illusts.length).toBeGreaterThan(0)
   })
 
@@ -153,7 +153,7 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
     const detailResult = await client.illusts.detail({ illustId: ILLUST_ID })
     expect(detailResult.isOk).toBe(true)
     if (!detailResult.isOk) return
-    const wasBookmarked = detailResult.value.illust.is_bookmarked
+    const wasBookmarked = detailResult.value.illust.isBookmarked
 
     try {
       if (wasBookmarked) {
@@ -212,10 +212,10 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
     const result = await client.ugoira.metadata({ illustId: UGOIRA_ID })
     expect(result.isOk).toBe(true)
     if (!result.isOk) return
-    expect(result.value.ugoira_metadata.zip_urls.medium).toMatch(
+    expect(result.value.ugoiraMetadata.zipUrls.medium).toMatch(
       /^https:\/\/i\.pximg\.net\/img-zip-ugoira\/img\/.+_ugoira600x600\.zip$/
     )
-    expect(result.value.ugoira_metadata.frames.length).toBeGreaterThan(0)
+    expect(result.value.ugoiraMetadata.frames.length).toBeGreaterThan(0)
   })
 
   // -------------------------------------------------------------------------
@@ -228,7 +228,7 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
     if (!result.isOk) return
     expect(result.value.novel.id).toBe(NOVEL_ID)
     expect(result.value.novel.title.length).toBeGreaterThan(0)
-    expect(result.value.novel.page_count).toBeGreaterThan(0)
+    expect(result.value.novel.pageCount).toBeGreaterThan(0)
   })
 
   it('novels.text', async () => {
@@ -271,7 +271,7 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
     const result = await client.novels.series({ seriesId: NOVEL_SERIES_ID })
     expect(result.isOk).toBe(true)
     if (!result.isOk) return
-    expect(result.value.novel_series_detail.id).toBe(NOVEL_SERIES_ID)
+    expect(result.value.novelSeriesDetail.id).toBe(NOVEL_SERIES_ID)
     expect(result.value.novels.length).toBeGreaterThan(0)
   })
 
@@ -279,7 +279,7 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
     const detailResult = await client.novels.detail({ novelId: NOVEL_ID })
     expect(detailResult.isOk).toBe(true)
     if (!detailResult.isOk) return
-    const wasBookmarked = detailResult.value.novel.is_bookmarked
+    const wasBookmarked = detailResult.value.novel.isBookmarked
 
     try {
       if (wasBookmarked) {
@@ -347,7 +347,7 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
     })
     expect(result.isOk).toBe(true)
     if (!result.isOk) return
-    expect(Array.isArray(result.value.user_previews)).toBe(true)
+    expect(Array.isArray(result.value.userPreviews)).toBe(true)
   })
 
   it('users.bookmarks.illusts', async () => {
@@ -374,7 +374,7 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
     const detailResult = await client.users.detail({ userId: STAFF_USER_ID })
     expect(detailResult.isOk).toBe(true)
     if (!detailResult.isOk) return
-    const wasFollowed = detailResult.value.user.is_followed ?? false
+    const wasFollowed = detailResult.value.user.isFollowed ?? false
 
     try {
       if (wasFollowed) {
@@ -413,7 +413,7 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
     const detailResult = await client.users.detail({ userId: STAFF_USER_ID })
     expect(detailResult.isOk).toBe(true)
     if (!detailResult.isOk) return
-    const avatarUrl = detailResult.value.user.profile_image_urls.medium
+    const avatarUrl = detailResult.value.user.profileImageUrls.medium
 
     // images.fetch returns ResultAsync<Response, PixivError>
     const imgResult = await client.images.fetch(avatarUrl)

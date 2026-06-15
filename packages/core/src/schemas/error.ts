@@ -13,20 +13,20 @@ import { z } from 'zod'
  * ```json
  * {
  *   "error": {
- *     "user_message": "The artwork has been deleted or the artwork ID does not exist.",
+ *     "userMessage": "The artwork has been deleted or the artwork ID does not exist.",
  *     "message": "",
  *     "reason": "",
- *     "user_message_details": {}
+ *     "userMessageDetails": {}
  *   }
  * }
  * ```
  */
 export const PixivApiErrorBodySchema = z.object({
   error: z.object({
-    user_message: z.string(),
+    userMessage: z.string(),
     message: z.string(),
     reason: z.string(),
-    user_message_details: z.record(z.unknown()).optional(),
+    userMessageDetails: z.record(z.unknown()).optional(),
   }),
 })
 

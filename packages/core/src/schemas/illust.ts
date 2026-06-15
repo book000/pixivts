@@ -12,14 +12,14 @@ import {
   TagSchema,
 } from './common'
 
-/** Single-page illust detail (original_image_url). */
+/** Single-page illust detail (originalImageUrl). */
 export const MetaSinglePageSchema = z.object({
-  original_image_url: z.string(),
+  originalImageUrl: z.string(),
 })
 
-/** Multi-page illust detail (image_urls for each page). */
+/** Multi-page illust detail (imageUrls for each page). */
 export const MetaPagesSchema = z.object({
-  image_urls: ImageUrlsSchema.extend({
+  imageUrls: ImageUrlsSchema.extend({
     original: z.string(),
   }),
 })
@@ -36,38 +36,38 @@ export const PixivIllustItemSchema = z.object({
   title: z.string(),
   /** "illust" | "manga" | "ugoira" */
   type: z.enum(['illust', 'manga', 'ugoira']),
-  image_urls: ImageUrlsSchema,
+  imageUrls: ImageUrlsSchema,
   caption: z.string(),
   restrict: z.number(),
   user: PixivUserSchema,
   tags: z.array(TagSchema),
   tools: z.array(z.string()),
   /** ISO 8601 date-time string */
-  create_date: z.string(),
-  page_count: z.number(),
+  createDate: z.string(),
+  pageCount: z.number(),
   width: z.number(),
   height: z.number(),
-  sanity_level: z.number(),
+  sanityLevel: z.number(),
   /** 0 = all-ages, 1 = R-18, 2 = R-18G */
-  x_restrict: z.number(),
+  xRestrict: z.number(),
   series: SeriesSchema.nullable(),
   /**
-   * For single-page works this is `{ original_image_url: string }`.
+   * For single-page works this is `{ originalImageUrl: string }`.
    * For multi-page works this is an empty object `{}`.
    */
-  meta_single_page: z.union([MetaSinglePageSchema, z.record(z.never())]),
-  meta_pages: z.array(MetaPagesSchema),
-  total_view: z.number(),
-  total_bookmarks: z.number(),
-  is_bookmarked: z.boolean(),
+  metaSinglePage: z.union([MetaSinglePageSchema, z.record(z.never())]),
+  metaPages: z.array(MetaPagesSchema),
+  totalView: z.number(),
+  totalBookmarks: z.number(),
+  isBookmarked: z.boolean(),
   visible: z.boolean(),
-  is_muted: z.boolean(),
-  total_comments: z.number().optional(),
+  isMuted: z.boolean(),
+  totalComments: z.number().optional(),
   /** 0 = no AI, 1 = partial AI, 2 = fully AI */
-  illust_ai_type: z.number(),
-  illust_book_style: z.number(),
-  comment_access_control: z.number().optional(),
-  restriction_attributes: z.array(z.string()).optional(),
+  illustAiType: z.number(),
+  illustBookStyle: z.number(),
+  commentAccessControl: z.number().optional(),
+  restrictionAttributes: z.array(z.string()).optional(),
 })
 
 /** Illust series metadata returned by GET /v1/illust/series. */
@@ -75,13 +75,13 @@ export const IllustSeriesDetailSchema = z.object({
   id: z.number(),
   title: z.string(),
   caption: z.string(),
-  cover_image_urls: z.object({ medium: z.string() }),
-  series_work_count: z.number(),
-  create_date: z.string(),
+  coverImageUrls: z.object({ medium: z.string() }),
+  seriesWorkCount: z.number(),
+  createDate: z.string(),
   width: z.number(),
   height: z.number(),
   user: PixivUserSchema,
-  watchlist_added: z.boolean(),
+  watchlistAdded: z.boolean(),
 })
 
 export type PixivIllustItem = z.infer<typeof PixivIllustItemSchema>

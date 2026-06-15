@@ -47,7 +47,7 @@ describe('PaginatedResultAsync — single page', () => {
         HttpResponse.json({
           items: [{ id: 1, title: 'a' }],
           next_url: null,
-        } satisfies ItemPage)
+        })
       )
     )
 
@@ -73,7 +73,7 @@ describe('PaginatedResultAsync — single page', () => {
         HttpResponse.json({
           items: [{ id: 1, title: 'a' }],
           next_url: null,
-        } satisfies ItemPage)
+        })
       )
     )
 
@@ -101,7 +101,7 @@ describe('PaginatedResultAsync — single page', () => {
             { id: 2, title: 'b' },
           ],
           next_url: null,
-        } satisfies ItemPage)
+        })
       )
     )
 
@@ -137,19 +137,19 @@ describe('PaginatedResultAsync — multiple pages', () => {
         HttpResponse.json({
           items: [{ id: 1, title: 'p1' }],
           next_url: `${BASE}/v1/multi-p2`,
-        } satisfies ItemPage)
+        })
       ),
       http.get(`${BASE}/v1/multi-p2`, () =>
         HttpResponse.json({
           items: [{ id: 2, title: 'p2' }],
           next_url: `${BASE}/v1/multi-p3`,
-        } satisfies ItemPage)
+        })
       ),
       http.get(`${BASE}/v1/multi-p3`, () =>
         HttpResponse.json({
           items: [{ id: 3, title: 'p3' }],
           next_url: null,
-        } satisfies ItemPage)
+        })
       )
     )
 
@@ -177,7 +177,7 @@ describe('PaginatedResultAsync — multiple pages', () => {
             { id: 2, title: 'b' },
           ],
           next_url: `${BASE}/v1/flat-p2`,
-        } satisfies ItemPage)
+        })
       ),
       http.get(`${BASE}/v1/flat-p2`, () =>
         HttpResponse.json({
@@ -186,7 +186,7 @@ describe('PaginatedResultAsync — multiple pages', () => {
             { id: 4, title: 'd' },
           ],
           next_url: null,
-        } satisfies ItemPage)
+        })
       )
     )
 
@@ -216,7 +216,7 @@ describe('PaginatedResultAsync — multiple pages', () => {
             { id: 3, title: 'c' },
           ],
           next_url: `${BASE}/v1/break-p2`,
-        } satisfies ItemPage)
+        })
       )
     )
 
@@ -245,14 +245,14 @@ describe('PaginatedResultAsync — multiple pages', () => {
         return HttpResponse.json({
           items: [{ id: 1, title: 'a' }],
           next_url: `${BASE}/v1/count-p2`,
-        } satisfies ItemPage)
+        })
       }),
       http.get(`${BASE}/v1/count-p2`, () => {
         fetchCount++
         return HttpResponse.json({
           items: [{ id: 2, title: 'b' }],
           next_url: null,
-        } satisfies ItemPage)
+        })
       })
     )
 
@@ -323,7 +323,7 @@ describe('PaginatedResultAsync — error handling', () => {
         HttpResponse.json({
           items: [{ id: 1, title: 'ok' }],
           next_url: `${BASE}/v1/ok-then-err-next`,
-        } satisfies ItemPage)
+        })
       ),
       http.get(`${BASE}/v1/ok-then-err-next`, () =>
         HttpResponse.json({ error: 'not found' }, { status: 404 })
@@ -353,7 +353,7 @@ describe('PaginatedResultAsync — error handling', () => {
         HttpResponse.json({
           items: [{ id: 1, title: 'a' }],
           next_url: `${BASE}/v1/items-then-err-next`,
-        } satisfies ItemPage)
+        })
       ),
       http.get(`${BASE}/v1/items-then-err-next`, () =>
         HttpResponse.json({ error: 'fail' }, { status: 500 })
@@ -421,7 +421,7 @@ describe('PaginatedResultAsync — inherits ResultAsync', () => {
         HttpResponse.json({
           items: [{ id: 10, title: 'x' }],
           next_url: null,
-        } satisfies ItemPage)
+        })
       )
     )
     const paginated = PaginatedResultAsync.fromResultAsync(
@@ -451,7 +451,7 @@ describe('PaginatedResultAsync — inherits ResultAsync', () => {
       (page) => page.items
     )
 
-    const fallback: ItemPage = { items: [], next_url: null }
+    const fallback: ItemPage = { items: [], nextUrl: null }
     const value = await paginated.unwrapOr(fallback)
     expect(value).toEqual(fallback)
   })
@@ -463,7 +463,7 @@ describe('PaginatedResultAsync — inherits ResultAsync', () => {
         HttpResponse.json({
           items: [{ id: 5, title: 'z' }],
           next_url: null,
-        } satisfies ItemPage)
+        })
       )
     )
     const paginated = PaginatedResultAsync.fromResultAsync(

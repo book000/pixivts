@@ -17,7 +17,7 @@ for await (const novel of client.users.bookmarks.novels({ userId: client.userId 
 
 ## `.pages()` — access the raw page object
 
-Use this when you need page-level metadata such as `next_url`:
+Use this when you need page-level metadata such as `nextUrl`:
 
 ```typescript
 for await (const page of client.illusts.search({ word: 'hatsune miku' }).pages()) {
@@ -46,8 +46,8 @@ can persist a position and resume across restarts.
 import { parseNextUrl } from '@book000/pixivts'
 
 const page = await client.users.bookmarks.illusts({ userId: client.userId })
-if (page.isOk && page.value.next_url) {
-  const cursor = parseNextUrl(page.value.next_url)
+if (page.isOk && page.value.nextUrl) {
+  const cursor = parseNextUrl(page.value.nextUrl)
   // cursor.maxBookmarkId is number | undefined — persist this value
 
   // Next run: pass the saved cursor back

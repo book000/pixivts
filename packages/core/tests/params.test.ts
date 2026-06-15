@@ -3,7 +3,9 @@ import {
   buildParams,
   buildSearchParams,
   camelToSnake,
+  camelizeKeys,
   parseNextUrl,
+  snakeToCamel,
   toSnakeKeys,
 } from '../src/params'
 
@@ -147,5 +149,85 @@ describe('parseNextUrl()', () => {
     )
     expect(result.offset).toBeUndefined()
     expect(result.maxBookmarkId).toBeUndefined()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// snakeToCamel
+// ---------------------------------------------------------------------------
+
+describe('snakeToCamel()', () => {
+  it('converts snake_case to camelCase', () => {
+    expect(snakeToCamel('image_urls')).toBe('imageUrls')
+    expect(snakeToCamel('x_restrict')).toBe('xRestrict')
+    expect(snakeToCamel('create_date')).toBe('createDate')
+    expect(snakeToCamel('profile_image_urls')).toBe('profileImageUrls')
+    expect(snakeToCamel('illust_ai_type')).toBe('illustAiType')
+  })
+
+  it('leaves already-camelCase keys unchanged (idempotent)', () => {
+    expect(snakeToCamel('imageUrls')).toBe('imageUrls')
+    expect(snakeToCamel('xRestrict')).toBe('xRestrict')
+    expect(snakeToCamel('title')).toBe('title')
+    expect(snakeToCamel('id')).toBe('id')
+  })
+
+  it('handles single-word keys', () => {
+    expect(snakeToCamel('title')).toBe('title')
+    expect(snakeToCamel('id')).toBe('id')
+    expect(snakeToCamel('user')).toBe('user')
+  })
+})
+
+// ---------------------------------------------------------------------------
+// camelizeKeys
+// ---------------------------------------------------------------------------
+
+describe('camelizeKeys()', () => {
+  it('converts top-level object keys', () => {
+    expect(camelizeKeys({ image_urls: 'x', create_date: 'y' })).toEqual({
+      imageUrls: 'x',
+      createDate: 'y',
+    })
+  })
+
+  it('recursively converts nested object keys', () => {
+    expect(
+      camelizeKeys({
+        user: { profile_image_urls: { square_medium: 'url' } },
+      })
+    ).toEqual({
+      user: { profileImageUrls: { squareMedium: 'url' } },
+    })
+  })
+
+  it('recursively converts keys inside arrays', () => {
+    expect(
+      camelizeKeys([
+        { image_urls: { square_medium: 'a' } },
+        { image_urls: { square_medium: 'b' } },
+      ])
+    ).toEqual([
+      { imageUrls: { squareMedium: 'a' } },
+      { imageUrls: { squareMedium: 'b' } },
+    ])
+  })
+
+  it('passes through primitives and null unchanged', () => {
+    expect(camelizeKeys(null)).toBeNull()
+    expect(camelizeKeys(42)).toBe(42)
+    expect(camelizeKeys('hello')).toBe('hello')
+    expect(camelizeKeys(true)).toBe(true)
+  })
+
+  it('is idempotent on already-camelCase keys', () => {
+    const input = { imageUrls: { squareMedium: 'url' } }
+    expect(camelizeKeys(input)).toEqual(input)
+  })
+
+  it('converts dynamic map keys uniformly', () => {
+    expect(
+      camelizeKeys({ user_message_details: { error_code: 123 } })
+    ).toEqual({ userMessageDetails: { errorCode: 123 } })
   })
 })

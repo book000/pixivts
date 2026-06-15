@@ -83,6 +83,31 @@ export class PixivClient {
   }
 
   /**
+   * Returns the current OAuth access token.
+   *
+   * The access token is short-lived and changes after each call to
+   * {@link PixivClient.of} and after each automatic token refresh triggered
+   * by a 401 response.
+   *
+   * @returns The current bearer access token string
+   */
+  getAccessToken(): string {
+    return this.#auth.accessToken
+  }
+
+  /**
+   * Returns the current OAuth refresh token.
+   *
+   * The refresh token is long-lived and is used to obtain new access tokens.
+   * It may rotate after a successful token refresh.
+   *
+   * @returns The current refresh token string
+   */
+  getRefreshToken(): string {
+    return this.#auth.refreshToken
+  }
+
+  /**
    * Creates a PixivClient by refreshing the given token.
    *
    * @param refreshToken - Pixiv refresh token
