@@ -48,6 +48,11 @@ const UGOIRA_ID = 83_638_393
 const NOVEL_ID = 13_574_875
 /** An illust series used for stable assertions. */
 const ILLUST_SERIES_ID = 147_483
+/**
+ * A novel series used for stable assertions.
+ * Title: 家が近所のバカップルのせいで燃えたらバビルス教師寮で暮らすことになった件
+ */
+const NOVEL_SERIES_ID = 16_003_416
 /** pixiv staff account (ID: 11) — always exists, safe for follow tests. */
 const STAFF_USER_ID = 11
 
@@ -263,28 +268,10 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
   })
 
   it('novels.series', async () => {
-    // Use the daily novel ranking to find a serialized novel.
-    // This avoids hardcoding a series ID that may become stale while
-    // ensuring the test always exercises client.novels.series().
-    const rankingResult = await client.novels.ranking({})
-    expect(rankingResult.isOk).toBe(true)
-    if (!rankingResult.isOk) return
-
-    const novelWithSeries = rankingResult.value.novels.find(
-      (n) => 'id' in n.series
-    )
-    // The daily novel ranking almost always contains serialized novels.
-    // If this fails, try re-running or check if the ranking API is healthy.
-    expect(novelWithSeries).toBeDefined()
-    if (!novelWithSeries) return
-
-    const series = novelWithSeries.series
-    if (!('id' in series)) return // type narrowing; unreachable given the find() above
-
-    const result = await client.novels.series({ seriesId: series.id })
+    const result = await client.novels.series({ seriesId: NOVEL_SERIES_ID })
     expect(result.isOk).toBe(true)
     if (!result.isOk) return
-    expect(result.value.novel_series_detail.id).toBe(series.id)
+    expect(result.value.novel_series_detail.id).toBe(NOVEL_SERIES_ID)
     expect(result.value.novels.length).toBeGreaterThan(0)
   })
 
