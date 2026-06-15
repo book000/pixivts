@@ -1,9 +1,11 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["src/index.ts"],
-  "out": "../../docs",
+  "out": "../../docs-out",
   "name": "@book000/pixivts",
-  "readme": "README.md",
+  "readme": "../../README.md",
+  "projectDocuments": ["../../docs/*.md"],
+  "searchInDocuments": true,
   "gitRevision": "master",
   "includeVersion": true,
   "excludePrivate": true,

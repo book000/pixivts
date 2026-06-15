@@ -68,7 +68,7 @@ jobs:
       - name: Upload Pages-artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: docs
+          path: docs-out
 
   deploy:
     runs-on: ubuntu-latest
