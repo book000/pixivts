@@ -153,8 +153,11 @@ jobs:
           RESPONSE_DB_DATABASE: pixiv-ts
 
       - name: 🧪 Run core e2e tests
-        # Tests skip themselves when PIXIV_REFRESH_TOKEN is empty; they are
-        # included here so they run automatically when the secret is configured.
+        # Run only on push (master) and scheduled/manual runs, not on PRs.
+        # The e2e tests hit the real pixiv API and fail flakily due to API state
+        # changes (deleted works, rate limits), which is unrelated to the PR changes.
+        # Coverage is maintained by the daily scheduled run and master push runs.
+        if: github.event_name != 'pull_request_target'
         run: pnpm --filter @book000/pixivts run test:e2e
         env:
           PIXIV_REFRESH_TOKEN: ${{ secrets.PIXIV_REFRESH_TOKEN }}
