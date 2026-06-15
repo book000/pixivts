@@ -11,6 +11,21 @@ const JAPANESE_PATTERN = /[぀-ゟ゠-ヿ㐀-䶿一-鿿]/gu
 const LATIN_PATTERN = /[A-Za-z0-9]/gu
 
 /**
+ * Strips Markdown fenced code blocks (``` ... ```) and inline code (` ... `)
+ * from the given text so that code snippets do not dilute the language ratio.
+ *
+ * @param text - Markdown text to strip
+ * @returns Text with code blocks and inline code removed
+ */
+function stripMarkdownCode(text) {
+  // Remove fenced code blocks (3 or more backticks, per CommonMark spec)
+  let stripped = text.replaceAll(/`{3,}[\s\S]*?`{3,}/g, '')
+  // Remove inline code (1 or more backticks as delimiter, no newline inside)
+  stripped = stripped.replaceAll(/`+[^`\n]*`+/g, '')
+  return stripped
+}
+
+/**
  * Calculates the ratio of Japanese characters to the total number of
  * Japanese and Latin alphanumeric characters in the given text.
  *
@@ -33,6 +48,8 @@ function calculateJapaneseRatio(text) {
 /**
  * Checks the PR title and body against {@link JAPANESE_RATIO_THRESHOLD}.
  *
+ * Code blocks and inline code are stripped from the body before checking so
+ * that English identifiers inside code snippets do not dilute the ratio.
  * The body is skipped if it is empty (or only whitespace).
  *
  * @param title - PR title
@@ -52,7 +69,8 @@ function checkPullRequestLanguage(title, body) {
 
   const trimmedBody = (body ?? '').trim()
   if (trimmedBody.length > 0) {
-    const bodyRatio = calculateJapaneseRatio(trimmedBody)
+    const strippedBody = stripMarkdownCode(trimmedBody)
+    const bodyRatio = calculateJapaneseRatio(strippedBody)
     if (bodyRatio >= JAPANESE_RATIO_THRESHOLD) {
       failures.push(
         `PR body appears to be mostly Japanese (Japanese ratio: ${bodyRatio.toFixed(2)}). Please write the PR body in English.`
