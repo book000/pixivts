@@ -4,13 +4,13 @@
 import type { HttpClient } from '../http'
 import { buildParams } from '../params'
 import { PaginatedResultAsync } from '../paginated'
-import type { OSFilter } from '../options'
+import { OSFilter } from '../options'
 import type { MangaRecommendedPage, PixivIllustItem } from '../types'
 
 /** Parameters for fetching recommended manga. */
 export interface MangaRecommendedParams {
   /** OS filter to apply (default: `"for_ios"`). */
-  filter?: OSFilter
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
   /** Zero-based offset for pagination. */
   offset?: number
 }

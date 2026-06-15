@@ -1,9 +1,9 @@
 /**
- * Public option types for @book000/pixivts.
+ * Public option constants for @book000/pixivts.
  *
- * Each option is exported as both a runtime `const` object (for enum-like
- * access, e.g. `BookmarkRestrict.PUBLIC`) and a TypeScript `type` (so plain
- * string literals such as `'public'` are also accepted).
+ * Each option is exported as a runtime `const` object for enum-like access
+ * (e.g. `BookmarkRestrict.PUBLIC`). Plain string literals are also accepted
+ * wherever these values are used as parameters.
  *
  * @example
  * ```ts
@@ -29,7 +29,6 @@ export const SearchTarget = {
   TITLE_AND_CAPTION: 'title_and_caption',
   KEYWORD: 'keyword',
 } as const
-export type SearchTarget = (typeof SearchTarget)[keyof typeof SearchTarget]
 
 /**
  * Sort order for search results.
@@ -43,7 +42,6 @@ export const SearchSort = {
   DATE_ASC: 'date_asc',
   POPULAR_DESC: 'popular_desc',
 } as const
-export type SearchSort = (typeof SearchSort)[keyof typeof SearchSort]
 
 /**
  * Date range filter for search results.
@@ -57,7 +55,6 @@ export const SearchDuration = {
   WITHIN_LAST_WEEK: 'within_last_week',
   WITHIN_LAST_MONTH: 'within_last_month',
 } as const
-export type SearchDuration = (typeof SearchDuration)[keyof typeof SearchDuration]
 
 /**
  * Ranking mode for illust rankings.
@@ -79,7 +76,6 @@ export const RankingMode = {
   DAY_FEMALE_R18: 'day_female_r18',
   DAY_R18_AI: 'day_r18_ai',
 } as const
-export type RankingMode = (typeof RankingMode)[keyof typeof RankingMode]
 
 /**
  * Ranking mode for novel rankings.
@@ -96,7 +92,6 @@ export const NovelRankingMode = {
   WEEK_R18: 'week_r18',
   DAY_R18_AI: 'day_r18_ai',
 } as const
-export type NovelRankingMode = (typeof NovelRankingMode)[keyof typeof NovelRankingMode]
 
 /**
  * Visibility restriction for bookmarks.
@@ -108,7 +103,6 @@ export const BookmarkRestrict = {
   PUBLIC: 'public',
   PRIVATE: 'private',
 } as const
-export type BookmarkRestrict = (typeof BookmarkRestrict)[keyof typeof BookmarkRestrict]
 
 /**
  * Visibility restriction for follows.
@@ -120,7 +114,6 @@ export const FollowRestrict = {
   PUBLIC: 'public',
   PRIVATE: 'private',
 } as const
-export type FollowRestrict = (typeof FollowRestrict)[keyof typeof FollowRestrict]
 
 /**
  * OS filter used to request works compatible with the given platform.
@@ -132,7 +125,6 @@ export const OSFilter = {
   FOR_IOS: 'for_ios',
   FOR_ANDROID: 'for_android',
 } as const
-export type OSFilter = (typeof OSFilter)[keyof typeof OSFilter]
 
 /**
  * Work type filter for user illust listings.
@@ -144,4 +136,3 @@ export const UserIllustType = {
   ILLUST: 'illust',
   MANGA: 'manga',
 } as const
-export type UserIllustType = (typeof UserIllustType)[keyof typeof UserIllustType]
