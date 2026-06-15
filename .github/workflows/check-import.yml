@@ -2,7 +2,7 @@ name: Check using src-import
 
 on: [pull_request]
 
-# ワークフロー全体のデフォルト権限を無効化（各ジョブで最小権限を明示する）
+# Disable default permissions for the entire workflow (each job explicitly sets minimum permissions)
 permissions: {}
 
 jobs:
