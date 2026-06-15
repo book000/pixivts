@@ -147,7 +147,9 @@ export function parseNextUrl(url: string): ParsedNextUrl {
 
   const toNum = (key: string): number | undefined => {
     const v = usp.get(key)
-    return v === null ? undefined : Number(v)
+    if (v === null || v === '') return undefined
+    const n = Number(v)
+    return Number.isNaN(n) ? undefined : n
   }
 
   const maxBookmarkId = toNum('max_bookmark_id')

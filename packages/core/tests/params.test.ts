@@ -140,4 +140,12 @@ describe('parseNextUrl()', () => {
     )
     expect(typeof result.offset).toBe('number')
   })
+
+  it('returns undefined for non-numeric cursor params', () => {
+    const result = parseNextUrl(
+      'https://app-api.pixiv.net/v1/search/illust?offset=abc&max_bookmark_id='
+    )
+    expect(result.offset).toBeUndefined()
+    expect(result.maxBookmarkId).toBeUndefined()
+  })
 })
