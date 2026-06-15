@@ -43,11 +43,9 @@ if (result.isOk) {
 - **[Getting Started](docs/getting-started.md)** — authentication, Result type, error handling
 - **[Pagination](docs/pagination.md)** — `.items()` / `.pages()`, cursor-based resume
 - **[Option Constants](docs/options.md)** — enum-like `BookmarkRestrict.PUBLIC` etc.
+- **[MySQL Recorder](docs/db-mysql.md)** — `@book000/pixivts-db-mysql` setup and query helpers
+- **[Migration Guide](docs/migration.md)** — migrating from ≤ 0.55.1 to ≥ 0.56.2
 - **[API Reference](https://book000.github.io/pixivts/)** — full TypeDoc reference
-
-## 🔄 Migration from 0.55.1 and earlier
-
-If you are migrating from the previous version of `@book000/pixivts`, see [MIGRATION.md](MIGRATION.md).
 
 ## 📑 License
 
