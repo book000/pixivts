@@ -48,13 +48,25 @@ export class PixivClient {
   /** Image fetch helpers. */
   readonly images: ImageResource
 
-  private constructor(http: HttpClient) {
+  readonly #auth: AuthManager
+
+  private constructor(auth: AuthManager, http: HttpClient) {
+    this.#auth = auth
     this.illusts = new IllustResource(http)
     this.novels = new NovelResource(http)
     this.users = new UserResource(http)
     this.manga = new MangaResource(http)
     this.ugoira = new UgoiraResource(http)
     this.images = new ImageResource(http)
+  }
+
+  /**
+   * Numeric user ID of the authenticated account, as a string.
+   *
+   * Available immediately after {@link PixivClient.of} resolves.
+   */
+  get userId(): string {
+    return this.#auth.userId
   }
 
   /**
@@ -70,6 +82,6 @@ export class PixivClient {
   ): Promise<PixivClient> {
     const auth = await AuthManager.login(refreshToken)
     const http = new HttpClient(auth, options)
-    return new PixivClient(http)
+    return new PixivClient(auth, http)
   }
 }
