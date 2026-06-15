@@ -12,6 +12,7 @@ import type { AuthManager } from './auth'
 import { apiError, authFailedError, networkError, rateLimitError } from './errors'
 import type { ResponseInterceptor } from './interceptor'
 import { type HttpMethod, type ResponseRecord } from './interceptor'
+import { camelizeKeys } from './params'
 import { err, ok, ResultAsync } from './result'
 import type { PixivError } from './errors'
 import type { Result } from './result'
@@ -275,7 +276,7 @@ export class HttpClient {
       const isJson = contentType.includes('application/json')
       if (isJson) {
         try {
-          data = JSON.parse(text) as T
+          data = camelizeKeys(JSON.parse(text)) as T
         } catch {
           data = text as unknown as T
         }
@@ -311,7 +312,7 @@ export class HttpClient {
           responseType: isJson ? 'JSON' : 'TEXT',
           statusCode: response.status,
           responseHeaders: JSON.stringify(responseHeaders),
-          responseBody: isJson ? JSON.stringify(data) : text,
+          responseBody: text,
         }
         Promise.resolve(this.#interceptor(record)).catch(() => undefined)
       }

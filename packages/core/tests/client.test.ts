@@ -398,8 +398,8 @@ describe('users.following()', () => {
     const result = await client.users.following({ userId: 42 })
     expect(result.isOk).toBe(true)
     if (result.isOk) {
-      expect(result.value.user_previews).toHaveLength(1)
-      expect(result.value.user_previews[0].user.id).toBe(99)
+      expect(result.value.userPreviews).toHaveLength(1)
+      expect(result.value.userPreviews[0].user.id).toBe(99)
     }
   })
 })
@@ -468,8 +468,8 @@ describe('ugoira.metadata()', () => {
     const result = await client.ugoira.metadata({ illustId: 1 })
     expect(result.isOk).toBe(true)
     if (result.isOk) {
-      expect(result.value.ugoira_metadata.frames).toHaveLength(2)
-      expect(result.value.ugoira_metadata.frames[0].file).toBe('000000.jpg')
+      expect(result.value.ugoiraMetadata.frames).toHaveLength(2)
+      expect(result.value.ugoiraMetadata.frames[0].file).toBe('000000.jpg')
     }
   })
 })
@@ -522,5 +522,27 @@ describe('client.userId', () => {
     const client = await PixivClient.of('test-refresh-token')
     expect(() => client.userId).toThrow(TypeError)
     expect(() => client.userId).toThrow('Invalid userId')
+  })
+})
+
+describe('client.getAccessToken() / getRefreshToken()', () => {
+  it('getAccessToken() returns the current access token', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    expect(client.getAccessToken()).toBe('test-access-token')
+  })
+
+  it('getRefreshToken() returns the refresh token used at login', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    expect(client.getRefreshToken()).toBe('test-refresh-token')
   })
 })

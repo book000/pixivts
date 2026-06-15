@@ -88,6 +88,45 @@ export function buildParams(
   return buildSearchParams(toSnakeKeys(params) as Record<string, ParamValue>)
 }
 
+/**
+ * Converts a snake_case string to lowerCamelCase.
+ *
+ * Already-camelCase keys pass through unchanged (idempotent).
+ *
+ * @example
+ * snakeToCamel('image_urls')   // 'imageUrls'
+ * snakeToCamel('x_restrict')   // 'xRestrict'
+ * snakeToCamel('imageUrls')    // 'imageUrls'  (no-op)
+ *
+ * @param key - snake_case string
+ * @returns lowerCamelCase string
+ */
+export function snakeToCamel(key: string): string {
+  return key.replaceAll(/_([a-z0-9])/g, (_m, c: string) => c.toUpperCase())
+}
+
+/**
+ * Recursively converts all object keys from snake_case to lowerCamelCase.
+ *
+ * - Plain objects: keys are converted, values are recursed.
+ * - Arrays: each element is recursed.
+ * - Primitives / null: returned as-is.
+ *
+ * All keys are converted uniformly — no path-based exclusions.
+ *
+ * @param value - Any JSON-compatible value
+ * @returns Deep copy with all object keys in lowerCamelCase
+ */
+export function camelizeKeys(value: unknown): unknown {
+  if (value === null || typeof value !== 'object') return value
+  if (Array.isArray(value)) return value.map((v) => camelizeKeys(v))
+  const out: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+    out[snakeToCamel(k)] = camelizeKeys(v)
+  }
+  return out
+}
+
 // ---------------------------------------------------------------------------
 // parseNextUrl
 // ---------------------------------------------------------------------------
@@ -128,8 +167,8 @@ export interface ParsedNextUrl {
  * @example
  * ```ts
  * const page = await client.users.bookmarks.illusts({ userId: client.userId })
- * if (page.isOk && page.value.next_url) {
- *   const cursor = parseNextUrl(page.value.next_url)
+ * if (page.isOk && page.value.nextUrl) {
+ *   const cursor = parseNextUrl(page.value.nextUrl)
  *   // Resume later:
  *   const next = await client.users.bookmarks.illusts({
  *     userId: client.userId,

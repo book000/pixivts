@@ -10,12 +10,12 @@ import { z } from 'zod'
 /** Image URLs for a work (thumbnail variants). */
 export const ImageUrlsSchema = z.object({
   /** 360×360 thumbnail */
-  square_medium: z.string(),
+  squareMedium: z.string(),
   /** Long side ≤ 540 px */
   medium: z.string(),
   /** Width ≤ 600 px, height ≤ 1200 px */
   large: z.string(),
-  /** Original image (only present in meta_pages entries) */
+  /** Original image (only present in metaPages entries) */
   original: z.string().optional(),
 })
 
@@ -40,17 +40,17 @@ export const PixivUserSchema = z.object({
   id: z.union([z.number(), z.string()]).pipe(z.coerce.number()),
   name: z.string(),
   account: z.string(),
-  profile_image_urls: ProfileImageUrlsSchema,
-  is_followed: z.boolean().optional(),
-  is_access_blocking_user: z.boolean().optional(),
-  is_accept_request: z.boolean().optional(),
+  profileImageUrls: ProfileImageUrlsSchema,
+  isFollowed: z.boolean().optional(),
+  isAccessBlockingUser: z.boolean().optional(),
+  isAcceptRequest: z.boolean().optional(),
 })
 
 /** Tag on a work. */
 export const TagSchema = z.object({
   name: z.string(),
-  translated_name: z.string().nullable(),
-  added_by_uploaded_user: z.boolean().optional(),
+  translatedName: z.string().nullable(),
+  addedByUploadedUser: z.boolean().optional(),
 })
 
 /** Series information embedded in a work item. */

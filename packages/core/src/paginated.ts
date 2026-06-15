@@ -6,7 +6,7 @@
  *   - `.pages()` is an async generator that yields each page
  *   - `.items()` is an async generator that yields individual items across all pages
  *
- * Pagination uses the `next_url` field returned by list endpoints. The URL is
+ * Pagination uses the `nextUrl` field returned by list endpoints. The URL is
  * fetched via `HttpClient.getAbsolute()` which reuses the same auth / retry /
  * interceptor pipeline as regular requests.
  */
@@ -21,18 +21,18 @@ import { ResultAsync } from './result'
 /**
  * A page returned by a pixiv list endpoint.
  *
- * Must have a `next_url` field (null when there are no more pages).
+ * Must have a `nextUrl` field (null when there are no more pages).
  */
 export interface PagedResponse {
   /** URL to the next page, or `null` when there are no more pages. */
-  next_url: string | null
+  nextUrl: string | null
 }
 
 /**
  * A `ResultAsync<TPage, PixivError>` with additional `.pages()` / `.items()`
  * async generators for consuming paginated pixiv list responses.
  *
- * Returned by all resource methods that produce a `next_url` field.
+ * Returned by all resource methods that produce a `nextUrl` field.
  */
 export class PaginatedResultAsync<
   TPage extends PagedResponse,
@@ -86,13 +86,13 @@ export class PaginatedResultAsync<
     if (first.isErr) throw new PixivFetchError(first.error)
     yield first.value
 
-    // Follow next_url chain
-    let nextUrl: string | null = first.value.next_url
+    // Follow nextUrl chain
+    let nextUrl: string | null = first.value.nextUrl
     while (nextUrl !== null) {
       const pageResult = await this.#http.getAbsolute<TPage>(nextUrl)
       if (pageResult.isErr) throw new PixivFetchError(pageResult.error)
       yield pageResult.value
-      nextUrl = pageResult.value.next_url
+      nextUrl = pageResult.value.nextUrl
     }
   }
 

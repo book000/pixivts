@@ -162,3 +162,67 @@ The following dependencies from ≤ 0.55.1 are no longer required:
 | `typeorm` | Moved to `@book000/pixivts-db-mysql` (Drizzle) |
 | `typeorm-naming-strategies` | Same as above |
 | `snake-camel-types` | Replaced by local type utilities |
+
+---
+
+# Migration Guide: ≤ 0.57.x → ≥ 0.58.0
+
+## Response Fields: snake_case → lowerCamelCase
+
+All response field names have been renamed from `snake_case` to `lowerCamelCase`. This is a **breaking change**.
+
+The library continues to communicate with the pixiv API using `snake_case` internally, but all values returned to callers are now `camelCase`.
+
+### Examples
+
+| ≤ 0.57.x | ≥ 0.58.0 |
+|---|---|
+| `illust.image_urls.square_medium` | `illust.imageUrls.squareMedium` |
+| `illust.create_date` | `illust.createDate` |
+| `illust.page_count` | `illust.pageCount` |
+| `illust.x_restrict` | `illust.xRestrict` |
+| `illust.meta_single_page` | `illust.metaSinglePage` |
+| `illust.meta_pages` | `illust.metaPages` |
+| `illust.total_view` | `illust.totalView` |
+| `illust.total_bookmarks` | `illust.totalBookmarks` |
+| `illust.is_bookmarked` | `illust.isBookmarked` |
+| `illust.illust_ai_type` | `illust.illustAiType` |
+| `novel.x_restrict` | `novel.xRestrict` |
+| `novel.create_date` | `novel.createDate` |
+| `novel.is_bookmarked` | `novel.isBookmarked` |
+| `novel.novel_ai_type` | `novel.novelAiType` |
+| `page.next_url` | `page.nextUrl` |
+| `page.user_previews` | `page.userPreviews` |
+| `page.ugoira_metadata` | `page.ugoiraMetadata` |
+| `user.profile_image_urls` | `user.profileImageUrls` |
+| `ugoira.zip_urls` | `ugoira.zipUrls` |
+
+### Pagination Cursors
+
+```typescript
+// ≤ 0.57.x
+const page = await client.users.bookmarks.illusts({ userId: client.userId })
+if (page.isOk && page.value.next_url) {
+  const cursor = parseNextUrl(page.value.next_url)
+}
+
+// ≥ 0.58.0
+const page = await client.users.bookmarks.illusts({ userId: client.userId })
+if (page.isOk && page.value.nextUrl) {
+  const cursor = parseNextUrl(page.value.nextUrl)
+}
+```
+
+### New: Token Getters
+
+`PixivClient` now exposes `getAccessToken()` and `getRefreshToken()` methods:
+
+```typescript
+const client = await PixivClient.of(refreshToken)
+console.log(client.getAccessToken())  // current bearer token
+console.log(client.getRefreshToken()) // current refresh token
+```
+
+### DB Recording
+
+The `@book000/pixivts-db-mysql` package continues to save **raw snake_case** response bodies to the database for archival fidelity. This behaviour is unchanged.

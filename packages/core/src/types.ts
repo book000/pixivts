@@ -20,12 +20,12 @@
  */
 export interface ImageUrls {
   /** 360×360 thumbnail */
-  square_medium: string
+  squareMedium: string
   /** Long side ≤ 540 px */
   medium: string
   /** Width ≤ 600 px, height ≤ 1200 px */
   large: string
-  /** Original image (present in `meta_pages` entries only) */
+  /** Original image (present in `metaPages` entries only) */
   original?: string
 }
 
@@ -53,13 +53,13 @@ export interface PixivUser {
   /** Login account name (distinct from the display `name`). */
   account: string
   /** Set of profile image URLs at different sizes. */
-  profile_image_urls: ProfileImageUrls
+  profileImageUrls: ProfileImageUrls
   /** Whether the authenticated user follows this user. */
-  is_followed?: boolean
+  isFollowed?: boolean
   /** Whether this user has blocked access by the authenticated user. */
-  is_access_blocking_user?: boolean
+  isAccessBlockingUser?: boolean
   /** Whether this user accepts illustration commission requests. */
-  is_accept_request?: boolean
+  isAcceptRequest?: boolean
 }
 
 /** Tag on a work. */
@@ -67,9 +67,9 @@ export interface Tag {
   /** Tag name in Japanese. */
   name: string
   /** Translated tag name, or `null` if no translation is available. */
-  translated_name: string | null
+  translatedName: string | null
   /** Whether the tag was added by the work's uploader. */
-  added_by_uploaded_user?: boolean
+  addedByUploadedUser?: boolean
 }
 
 /** Series information embedded in a work item. */
@@ -97,13 +97,13 @@ export interface PrivacyPolicy {
 /** Original-image URL for a single-page illust. */
 export interface MetaSinglePage {
   /** Direct URL to the original-resolution image. */
-  original_image_url: string
+  originalImageUrl: string
 }
 
 /** Per-page image URLs for a multi-page work (manga). */
 export interface MetaPages {
   /** Full set of image URLs for this page, including the original. */
-  image_urls: Required<ImageUrls>
+  imageUrls: Required<ImageUrls>
 }
 
 /**
@@ -125,7 +125,7 @@ export interface PixivIllustItem {
   /** Work category: illustration, manga, or animated illustration. */
   type: 'illust' | 'manga' | 'ugoira'
   /** Thumbnail image URLs at various sizes. */
-  image_urls: ImageUrls
+  imageUrls: ImageUrls
   /** Work caption / description (may contain HTML). */
   caption: string
   /** Content restriction level (0 = public, 1 = mypixiv-only, 2 = private). */
@@ -137,46 +137,46 @@ export interface PixivIllustItem {
   /** Creation tools listed by the author (e.g. "Photoshop"). */
   tools: string[]
   /** ISO 8601 date-time string of when the work was posted. */
-  create_date: string
+  createDate: string
   /** Number of images in a multi-page work (1 for single-page). */
-  page_count: number
+  pageCount: number
   /** Canvas width in pixels. */
   width: number
   /** Canvas height in pixels. */
   height: number
   /** Sanity / sensitivity level assigned by the pixiv content filter. */
-  sanity_level: number
+  sanityLevel: number
   /** Age restriction: 0 = all-ages, 1 = R-18, 2 = R-18G */
-  x_restrict: number
+  xRestrict: number
   /** Series this work belongs to, or `null` if not part of a series. */
   series: Series | null
   /**
-   * For single-page works: `{ original_image_url: string }`.
+   * For single-page works: `{ originalImageUrl: string }`.
    * For multi-page works: `{}` (empty object).
    */
-  meta_single_page: MetaSinglePage | Record<string, never>
+  metaSinglePage: MetaSinglePage | Record<string, never>
   /** Per-page image URLs for multi-page works (empty array for single-page). */
-  meta_pages: MetaPages[]
+  metaPages: MetaPages[]
   /** Total number of views. */
-  total_view: number
+  totalView: number
   /** Total number of bookmarks. */
-  total_bookmarks: number
+  totalBookmarks: number
   /** Whether the authenticated user has bookmarked this work. */
-  is_bookmarked: boolean
+  isBookmarked: boolean
   /** Whether the work is publicly visible. */
   visible: boolean
   /** Whether the work is muted for the authenticated user. */
-  is_muted: boolean
+  isMuted: boolean
   /** Total number of comments (may be absent on some endpoints). */
-  total_comments?: number
+  totalComments?: number
   /** AI-generated content flag: 0 = no AI, 1 = partial AI, 2 = fully AI */
-  illust_ai_type: number
+  illustAiType: number
   /** Book-style rendering flag (0 = normal, 1 = book). */
-  illust_book_style: number
+  illustBookStyle: number
   /** Controls who can post comments (may be absent). */
-  comment_access_control?: number
+  commentAccessControl?: number
   /** Additional access-restriction attributes (may be absent). */
-  restriction_attributes?: string[]
+  restrictionAttributes?: string[]
 }
 
 /** Illust series metadata returned by GET /v1/illust/series. */
@@ -188,11 +188,11 @@ export interface IllustSeriesDetail {
   /** Series description / caption. */
   caption: string
   /** Cover image URLs. */
-  cover_image_urls: { medium: string }
+  coverImageUrls: { medium: string }
   /** Number of works in the series. */
-  series_work_count: number
+  seriesWorkCount: number
   /** ISO 8601 date-time string of when the series was created. */
-  create_date: string
+  createDate: string
   /** Canvas width of the cover image in pixels. */
   width: number
   /** Canvas height of the cover image in pixels. */
@@ -200,7 +200,7 @@ export interface IllustSeriesDetail {
   /** Author of the series. */
   user: PixivUser
   /** Whether the authenticated user has added this series to their watchlist. */
-  watchlist_added: boolean
+  watchlistAdded: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -227,19 +227,19 @@ export interface PixivNovelItem {
   /** Content restriction level (0 = public, 1 = mypixiv-only, 2 = private). */
   restrict: number
   /** Age restriction: 0 = all-ages, 1 = R-18, 2 = R-18G */
-  x_restrict: number
+  xRestrict: number
   /** Whether the novel is an original work (not fan fiction). */
-  is_original: boolean
+  isOriginal: boolean
   /** Cover image URLs. */
-  image_urls: ImageUrls
+  imageUrls: ImageUrls
   /** ISO 8601 date-time string of when the novel was posted. */
-  create_date: string
+  createDate: string
   /** Tags attached to the novel. */
   tags: Tag[]
   /** Number of pages (word-count chunks). */
-  page_count: number
+  pageCount: number
   /** Total character count of the novel body. */
-  text_length: number
+  textLength: number
   /** Author of the novel. */
   user: PixivUser
   /**
@@ -249,25 +249,25 @@ export interface PixivNovelItem {
    */
   series: Series | Record<string, never>
   /** Whether the authenticated user has bookmarked this novel. */
-  is_bookmarked: boolean
+  isBookmarked: boolean
   /** Total number of bookmarks. */
-  total_bookmarks: number
+  totalBookmarks: number
   /** Total number of views. */
-  total_view: number
+  totalView: number
   /** Whether the novel is publicly visible. */
   visible: boolean
   /** Total number of comments. */
-  total_comments: number
+  totalComments: number
   /** Whether the novel is muted for the authenticated user. */
-  is_muted: boolean
+  isMuted: boolean
   /** Whether the novel is restricted to mutual followers (mypixiv). */
-  is_mypixiv_only: boolean
-  /** Whether the novel contains explicit content beyond the `x_restrict` flag. */
-  is_x_restricted: boolean
+  isMypixivOnly: boolean
+  /** Whether the novel contains explicit content beyond the `xRestrict` flag. */
+  isXRestricted: boolean
   /** AI-generated content flag: 0 = no AI, 1 = partial AI, 2 = fully AI */
-  novel_ai_type: number
+  novelAiType: number
   /** Controls who can post comments (may be absent). */
-  comment_access_control?: number
+  commentAccessControl?: number
 }
 
 /** Novel series details returned by GET /v2/novel/series. */
@@ -279,21 +279,21 @@ export interface NovelSeriesDetail {
   /** Series description / caption. */
   caption: string
   /** Whether every novel in the series is original (not fan fiction). */
-  is_original: boolean
+  isOriginal: boolean
   /** Whether the series has been marked as concluded by the author. */
-  is_concluded: boolean
+  isConcluded: boolean
   /** Number of novels in the series. */
-  content_count: number
+  contentCount: number
   /** Total character count across all novels in the series. */
-  total_character_count: number
+  totalCharacterCount: number
   /** Author of the series. */
   user: PixivUser
   /** Human-readable series label / tagline. */
-  display_text: string
+  displayText: string
   /** AI-generated content flag: 0 = no AI, 1 = partial AI, 2 = fully AI */
-  novel_ai_type: number
+  novelAiType: number
   /** Whether the authenticated user has added this series to their watchlist. */
-  watchlist_added: boolean
+  watchlistAdded: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -318,47 +318,47 @@ export interface PixivUserProfile {
   /** Birth date string (YYYY-MM-DD format, may be partial). */
   birth: string
   /** Birth day portion (MM-DD format). */
-  birth_day: string
+  birthDay: string
   /** Birth year. */
-  birth_year: number
+  birthYear: number
   /** Region / prefecture. */
   region: string
   /** Internal address ID. */
-  address_id: number
+  addressId: number
   /** Two-letter country code (ISO 3166-1 alpha-2). */
-  country_code: string
+  countryCode: string
   /** Occupation / job description. */
   job: string
   /** Internal job category ID. */
-  job_id: number
+  jobId: number
   /** Number of users this user follows. */
-  total_follow_users: number
+  totalFollowUsers: number
   /** Number of mutual-follow (mypixiv) connections. */
-  total_mypixiv_users: number
+  totalMypixivUsers: number
   /** Total number of public illusts. */
-  total_illusts: number
+  totalIllusts: number
   /** Total number of public manga works. */
-  total_manga: number
+  totalManga: number
   /** Total number of public novels. */
-  total_novels: number
+  totalNovels: number
   /** Total number of publicly bookmarked illusts. */
-  total_illust_bookmarks_public: number
+  totalIllustBookmarksPublic: number
   /** Total number of illust series. */
-  total_illust_series: number
+  totalIllustSeries: number
   /** Total number of novel series. */
-  total_novel_series: number
+  totalNovelSeries: number
   /** Profile background image URL, or `null` if not set. */
-  background_image_url: string | null
+  backgroundImageUrl: string | null
   /** Linked Twitter/X account name (without @). */
-  twitter_account: string
+  twitterAccount: string
   /** Twitter/X profile URL, or `null` if not set. */
-  twitter_url: string | null
+  twitterUrl: string | null
   /** Pawoo profile URL, or `null` if not set. */
-  pawoo_url: string | null
+  pawooUrl: string | null
   /** Whether the user has a premium (paid) account. */
-  is_premium: boolean
+  isPremium: boolean
   /** Whether the user has set a custom profile image. */
-  is_using_custom_profile_image: boolean
+  isUsingCustomProfileImage: boolean
 }
 
 /** Visibility settings for a user's profile fields. */
@@ -368,9 +368,9 @@ export interface PixivUserProfilePublicity {
   /** Visibility of the region field. */
   region: Publicity
   /** Visibility of the birth-day field. */
-  birth_day: Publicity
+  birthDay: Publicity
   /** Visibility of the birth-year field. */
-  birth_year: Publicity
+  birthYear: Publicity
   /** Visibility of the job field. */
   job: Publicity
   /** Whether the Pawoo account link is visible. */
@@ -404,7 +404,7 @@ export interface PixivUserProfileWorkspace {
   /** Free-text comment about the workspace. */
   comment: string
   /** Workspace image URL, or `null` if not set. */
-  workspace_image_url: string | null
+  workspaceImageUrl: string | null
 }
 
 /**
@@ -420,7 +420,7 @@ export interface PixivUserPreviewItem {
   /** A small sample of the user's recent novels. */
   novels: PixivNovelItem[]
   /** Whether this user is muted by the authenticated user. */
-  is_muted: boolean
+  isMuted: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -444,7 +444,7 @@ export interface Frame {
 /** Ugoira metadata as returned by GET /v1/ugoira/metadata. */
 export interface PixivUgoiraItem {
   /** Archive URLs for the frame ZIP. */
-  zip_urls: ZipUrls
+  zipUrls: ZipUrls
   /** Per-frame timing data (in order). */
   frames: Frame[]
 }
@@ -454,19 +454,23 @@ export interface PixivUgoiraItem {
 // ---------------------------------------------------------------------------
 
 /**
- * Shape of the JSON body returned by the pixiv API on error.
+ * Camelized shape of the JSON error body returned by the pixiv API.
+ *
+ * The pixiv wire format uses `snake_case` field names (e.g. `user_message`);
+ * `HttpClient` applies `camelizeKeys()` before returning, so all fields here
+ * are `lowerCamelCase`.
  */
 export interface PixivApiErrorBody {
-  /** Error payload returned by the pixiv API. */
+  /** Error payload returned by the pixiv API (keys camelized). */
   error: {
     /** Localised error message intended for end users. */
-    user_message: string
+    userMessage: string
     /** Internal error message. */
     message: string
     /** Short error reason / code. */
     reason: string
     /** Additional details for the user-facing message (may be absent). */
-    user_message_details?: Record<string, unknown>
+    userMessageDetails?: Record<string, unknown>
   }
 }
 
@@ -492,9 +496,9 @@ export interface IllustListPage {
    *
    * Only present on search responses; absent on related/ranking/recommended endpoints.
    */
-  show_ai?: boolean
+  showAi?: boolean
   /** URL to the next page, or `null` when this is the last page. */
-  next_url: string | null
+  nextUrl: string | null
 }
 
 /** Page response for GET /v1/illust/recommended. */
@@ -502,25 +506,25 @@ export interface IllustRecommendedPage {
   /** Recommended illusts. */
   illusts: PixivIllustItem[]
   /** Ranking illusts included alongside recommendations. */
-  ranking_illusts: PixivIllustItem[]
+  rankingIllusts: PixivIllustItem[]
   /** Whether an ongoing contest exists. */
-  contest_exists: boolean
+  contestExists: boolean
   /** Privacy-policy notice (present on the first page). */
-  privacy_policy?: PrivacyPolicy
+  privacyPolicy?: PrivacyPolicy
   /** URL to the next page, or `null` when this is the last page. */
-  next_url: string | null
+  nextUrl: string | null
 }
 
 /** Page response for GET /v1/illust/series. */
 export interface IllustSeriesPage {
   /** Metadata for the series. */
-  illust_series_detail: IllustSeriesDetail
+  illustSeriesDetail: IllustSeriesDetail
   /** First illust in the series. */
-  illust_series_first_illust: PixivIllustItem
+  illustSeriesFirstIllust: PixivIllustItem
   /** Illusts on this page. */
   illusts: PixivIllustItem[]
   /** URL to the next page, or `null` when this is the last page. */
-  next_url: string | null
+  nextUrl: string | null
 }
 
 // Manga endpoint responses
@@ -530,11 +534,11 @@ export interface MangaRecommendedPage {
   /** Recommended manga works. */
   illusts: PixivIllustItem[]
   /** Ranking manga works included alongside recommendations. */
-  ranking_illusts: PixivIllustItem[]
+  rankingIllusts: PixivIllustItem[]
   /** Privacy-policy notice (present on the first page). */
-  privacy_policy?: PrivacyPolicy
+  privacyPolicy?: PrivacyPolicy
   /** URL to the next page, or `null` when this is the last page. */
-  next_url: string | null
+  nextUrl: string | null
 }
 
 // Ugoira endpoint responses
@@ -542,7 +546,7 @@ export interface MangaRecommendedPage {
 /** Response shape for GET /v1/ugoira/metadata. */
 export interface UgoiraMetadataResponse {
   /** Ugoira metadata (ZIP URLs and per-frame timings). */
-  ugoira_metadata: PixivUgoiraItem
+  ugoiraMetadata: PixivUgoiraItem
 }
 
 // Novel endpoint responses
@@ -562,9 +566,9 @@ export interface NovelListPage {
    *
    * Only present on search responses; absent on related/ranking/recommended endpoints.
    */
-  show_ai?: boolean
+  showAi?: boolean
   /** URL to the next page, or `null` when this is the last page. */
-  next_url: string | null
+  nextUrl: string | null
 }
 
 /** Page response for GET /v1/novel/recommended. */
@@ -572,25 +576,25 @@ export interface NovelRecommendedPage {
   /** Recommended novels. */
   novels: PixivNovelItem[]
   /** Ranking novels included alongside recommendations. */
-  ranking_novels: PixivNovelItem[]
+  rankingNovels: PixivNovelItem[]
   /** Privacy-policy notice (present on the first page). */
-  privacy_policy?: PrivacyPolicy
+  privacyPolicy?: PrivacyPolicy
   /** URL to the next page, or `null` when this is the last page. */
-  next_url: string | null
+  nextUrl: string | null
 }
 
 /** Page response for GET /v2/novel/series. */
 export interface NovelSeriesPage {
   /** Metadata for the series. */
-  novel_series_detail: NovelSeriesDetail
+  novelSeriesDetail: NovelSeriesDetail
   /** First novel in the series. */
-  novel_series_first_novel: PixivNovelItem
+  novelSeriesFirstNovel: PixivNovelItem
   /** Most recently published novel in the series. */
-  novel_series_latest_novel: PixivNovelItem
+  novelSeriesLatestNovel: PixivNovelItem
   /** Novels on this page. */
   novels: PixivNovelItem[]
   /** URL to the next page, or `null` when this is the last page. */
-  next_url: string | null
+  nextUrl: string | null
 }
 
 // User endpoint responses
@@ -602,7 +606,7 @@ export interface UserDetailResponse {
   /** Detailed profile data. */
   profile: PixivUserProfile
   /** Visibility settings for profile fields. */
-  profile_publicity: PixivUserProfilePublicity
+  profilePublicity: PixivUserProfilePublicity
   /** Workspace / desk-setup information. */
   workspace: PixivUserProfileWorkspace
 }
@@ -614,7 +618,7 @@ export interface UserIllustsPage {
   /** Illusts on this page. */
   illusts: PixivIllustItem[]
   /** URL to the next page, or `null` when this is the last page. */
-  next_url: string | null
+  nextUrl: string | null
 }
 
 /** Page response for GET /v1/user/novels. */
@@ -624,7 +628,7 @@ export interface UserNovelsPage {
   /** Novels on this page. */
   novels: PixivNovelItem[]
   /** URL to the next page, or `null` when this is the last page. */
-  next_url: string | null
+  nextUrl: string | null
 }
 
 /** Page response for GET /v1/user/bookmarks/illust. */
@@ -632,7 +636,7 @@ export interface UserBookmarksIllustPage {
   /** Bookmarked illusts on this page. */
   illusts: PixivIllustItem[]
   /** URL to the next page, or `null` when this is the last page. */
-  next_url: string | null
+  nextUrl: string | null
 }
 
 /** Page response for GET /v1/user/bookmarks/novel. */
@@ -640,13 +644,13 @@ export interface UserBookmarksNovelPage {
   /** Bookmarked novels on this page. */
   novels: PixivNovelItem[]
   /** URL to the next page, or `null` when this is the last page. */
-  next_url: string | null
+  nextUrl: string | null
 }
 
 /** Page response for GET /v1/user/following. */
 export interface UserFollowingPage {
   /** User preview items on this page. */
-  user_previews: PixivUserPreviewItem[]
+  userPreviews: PixivUserPreviewItem[]
   /** URL to the next page, or `null` when this is the last page. */
-  next_url: string | null
+  nextUrl: string | null
 }
