@@ -125,6 +125,25 @@ export class UserBookmarksResource {
    * GET /v1/user/bookmarks/illust
    *
    * @param params - Request parameters
+   *
+   * @example
+   * ```ts
+   * // Iterate all bookmarked illusts across pages
+   * for await (const illust of client.users.bookmarks.illusts({ userId: client.userId }).items()) {
+   *   console.log(illust.title)
+   * }
+   *
+   * // Resume from a saved cursor
+   * import { parseNextUrl } from '@book000/pixivts'
+   * const page = await client.users.bookmarks.illusts({ userId: client.userId })
+   * if (page.isOk && page.value.next_url) {
+   *   const cursor = parseNextUrl(page.value.next_url)
+   *   const next = await client.users.bookmarks.illusts({
+   *     userId: client.userId,
+   *     maxBookmarkId: cursor.maxBookmarkId,
+   *   })
+   * }
+   * ```
    */
   illusts(
     params: UserBookmarksIllustParams
@@ -151,6 +170,14 @@ export class UserBookmarksResource {
    * GET /v1/user/bookmarks/novel
    *
    * @param params - Request parameters
+   *
+   * @example
+   * ```ts
+   * // Iterate all bookmarked novels across pages
+   * for await (const novel of client.users.bookmarks.novels({ userId: client.userId }).items()) {
+   *   console.log(novel.title)
+   * }
+   * ```
    */
   novels(
     params: UserBookmarksNovelParams

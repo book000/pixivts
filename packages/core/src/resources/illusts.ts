@@ -81,6 +81,16 @@ export interface IllustRecommendedParams {
   filter?: OSFilter
   /** Zero-based offset for pagination. */
   offset?: number
+  /**
+   * Cursor for resuming pagination: the `maxBookmarkIdForRecommend` value
+   * extracted from a previous page's `next_url` via {@link parseNextUrl}.
+   */
+  maxBookmarkIdForRecommend?: number
+  /**
+   * Secondary cursor for resuming pagination: the `minBookmarkIdForRecentIllust`
+   * value extracted from a previous page's `next_url` via {@link parseNextUrl}.
+   */
+  minBookmarkIdForRecentIllust?: number
 }
 
 /** Parameters for fetching an illust series. */
@@ -120,6 +130,16 @@ export class IllustResource {
    * GET /v1/illust/detail
    *
    * @param params - Request parameters
+   *
+   * @example
+   * ```ts
+   * const result = await client.illusts.detail({ illustId: 12345 })
+   * if (result.isOk) {
+   *   console.log(result.value.illust.title)
+   * } else {
+   *   console.error(result.error)
+   * }
+   * ```
    */
   detail(
     params: IllustDetailParams
@@ -160,6 +180,20 @@ export class IllustResource {
    * GET /v1/search/illust
    *
    * @param params - Request parameters
+   *
+   * @example
+   * ```ts
+   * // Iterate all results across pages
+   * for await (const illust of client.illusts.search({ word: 'cat' }).items()) {
+   *   console.log(illust.title)
+   * }
+   *
+   * // Fetch only the first page
+   * const page = await client.illusts.search({ word: 'cat' })
+   * if (page.isOk) {
+   *   console.log(page.value.illusts.length)
+   * }
+   * ```
    */
   search(
     params: IllustSearchParams
@@ -229,6 +263,8 @@ export class IllustResource {
           includeRankingIllusts: true,
           includePrivacyPolicy: true,
           offset: params.offset,
+          maxBookmarkIdForRecommend: params.maxBookmarkIdForRecommend,
+          minBookmarkIdForRecentIllust: params.minBookmarkIdForRecentIllust,
         })
       ),
       this.#http,

@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { buildParams, buildSearchParams, camelToSnake, toSnakeKeys } from '../src/params'
+import {
+  buildParams,
+  buildSearchParams,
+  camelToSnake,
+  parseNextUrl,
+  toSnakeKeys,
+} from '../src/params'
 
 describe('camelToSnake()', () => {
   it('converts a single uppercase letter', () => {
@@ -88,5 +94,58 @@ describe('buildParams()', () => {
     const usp = buildParams({ tags: ['foo', 'bar'] })
     expect(usp.getAll('tags[]')).toEqual(['foo', 'bar'])
     expect(usp.has('tags')).toBe(false)
+  })
+})
+
+describe('parseNextUrl()', () => {
+  it('extracts offset', () => {
+    const result = parseNextUrl(
+      'https://app-api.pixiv.net/v1/search/illust?word=cat&offset=30'
+    )
+    expect(result.offset).toBe(30)
+    expect(result.maxBookmarkId).toBeUndefined()
+  })
+
+  it('extracts max_bookmark_id', () => {
+    const result = parseNextUrl(
+      'https://app-api.pixiv.net/v1/user/bookmarks/illust?user_id=1&max_bookmark_id=99999'
+    )
+    expect(result.maxBookmarkId).toBe(99_999)
+    expect(result.offset).toBeUndefined()
+  })
+
+  it('extracts last_order', () => {
+    const result = parseNextUrl(
+      'https://app-api.pixiv.net/v2/novel/series?series_id=1&last_order=10'
+    )
+    expect(result.lastOrder).toBe(10)
+  })
+
+  it('extracts max_bookmark_id_for_recommend and min_bookmark_id_for_recent_illust', () => {
+    const result = parseNextUrl(
+      'https://app-api.pixiv.net/v1/illust/recommended?max_bookmark_id_for_recommend=888&min_bookmark_id_for_recent_illust=777'
+    )
+    expect(result.maxBookmarkIdForRecommend).toBe(888)
+    expect(result.minBookmarkIdForRecentIllust).toBe(777)
+  })
+
+  it('returns an empty object when no cursor params are present', () => {
+    const result = parseNextUrl('https://app-api.pixiv.net/v1/illust/ranking?filter=for_ios')
+    expect(result).toEqual({})
+  })
+
+  it('returns numeric values, not strings', () => {
+    const result = parseNextUrl(
+      'https://app-api.pixiv.net/v1/search/illust?offset=60'
+    )
+    expect(typeof result.offset).toBe('number')
+  })
+
+  it('returns undefined for non-numeric cursor params', () => {
+    const result = parseNextUrl(
+      'https://app-api.pixiv.net/v1/search/illust?offset=abc&max_bookmark_id='
+    )
+    expect(result.offset).toBeUndefined()
+    expect(result.maxBookmarkId).toBeUndefined()
   })
 })

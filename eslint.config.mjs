@@ -8,7 +8,7 @@ const __dirname = nodePath.dirname(fileURLToPath(import.meta.url))
 export default [
   ...eslintConfig,
   {
-    ignores: ['**/dist/**', '**/coverage/**', 'docs/**'],
+    ignores: ['**/dist/**', '**/coverage/**', 'docs-out/**'],
   },
   {
     // Use projectService to auto-discover each package's tsconfig.json.

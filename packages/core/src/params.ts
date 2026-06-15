@@ -87,3 +87,87 @@ export function buildParams(
 ): URLSearchParams {
   return buildSearchParams(toSnakeKeys(params) as Record<string, ParamValue>)
 }
+
+// ---------------------------------------------------------------------------
+// parseNextUrl
+// ---------------------------------------------------------------------------
+
+/**
+ * Typed cursor parameters extracted from a pixiv `next_url`.
+ *
+ * Different endpoints use different cursor fields; only the fields present
+ * in the URL will be defined.
+ *
+ * | Field | Endpoint(s) |
+ * |---|---|
+ * | `maxBookmarkId` | `GET /v1/user/bookmarks/illust` |
+ * | `maxBookmarkIdForRecommend` | `GET /v1/illust/recommended`, `GET /v1/novel/recommended` |
+ * | `minBookmarkIdForRecentIllust` | `GET /v1/illust/recommended` |
+ * | `offset` | search, ranking, recommended, user lists, … |
+ * | `lastOrder` | `GET /v2/novel/series` |
+ */
+export interface ParsedNextUrl {
+  /** Cursor for `GET /v1/user/bookmarks/illust`. */
+  maxBookmarkId?: number
+  /** Cursor for `GET /v1/illust/recommended` and `GET /v1/novel/recommended`. */
+  maxBookmarkIdForRecommend?: number
+  /** Secondary cursor for `GET /v1/illust/recommended`. */
+  minBookmarkIdForRecentIllust?: number
+  /** Zero-based offset for general list endpoints. */
+  offset?: number
+  /** Cursor for `GET /v2/novel/series`. */
+  lastOrder?: number
+}
+
+/**
+ * Parses a pixiv `next_url` into a typed cursor object.
+ *
+ * Pass the `next_url` field from any paginated response to extract the
+ * cursor parameters needed to resume pagination from a saved position.
+ *
+ * @example
+ * ```ts
+ * const page = await client.users.bookmarks.illusts({ userId: client.userId })
+ * if (page.isOk && page.value.next_url) {
+ *   const cursor = parseNextUrl(page.value.next_url)
+ *   // Resume later:
+ *   const next = await client.users.bookmarks.illusts({
+ *     userId: client.userId,
+ *     maxBookmarkId: cursor.maxBookmarkId,
+ *   })
+ * }
+ * ```
+ *
+ * @param url - The `next_url` string returned by a pixiv list endpoint
+ * @returns Typed cursor parameters; fields absent in the URL are `undefined`
+ */
+export function parseNextUrl(url: string): ParsedNextUrl {
+  const usp = new URL(url).searchParams
+  const result: ParsedNextUrl = {}
+
+  const toNum = (key: string): number | undefined => {
+    const v = usp.get(key)
+    if (v === null || v === '') return undefined
+    const n = Number(v)
+    return Number.isNaN(n) ? undefined : n
+  }
+
+  const maxBookmarkId = toNum('max_bookmark_id')
+  if (maxBookmarkId !== undefined) result.maxBookmarkId = maxBookmarkId
+
+  const maxBookmarkIdForRecommend = toNum('max_bookmark_id_for_recommend')
+  if (maxBookmarkIdForRecommend !== undefined)
+    result.maxBookmarkIdForRecommend = maxBookmarkIdForRecommend
+
+  const minBookmarkIdForRecentIllust = toNum('min_bookmark_id_for_recent_illust')
+  if (minBookmarkIdForRecentIllust !== undefined)
+    result.minBookmarkIdForRecentIllust = minBookmarkIdForRecentIllust
+
+  const offset = toNum('offset')
+  if (offset !== undefined) result.offset = offset
+
+  const lastOrder = toNum('last_order')
+  if (lastOrder !== undefined) result.lastOrder = lastOrder
+
+  return result
+}

@@ -36,22 +36,16 @@ const result = await client.illusts.detail({ illustId: 12345 })
 if (result.isOk) {
   console.log(result.value.illust.title)
 }
-
-// Iterate over all pages
-for await (const page of client.illusts.search({ word: 'hatsune miku' }).pages()) {
-  for (const illust of page.illusts) {
-    console.log(illust.id, illust.title)
-  }
-}
 ```
 
-## 🔄 Migration from 0.55.1 and earlier
+## 📖 Documentation
 
-If you are migrating from the previous version of `@book000/pixivts`, see [MIGRATION.md](MIGRATION.md).
-
-## 📚 API Documentation
-
-Full API reference: <https://book000.github.io/pixivts/>
+- **[Getting Started](docs/getting-started.md)** — authentication, Result type, error handling
+- **[Pagination](docs/pagination.md)** — `.items()` / `.pages()`, cursor-based resume
+- **[Option Constants](docs/options.md)** — enum-like `BookmarkRestrict.PUBLIC` etc.
+- **[MySQL Recorder](docs/db-mysql.md)** — `@book000/pixivts-db-mysql` setup and query helpers
+- **[Migration Guide](docs/migration.md)** — migrating from ≤ 0.55.1 to ≥ 0.56.2
+- **[API Reference](https://book000.github.io/pixivts/)** — full TypeDoc reference
 
 ## 📑 License
 

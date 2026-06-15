@@ -496,3 +496,31 @@ describe('images.fetch()', () => {
     }
   })
 })
+
+describe('client.userId', () => {
+  it('returns a number even though the OAuth response contains a string', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    // AUTH_RESPONSE has user.id = '42' (string); userId should be coerced to number
+    expect(typeof client.userId).toBe('number')
+    expect(client.userId).toBe(42)
+  })
+
+  it('throws when the OAuth response contains a non-numeric user id', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json({
+          ...AUTH_RESPONSE,
+          user: { id: 'not-a-number' },
+        })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    expect(() => client.userId).toThrow(TypeError)
+    expect(() => client.userId).toThrow('Invalid userId')
+  })
+})
