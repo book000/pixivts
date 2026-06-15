@@ -55,9 +55,16 @@ describe('buildSearchParams()', () => {
     expect(usp.get('other')).toBe('false')
   })
 
-  it('appends array values as repeated params', () => {
+  it('appends array values with bracket suffix (Rails/pixiv convention)', () => {
     const usp = buildSearchParams({ ids: [1, 2, 3] })
-    expect(usp.getAll('ids')).toEqual(['1', '2', '3'])
+    // pixiv API expects key[]=value1&key[]=value2, not key=value1&key=value2
+    expect(usp.getAll('ids[]')).toEqual(['1', '2', '3'])
+    expect(usp.has('ids')).toBe(false)
+  })
+
+  it('appends string arrays with bracket suffix', () => {
+    const usp = buildSearchParams({ tags: ['a', 'b'] })
+    expect(usp.getAll('tags[]')).toEqual(['a', 'b'])
   })
 })
 

@@ -48,8 +48,6 @@ const UGOIRA_ID = 83_638_393
 const NOVEL_ID = 13_574_875
 /** An illust series used for stable assertions. */
 const ILLUST_SERIES_ID = 147_483
-/** A novel series ID used for stable assertions. */
-const NOVEL_SERIES_ID = 7_519_447
 /** pixiv staff account (ID: 11) — always exists, safe for follow tests. */
 const STAFF_USER_ID = 11
 
@@ -265,10 +263,22 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
   })
 
   it('novels.series', async () => {
-    const result = await client.novels.series({ seriesId: NOVEL_SERIES_ID })
+    // Derive the series ID from the test novel to avoid hardcoding an ID that may become stale.
+    const detailResult = await client.novels.detail({ novelId: NOVEL_ID })
+    expect(detailResult.isOk).toBe(true)
+    if (!detailResult.isOk) return
+
+    const seriesInfo = detailResult.value.novel.series
+    if (!('id' in seriesInfo)) {
+      // The test novel does not belong to a series; nothing to test.
+      return
+    }
+    const seriesId = seriesInfo.id
+
+    const result = await client.novels.series({ seriesId })
     expect(result.isOk).toBe(true)
     if (!result.isOk) return
-    expect(result.value.novel_series_detail.id).toBe(NOVEL_SERIES_ID)
+    expect(result.value.novel_series_detail.id).toBe(seriesId)
     expect(result.value.novels.length).toBeGreaterThan(0)
   })
 
