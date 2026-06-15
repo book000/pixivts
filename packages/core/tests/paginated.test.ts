@@ -6,7 +6,7 @@ import { HttpClient } from '../src/http'
 import { PaginatedResultAsync, failedPaginated } from '../src/paginated'
 import type { PagedResponse } from '../src/paginated'
 import { apiError } from '../src/errors'
-import { ResultAsync } from '../src/result'
+import { ok, ResultAsync } from '../src/result'
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -472,9 +472,8 @@ describe('PaginatedResultAsync — inherits ResultAsync', () => {
       (page) => page.items
     )
 
-    const { ok: okFn } = await import('../src/result.js')
     const chained = await paginated.andThen((page) =>
-      okFn(page.items[0]?.id ?? 0)
+      ok(page.items[0]?.id ?? 0)
     )
     expect(chained.isOk).toBe(true)
     if (chained.isOk) expect(chained.value).toBe(5)

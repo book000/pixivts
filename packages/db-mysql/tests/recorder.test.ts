@@ -10,7 +10,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { drizzle } from 'drizzle-orm/mysql2'
 import type { ResponseRecord } from '@book000/pixivts'
 import * as schema from '../src/schema'
-import { addResponse, createRecorderBundle } from '../src/recorder'
+import { addResponse, createRecorderBundle, createResponseRecorder } from '../src/recorder'
 
 // ---------------------------------------------------------------------------
 // Hoisted mock state — created before vi.mock() factory runs
@@ -172,8 +172,6 @@ describe('createResponseRecorder()', () => {
   })
 
   it('creates a bundle without error (no bootstrap)', async () => {
-    const { createResponseRecorder } = await import('../src/recorder.js')
-
     const bundle = await createResponseRecorder({
       host: 'localhost',
       database: 'testdb',
@@ -184,8 +182,6 @@ describe('createResponseRecorder()', () => {
   })
 
   it('close() calls pool.end()', async () => {
-    const { createResponseRecorder } = await import('../src/recorder.js')
-
     const bundle = await createResponseRecorder({
       host: 'localhost',
       database: 'testdb',
@@ -196,8 +192,6 @@ describe('createResponseRecorder()', () => {
   })
 
   it('bootstrap=true executes a CREATE TABLE statement via client.query()', async () => {
-    const { createResponseRecorder } = await import('../src/recorder.js')
-
     await createResponseRecorder({
       host: 'localhost',
       database: 'testdb',
