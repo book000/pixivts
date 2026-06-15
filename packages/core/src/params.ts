@@ -50,7 +50,7 @@ type ParamValue =
  *
  * Rules:
  * - `null` / `undefined` values are skipped.
- * - Arrays are appended as repeated params: `foo=1&foo=2`.
+ * - Arrays are appended with a `[]` suffix: `foo[]=1&foo[]=2` (Rails/pixiv convention).
  * - Booleans are serialised as `'true'` / `'false'`.
  * - Numbers are serialised via `.toString()`.
  *
@@ -64,7 +64,9 @@ export function buildSearchParams(
   for (const [key, value] of Object.entries(params)) {
     if (value === null || value === undefined) continue
     if (Array.isArray(value)) {
-      for (const item of value) usp.append(key, String(item))
+      // The pixiv API (Rails backend) expects bracket-suffixed keys for arrays:
+      // e.g. seed_illust_ids[]=1&seed_illust_ids[]=2, not seed_illust_ids=1&seed_illust_ids=2
+      for (const item of value) usp.append(`${key}[]`, String(item))
     } else {
       usp.set(key, String(value))
     }

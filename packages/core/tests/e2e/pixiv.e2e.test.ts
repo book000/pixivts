@@ -48,8 +48,11 @@ const UGOIRA_ID = 83_638_393
 const NOVEL_ID = 13_574_875
 /** An illust series used for stable assertions. */
 const ILLUST_SERIES_ID = 147_483
-/** A novel series ID used for stable assertions. */
-const NOVEL_SERIES_ID = 7_519_447
+/**
+ * A novel series used for stable assertions.
+ * Title: FGO夢まとめ (series ID 1458483, 58+ works, active since 2018)
+ */
+const NOVEL_SERIES_ID = 1_458_483
 /** pixiv staff account (ID: 11) — always exists, safe for follow tests. */
 const STAFF_USER_ID = 11
 
