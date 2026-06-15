@@ -8,7 +8,7 @@ The previous version was a single package. The current version is a pnpm monorep
 
 | ≤ 0.55.1 | ≥ 0.56.2 |
 |---|---|
-| `@book000/pixivts` (axios-based, CJS) | `@book000/pixivts` (fetch-based, ESM+CJS) |
+| `@book000/pixivts` (fetch-based, CJS) | `@book000/pixivts` (fetch-based, ESM+CJS) |
 | `saving-responses/` (TypeORM + MySQL built-in) | `@book000/pixivts-db-mysql` (optional, Drizzle + MySQL) |
 
 ## Creating a Client
@@ -63,7 +63,7 @@ if (result.isOk) {
 | `pixiv.searchNovel({ word })` | `client.novels.search({ word })` |
 | `pixiv.novelRanking(opts)` | `client.novels.ranking(opts)` |
 | `pixiv.novelRecommended(opts)` | `client.novels.recommended(opts)` |
-| `pixiv.novelSeries({ novelSeriesId })` | `client.novels.series({ novelSeriesId })` |
+| `pixiv.novelSeries({ seriesId })` | `client.novels.series({ seriesId })` |
 | `pixiv.novelBookmarkAdd(opts)` | `client.novels.bookmarkAdd(opts)` |
 | `pixiv.novelBookmarkDelete(opts)` | `client.novels.bookmarkDelete(opts)` |
 | `pixiv.userDetail({ userId })` | `client.users.detail({ userId })` |
@@ -84,12 +84,13 @@ The previous version returned the raw API response including `next_url`. The cur
 
 ```typescript
 // ≤ 0.55.1
-let nextUrl: string | null = null
-do {
-  const res = await pixiv.searchIllust({ word: 'hatsune miku', nextUrl })
+let offset = 0
+while (true) {
+  const res = await pixiv.searchIllust({ word: 'hatsune miku', offset })
   // process res.data.illusts
-  nextUrl = res.data.next_url
-} while (nextUrl)
+  if (!res.data.next_url) break
+  offset += res.data.illusts.length
+}
 
 // ≥ 0.56.2 — iterate pages
 for await (const page of client.illusts.search({ word: 'hatsune miku' }).pages()) {
@@ -104,12 +105,12 @@ for await (const illust of client.illusts.search({ word: 'hatsune miku' }).items
 
 ## Response Type
 
-The previous version returned `AxiosResponse<T>` — you accessed data via `.data`. The current version returns the unwrapped response body directly.
+The previous version returned a custom `PixivApiResponse<T>` — you accessed the body via `.data`. The current version returns the unwrapped response body directly.
 
 ```typescript
 // ≤ 0.55.1
 const res = await pixiv.illustDetail({ illustId })
-console.log(res.data.illust.title)  // .data because it's AxiosResponse
+console.log(res.data.illust.title)  // .data because it's PixivApiResponse<T>
 
 // ≥ 0.56.2
 const result = await client.illusts.detail({ illustId })
