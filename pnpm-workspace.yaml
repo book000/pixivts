@@ -8,4 +8,4 @@ allowBuilds:
 minimumReleaseAgeExclude:
   - '@book000/*'
 patchedDependencies:
-  drizzle-orm@0.38.4: patches/drizzle-orm@0.38.4.patch
+  drizzle-orm@0.45.2: patches/drizzle-orm@0.45.2.patch
