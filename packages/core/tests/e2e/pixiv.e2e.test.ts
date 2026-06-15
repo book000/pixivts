@@ -263,26 +263,28 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
   })
 
   it('novels.series', async () => {
-    // Derive the series ID from the test novel to avoid hardcoding an ID that may become stale.
-    const detailResult = await client.novels.detail({ novelId: NOVEL_ID })
-    expect(detailResult.isOk).toBe(true)
-    if (!detailResult.isOk) return
+    // Use the daily novel ranking to find a serialized novel.
+    // This avoids hardcoding a series ID that may become stale while
+    // ensuring the test always exercises client.novels.series().
+    const rankingResult = await client.novels.ranking({})
+    expect(rankingResult.isOk).toBe(true)
+    if (!rankingResult.isOk) return
 
-    const seriesInfo = detailResult.value.novel.series
-    if (!('id' in seriesInfo)) {
-      // NOVEL_ID must belong to a series for this test to be meaningful.
-      // If this assertion fails, update NOVEL_ID to a novel that is part of a series.
-      throw new Error(
-        `NOVEL_ID ${NOVEL_ID} does not belong to a series. ` +
-          'Update the NOVEL_ID constant to a novel that belongs to a series.'
-      )
-    }
-    const seriesId = seriesInfo.id
+    const novelWithSeries = rankingResult.value.novels.find(
+      (n) => 'id' in n.series
+    )
+    // The daily novel ranking almost always contains serialized novels.
+    // If this fails, try re-running or check if the ranking API is healthy.
+    expect(novelWithSeries).toBeDefined()
+    if (!novelWithSeries) return
 
-    const result = await client.novels.series({ seriesId })
+    const series = novelWithSeries.series
+    if (!('id' in series)) return // type narrowing; unreachable given the find() above
+
+    const result = await client.novels.series({ seriesId: series.id })
     expect(result.isOk).toBe(true)
     if (!result.isOk) return
-    expect(result.value.novel_series_detail.id).toBe(seriesId)
+    expect(result.value.novel_series_detail.id).toBe(series.id)
     expect(result.value.novels.length).toBeGreaterThan(0)
   })
 
