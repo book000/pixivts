@@ -21,7 +21,7 @@ importers:
         specifier: 10.4.1
         version: 10.4.1
       eslint-plugin-jsdoc:
-        specifier: ^63.0.2
+        specifier: 63.0.2
         version: 63.0.2(eslint@10.4.1)
       prettier:
         specifier: 3.8.4
@@ -51,7 +51,7 @@ importers:
         specifier: 8.5.0
         version: 8.5.0(postcss@8.5.15)(typescript@6.0.3)(yaml@2.9.0)
       typedoc:
-        specifier: ^0.28.19
+        specifier: 0.28.19
         version: 0.28.19(typescript@6.0.3)
       typescript:
         specifier: 6.0.3
