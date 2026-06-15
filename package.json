@@ -7,7 +7,7 @@
     "build": "pnpm -r build",
     "clean": "pnpm -r clean",
     "test": "vitest run",
-    "lint": "pnpm -r lint && eslint .",
+    "lint": "pnpm --filter @book000/pixivts build && pnpm -r lint && eslint .",
     "fix": "pnpm -r fix && eslint . --fix"
   },
   "devDependencies": {
