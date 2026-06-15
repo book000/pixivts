@@ -39,7 +39,7 @@
     }
   },
   "dependencies": {
-    "drizzle-orm": "0.44.2",
+    "drizzle-orm": "0.38.4",
     "mysql2": "3.22.5"
   },
   "peerDependencies": {
@@ -48,7 +48,7 @@
   "devDependencies": {
     "@types/node": "24.13.2",
     "@vitest/coverage-v8": "3.2.4",
-    "drizzle-kit": "0.30.2",
+    "drizzle-kit": "0.29.1",
     "tsup": "8.5.0",
     "typescript": "6.0.3",
     "vitest": "3.2.4"

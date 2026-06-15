@@ -2,7 +2,10 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    // Include @types/node so that Buffer, stream, events, etc. resolve correctly.
+    // mysql2 and drizzle-orm reference Node.js globals in their .d.ts files.
+    "types": ["node"]
   },
-  "include": ["src/**/*", "tests/**/*"]
+  "include": ["src/**/*"]
 }

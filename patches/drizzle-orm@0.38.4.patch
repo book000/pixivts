@@ -1,0 +1,103 @@
+diff --git a/column-builder.d.ts b/column-builder.d.ts
+index d5fbd2a555b42ffd22d8a2cee8d0d6e8ac62099d..0f00d50c8ab7c283a1cc983bbdd52f4c0cc56344 100644
+--- a/column-builder.d.ts
++++ b/column-builder.d.ts
+@@ -1,10 +1,15 @@
+ import { entityKind } from "./entity.js";
+ import type { Column } from "./column.js";
+ import type { MySqlColumn } from "./mysql-core/index.js";
+-import type { ExtraConfigColumn, PgColumn, PgSequenceOptions } from "./pg-core/index.js";
+-import type { SingleStoreColumn } from "./singlestore-core/index.js";
++// Stub: pg-core types replaced to avoid TypeScript 6.0 type-check errors in pg-core declarations
++type ExtraConfigColumn = object;
++type PgColumn<T = object, U = object, V = object> = object & { _: T };
++type PgSequenceOptions = object;
++// Stub: singlestore-core type replaced to avoid TypeScript 6.0 type-check errors in singlestore-core declarations
++type SingleStoreColumn<T = object, U = object, V = object> = object & { _: T };
+ import type { SQL } from "./sql/sql.js";
+-import type { SQLiteColumn } from "./sqlite-core/index.js";
++// Stub: sqlite-core import replaced to avoid TypeScript 6.0 type errors in sqlite-core declarations
++type SQLiteColumn<T = object, U = object, V = object> = object & { _: T };
+ import type { Assume, Simplify } from "./utils.js";
+ export type ColumnDataType = 'string' | 'number' | 'boolean' | 'array' | 'json' | 'date' | 'bigint' | 'custom' | 'buffer';
+ export type Dialect = 'pg' | 'mysql' | 'sqlite' | 'singlestore' | 'common';
+diff --git a/mysql-core/query-builders/delete.d.cts b/mysql-core/query-builders/delete.d.cts
+index 20e968b447bd314a4059d430e89c3a7d73c7ed1d..53e1d91aa5df3e4c2add7a1a24b10ee3e31440a2 100644
+--- a/mysql-core/query-builders/delete.d.cts
++++ b/mysql-core/query-builders/delete.d.cts
+@@ -73,6 +73,8 @@ export declare class MySqlDeleteBase<TTable extends MySqlTable, TQueryResult ext
+     orderBy(builder: (deleteTable: TTable) => ValueOrArray<MySqlColumn | SQL | SQL.Aliased>): MySqlDeleteWithout<this, TDynamic, 'orderBy'>;
+     orderBy(...columns: (MySqlColumn | SQL | SQL.Aliased)[]): MySqlDeleteWithout<this, TDynamic, 'orderBy'>;
+     limit(limit: number | Placeholder): MySqlDeleteWithout<this, TDynamic, 'limit'>;
++    /** @internal Satisfies SQLWrapper.getSQL() — TypeScript 6.0 strict implements */
++    getSQL(): SQL;
+     toSQL(): Query;
+     prepare(): MySqlDeletePrepare<this>;
+     execute: ReturnType<this['prepare']>['execute'];
+diff --git a/mysql-core/query-builders/delete.d.ts b/mysql-core/query-builders/delete.d.ts
+index 9149eb1118e376a0174f8d003f4dde4d0d4d9b26..06f1a2aeaf2b64cbb8cbdb87c93e1d22c73edd9c 100644
+--- a/mysql-core/query-builders/delete.d.ts
++++ b/mysql-core/query-builders/delete.d.ts
+@@ -73,6 +73,8 @@ export declare class MySqlDeleteBase<TTable extends MySqlTable, TQueryResult ext
+     orderBy(builder: (deleteTable: TTable) => ValueOrArray<MySqlColumn | SQL | SQL.Aliased>): MySqlDeleteWithout<this, TDynamic, 'orderBy'>;
+     orderBy(...columns: (MySqlColumn | SQL | SQL.Aliased)[]): MySqlDeleteWithout<this, TDynamic, 'orderBy'>;
+     limit(limit: number | Placeholder): MySqlDeleteWithout<this, TDynamic, 'limit'>;
++    /** @internal Satisfies SQLWrapper.getSQL() — TypeScript 6.0 strict implements */
++    getSQL(): SQL;
+     toSQL(): Query;
+     prepare(): MySqlDeletePrepare<this>;
+     execute: ReturnType<this['prepare']>['execute'];
+diff --git a/mysql-core/query-builders/select.d.cts b/mysql-core/query-builders/select.d.cts
+index b4d46e79666af11417a52ce7f26572a3de6e00df..3a69f6e4bc8c2ba14b96c2f5c8f01e75c99e74a1 100644
+--- a/mysql-core/query-builders/select.d.cts
++++ b/mysql-core/query-builders/select.d.cts
+@@ -560,6 +560,8 @@ export interface MySqlSelectBase<TTableName extends string | undefined, TSelecti
+ }
+ export declare class MySqlSelectBase<TTableName extends string | undefined, TSelection, TSelectMode extends SelectMode, TPreparedQueryHKT extends PreparedQueryHKTBase, TNullabilityMap extends Record<string, JoinNullability> = TTableName extends string ? Record<TTableName, 'not-null'> : {}, TDynamic extends boolean = false, TExcludedMethods extends string = never, TResult = SelectResult<TSelection, TSelectMode, TNullabilityMap>[], TSelectedFields = BuildSubquerySelection<TSelection, TNullabilityMap>> extends MySqlSelectQueryBuilderBase<MySqlSelectHKT, TTableName, TSelection, TSelectMode, TPreparedQueryHKT, TNullabilityMap, TDynamic, TExcludedMethods, TResult, TSelectedFields> {
+     static readonly [entityKind]: string;
++    /** @internal Satisfies TypedQueryBuilder.getSQL() — TypeScript 6.0 strict abstract */
++    getSQL(): SQL;
+     prepare(): MySqlSelectPrepare<this>;
+     execute: ReturnType<this["prepare"]>["execute"];
+     private createIterator;
+diff --git a/mysql-core/query-builders/select.d.ts b/mysql-core/query-builders/select.d.ts
+index f07cfbd14b8f8879afb4ca1d75fbe2a21ead5e5d..f94c21ae4caeab43e3699af0da2bba3d3b55c5a1 100644
+--- a/mysql-core/query-builders/select.d.ts
++++ b/mysql-core/query-builders/select.d.ts
+@@ -560,6 +560,8 @@ export interface MySqlSelectBase<TTableName extends string | undefined, TSelecti
+ }
+ export declare class MySqlSelectBase<TTableName extends string | undefined, TSelection, TSelectMode extends SelectMode, TPreparedQueryHKT extends PreparedQueryHKTBase, TNullabilityMap extends Record<string, JoinNullability> = TTableName extends string ? Record<TTableName, 'not-null'> : {}, TDynamic extends boolean = false, TExcludedMethods extends string = never, TResult = SelectResult<TSelection, TSelectMode, TNullabilityMap>[], TSelectedFields = BuildSubquerySelection<TSelection, TNullabilityMap>> extends MySqlSelectQueryBuilderBase<MySqlSelectHKT, TTableName, TSelection, TSelectMode, TPreparedQueryHKT, TNullabilityMap, TDynamic, TExcludedMethods, TResult, TSelectedFields> {
+     static readonly [entityKind]: string;
++    /** @internal Satisfies TypedQueryBuilder.getSQL() — TypeScript 6.0 strict abstract */
++    getSQL(): SQL;
+     prepare(): MySqlSelectPrepare<this>;
+     execute: ReturnType<this["prepare"]>["execute"];
+     private createIterator;
+diff --git a/mysql-core/query-builders/select.types.d.cts b/mysql-core/query-builders/select.types.d.cts
+index 9b53be73f255caedaefaaebfb70eebd8c6c06228..168bdd64e5cc66427daab1a7b187cc9c80f84983 100644
+--- a/mysql-core/query-builders/select.types.d.cts
++++ b/mysql-core/query-builders/select.types.d.cts
+@@ -99,7 +99,8 @@ export interface MySqlSelectQueryBuilderHKT extends MySqlSelectHKTBase {
+ export interface MySqlSelectHKT extends MySqlSelectHKTBase {
+     _type: MySqlSelectBase<this['tableName'], Assume<this['selection'], ColumnsSelection>, this['selectMode'], Assume<this['preparedQueryHKT'], PreparedQueryHKTBase>, Assume<this['nullabilityMap'], Record<string, JoinNullability>>, this['dynamic'], this['excludedMethods'], Assume<this['result'], any[]>, Assume<this['selectedFields'], ColumnsSelection>>;
+ }
+-export type MySqlSetOperatorExcludedMethods = 'where' | 'having' | 'groupBy' | 'session' | 'leftJoin' | 'rightJoin' | 'innerJoin' | 'fullJoin' | 'for';
++// 'session' removed — it's a private member, not a public key of MySqlSelectBase
++export type MySqlSetOperatorExcludedMethods = 'where' | 'having' | 'groupBy' | 'leftJoin' | 'rightJoin' | 'innerJoin' | 'fullJoin' | 'for';
+ export type MySqlSelectWithout<T extends AnyMySqlSelectQueryBuilder, TDynamic extends boolean, K extends keyof T & string, TResetExcluded extends boolean = false> = TDynamic extends true ? T : Omit<MySqlSelectKind<T['_']['hkt'], T['_']['tableName'], T['_']['selection'], T['_']['selectMode'], T['_']['preparedQueryHKT'], T['_']['nullabilityMap'], TDynamic, TResetExcluded extends true ? K : T['_']['excludedMethods'] | K, T['_']['result'], T['_']['selectedFields']>, TResetExcluded extends true ? K : T['_']['excludedMethods'] | K>;
+ export type MySqlSelectPrepare<T extends AnyMySqlSelect> = PreparedQueryKind<T['_']['preparedQueryHKT'], MySqlPreparedQueryConfig & {
+     execute: T['_']['result'];
+diff --git a/mysql-core/query-builders/select.types.d.ts b/mysql-core/query-builders/select.types.d.ts
+index 6e1b1b9302f75f16412ce4ce23399274ff985d6a..28b58711d97d13c1a54b501b5c90514cce8dfdf8 100644
+--- a/mysql-core/query-builders/select.types.d.ts
++++ b/mysql-core/query-builders/select.types.d.ts
+@@ -99,7 +99,8 @@ export interface MySqlSelectQueryBuilderHKT extends MySqlSelectHKTBase {
+ export interface MySqlSelectHKT extends MySqlSelectHKTBase {
+     _type: MySqlSelectBase<this['tableName'], Assume<this['selection'], ColumnsSelection>, this['selectMode'], Assume<this['preparedQueryHKT'], PreparedQueryHKTBase>, Assume<this['nullabilityMap'], Record<string, JoinNullability>>, this['dynamic'], this['excludedMethods'], Assume<this['result'], any[]>, Assume<this['selectedFields'], ColumnsSelection>>;
+ }
+-export type MySqlSetOperatorExcludedMethods = 'where' | 'having' | 'groupBy' | 'session' | 'leftJoin' | 'rightJoin' | 'innerJoin' | 'fullJoin' | 'for';
++// 'session' removed — it's a private member, not a public key of MySqlSelectBase
++export type MySqlSetOperatorExcludedMethods = 'where' | 'having' | 'groupBy' | 'leftJoin' | 'rightJoin' | 'innerJoin' | 'fullJoin' | 'for';
+ export type MySqlSelectWithout<T extends AnyMySqlSelectQueryBuilder, TDynamic extends boolean, K extends keyof T & string, TResetExcluded extends boolean = false> = TDynamic extends true ? T : Omit<MySqlSelectKind<T['_']['hkt'], T['_']['tableName'], T['_']['selection'], T['_']['selectMode'], T['_']['preparedQueryHKT'], T['_']['nullabilityMap'], TDynamic, TResetExcluded extends true ? K : T['_']['excludedMethods'] | K, T['_']['result'], T['_']['selectedFields']>, TResetExcluded extends true ? K : T['_']['excludedMethods'] | K>;
+ export type MySqlSelectPrepare<T extends AnyMySqlSelect> = PreparedQueryKind<T['_']['preparedQueryHKT'], MySqlPreparedQueryConfig & {
+     execute: T['_']['result'];
