@@ -26,6 +26,7 @@ import { GetV1UserFollowingRequest } from './types/endpoints/v1/user/following'
 import { PostV1UserFollowAddRequest } from './types/endpoints/v1/user/follow/add'
 import { PostV1UserFollowDeleteRequest } from './types/endpoints/v1/user/follow/delete'
 import { GetV1UserIllustsRequest } from './types/endpoints/v1/user/illusts'
+import { GetV1UserNovelsRequest } from './types/endpoints/v1/user/novels'
 
 /**
  * Search target
@@ -450,10 +451,19 @@ export type UserFollowAddOptions = SomeRequired<
 export type UserFollowDeleteOptions =
   SnakeToCamel<PostV1UserFollowDeleteRequest>
 
+
 /**
  * Options for getting a user's illusts
  */
 export type UserIllustsOptions = SomeRequired<
   SnakeToCamel<GetV1UserIllustsRequest>,
+  'userId'
+>
+
+/**
+ * Options for getting a user's novels
+ */
+export type UserNovelsOptions = SomeRequired<
+  SnakeToCamel<GetV1UserNovelsRequest>,
   'userId'
 >
