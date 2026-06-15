@@ -63,7 +63,12 @@ jobs:
             VERSION="${RAW#v}"
           fi
           echo "Using version: $VERSION"
-          (cd packages/core && npm version --no-git-tag-version "$VERSION")
+          # Skip npm version when VERSION is 0.0.0: package.json is already at
+          # 0.0.0 in the repository and npm errors with "Version not changed"
+          # when setting the same version.
+          if [[ "$VERSION" != "0.0.0" ]]; then
+            (cd packages/core && npm version --no-git-tag-version "$VERSION")
+          fi
 
       - name: 📄 Generate API documentation
         run: pnpm --filter @book000/pixivts run generate-docs
