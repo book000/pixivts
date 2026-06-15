@@ -35,12 +35,14 @@ describe('ok()', () => {
   it('andThen chains to Ok', () => {
     const r = ok(5).andThen((x) => ok(x + 1))
     expect(r.isOk).toBe(true)
+    if (!r.isOk) return
     expect(r.value).toBe(6)
   })
 
   it('andThen chains to Err', () => {
     const r = ok(5).andThen<number, string>(() => err('oops'))
     expect(r.isErr).toBe(true)
+    if (!r.isErr) return
     expect(r.error).toBe('oops')
   })
 
@@ -104,6 +106,7 @@ describe('ResultAsync.fromPromise()', () => {
   it('wraps a resolved promise into Ok', async () => {
     const r = await ResultAsync.fromPromise(Promise.resolve(7), String)
     expect(r.isOk).toBe(true)
+    if (!r.isOk) return
     expect(r.value).toBe(7)
   })
 
@@ -113,6 +116,7 @@ describe('ResultAsync.fromPromise()', () => {
       (e: unknown) => (e instanceof Error ? e.message : String(e))
     )
     expect(r.isErr).toBe(true)
+    if (!r.isErr) return
     expect(r.error).toBe('oops')
   })
 })
@@ -121,12 +125,14 @@ describe('ResultAsync.fromResult()', () => {
   it('wraps an Ok result', async () => {
     const r = await ResultAsync.fromResult(ok(3))
     expect(r.isOk).toBe(true)
+    if (!r.isOk) return
     expect(r.value).toBe(3)
   })
 
   it('wraps an Err result', async () => {
     const r = await ResultAsync.fromResult(err('e'))
     expect(r.isErr).toBe(true)
+    if (!r.isErr) return
     expect(r.error).toBe('e')
   })
 })
@@ -135,6 +141,7 @@ describe('ResultAsync.map()', () => {
   it('transforms the success value', async () => {
     const r = await ResultAsync.fromResult(ok(4)).map((x) => x * 2)
     expect(r.isOk).toBe(true)
+    if (!r.isOk) return
     expect(r.value).toBe(8)
   })
 
@@ -155,6 +162,7 @@ describe('ResultAsync.mapErr()', () => {
       e.toUpperCase()
     )
     expect(r.isErr).toBe(true)
+    if (!r.isErr) return
     expect(r.error).toBe('X')
   })
 
@@ -175,6 +183,7 @@ describe('ResultAsync.andThen()', () => {
       ResultAsync.fromResult(ok(x + 10))
     )
     expect(r.isOk).toBe(true)
+    if (!r.isOk) return
     expect(r.value).toBe(11)
   })
 
@@ -186,6 +195,7 @@ describe('ResultAsync.andThen()', () => {
     })
     expect(called).toBe(false)
     expect(r.isErr).toBe(true)
+    if (!r.isErr) return
     expect(r.error).toBe('e')
   })
 
@@ -194,6 +204,7 @@ describe('ResultAsync.andThen()', () => {
       ResultAsync.fromResult(err('chain-err'))
     )
     expect(r.isErr).toBe(true)
+    if (!r.isErr) return
     expect(r.error).toBe('chain-err')
   })
 })

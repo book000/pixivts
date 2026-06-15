@@ -100,7 +100,7 @@ describe('createRecorderBundle()', () => {
 
   it('close() calls the provided close function exactly once', async () => {
     const db = drizzle.mock({ schema, mode: 'default' })
-    const close = vi.fn<[], Promise<void>>().mockResolvedValue(undefined)
+    const close = vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
     const bundle = createRecorderBundle(db as never, close)
 
     await bundle.close()
