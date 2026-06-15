@@ -26,7 +26,7 @@ export const PixivApiErrorBodySchema = z.object({
     userMessage: z.string(),
     message: z.string(),
     reason: z.string(),
-    userMessageDetails: z.record(z.unknown()).optional(),
+    userMessageDetails: z.record(z.string(), z.unknown()).optional(),
   }),
 })
 
