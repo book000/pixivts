@@ -520,6 +520,7 @@ describe('client.userId', () => {
       )
     )
     const client = await PixivClient.of('test-refresh-token')
+    expect(() => client.userId).toThrow(TypeError)
     expect(() => client.userId).toThrow('Invalid userId')
   })
 })

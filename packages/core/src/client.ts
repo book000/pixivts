@@ -77,7 +77,7 @@ export class PixivClient {
   get userId(): number {
     const id = Number(this.#auth.userId)
     if (Number.isNaN(id)) {
-      throw new Error(`Invalid userId: "${this.#auth.userId}"`)
+      throw new TypeError(`Invalid userId: "${this.#auth.userId}"`)
     }
     return id
   }
