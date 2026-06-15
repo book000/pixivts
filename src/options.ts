@@ -451,7 +451,6 @@ export type UserFollowAddOptions = SomeRequired<
 export type UserFollowDeleteOptions =
   SnakeToCamel<PostV1UserFollowDeleteRequest>
 
-
 /**
  * Options for getting a user's illusts
  */

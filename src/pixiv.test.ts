@@ -574,7 +574,6 @@ describe('pixiv', () => {
     expect(() => check.throwIfResponseFailed(userNovels.data)).not.toThrow()
   })
 
-
   it('userBookmarksIllust', async () => {
     const userBookmarksIllust = await pixiv.userBookmarksIllust({
       userId: 16_568_776,
