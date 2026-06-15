@@ -23,6 +23,7 @@ import { GetV1UserBookmarksNovelCheck } from './types/endpoints/v1/user/bookmark
 import { GetV1UserDetailCheck } from './types/endpoints/v1/user/detail'
 import { GetV1UserFollowingCheck } from './types/endpoints/v1/user/following'
 import { GetV1UserIllustsCheck } from './types/endpoints/v1/user/illusts'
+import { GetV1UserNovelsCheck } from './types/endpoints/v1/user/novels'
 import { GetV2IllustRelatedCheck } from './types/endpoints/v2/illust/related'
 import { GetV2NovelDetailCheck } from './types/endpoints/v2/novel/detail'
 import { GetV2NovelSeriesCheck } from './types/endpoints/v2/novel/series'
@@ -558,6 +559,19 @@ describe('pixiv', () => {
 
     const check = new GetV1UserIllustsCheck()
     expect(() => check.throwIfResponseFailed(userIllusts.data)).not.toThrow()
+  })
+
+  it('userNovels', async () => {
+    const userNovels = await pixiv.userNovels({
+      userId: 16_568_776,
+    })
+    expect(userNovels.status).toBe(200)
+    expect(userNovels.data).toBeDefined()
+    expect(userNovels.data.user).toBeDefined()
+    expect(userNovels.data.novels).toBeDefined()
+
+    const check = new GetV1UserNovelsCheck()
+    expect(() => check.throwIfResponseFailed(userNovels.data)).not.toThrow()
   })
 
   it('userBookmarksIllust', async () => {
