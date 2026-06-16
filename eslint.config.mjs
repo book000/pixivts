@@ -11,19 +11,12 @@ export default [
     ignores: ['**/dist/**', '**/coverage/**', 'docs-out/**'],
   },
   {
-    // Use projectService to auto-discover each package's tsconfig.json.
-    // project: false cancels @book000/eslint-config's project setting so the
-    // two options don't conflict. Files outside any tsconfig fall back to the
-    // default project (no type-aware rules, syntax rules still apply).
     files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
     languageOptions: {
       parserOptions: {
+        // project: false overrides @book000/eslint-config's project setting.
         project: false,
         projectService: {
-          // Files outside any discovered tsconfig fall back to the default project.
-          // Test files are covered by packages/*/tests/tsconfig.json (auto-discovered
-          // by projectService) and no longer need to be listed here.
-          // Glob patterns (via minimatch) are supported.
           allowDefaultProject: [
             'packages/*/*.config.ts',
             '*.mjs',
