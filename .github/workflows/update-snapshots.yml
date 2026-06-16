@@ -90,7 +90,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: update-snapshots
-          base: master
+          base: develop
           commit-message: 'test: update snapshots'
           title: 'test: update snapshots'
           body: 'This PR updates vitest snapshots generated against the real pixiv API and MySQL.'
