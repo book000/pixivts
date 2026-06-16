@@ -25,26 +25,143 @@ jobs:
     steps:
       - name: 🛎 Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: 📬 Create or update Release PR
         run: |
-          TITLE="chore: release develop → master"
+          set -euo pipefail
 
-          PR_BODY='## Release PR
+          # --- Find last stable tag reachable from master ---
+          git fetch origin master --no-tags -q
+          LAST_STABLE=$(git describe --tags --match "v[0-9]*" --exclude "*-*" --abbrev=0 origin/master 2>/dev/null || echo "")
+          if [ -z "$LAST_STABLE" ]; then
+            echo "No stable tag found; skipping Release PR creation."
+            exit 0
+          fi
+          CURRENT_VERSION="${LAST_STABLE#v}"
 
-          This PR merges `develop` into `master` to publish a new stable release.
+          # --- Commits on develop not yet in master ---
+          COMMITS=$(git log "${LAST_STABLE}..HEAD" --format="%s" --no-merges 2>/dev/null || echo "")
+          if [ -z "$COMMITS" ]; then
+            echo "No new commits since ${LAST_STABLE}; skipping."
+            exit 0
+          fi
 
-          **⚠️ Merge method: merge commit (--no-ff) required.**
-          Do NOT squash-merge this PR. semantic-release uses full commit history
-          to resolve the addChannel flow and promote the beta tag to latest.
+          # --- Determine bump type from conventional commits ---
+          HAS_BREAK=0
+          HAS_FEAT=0
+          while IFS= read -r line; do
+            if echo "$line" | grep -qE "^[a-z]+(\([^)]*\))?!:|^BREAKING CHANGE:"; then
+              HAS_BREAK=1
+            elif echo "$line" | grep -qE "^feat"; then
+              HAS_FEAT=1
+            fi
+          done <<< "$(git log "${LAST_STABLE}..HEAD" --format="%s%n%b" --no-merges 2>/dev/null || echo "")"
 
-          ---
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+          if [ "$HAS_BREAK" -eq 1 ]; then
+            BUMP="major"; NEXT="$((MAJOR+1)).0.0"
+          elif [ "$HAS_FEAT" -eq 1 ]; then
+            BUMP="minor"; NEXT="${MAJOR}.$((MINOR+1)).0"
+          else
+            BUMP="patch"; NEXT="${MAJOR}.${MINOR}.$((PATCH+1))"
+          fi
 
-          After merging, the Release workflow will:
-          1. Publish `@latest` to npm
-          2. Create a GitHub Release with the changelog
-          3. Deploy updated API documentation to GitHub Pages'
+          REPO="${GITHUB_REPOSITORY}"
 
+          # --- Parse commits into changelog sections ---
+          BREAK_LINES=""
+          FEAT_LINES=""
+          FIX_LINES=""
+          OTHER_LINES=""
+
+          while IFS= read -r msg; do
+            # Convert "(#NNN)" inline to a markdown link
+            desc=$(echo "$msg" | sed 's/^[a-z!]*([^)]*): //;s/^[a-z!]*!*: //')
+            desc=$(echo "$desc" | sed "s|(#\([0-9]*\))|([#\1](https://github.com/${REPO}/pull/\1))|g")
+
+            if echo "$msg" | grep -qE "^[a-z]+(\([^)]*\))?!:"; then
+              BREAK_LINES="${BREAK_LINES}- ${desc}\n"
+            elif echo "$msg" | grep -qE "^feat"; then
+              FEAT_LINES="${FEAT_LINES}- ${desc}\n"
+            elif echo "$msg" | grep -qE "^fix"; then
+              FIX_LINES="${FIX_LINES}- ${desc}\n"
+            else
+              OTHER_LINES="${OTHER_LINES}- ${desc}\n"
+            fi
+          done <<< "$COMMITS"
+
+          # --- Beta tags published for this upcoming version ---
+          BETA_TAGS=$(git tag -l "v${NEXT}-beta.*" --sort=version:refname 2>/dev/null || echo "")
+
+          # --- Build PR body to a temp file (avoids quoting pitfalls) ---
+          {
+            echo "## 📦 Release v${NEXT}"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| **Bump type** | \`${BUMP}\` |"
+            echo "| \`@book000/pixivts\` | \`${CURRENT_VERSION}\` → \`${NEXT}\` |"
+            echo "| \`@book000/pixivts-db-mysql\` | \`${CURRENT_VERSION}\` → \`${NEXT}\` |"
+            echo "| **npm dist-tag** | \`@beta\` → \`@latest\` |"
+            echo ""
+            echo "[📋 Full diff: ${LAST_STABLE}...develop](https://github.com/${REPO}/compare/${LAST_STABLE}...develop)"
+            echo ""
+            echo "---"
+            echo ""
+
+            if [ -n "$BREAK_LINES" ]; then
+              echo "### 💥 BREAKING CHANGES"
+              echo ""
+              printf '%b' "$BREAK_LINES"
+              echo ""
+            fi
+            if [ -n "$FEAT_LINES" ]; then
+              echo "### ✨ Features"
+              echo ""
+              printf '%b' "$FEAT_LINES"
+              echo ""
+            fi
+            if [ -n "$FIX_LINES" ]; then
+              echo "### 🐛 Bug Fixes"
+              echo ""
+              printf '%b' "$FIX_LINES"
+              echo ""
+            fi
+            if [ -n "$OTHER_LINES" ]; then
+              echo "### 🔧 Other Changes"
+              echo ""
+              printf '%b' "$OTHER_LINES"
+              echo ""
+            fi
+
+            if [ -n "$BETA_TAGS" ]; then
+              echo "### 🧪 Beta releases tested"
+              echo ""
+              echo "| Tag |"
+              echo "|---|"
+              # Show at most the last 5 beta tags
+              echo "$BETA_TAGS" | tail -5 | while IFS= read -r tag; do
+                echo "| \`${tag}\` |"
+              done
+              echo ""
+            fi
+
+            echo "---"
+            echo ""
+            echo "> ⚠️ **Merge method: merge commit (--no-ff) required.**"
+            echo "> Do NOT squash-merge this PR. semantic-release uses full commit history"
+            echo "> to promote \`@beta\` → \`@latest\`."
+            echo ""
+            echo "After merging, the Release workflow will:"
+            echo "1. Publish \`@book000/pixivts@${NEXT}\` and \`@book000/pixivts-db-mysql@${NEXT}\` to npm \`@latest\`"
+            echo "2. Create a GitHub Release with the full changelog"
+            echo "3. Deploy updated API documentation to GitHub Pages"
+          } > /tmp/pr-body.md
+
+          TITLE="chore: release v${NEXT} (develop → master)"
           EXISTING_PR=$(gh pr list --base master --head develop --state open --json number --jq '.[0].number // empty' 2>/dev/null || echo "")
 
           if [ -z "$EXISTING_PR" ]; then
@@ -52,11 +169,11 @@ jobs:
               --base master \
               --head develop \
               --title "$TITLE" \
-              --body "$PR_BODY"
+              --body-file /tmp/pr-body.md
           else
             gh pr edit "$EXISTING_PR" \
               --title "$TITLE" \
-              --body "$PR_BODY"
+              --body-file /tmp/pr-body.md
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
