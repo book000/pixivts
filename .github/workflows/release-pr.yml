@@ -42,9 +42,8 @@ jobs:
           fi
           CURRENT_VERSION="${LAST_STABLE#v}"
 
-          # --- Commits on develop not yet in master ---
-          COMMITS=$(git log "${LAST_STABLE}..HEAD" --format="%s" --no-merges 2>/dev/null || echo "")
-          if [ -z "$COMMITS" ]; then
+          # --- Check for commits on develop not yet in master ---
+          if ! git log "${LAST_STABLE}..HEAD" --format="%H" --no-merges -n 1 2>/dev/null | grep -q .; then
             echo "No new commits since ${LAST_STABLE}; skipping."
             exit 0
           fi
@@ -104,8 +103,9 @@ jobs:
             BUMP="patch"; NEXT="${MAJOR}.${MINOR}.$((PATCH+1))"
           fi
 
-          # --- Last 5 beta tags across all versions (not filtered to NEXT) ---
-          BETA_TAGS=$(git tag -l "v*-beta.*" --sort=version:refname 2>/dev/null | tail -5 || echo "")
+          # --- Most recently created 5 beta tags (sorted by creation date, not version) ---
+          # Using -creatordate so backfilled or hotfix betas don't displace newer ones.
+          BETA_TAGS=$(git tag -l "v*-beta.*" --sort=-creatordate 2>/dev/null | head -5 || echo "")
 
           # --- Build PR body to a temp file (avoids quoting pitfalls) ---
           {
@@ -153,8 +153,7 @@ jobs:
               echo ""
               echo "| Tag |"
               echo "|---|"
-              # Show at most the last 5 beta tags
-              echo "$BETA_TAGS" | tail -5 | while IFS= read -r tag; do
+              echo "$BETA_TAGS" | while IFS= read -r tag; do
                 echo "| \`${tag}\` |"
               done
               echo ""
