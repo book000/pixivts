@@ -186,4 +186,4 @@ jobs:
               --body-file /tmp/pr-body.md
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
