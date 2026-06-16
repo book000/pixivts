@@ -49,16 +49,51 @@ jobs:
             exit 0
           fi
 
-          # --- Determine bump type from conventional commits ---
+          REPO="${GITHUB_REPOSITORY}"
+
+          # --- Parse commits: bump type + changelog sections in one pass ---
+          # Process each commit individually to access both subject and body,
+          # so that BREAKING CHANGE footers in the body are reflected in the
+          # changelog (not just in the version bump calculation).
           HAS_BREAK=0
           HAS_FEAT=0
-          while IFS= read -r line; do
-            if echo "$line" | grep -qE "^[a-z]+(\([^)]*\))?!:|^BREAKING CHANGE:"; then
-              HAS_BREAK=1
-            elif echo "$line" | grep -qE "^feat"; then
+          BREAK_LINES=""
+          FEAT_LINES=""
+          FIX_LINES=""
+          OTHER_LINES=""
+
+          while IFS= read -r hash; do
+            subject=$(git log -1 --format="%s" "$hash")
+            body=$(git log -1 --format="%b" "$hash")
+
+            IS_BREAKING=0
+            # Subject-level breaking: type(scope)!: or type!:
+            if echo "$subject" | grep -qE "^[a-z]+(\([^)]*\))?!:"; then
+              IS_BREAKING=1; HAS_BREAK=1
+            fi
+            # Body-level breaking: BREAKING CHANGE: footer
+            if [ -n "$body" ] && echo "$body" | grep -qE "^BREAKING CHANGE:"; then
+              IS_BREAKING=1; HAS_BREAK=1
+            fi
+            if echo "$subject" | grep -qE "^feat"; then
               HAS_FEAT=1
             fi
-          done <<< "$(git log "${LAST_STABLE}..HEAD" --format="%s%n%b" --no-merges 2>/dev/null || echo "")"
+
+            # Strip conventional-commit prefix (type, optional scope, optional !)
+            desc=$(echo "$subject" | sed -E 's/^[a-z]+(\([^)]*\))?!?: //')
+            # Convert inline "(#NNN)" to a markdown link
+            desc=$(echo "$desc" | sed "s|(#\([0-9]*\))|([#\1](https://github.com/${REPO}/pull/\1))|g")
+
+            if [ "$IS_BREAKING" -eq 1 ]; then
+              BREAK_LINES="${BREAK_LINES}- ${desc}\n"
+            elif echo "$subject" | grep -qE "^feat"; then
+              FEAT_LINES="${FEAT_LINES}- ${desc}\n"
+            elif echo "$subject" | grep -qE "^fix"; then
+              FIX_LINES="${FIX_LINES}- ${desc}\n"
+            else
+              OTHER_LINES="${OTHER_LINES}- ${desc}\n"
+            fi
+          done < <(git log "${LAST_STABLE}..HEAD" --format="%H" --no-merges 2>/dev/null || echo "")
 
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
           if [ "$HAS_BREAK" -eq 1 ]; then
@@ -69,32 +104,8 @@ jobs:
             BUMP="patch"; NEXT="${MAJOR}.${MINOR}.$((PATCH+1))"
           fi
 
-          REPO="${GITHUB_REPOSITORY}"
-
-          # --- Parse commits into changelog sections ---
-          BREAK_LINES=""
-          FEAT_LINES=""
-          FIX_LINES=""
-          OTHER_LINES=""
-
-          while IFS= read -r msg; do
-            # Convert "(#NNN)" inline to a markdown link
-            desc=$(echo "$msg" | sed 's/^[a-z!]*([^)]*): //;s/^[a-z!]*!*: //')
-            desc=$(echo "$desc" | sed "s|(#\([0-9]*\))|([#\1](https://github.com/${REPO}/pull/\1))|g")
-
-            if echo "$msg" | grep -qE "^[a-z]+(\([^)]*\))?!:"; then
-              BREAK_LINES="${BREAK_LINES}- ${desc}\n"
-            elif echo "$msg" | grep -qE "^feat"; then
-              FEAT_LINES="${FEAT_LINES}- ${desc}\n"
-            elif echo "$msg" | grep -qE "^fix"; then
-              FIX_LINES="${FIX_LINES}- ${desc}\n"
-            else
-              OTHER_LINES="${OTHER_LINES}- ${desc}\n"
-            fi
-          done <<< "$COMMITS"
-
-          # --- Beta tags published for this upcoming version ---
-          BETA_TAGS=$(git tag -l "v${NEXT}-beta.*" --sort=version:refname 2>/dev/null || echo "")
+          # --- Last 5 beta tags across all versions (not filtered to NEXT) ---
+          BETA_TAGS=$(git tag -l "v*-beta.*" --sort=version:refname 2>/dev/null | tail -5 || echo "")
 
           # --- Build PR body to a temp file (avoids quoting pitfalls) ---
           {
