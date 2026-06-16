@@ -2,7 +2,7 @@
   "branches": [
     "master",
     "main",
-    { "name": "develop", "prerelease": "beta" }
+    { "name": "develop", "prerelease": "beta", "channel": "beta" }
   ],
   "tagFormat": "v${version}",
   "plugins": [
