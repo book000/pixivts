@@ -25,7 +25,7 @@
     }],
     ["@semantic-release/release-notes-generator", { "preset": "conventionalcommits" }],
     ["@semantic-release/exec", {
-      "prepareCmd": "npm version --no-git-tag-version ${nextRelease.version} --prefix packages/core && npm version --no-git-tag-version ${nextRelease.version} --prefix packages/db-mysql",
+      "prepareCmd": "npm --prefix packages/core version --no-git-tag-version ${nextRelease.version} && npm --prefix packages/db-mysql version --no-git-tag-version ${nextRelease.version}",
       "publishCmd": "DIST_TAG=\"${nextRelease.channel || 'latest'}\" && pnpm --filter @book000/pixivts publish --access public --no-git-checks --ignore-scripts --tag \"$DIST_TAG\" && pnpm --filter @book000/pixivts-db-mysql publish --access public --no-git-checks --ignore-scripts --tag \"$DIST_TAG\""
     }],
     ["@semantic-release/github", { "successComment": false, "failComment": false }]

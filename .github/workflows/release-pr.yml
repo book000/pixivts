@@ -179,11 +179,13 @@ jobs:
               --base master \
               --head develop \
               --title "$TITLE" \
-              --body-file /tmp/pr-body.md
+              --body-file /tmp/pr-body.md \
+              --reviewer book000
           else
             gh pr edit "$EXISTING_PR" \
               --title "$TITLE" \
-              --body-file /tmp/pr-body.md
+              --body-file /tmp/pr-body.md \
+              --add-reviewer book000
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
