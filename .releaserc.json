@@ -1,0 +1,33 @@
+{
+  "branches": [
+    "master",
+    "main",
+    { "name": "develop", "prerelease": "beta", "channel": "beta" }
+  ],
+  "tagFormat": "v${version}",
+  "plugins": [
+    ["@semantic-release/commit-analyzer", {
+      "preset": "conventionalcommits",
+      "releaseRules": [
+        { "type": "release",  "release": "major" },
+        { "type": "feat",     "release": "minor" },
+        { "type": "fix",      "release": "patch" },
+        { "type": "docs",     "release": "patch" },
+        { "type": "chore",    "release": "patch" },
+        { "type": "perf",     "release": "patch" },
+        { "type": "refactor", "release": "patch" },
+        { "type": "build",    "release": "patch" },
+        { "type": "ci",       "release": "patch" },
+        { "type": "revert",   "release": "patch" },
+        { "type": "style",    "release": "patch" },
+        { "type": "test",     "release": "patch" }
+      ]
+    }],
+    ["@semantic-release/release-notes-generator", { "preset": "conventionalcommits" }],
+    ["@semantic-release/exec", {
+      "prepareCmd": "npm --prefix packages/core version --no-git-tag-version ${nextRelease.version} && npm --prefix packages/db-mysql version --no-git-tag-version ${nextRelease.version}",
+      "publishCmd": "DIST_TAG=\"${nextRelease.channel || 'latest'}\" && pnpm --filter @book000/pixivts publish --access public --no-git-checks --ignore-scripts --tag \"$DIST_TAG\" && pnpm --filter @book000/pixivts-db-mysql publish --access public --no-git-checks --ignore-scripts --tag \"$DIST_TAG\""
+    }],
+    ["@semantic-release/github", { "successComment": false, "failComment": false }]
+  ]
+}

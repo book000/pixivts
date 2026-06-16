@@ -7,6 +7,7 @@ on:
     branches:
       - main
       - master
+      - develop
   # Consolidate PR events to pull_request_target only (using both pull_request and
   # pull_request_target simultaneously can cause finished-node-ci's skipped result
   # to incorrectly pass required checks)
@@ -17,6 +18,7 @@ on:
     branches:
       - main
       - master
+      - develop
     types:
       - opened
       - synchronize

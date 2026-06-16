@@ -1,0 +1,191 @@
+# Creates or updates a Release PR (develop → master) on every push to develop.
+# The PR must be merged with a merge commit (--no-ff) so that semantic-release
+# can resolve the addChannel flow correctly when promoting beta → latest.
+
+name: Release PR
+
+on:
+  push:
+    branches:
+      - develop
+
+concurrency:
+  group: release-pr
+  cancel-in-progress: true
+
+jobs:
+  release-pr:
+    name: Create or update Release PR
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: 🛎 Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: 📬 Create or update Release PR
+        run: |
+          set -euo pipefail
+
+          # --- Find last stable tag reachable from master ---
+          git fetch origin master --no-tags -q
+          LAST_STABLE=$(git describe --tags --match "v[0-9]*" --exclude "*-*" --abbrev=0 origin/master 2>/dev/null || echo "")
+          if [ -z "$LAST_STABLE" ]; then
+            echo "No stable tag found; skipping Release PR creation."
+            exit 0
+          fi
+          CURRENT_VERSION="${LAST_STABLE#v}"
+
+          # --- Check for commits on develop not yet in master ---
+          if ! git log "${LAST_STABLE}..HEAD" --format="%H" --no-merges -n 1 2>/dev/null | grep -q .; then
+            echo "No new commits since ${LAST_STABLE}; skipping."
+            exit 0
+          fi
+
+          REPO="${GITHUB_REPOSITORY}"
+
+          # --- Parse commits: bump type + changelog sections in one pass ---
+          # Process each commit individually to access both subject and body,
+          # so that BREAKING CHANGE footers in the body are reflected in the
+          # changelog (not just in the version bump calculation).
+          HAS_BREAK=0
+          HAS_FEAT=0
+          BREAK_LINES=""
+          FEAT_LINES=""
+          FIX_LINES=""
+          OTHER_LINES=""
+
+          while IFS= read -r hash; do
+            subject=$(git log -1 --format="%s" "$hash")
+            body=$(git log -1 --format="%b" "$hash")
+
+            IS_BREAKING=0
+            # Subject-level breaking: type(scope)!: or type!:
+            if echo "$subject" | grep -qE "^[a-z]+(\([^)]*\))?!:"; then
+              IS_BREAKING=1; HAS_BREAK=1
+            fi
+            # Body-level breaking: BREAKING CHANGE: footer
+            if [ -n "$body" ] && echo "$body" | grep -qE "^BREAKING CHANGE:"; then
+              IS_BREAKING=1; HAS_BREAK=1
+            fi
+            if echo "$subject" | grep -qE "^feat"; then
+              HAS_FEAT=1
+            fi
+
+            # Strip conventional-commit prefix (type, optional scope, optional !)
+            desc=$(echo "$subject" | sed -E 's/^[a-z]+(\([^)]*\))?!?: //')
+            # Convert inline "(#NNN)" to a markdown link
+            desc=$(echo "$desc" | sed "s|(#\([0-9]*\))|([#\1](https://github.com/${REPO}/pull/\1))|g")
+
+            if [ "$IS_BREAKING" -eq 1 ]; then
+              BREAK_LINES="${BREAK_LINES}- ${desc}\n"
+            elif echo "$subject" | grep -qE "^feat"; then
+              FEAT_LINES="${FEAT_LINES}- ${desc}\n"
+            elif echo "$subject" | grep -qE "^fix"; then
+              FIX_LINES="${FIX_LINES}- ${desc}\n"
+            else
+              OTHER_LINES="${OTHER_LINES}- ${desc}\n"
+            fi
+          done < <(git log "${LAST_STABLE}..HEAD" --format="%H" --no-merges 2>/dev/null || echo "")
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+          if [ "$HAS_BREAK" -eq 1 ]; then
+            BUMP="major"; NEXT="$((MAJOR+1)).0.0"
+          elif [ "$HAS_FEAT" -eq 1 ]; then
+            BUMP="minor"; NEXT="${MAJOR}.$((MINOR+1)).0"
+          else
+            BUMP="patch"; NEXT="${MAJOR}.${MINOR}.$((PATCH+1))"
+          fi
+
+          # --- Most recently created 5 beta tags (sorted by creation date, not version) ---
+          # Using -creatordate so backfilled or hotfix betas don't displace newer ones.
+          BETA_TAGS=$(git tag -l "v*-beta.*" --sort=-creatordate 2>/dev/null | head -5 || echo "")
+
+          # --- Build PR body to a temp file (avoids quoting pitfalls) ---
+          {
+            echo "## 📦 Release v${NEXT}"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| **Bump type** | \`${BUMP}\` |"
+            echo "| \`@book000/pixivts\` | \`${CURRENT_VERSION}\` → \`${NEXT}\` |"
+            echo "| \`@book000/pixivts-db-mysql\` | \`${CURRENT_VERSION}\` → \`${NEXT}\` |"
+            echo "| **npm dist-tag** | \`@beta\` → \`@latest\` |"
+            echo ""
+            echo "[📋 Full diff: ${LAST_STABLE}...develop](https://github.com/${REPO}/compare/${LAST_STABLE}...develop)"
+            echo ""
+            echo "---"
+            echo ""
+
+            if [ -n "$BREAK_LINES" ]; then
+              echo "### 💥 BREAKING CHANGES"
+              echo ""
+              printf '%b' "$BREAK_LINES"
+              echo ""
+            fi
+            if [ -n "$FEAT_LINES" ]; then
+              echo "### ✨ Features"
+              echo ""
+              printf '%b' "$FEAT_LINES"
+              echo ""
+            fi
+            if [ -n "$FIX_LINES" ]; then
+              echo "### 🐛 Bug Fixes"
+              echo ""
+              printf '%b' "$FIX_LINES"
+              echo ""
+            fi
+            if [ -n "$OTHER_LINES" ]; then
+              echo "### 🔧 Other Changes"
+              echo ""
+              printf '%b' "$OTHER_LINES"
+              echo ""
+            fi
+
+            if [ -n "$BETA_TAGS" ]; then
+              echo "### 🧪 Beta releases tested"
+              echo ""
+              echo "| Tag |"
+              echo "|---|"
+              echo "$BETA_TAGS" | while IFS= read -r tag; do
+                echo "| \`${tag}\` |"
+              done
+              echo ""
+            fi
+
+            echo "---"
+            echo ""
+            echo "> ⚠️ **Merge method: merge commit (--no-ff) required.**"
+            echo "> Do NOT squash-merge this PR. semantic-release uses full commit history"
+            echo "> to promote \`@beta\` → \`@latest\`."
+            echo ""
+            echo "After merging, the Release workflow will:"
+            echo "1. Publish \`@book000/pixivts@${NEXT}\` and \`@book000/pixivts-db-mysql@${NEXT}\` to npm \`@latest\`"
+            echo "2. Create a GitHub Release with the full changelog"
+            echo "3. Deploy updated API documentation to GitHub Pages"
+          } > /tmp/pr-body.md
+
+          TITLE="chore: release v${NEXT} (develop → master)"
+          EXISTING_PR=$(gh pr list --base master --head develop --state open --json number --jq '.[0].number // empty' 2>/dev/null || echo "")
+
+          if [ -z "$EXISTING_PR" ]; then
+            gh pr create \
+              --base master \
+              --head develop \
+              --title "$TITLE" \
+              --body-file /tmp/pr-body.md \
+              --reviewer book000
+          else
+            gh pr edit "$EXISTING_PR" \
+              --title "$TITLE" \
+              --body-file /tmp/pr-body.md \
+              --add-reviewer book000
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
