@@ -1,0 +1,62 @@
+# Creates or updates a Release PR (develop → master) on every push to develop.
+# The PR must be merged with a merge commit (--no-ff) so that semantic-release
+# can resolve the addChannel flow correctly when promoting beta → latest.
+
+name: Release PR
+
+on:
+  push:
+    branches:
+      - develop
+
+concurrency:
+  group: release-pr
+  cancel-in-progress: true
+
+jobs:
+  release-pr:
+    name: Create or update Release PR
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: 🛎 Checkout
+        uses: actions/checkout@v6
+
+      - name: 📬 Create or update Release PR
+        run: |
+          TITLE="chore: release develop → master"
+
+          PR_BODY='## Release PR
+
+          This PR merges `develop` into `master` to publish a new stable release.
+
+          **⚠️ Merge method: merge commit (--no-ff) required.**
+          Do NOT squash-merge this PR. semantic-release uses full commit history
+          to resolve the addChannel flow and promote the beta tag to latest.
+
+          ---
+
+          After merging, the Release workflow will:
+          1. Publish `@latest` to npm
+          2. Create a GitHub Release with the changelog
+          3. Deploy updated API documentation to GitHub Pages'
+
+          EXISTING_PR=$(gh pr list --base master --head develop --state open --json number --jq '.[0].number // empty' 2>/dev/null || echo "")
+
+          if [ -z "$EXISTING_PR" ]; then
+            gh pr create \
+              --base master \
+              --head develop \
+              --title "$TITLE" \
+              --body "$PR_BODY"
+          else
+            gh pr edit "$EXISTING_PR" \
+              --title "$TITLE" \
+              --body "$PR_BODY"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
