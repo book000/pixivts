@@ -86,7 +86,7 @@ pnpm install
 pnpm build                            # = pnpm -r build
 
 # Build only the core package
-pnpm --filter @book000/pixivts build  # runs tsup
+pnpm --filter @book000/pixivts build  # runs tsdown
 
 # Verify .d.ts files contain no zod references (tree-shake guard)
 pnpm --filter @book000/pixivts build:dts-guard
@@ -152,7 +152,7 @@ This is a **pnpm monorepo** with two published packages:
 | Tool | Role | Notes |
 |---|---|---|
 | `pnpm` v11.6.0 | Package manager | Workspace monorepo |
-| `tsup` | Build (core) | Outputs ESM + CJS + `.d.ts` |
+| `tsdown` | Build (core) | Outputs ESM + CJS + `.d.ts` |
 | `vitest` | Test runner | Replaces Jest; MSW v2 for HTTP mocking |
 | `typedoc` | API docs generator | `--gitRevision master` |
 | `tsc` | Type checking | No `skipLibCheck` |
