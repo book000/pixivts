@@ -43,14 +43,14 @@
     "@types/node": "24.13.2",
     "@vitest/coverage-v8": "4.1.8",
     "msw": "2.14.6",
-    "tsup": "8.5.1",
+    "tsdown": "0.22.2",
     "typedoc": "0.28.19",
     "typescript": "6.0.3",
     "vitest": "4.1.8",
     "zod": "4.4.3"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "build:dts-guard": "node ../../scripts/check-dts-no-zod.mjs",
     "clean": "rimraf dist",
     "generate-docs": "typedoc",

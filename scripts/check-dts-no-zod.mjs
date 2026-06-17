@@ -3,8 +3,8 @@
  * CI guard: verifies that the built .d.ts files do not contain any reference to zod.
  *
  * zod is intentionally a devDependency of @book000/pixivts. Public types are
- * generated via z.infer<> and should be structurally inlined by rollup-plugin-dts
- * (used by tsup). If zod leaks into the output .d.ts files, downstream consumers
+ * generated via z.infer<> and should be structurally inlined by rolldown-plugin-dts
+ * (used by tsdown). If zod leaks into the output .d.ts files, downstream consumers
  * would need to install zod just to use our types.
  *
  * This script fails the build if any of the following patterns appear in dist/*.d.ts:
@@ -67,7 +67,7 @@ if (hadError) {
   console.error(
     '\nzod leaked into the distributed .d.ts files. ' +
       'Ensure all public types are exported as type-only re-exports of z.infer<> results ' +
-      'so that rollup-plugin-dts can inline them structurally.'
+      'so that rolldown-plugin-dts can inline them structurally.'
   )
   process.exit(1)
 }
