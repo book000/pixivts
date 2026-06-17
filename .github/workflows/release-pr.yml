@@ -188,4 +188,5 @@ jobs:
               --add-reviewer book000
           fi
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN: ""  # Prevent gh CLI fallback to GITHUB_TOKEN if GH_PAT is unset
