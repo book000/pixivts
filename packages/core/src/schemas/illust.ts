@@ -14,7 +14,7 @@ import {
 
 /** Single-page illust detail (originalImageUrl). */
 export const MetaSinglePageSchema = z.object({
-  originalImageUrl: z.string(),
+  originalImageUrl: z.string().optional(),
 })
 
 /** Multi-page illust detail (imageUrls for each page). */
