@@ -287,7 +287,8 @@ describe('illusts.recommended() — contentType param', () => {
       )
     )
     const client = await PixivClient.of('test-refresh-token')
-    await client.illusts.recommended({ contentType: 'manga' })
+    const result = await client.illusts.recommended({ contentType: 'manga' })
+    expect(result.isOk).toBe(true)
     expect(capturedUrl).toBeDefined()
     if (capturedUrl === undefined) return
     const params = new URL(capturedUrl).searchParams
@@ -309,7 +310,8 @@ describe('illusts.recommended() — contentType param', () => {
       )
     )
     const client = await PixivClient.of('test-refresh-token')
-    await client.illusts.recommended()
+    const result = await client.illusts.recommended()
+    expect(result.isOk).toBe(true)
     expect(capturedUrl).toBeDefined()
     if (capturedUrl === undefined) return
     const params = new URL(capturedUrl).searchParams
@@ -333,7 +335,8 @@ describe('illusts.recommended() — includeRankingLabel param', () => {
       )
     )
     const client = await PixivClient.of('test-refresh-token')
-    await client.illusts.recommended({ includeRankingLabel: false })
+    const result = await client.illusts.recommended({ includeRankingLabel: false })
+    expect(result.isOk).toBe(true)
     expect(capturedUrl).toBeDefined()
     if (capturedUrl === undefined) return
     const params = new URL(capturedUrl).searchParams
@@ -357,7 +360,8 @@ describe('illusts.recommended() — viewed param', () => {
       )
     )
     const client = await PixivClient.of('test-refresh-token')
-    await client.illusts.recommended({ viewed: [101, 202] })
+    const result = await client.illusts.recommended({ viewed: [101, 202] })
+    expect(result.isOk).toBe(true)
     expect(capturedUrl).toBeDefined()
     if (capturedUrl === undefined) return
     const params = new URL(capturedUrl).searchParams
@@ -379,7 +383,8 @@ describe('illusts.recommended() — viewed param', () => {
       )
     )
     const client = await PixivClient.of('test-refresh-token')
-    await client.illusts.recommended()
+    const result = await client.illusts.recommended()
+    expect(result.isOk).toBe(true)
     expect(capturedUrl).toBeDefined()
     if (capturedUrl === undefined) return
     const params = new URL(capturedUrl).searchParams
