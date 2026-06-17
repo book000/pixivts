@@ -6,15 +6,11 @@ export default defineConfig({
   platform: 'node',
   dts: true,
   clean: true,
-  // Keep ESM output as index.js and CJS as index.cjs to match package.json exports.
-  // tsdown sets fixedExtension: true on the node platform by default, which would
-  // emit index.mjs instead of index.js for ESM.
+  // node platform defaults fixedExtension: true, which would emit index.mjs.
+  // Set false to preserve index.js as expected by package.json exports.
   fixedExtension: false,
   outDir: 'dist',
-  // Note: dist also contains index.js.map because tsdown forces sourcemap: true
-  // when declarationMap: true is set in tsconfig.base.json. This is expected.
-  // zod is a devDependency used only for schema definitions in src/schemas/.
-  // It is never imported in a value position from the public barrel (src/index.ts),
-  // so Rolldown tree-shakes it out of the JS bundle automatically.
-  // The dts:guard script (scripts/check-dts-no-zod.mjs) verifies this at CI time.
+  // zod is a devDependency used only in src/schemas/ and is not re-exported
+  // from the public barrel; Rolldown tree-shakes it out. scripts/check-dts-no-zod.mjs
+  // verifies that no zod reference leaks into the dist .d.ts files.
 })

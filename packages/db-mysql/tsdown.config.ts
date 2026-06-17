@@ -6,12 +6,11 @@ export default defineConfig({
   platform: 'node',
   dts: true,
   clean: true,
-  // Keep ESM output as index.js and CJS as index.cjs to match package.json exports.
-  // tsdown sets fixedExtension: true on the node platform by default, which would
-  // emit index.mjs instead of index.js for ESM.
+  // node platform defaults fixedExtension: true, which would emit index.mjs.
+  // Set false to preserve index.js as expected by package.json exports.
   fixedExtension: false,
   outDir: 'dist',
-  // drizzle-orm + mysql2 (deps) and @book000/pixivts (peerDep) are automatically
-  // externalised by tsdown; this makes the intent explicit.
+  // drizzle-orm + mysql2 (deps) and @book000/pixivts (peerDep) are auto-externalised
+  // by tsdown; listed explicitly to make the intent clear.
   deps: { neverBundle: ['drizzle-orm', 'mysql2', '@book000/pixivts'] },
 })
