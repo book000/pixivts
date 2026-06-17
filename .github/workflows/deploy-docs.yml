@@ -1,27 +1,22 @@
-name: Deploy
+name: Deploy Docs
 
 on:
+  workflow_call:
   workflow_dispatch:
-  workflow_run:
-    # release:published does not fire when the release is created by GITHUB_TOKEN;
-    # workflow_run bypasses that restriction.
-    workflows: ["Release"]
-    types: [completed]
-    branches: [main, master]
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: 🛎 Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          # Pin to the exact commit the Release workflow ran on so docs always
-          # match the tagged release. Falls back to github.ref for workflow_dispatch.
-          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
 
       - name: 🏗 Setup node
         uses: actions/setup-node@v6
@@ -65,7 +60,7 @@ jobs:
       - name: 📄 Generate API documentation
         run: pnpm --filter @book000/pixivts run generate-docs
 
-      - name: Upload Pages-artifact
+      - name: 📤 Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
           path: docs-out
@@ -81,6 +76,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Deploy to GitHub Pages
+      - name: 🚀 Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
