@@ -84,3 +84,12 @@ jobs:
         run: pnpm exec semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  docs:
+    needs: release
+    if: ${{ github.ref == 'refs/heads/master' }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy-docs.yml
