@@ -189,3 +189,7 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
+          # Explicitly clear GITHUB_TOKEN so gh CLI cannot fall back to it
+          # if GH_PAT is missing — the step will fail fast instead of
+          # silently using GITHUB_TOKEN (which would not trigger pull_request_target).
+          GITHUB_TOKEN: ""
