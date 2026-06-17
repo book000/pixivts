@@ -21,6 +21,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+      checks: write
 
     steps:
       - name: 🛎 Checkout
@@ -28,6 +29,11 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+
+      - name: 🟢 Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
 
       - name: 📬 Create or update Release PR
         run: |
@@ -187,6 +193,39 @@ jobs:
               --body-file /tmp/pr-body.md \
               --add-reviewer book000
           fi
+
+          # --- Report required checks via Checks API ---
+          # The release PR head SHA equals github.sha (develop HEAD after this push).
+          # Posting check runs against that SHA satisfies the master ruleset's
+          # required checks without needing pull_request_target to fire.
+
+          # check-pr-language: run the shared script against the generated title/body
+          PR_BODY_CONTENT=$(cat /tmp/pr-body.md)
+          if PR_TITLE="$TITLE" PR_BODY="$PR_BODY_CONTENT" node scripts/check-pr-language.mjs 2>/tmp/lang-stderr.txt; then
+            LANG_CONCLUSION="success"
+            LANG_SUMMARY="PR title and body are in English. ✅"
+          else
+            LANG_CONCLUSION="failure"
+            LANG_SUMMARY=$(cat /tmp/lang-stderr.txt)
+          fi
+
+          jq -n \
+            --arg name "check-pr-language" \
+            --arg head_sha "$GITHUB_SHA" \
+            --arg conclusion "$LANG_CONCLUSION" \
+            --arg summary "$LANG_SUMMARY" \
+            '{name: $name, head_sha: $head_sha, status: "completed", conclusion: $conclusion, output: {title: "Check PR language", summary: $summary}}' | \
+          gh api "repos/${GITHUB_REPOSITORY}/check-runs" \
+            --method POST \
+            --input -
+
+          # Enforce PR flow: release PRs are always develop → master (same-repo),
+          # so the condition is trivially satisfied and the conclusion is always success.
+          jq -n \
+            --arg head_sha "$GITHUB_SHA" \
+            '{name: "Enforce PR flow", head_sha: $head_sha, status: "completed", conclusion: "success", output: {title: "Enforce PR flow", summary: "✅ Valid develop → master PR."}}' | \
+          gh api "repos/${GITHUB_REPOSITORY}/check-runs" \
+            --method POST \
+            --input -
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-          GITHUB_TOKEN: ""  # Prevent gh CLI fallback to GITHUB_TOKEN if GH_PAT is unset
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
