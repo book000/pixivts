@@ -235,6 +235,189 @@ describe('illusts.ranking()', () => {
   })
 })
 
+// ---------------------------------------------------------------------------
+// illusts.recommended() — unit tests (MSW)
+// ---------------------------------------------------------------------------
+
+const RECOMMENDED_RESPONSE = {
+  illusts: [ILLUST],
+  ranking_illusts: [] as unknown[],
+  contest_exists: false,
+  next_url: null,
+}
+
+describe('illusts.recommended() — default params', () => {
+  it('sends include_ranking_label=true by default', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/illust/recommended',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json(RECOMMENDED_RESPONSE)
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.illusts.recommended()
+    expect(result.isOk).toBe(true)
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('include_ranking_label')).toBe('true')
+  })
+})
+
+describe('illusts.recommended() — contentType param', () => {
+  it('sends content_type when contentType is specified', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/illust/recommended',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json(RECOMMENDED_RESPONSE)
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.illusts.recommended({ contentType: 'manga' })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('content_type')).toBe('manga')
+  })
+
+  it('omits content_type when contentType is not specified', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/illust/recommended',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json(RECOMMENDED_RESPONSE)
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.illusts.recommended()
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.has('content_type')).toBe(false)
+  })
+})
+
+describe('illusts.recommended() — includeRankingLabel param', () => {
+  it('sends include_ranking_label=false when explicitly set to false', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/illust/recommended',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json(RECOMMENDED_RESPONSE)
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.illusts.recommended({ includeRankingLabel: false })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('include_ranking_label')).toBe('false')
+  })
+})
+
+describe('illusts.recommended() — viewed param', () => {
+  it('sends viewed[] for each ID when viewed is specified', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/illust/recommended',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json(RECOMMENDED_RESPONSE)
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.illusts.recommended({ viewed: [101, 202] })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.getAll('viewed[]')).toEqual(['101', '202'])
+  })
+
+  it('omits viewed[] when viewed is not specified', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/illust/recommended',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json(RECOMMENDED_RESPONSE)
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.illusts.recommended()
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.has('viewed[]')).toBe(false)
+  })
+})
+
+describe('illusts.recommended() — meta_single_page regression (PIXIVTS-39)', () => {
+  it('handles meta_single_page as empty object without errors', async () => {
+    const MANGA_ILLUST = {
+      ...ILLUST,
+      type: 'manga' as const,
+      meta_single_page: {},
+    }
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/illust/recommended',
+        () =>
+          HttpResponse.json({
+            ...RECOMMENDED_RESPONSE,
+            illusts: [MANGA_ILLUST],
+          })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.illusts.recommended()
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      const illust = result.value.illusts[0]
+      expect(illust.type).toBe('manga')
+      expect(illust.metaSinglePage.originalImageUrl).toBeUndefined()
+    }
+  })
+})
+
 describe('illusts.bookmarkAdd()', () => {
   it('returns Ok', async () => {
     server.use(
