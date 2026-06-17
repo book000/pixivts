@@ -1,0 +1,42 @@
+name: Enforce PR flow
+
+on:
+  pull_request_target:
+    # No branches filter — run on ALL PRs so this job also satisfies the
+    # required-status-check on the develop ruleset and does not deadlock
+    # feature → develop PRs.
+    # opened/reopened/synchronize: required by sync-repo-settings' "always-run"
+    # detection so this job is auto-registered as a required check.
+    # edited: captures base-branch retargeting.
+    types: [opened, reopened, synchronize, edited]
+
+# This check only reports a status (pass/fail); no repo access needed.
+permissions: {}
+
+jobs:
+  enforce-pr-flow:
+    # ⚠ This job name becomes the required-check context string.
+    # Do NOT rename after it has been registered — both rulesets would deadlock.
+    name: Enforce PR flow
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚦 Require develop → master
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          if [ "$BASE_REF" != "master" ]; then
+            echo "Base is '$BASE_REF' (not master); flow check not applicable. ✅"
+            exit 0
+          fi
+          if [ "$HEAD_REF" != "develop" ] || [ "$HEAD_REPO" != "$BASE_REPO" ]; then
+            echo "::error::PRs into 'master' must come from this repository's 'develop' branch."
+            echo "Flow: feature/* → develop → master. Please retarget this PR to 'develop'."
+            echo "Current head: ${HEAD_REPO}:${HEAD_REF}"
+            exit 1
+          fi
+          echo "✅ Valid develop → master PR."
