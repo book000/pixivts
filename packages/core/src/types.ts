@@ -160,7 +160,7 @@ export interface PixivIllustItem {
   series: Series | null
   /**
    * For single-page works: `{ originalImageUrl: string }`.
-   * For multi-page works: `{}` (empty object).
+   * For multi-page works (manga): `{}` (empty object; `originalImageUrl` will be `undefined`).
    */
   metaSinglePage: MetaSinglePage | Record<string, never>
   /** Per-page image URLs for multi-page works (empty array for single-page). */
