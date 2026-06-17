@@ -7,7 +7,9 @@ on:
     branches:
       - main
       - master
-      - develop
+      # develop is intentionally excluded: every push to develop updates the
+      # develop→master Release PR, which fires pull_request_target:synchronize
+      # and runs CI via that event.  Including develop here would run CI twice.
   # Consolidate PR events to pull_request_target only (using both pull_request and
   # pull_request_target simultaneously can cause finished-node-ci's skipped result
   # to incorrectly pass required checks)

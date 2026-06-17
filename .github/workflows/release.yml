@@ -3,7 +3,6 @@ name: Release
 on:
   push:
     branches:
-      - main
       - master
       - develop
 
@@ -84,6 +83,30 @@ jobs:
         run: pnpm exec semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔀 Back-merge master into develop
+        # Run only after a stable release (master push) so that the release tag
+        # enters develop's ancestry — required for semantic-release to start a
+        # fresh pre-release cycle with the correct next version (e.g. v0.61.0-beta.1).
+        # Uses DEPLOY_KEY (SSH deploy key with write access) to push to the protected
+        # develop branch.  Configure it in repo Settings → Deploy keys and add it as
+        # a bypass actor in the develop branch ruleset.
+        if: github.ref == 'refs/heads/master'
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+          git config core.sshCommand "ssh -i ~/.ssh/deploy_key -F /dev/null"
+          git remote set-url origin git@github.com:${{ github.repository }}.git
+          # After the Release PR is merged, master's merge commit has develop HEAD as
+          # a parent, so pushing master HEAD to develop is always a valid fast-forward
+          # in the normal workflow.  If develop has diverged due to a concurrent push,
+          # this push fails — resolve manually by merging master into develop.
+          git fetch origin develop
+          git push origin HEAD:refs/heads/develop
+          rm -f ~/.ssh/deploy_key
 
   docs:
     needs: release

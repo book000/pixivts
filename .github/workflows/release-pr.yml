@@ -10,8 +10,10 @@ on:
       - develop
 
 concurrency:
+  # Do not cancel in-progress runs: a canceled run may have already created/updated
+  # the PR but not yet posted the Checks API runs, leaving required checks pending.
   group: release-pr
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   release-pr:
@@ -109,9 +111,19 @@ jobs:
             BUMP="patch"; NEXT="${MAJOR}.${MINOR}.$((PATCH+1))"
           fi
 
-          # --- Most recently created 5 beta tags (sorted by creation date, not version) ---
-          # Using -creatordate so backfilled or hotfix betas don't displace newer ones.
-          BETA_TAGS=$(git tag -l "v*-beta.*" --sort=-creatordate 2>/dev/null | head -5 || echo "")
+          # --- Beta tags for the current release cycle (since LAST_STABLE, on develop) ---
+          # Only include beta tags whose commit is a descendant of LAST_STABLE AND an
+          # ancestor of HEAD, so stale betas from prior cycles are excluded.
+          # Sorted by creation date (newest first), capped at 5 entries.
+          BETA_TAGS=""
+          while IFS= read -r tag; do
+            tag_commit=$(git rev-list -n 1 "${tag}" 2>/dev/null) || continue
+            if git merge-base --is-ancestor "${LAST_STABLE}" "${tag_commit}" 2>/dev/null && \
+               git merge-base --is-ancestor "${tag_commit}" HEAD 2>/dev/null; then
+              BETA_TAGS="${BETA_TAGS}${tag}"$'\n'
+            fi
+          done < <(git tag -l "v*-beta.*" --sort=-creatordate 2>/dev/null | head -20)
+          BETA_TAGS=$(printf '%s' "$BETA_TAGS" | head -5)
 
           # --- Build PR body to a temp file (avoids quoting pitfalls) ---
           {
