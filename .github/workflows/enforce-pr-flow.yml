@@ -2,12 +2,9 @@ name: Enforce PR flow
 
 on:
   pull_request_target:
-    # No branches filter — run on ALL PRs so this job also satisfies the
-    # required-status-check on the develop ruleset and does not deadlock
-    # feature → develop PRs.
-    # opened/reopened/synchronize: required by sync-repo-settings' "always-run"
-    # detection so this job is auto-registered as a required check.
-    # edited: captures base-branch retargeting.
+    # No branches filter: runs on all PRs so this job satisfies the develop
+    # ruleset's required check and does not deadlock feature → develop PRs.
+    # edited: also captures base-branch retargeting.
     types: [opened, reopened, synchronize, edited]
 
 # This check only reports a status (pass/fail); no repo access needed.
