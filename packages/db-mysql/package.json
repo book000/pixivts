@@ -52,12 +52,12 @@
     "@types/node": "24.13.2",
     "@vitest/coverage-v8": "4.1.8",
     "drizzle-kit": "0.31.10",
-    "tsup": "8.5.1",
+    "tsdown": "0.22.2",
     "typescript": "6.0.3",
     "vitest": "4.1.8"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "clean": "rimraf dist",
     "lint": "tsc -p tsconfig.test.json",
     "fix": "echo 'no fix needed'",
