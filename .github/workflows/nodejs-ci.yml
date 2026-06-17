@@ -9,7 +9,6 @@ on:
       # develop is intentionally excluded: every push to develop updates the
       # develop→master Release PR, which fires pull_request_target:synchronize
       # and runs CI via that event.  Including develop here would run CI twice.
-      # main is intentionally excluded: this repo uses master as the default branch.
   # Consolidate PR events to pull_request_target only (using both pull_request and
   # pull_request_target simultaneously can cause finished-node-ci's skipped result
   # to incorrectly pass required checks)
@@ -20,7 +19,6 @@ on:
     branches:
       - master
       - develop
-      # main is intentionally excluded: this repo uses master as the default branch.
     types:
       - opened
       - synchronize
