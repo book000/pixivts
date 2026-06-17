@@ -94,10 +94,18 @@ export interface PrivacyPolicy {
 // Illust
 // ---------------------------------------------------------------------------
 
-/** Original-image URL for a single-page illust. */
+/**
+ * Original-image URL for a single-page illust.
+ *
+ * For manga works the API returns `meta_single_page` as an empty object `{}`,
+ * so `originalImageUrl` may be absent even when the enclosing object is present.
+ */
 export interface MetaSinglePage {
-  /** Direct URL to the original-resolution image. */
-  originalImageUrl: string
+  /**
+   * Direct URL to the original-resolution image.
+   * Absent for manga works where `meta_single_page` is returned as `{}`.
+   */
+  originalImageUrl?: string
 }
 
 /** Per-page image URLs for a multi-page work (manga). */
@@ -152,7 +160,7 @@ export interface PixivIllustItem {
   series: Series | null
   /**
    * For single-page works: `{ originalImageUrl: string }`.
-   * For multi-page works: `{}` (empty object).
+   * For multi-page works (manga): `{}` (empty object; `originalImageUrl` will be `undefined`).
    */
   metaSinglePage: MetaSinglePage | Record<string, never>
   /** Per-page image URLs for multi-page works (empty array for single-page). */

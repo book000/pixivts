@@ -91,6 +91,24 @@ export interface IllustRecommendedParams {
    * value extracted from a previous page's `next_url` via {@link parseNextUrl}.
    */
   minBookmarkIdForRecentIllust?: number
+  /**
+   * Content type filter for recommended works.
+   * - `"illust"` — illustration works only
+   * - `"manga"` — manga works only
+   * Omit to receive both types.
+   */
+  contentType?: 'illust' | 'manga'
+  /**
+   * Whether to include ranking label information in the response.
+   * Defaults to `true` when omitted.
+   */
+  includeRankingLabel?: boolean
+  /**
+   * IDs of illusts already seen by the user.
+   * The API will exclude these from the recommendations.
+   * Serialised as repeated `viewed[]=<id>` query parameters.
+   */
+  viewed?: number[]
 }
 
 /** Parameters for fetching an illust series. */
@@ -259,12 +277,14 @@ export class IllustResource {
         '/v1/illust/recommended',
         buildParams({
           filter: params.filter ?? 'for_ios',
-          includeRankingLabel: true,
+          contentType: params.contentType,
+          includeRankingLabel: params.includeRankingLabel ?? true,
           includeRankingIllusts: true,
           includePrivacyPolicy: true,
           offset: params.offset,
           maxBookmarkIdForRecommend: params.maxBookmarkIdForRecommend,
           minBookmarkIdForRecentIllust: params.minBookmarkIdForRecentIllust,
+          ...(params.viewed ? { viewed: params.viewed } : {}),
         })
       ),
       this.#http,
