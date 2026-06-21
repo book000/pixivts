@@ -198,6 +198,7 @@ jobs:
               --head develop \
               --title "$TITLE" \
               --body-file /tmp/pr-body.md \
+              --draft \
               --reviewer book000
           else
             gh pr edit "$EXISTING_PR" \
