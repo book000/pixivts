@@ -41,12 +41,12 @@
   },
   "devDependencies": {
     "@types/node": "24.13.2",
-    "@vitest/coverage-v8": "4.1.8",
+    "@vitest/coverage-v8": "4.1.9",
     "msw": "2.14.6",
-    "tsdown": "0.22.2",
+    "tsdown": "0.22.3",
     "typedoc": "0.28.19",
     "typescript": "6.0.3",
-    "vitest": "4.1.8",
+    "vitest": "4.1.9",
     "zod": "4.4.3"
   },
   "scripts": {

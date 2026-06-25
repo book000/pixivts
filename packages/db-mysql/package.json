@@ -50,11 +50,11 @@
   },
   "devDependencies": {
     "@types/node": "24.13.2",
-    "@vitest/coverage-v8": "4.1.8",
+    "@vitest/coverage-v8": "4.1.9",
     "drizzle-kit": "0.31.10",
-    "tsdown": "0.22.2",
+    "tsdown": "0.22.3",
     "typescript": "6.0.3",
-    "vitest": "4.1.8"
+    "vitest": "4.1.9"
   },
   "scripts": {
     "build": "tsdown",

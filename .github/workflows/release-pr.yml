@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: 🛎 Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -198,6 +198,7 @@ jobs:
               --head develop \
               --title "$TITLE" \
               --body-file /tmp/pr-body.md \
+              --draft \
               --reviewer book000
           else
             gh pr edit "$EXISTING_PR" \
