@@ -17,7 +17,7 @@
     "@semantic-release/github": "12.0.8",
     "@semantic-release/release-notes-generator": "14.1.1",
     "@types/node": "24.13.2",
-    "conventional-changelog-conventionalcommits": "10.0.0",
+    "conventional-changelog-conventionalcommits": "10.2.0",
     "eslint": "10.6.0",
     "eslint-plugin-jsdoc": "63.0.10",
     "prettier": "3.9.0",
