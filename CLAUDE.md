@@ -111,7 +111,7 @@ This is a **pnpm monorepo** with two published packages:
 - **`src/schemas/`**: Zod schemas mirroring `types.ts` — internal only, not exported from the barrel
 - **`src/options.ts`**: Const enums for API option values (`OSFilter`, `BookmarkRestrict`, etc.)
 - **`src/resources/`**: Per-namespace resource classes (`IllustResource`, `NovelResource`, `UserResource`, `MangaResource`, `UgoiraResource`, `ImageResource`)
-- **`src/result.ts`**: Re-exports from `neverthrow` (`ok`, `err`, `ResultAsync`)
+- **`src/result.ts`**: Zero-dependency in-repo `Result` / `ResultAsync` implementation (`ok`, `err`, `ResultAsync`) with neverthrow-style ergonomics — the external `neverthrow` package is **not** a dependency
 - **`src/errors.ts`**: Typed `PixivError` union and factory functions
 - **`src/interceptor.ts`**: `ResponseInterceptor` type definition (DB seam)
 - **`src/index.ts`**: Package barrel — hand-maintained (not auto-generated)
@@ -135,7 +135,7 @@ This is a **pnpm monorepo** with two published packages:
 | `eslint` (flat config) | Linting | `eslint.config.mjs` at root |
 | `prettier` | Formatting | `semi: false`, single quotes |
 | `drizzle-orm` | DB ORM (db-mysql) | MySQL2 adapter |
-| `neverthrow` | Result type | `ok`/`err`/`ResultAsync` |
+| `src/result.ts` | Result type (in-repo module) | Zero-dependency `ok`/`err`/`ResultAsync`, neverthrow-style — **not** the external `neverthrow` package |
 
 ## Response Design
 
@@ -152,7 +152,7 @@ All values returned to callers are in **lowerCamelCase**. The library communicat
 
 ### Recommended Patterns
 
-- API request methods return `ResultAsync<T, PixivError>` (from neverthrow) — no throws
+- API request methods return `ResultAsync<T, PixivError>` (from the in-repo `src/result.ts`, a zero-dependency neverthrow-style module) — no throws
 - Paginated endpoints return `PaginatedResultAsync<TPage, TItem>` with `.pages()` / `.items()` generators
 - Type definitions are hand-written interfaces in `types.ts` (not derived from Zod)
 - Zod schemas in `src/schemas/` exist for internal fixture validation only — they are not exported

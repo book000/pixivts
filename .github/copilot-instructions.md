@@ -13,7 +13,7 @@ Guidance for reviewing pull requests in this repository. This is a pixiv Unoffic
 
 ## Review focus points
 
-- API request methods must return `ResultAsync<T, PixivError>` (from `neverthrow`) — flag `throw` in request paths. Paginated endpoints return `PaginatedResultAsync`.
+- API request methods must return `ResultAsync<T, PixivError>` (from the in-repo `src/result.ts`, a zero-dependency neverthrow-style module — not the external `neverthrow` package) — flag `throw` in request paths. Paginated endpoints return `PaginatedResultAsync`.
 - Public types in `src/types.ts` are hand-written camelCase interfaces. The library talks to pixiv in snake_case and converts at the HTTP layer (`camelizeKeys` in `src/params.ts`). Confirm caller-facing values are camelCase and wire params are converted via `buildParams()`.
 - `src/index.ts` is the hand-maintained barrel (not auto-generated). Flag added/removed public exports that are not reflected there.
 - Zod schemas in `src/schemas/` are internal only. Flag any `z.infer<>` type or schema exported from the public barrel — it breaks Zod tree-shaking.
@@ -35,4 +35,4 @@ Guidance for reviewing pull requests in this repository. This is a pixiv Unoffic
 ## Known non-issues (do not flag)
 
 - Absent semicolons and single quotes are intentional (Prettier config).
-- `PaginatedResultAsync` extending `ResultAsync` and the `neverthrow` no-throw style are deliberate design choices.
+- `PaginatedResultAsync` extending `ResultAsync` and the neverthrow-style no-throw pattern (implemented in-repo in `src/result.ts`, no external dependency) are deliberate design choices.
