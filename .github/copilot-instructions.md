@@ -1,114 +1,38 @@
-# GitHub Copilot Instructions
+# GitHub Copilot Code Review Instructions
 
-## Project Overview
+Guidance for reviewing pull requests in this repository. This is a pixiv Unofficial API Library for TypeScript, published as a pnpm monorepo (`@book000/pixivts` core + optional `@book000/pixivts-db-mysql` recorder).
 
-- Purpose: pixiv Unofficial API Library for TypeScript
-- Main features: provides a TypeScript library using the private API used by the pixiv iOS app
-- Target users: TypeScript/Node.js developers who want to use the pixiv API
+## Enforced conventions (flag violations)
 
-## Common Rules
+- Prettier: no semicolons (`semi: false`), single quotes, 2-space indentation, LF line endings. Flag added semicolons and double quotes.
+- ESLint flat config (`eslint.config.mjs`) via `@book000/eslint-config`. Type checking is `tsc` with strict mode.
+- Comments, JSDoc, and error messages must be in English.
+- Public functions and interfaces must have English JSDoc comments.
+- Commit messages / PR titles follow Conventional Commits with an English `<description>`.
+- Insert a half-width space between Japanese and alphanumeric characters where Japanese text is unavoidable.
 
-- Project language: English is the primary language for all project artifacts (code, comments, commit messages, PR titles/bodies, and documentation). The only exception is direct conversation with Claude Code itself, which follows the user's personal/global instructions.
-- PRs and commits follow Conventional Commits (`<description>` written in English).
-- Insert a half-width space between Japanese and alphanumeric characters whenever Japanese text is unavoidable.
+## Review focus points
 
-## Tech Stack
+- API request methods must return `ResultAsync<T, PixivError>` (from `neverthrow`) — flag `throw` in request paths. Paginated endpoints return `PaginatedResultAsync`.
+- Public types in `src/types.ts` are hand-written camelCase interfaces. The library talks to pixiv in snake_case and converts at the HTTP layer (`camelizeKeys` in `src/params.ts`). Confirm caller-facing values are camelCase and wire params are converted via `buildParams()`.
+- `src/index.ts` is the hand-maintained barrel (not auto-generated). Flag added/removed public exports that are not reflected there.
+- Zod schemas in `src/schemas/` are internal only. Flag any `z.infer<>` type or schema exported from the public barrel — it breaks Zod tree-shaking.
+- Never enable `skipLibCheck` to work around type errors.
+- The db-mysql package (Drizzle ORM + mysql2) stores raw snake_case response bodies for archival fidelity — do not "fix" that column to camelCase.
 
-- Language: TypeScript (es2020)
-- Package manager: pnpm
-- Test framework: Jest
-- Lint: ESLint (@book000/eslint-config)
-- Format: Prettier
-- Documentation generation: TypeDoc
-- Main dependencies: axios, mysql2, typeorm
+## Testing expectations
 
-## Coding Conventions
+- Test framework is **vitest** (not Jest); HTTP mocking uses **MSW v2**.
+- MSW response bodies are snake_case (raw wire format); assertions on `result.value.*` use camelCase.
+- New API methods and new `params.ts` utilities require corresponding unit tests, including edge cases and error handling.
+- E2E tests (`packages/core/tests/e2e/`) require a real `PIXIV_REFRESH_TOKEN` env var.
 
-- Formatting: use Prettier
-  - No semicolons (`semi: false`)
-  - Single quotes (`singleQuote: true`)
-  - Tab width 2 (`tabWidth: 2`)
-  - Line endings: LF
-- Naming conventions:
-  - Classes: PascalCase
-  - Functions/variables: camelCase
-  - Constants: UPPER_SNAKE_CASE
-- TypeScript:
-  - strict mode enabled
-  - Working around issues with `skipLibCheck` is prohibited
-  - Functions and interfaces have docstrings (JSDoc) written in English
-- Comments: written in English
-- Error messages: written in English
+## Security (flag on sight)
 
-## Development Commands
+- No API keys, refresh tokens, or credentials committed to Git or written to logs.
+- No real credentials in test code — use MSW mocks or dummy data.
 
-```bash
-# Install dependencies
-pnpm install
+## Known non-issues (do not flag)
 
-# Build
-pnpm build
-
-# Clean
-pnpm clean
-
-# Compile
-pnpm compile
-
-# Run tests
-pnpm test
-
-# Lint check
-pnpm lint
-
-# Lint fix
-pnpm fix
-
-# Prettier check
-pnpm lint:prettier
-
-# Prettier fix
-pnpm fix:prettier
-
-# ESLint check
-pnpm lint:eslint
-
-# ESLint fix
-pnpm fix:eslint
-
-# TypeScript type check
-pnpm lint:tsc
-
-# Generate documentation
-pnpm generate-docs
-```
-
-## Testing Policy
-
-- Test framework: Jest
-- Test files: `*.test.ts`
-- Coverage collection target: `src/**/*.ts` (excluding `src/index.ts`, `src/**/*.test.ts`, and `src/types/**`)
-- When adding a new feature, add a corresponding test
-
-## Security / Sensitive Information
-
-- Do not commit API keys or credentials to Git.
-- Do not output personal information or credentials to logs.
-- Do not use real credentials in test code; use mocks or dummy data.
-
-## Documentation Updates
-
-Update the following documents as needed:
-
-- README.md: when adding features or changing usage
-- TypeDoc comments: when changing public APIs
-- CHANGELOG (if present): on version bumps
-
-## Repository-Specific Notes
-
-- This project is published as an npm package.
-- API documentation is hosted on GitHub Pages.
-- TypeDoc documentation generation references the content of the `master` branch.
-- The index file is auto-generated using ctix.
-- There is a feature using TypeORM to save responses to a MySQL database.
-- Renovate is enabled for automatic dependency updates.
+- Absent semicolons and single quotes are intentional (Prettier config).
+- `PaginatedResultAsync` extending `ResultAsync` and the `neverthrow` no-throw style are deliberate design choices.
