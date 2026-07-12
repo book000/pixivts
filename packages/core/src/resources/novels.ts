@@ -305,7 +305,7 @@ export class NovelResource {
     const body = buildParams({
       novelId: params.novelId,
       restrict: params.restrict ?? 'public',
-      ...(params.tags ? { tags: params.tags } : {}),
+      ...(params.tags && { tags: params.tags }),
     })
     return this.#http.post<Record<string, never>>(
       '/v2/novel/bookmark/add',

@@ -28,22 +28,18 @@ export function camelToSnake(key: string): string {
  * @param obj - Object with camelCase keys
  * @returns New object with snake_case keys
  */
-export function toSnakeKeys(obj: Record<string, unknown>): Record<string, unknown> {
+export function toSnakeKeys(
+  obj: Record<string, unknown>
+): Record<string, unknown> {
   const out: Record<string, unknown> = {}
-  for (const key of Object.keys(obj)) {
-    out[camelToSnake(key)] = obj[key]
+  for (const [key, value] of Object.entries(obj)) {
+    out[camelToSnake(key)] = value
   }
   return out
 }
 
 type ParamValue =
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | string[]
-  | number[]
+  string | number | boolean | null | undefined | string[] | number[]
 
 /**
  * Serialises a record of query parameters into a `URLSearchParams` instance.
@@ -198,7 +194,9 @@ export function parseNextUrl(url: string): ParsedNextUrl {
   if (maxBookmarkIdForRecommend !== undefined)
     result.maxBookmarkIdForRecommend = maxBookmarkIdForRecommend
 
-  const minBookmarkIdForRecentIllust = toNum('min_bookmark_id_for_recent_illust')
+  const minBookmarkIdForRecentIllust = toNum(
+    'min_bookmark_id_for_recent_illust'
+  )
   if (minBookmarkIdForRecentIllust !== undefined)
     result.minBookmarkIdForRecentIllust = minBookmarkIdForRecentIllust
 

@@ -164,7 +164,10 @@ export class IllustResource {
   ): ResultAsync<IllustDetailResponse, PixivError> {
     return this.#http.get<IllustDetailResponse>(
       '/v1/illust/detail',
-      buildParams({ illustId: params.illustId, filter: params.filter ?? 'for_ios' })
+      buildParams({
+        illustId: params.illustId,
+        filter: params.filter ?? 'for_ios',
+      })
     )
   }
 
@@ -183,9 +186,7 @@ export class IllustResource {
         buildParams({
           illustId: params.illustId,
           filter: params.filter ?? 'for_ios',
-          ...(params.seedIllustIds
-            ? { seedIllustIds: params.seedIllustIds }
-            : {}),
+          ...(params.seedIllustIds && { seedIllustIds: params.seedIllustIds }),
         })
       ),
       this.#http,
@@ -284,7 +285,7 @@ export class IllustResource {
           offset: params.offset,
           maxBookmarkIdForRecommend: params.maxBookmarkIdForRecommend,
           minBookmarkIdForRecentIllust: params.minBookmarkIdForRecentIllust,
-          ...(params.viewed ? { viewed: params.viewed } : {}),
+          ...(params.viewed && { viewed: params.viewed }),
         })
       ),
       this.#http,
@@ -329,7 +330,7 @@ export class IllustResource {
     const body = buildParams({
       illustId: params.illustId,
       restrict: params.restrict ?? 'public',
-      ...(params.tags ? { tags: params.tags } : {}),
+      ...(params.tags && { tags: params.tags }),
     })
     return this.#http.post<Record<string, never>>(
       '/v2/illust/bookmark/add',
