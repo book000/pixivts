@@ -52,30 +52,6 @@ Assumptions, premises, and uncertainties must be stated explicitly. Assumptions 
 - Never enable `skipLibCheck` in a TypeScript project to work around type errors
 - Add and update docstrings (JSDoc) for functions and interfaces, written in English
 
-## Consultation Rules
-
-Claude Code can consult other agent-based AI development assistant tools such as Codex CLI and Gemini CLI. Use them according to the following:
-
-- Codex CLI (ask-codex): an AI development assistant agent specialized in source code review and implementation strategy
-  - Source code review of implementation code
-  - Local technical decisions such as function design and module-internal implementation strategy
-  - Decisions with broader impact, such as architecture, inter-module contracts, performance, and security
-  - Verifying implementation correctness, detecting mechanical mistakes, and checking consistency with existing code
-- Gemini CLI (ask-gemini): an AI research agent specialized in investigating external service specifications and the latest information
-  - Decisions about external dependencies that require up-to-date information, such as SaaS specifications, language/runtime version differences, and pricing/limits/quotas
-  - Verifying primary external sources, researching the latest specifications, and validating external assumptions
-
-If another agent raises a point or objection, Claude Code must always do one of the following. Silently ignoring or rejecting it without comment is prohibited:
-
-- Accept the feedback and revise the decision
-- Reject the feedback and clearly state the reason
-
-The following must always be done:
-
-- Do not blindly accept another agent's suggestion; understand its rationale and reasoning
-- If your own analysis differs from another agent's opinion, compare both viewpoints
-- Make the final decision yourself, after comprehensively evaluating both viewpoints
-
 ## Development Commands
 
 ```bash
@@ -135,7 +111,7 @@ This is a **pnpm monorepo** with two published packages:
 - **`src/schemas/`**: Zod schemas mirroring `types.ts` — internal only, not exported from the barrel
 - **`src/options.ts`**: Const enums for API option values (`OSFilter`, `BookmarkRestrict`, etc.)
 - **`src/resources/`**: Per-namespace resource classes (`IllustResource`, `NovelResource`, `UserResource`, `MangaResource`, `UgoiraResource`, `ImageResource`)
-- **`src/result.ts`**: Re-exports from `neverthrow` (`ok`, `err`, `ResultAsync`)
+- **`src/result.ts`**: Zero-dependency in-repo `Result` / `ResultAsync` implementation (`ok`, `err`, `ResultAsync`) with neverthrow-style ergonomics — the external `neverthrow` package is **not** a dependency
 - **`src/errors.ts`**: Typed `PixivError` union and factory functions
 - **`src/interceptor.ts`**: `ResponseInterceptor` type definition (DB seam)
 - **`src/index.ts`**: Package barrel — hand-maintained (not auto-generated)
@@ -151,7 +127,7 @@ This is a **pnpm monorepo** with two published packages:
 
 | Tool | Role | Notes |
 |---|---|---|
-| `pnpm` v11.6.0 | Package manager | Workspace monorepo |
+| `pnpm` v11.10.0 | Package manager | Workspace monorepo |
 | `tsdown` | Build (core) | Outputs ESM + CJS + `.d.ts` |
 | `vitest` | Test runner | Replaces Jest; MSW v2 for HTTP mocking |
 | `typedoc` | API docs generator | `--gitRevision master` |
@@ -159,7 +135,7 @@ This is a **pnpm monorepo** with two published packages:
 | `eslint` (flat config) | Linting | `eslint.config.mjs` at root |
 | `prettier` | Formatting | `semi: false`, single quotes |
 | `drizzle-orm` | DB ORM (db-mysql) | MySQL2 adapter |
-| `neverthrow` | Result type | `ok`/`err`/`ResultAsync` |
+| `src/result.ts` | Result type (in-repo module) | Zero-dependency `ok`/`err`/`ResultAsync`, neverthrow-style — **not** the external `neverthrow` package |
 
 ## Response Design
 
@@ -176,7 +152,7 @@ All values returned to callers are in **lowerCamelCase**. The library communicat
 
 ### Recommended Patterns
 
-- API request methods return `ResultAsync<T, PixivError>` (from neverthrow) — no throws
+- API request methods return `ResultAsync<T, PixivError>` (from the in-repo `src/result.ts`, a zero-dependency neverthrow-style module) — no throws
 - Paginated endpoints return `PaginatedResultAsync<TPage, TItem>` with `.pages()` / `.items()` generators
 - Type definitions are hand-written interfaces in `types.ts` (not derived from Zod)
 - Zod schemas in `src/schemas/` exist for internal fixture validation only — they are not exported
@@ -207,6 +183,12 @@ All values returned to callers are in **lowerCamelCase**. The library communicat
 - When adding a new API method, add a corresponding unit test
 - Include tests for edge cases and exception handling
 - When adding a new utility function (`params.ts`), add unit tests in `params.test.ts`
+
+## Security / Sensitive Information
+
+- Never commit API keys, refresh tokens, or credentials to Git
+- Never output personal information or credentials to logs
+- Never use real credentials in test code — use MSW mocks or dummy data. The only exception is the E2E suite, which reads `PIXIV_REFRESH_TOKEN` from the environment at runtime and must not hard-code it
 
 ## Documentation Update Rules
 
@@ -264,5 +246,5 @@ All values returned to callers are in **lowerCamelCase**. The library communicat
 - `src/index.ts` is the hand-maintained package barrel — update it when adding or removing public exports
 - The db-mysql package saves raw snake_case response bodies to MySQL for archival fidelity; the camelizer only runs on values returned to callers
 - Renovate is enabled for automatic dependency updates
-- The package manager is pnpm v11.6.0
+- The package manager is pnpm v11.10.0
 - The Node.js version is managed via the `.node-version` file
