@@ -3,7 +3,7 @@
  */
 import type { HttpClient } from '../http'
 import type { PixivError } from '../errors'
-import { buildParams } from '../params'
+import { buildParameters } from '../parameters'
 import { PaginatedResultAsync } from '../paginated'
 import type { ResultAsync } from '../result'
 import {
@@ -25,25 +25,25 @@ import type {
 // === Request param types ===
 
 /** Parameters for fetching a single novel by ID. */
-export interface NovelDetailParams {
+export interface NovelDetailParameters {
   /** ID of the novel to fetch. */
   novelId: number
 }
 
 /** Parameters for fetching the WebView HTML of a novel. */
-export interface NovelTextParams {
+export interface NovelTextParameters {
   /** ID of the novel whose WebView HTML to fetch. */
   novelId: number
 }
 
 /** Parameters for fetching related novels. */
-export interface NovelRelatedParams {
+export interface NovelRelatedParameters {
   /** ID of the novel for which to fetch related works. */
   novelId: number
 }
 
 /** Parameters for searching novels. */
-export interface NovelSearchParams {
+export interface NovelSearchParameters {
   /** Search keyword. */
   word: string
   /** How to match the keyword against works (default: `"partial_match_for_tags"`). */
@@ -65,7 +65,7 @@ export interface NovelSearchParams {
 }
 
 /** Parameters for fetching the novel ranking. */
-export interface NovelRankingParams {
+export interface NovelRankingParameters {
   /** Ranking category (default: `"day"`). */
   mode?: (typeof NovelRankingMode)[keyof typeof NovelRankingMode]
   /** OS filter to apply (default: `"for_ios"`). */
@@ -77,7 +77,7 @@ export interface NovelRankingParams {
 }
 
 /** Parameters for fetching recommended novels. */
-export interface NovelRecommendedParams {
+export interface NovelRecommendedParameters {
   /** OS filter to apply (default: `"for_ios"`). */
   filter?: (typeof OSFilter)[keyof typeof OSFilter]
   /** Zero-based offset for pagination. */
@@ -90,7 +90,7 @@ export interface NovelRecommendedParams {
 }
 
 /** Parameters for fetching a novel series. */
-export interface NovelSeriesParams {
+export interface NovelSeriesParameters {
   /** ID of the novel series to fetch. */
   seriesId: number
   /** Order of the last novel already seen; used for cursor-based pagination. */
@@ -98,7 +98,7 @@ export interface NovelSeriesParams {
 }
 
 /** Parameters for adding a novel bookmark. */
-export interface NovelBookmarkAddParams {
+export interface NovelBookmarkAddParameters {
   /** ID of the novel to bookmark. */
   novelId: number
   /** Bookmark visibility (default: `"public"`). */
@@ -108,7 +108,7 @@ export interface NovelBookmarkAddParams {
 }
 
 /** Parameters for removing a novel bookmark. */
-export interface NovelBookmarkDeleteParams {
+export interface NovelBookmarkDeleteParameters {
   /** ID of the novel to remove from bookmarks. */
   novelId: number
 }
@@ -125,7 +125,7 @@ export class NovelResource {
    * Fetches a single novel by ID.
    * GET /v2/novel/detail
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    *
    * @example
    * ```ts
@@ -138,11 +138,11 @@ export class NovelResource {
    * ```
    */
   detail(
-    params: NovelDetailParams
+    parameters: NovelDetailParameters
   ): ResultAsync<NovelDetailResponse, PixivError> {
     return this.#http.get<NovelDetailResponse>(
       '/v2/novel/detail',
-      buildParams({ novelId: params.novelId })
+      buildParameters({ novelId: parameters.novelId })
     )
   }
 
@@ -153,13 +153,13 @@ export class NovelResource {
    * Returns the raw HTML page that the pixiv app renders in a WebView.
    * To extract the plain text, parse the returned HTML (e.g. strip tags).
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
-  text(params: NovelTextParams): ResultAsync<string, PixivError> {
+  text(parameters: NovelTextParameters): ResultAsync<string, PixivError> {
     return this.#http.get<string>(
       '/webview/v2/novel',
       // The webview endpoint uses the query parameter 'id', not 'novel_id'
-      buildParams({ id: params.novelId })
+      buildParameters({ id: parameters.novelId })
     )
   }
 
@@ -167,15 +167,15 @@ export class NovelResource {
    * Fetches related novels for a given novel.
    * GET /v1/novel/related
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   related(
-    params: NovelRelatedParams
+    parameters: NovelRelatedParameters
   ): PaginatedResultAsync<NovelListPage, PixivNovelItem> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<NovelListPage>(
         '/v1/novel/related',
-        buildParams({ novelId: params.novelId })
+        buildParameters({ novelId: parameters.novelId })
       ),
       this.#http,
       (page) => page.novels
@@ -186,7 +186,7 @@ export class NovelResource {
    * Searches for novels.
    * GET /v1/search/novel
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    *
    * @example
    * ```ts
@@ -203,21 +203,21 @@ export class NovelResource {
    * ```
    */
   search(
-    params: NovelSearchParams
+    parameters: NovelSearchParameters
   ): PaginatedResultAsync<NovelListPage, PixivNovelItem> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<NovelListPage>(
         '/v1/search/novel',
-        buildParams({
-          word: params.word,
-          searchTarget: params.searchTarget ?? 'partial_match_for_tags',
-          sort: params.sort ?? 'date_desc',
-          filter: params.filter ?? 'for_ios',
-          duration: params.duration,
-          startDate: params.startDate,
-          endDate: params.endDate,
-          searchAiType: params.searchAiType,
-          offset: params.offset,
+        buildParameters({
+          word: parameters.word,
+          searchTarget: parameters.searchTarget ?? 'partial_match_for_tags',
+          sort: parameters.sort ?? 'date_desc',
+          filter: parameters.filter ?? 'for_ios',
+          duration: parameters.duration,
+          startDate: parameters.startDate,
+          endDate: parameters.endDate,
+          searchAiType: parameters.searchAiType,
+          offset: parameters.offset,
         })
       ),
       this.#http,
@@ -229,19 +229,19 @@ export class NovelResource {
    * Fetches the novel ranking.
    * GET /v1/novel/ranking
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   ranking(
-    params: NovelRankingParams = {}
+    parameters: NovelRankingParameters = {}
   ): PaginatedResultAsync<NovelListPage, PixivNovelItem> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<NovelListPage>(
         '/v1/novel/ranking',
-        buildParams({
-          mode: params.mode ?? 'day',
-          filter: params.filter ?? 'for_ios',
-          date: params.date,
-          offset: params.offset,
+        buildParameters({
+          mode: parameters.mode ?? 'day',
+          filter: parameters.filter ?? 'for_ios',
+          date: parameters.date,
+          offset: parameters.offset,
         })
       ),
       this.#http,
@@ -253,20 +253,20 @@ export class NovelResource {
    * Fetches recommended novels.
    * GET /v1/novel/recommended
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   recommended(
-    params: NovelRecommendedParams = {}
+    parameters: NovelRecommendedParameters = {}
   ): PaginatedResultAsync<NovelRecommendedPage, PixivNovelItem> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<NovelRecommendedPage>(
         '/v1/novel/recommended',
-        buildParams({
-          filter: params.filter ?? 'for_ios',
+        buildParameters({
+          filter: parameters.filter ?? 'for_ios',
           includeRankingNovels: true,
           includePrivacyPolicy: true,
-          offset: params.offset,
-          maxBookmarkIdForRecommend: params.maxBookmarkIdForRecommend,
+          offset: parameters.offset,
+          maxBookmarkIdForRecommend: parameters.maxBookmarkIdForRecommend,
         })
       ),
       this.#http,
@@ -278,15 +278,18 @@ export class NovelResource {
    * Fetches a novel series.
    * GET /v2/novel/series
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   series(
-    params: NovelSeriesParams
+    parameters: NovelSeriesParameters
   ): PaginatedResultAsync<NovelSeriesPage, PixivNovelItem> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<NovelSeriesPage>(
         '/v2/novel/series',
-        buildParams({ seriesId: params.seriesId, lastOrder: params.lastOrder })
+        buildParameters({
+          seriesId: parameters.seriesId,
+          lastOrder: parameters.lastOrder,
+        })
       ),
       this.#http,
       (page) => page.novels
@@ -297,15 +300,15 @@ export class NovelResource {
    * Adds a novel bookmark.
    * POST /v2/novel/bookmark/add
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   bookmarkAdd(
-    params: NovelBookmarkAddParams
+    parameters: NovelBookmarkAddParameters
   ): ResultAsync<Record<string, never>, PixivError> {
-    const body = buildParams({
-      novelId: params.novelId,
-      restrict: params.restrict ?? 'public',
-      ...(params.tags ? { tags: params.tags } : {}),
+    const body = buildParameters({
+      novelId: parameters.novelId,
+      restrict: parameters.restrict ?? 'public',
+      ...(parameters.tags && { tags: parameters.tags }),
     })
     return this.#http.post<Record<string, never>>(
       '/v2/novel/bookmark/add',
@@ -317,12 +320,12 @@ export class NovelResource {
    * Removes a novel bookmark.
    * POST /v1/novel/bookmark/delete
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   bookmarkDelete(
-    params: NovelBookmarkDeleteParams
+    parameters: NovelBookmarkDeleteParameters
   ): ResultAsync<Record<string, never>, PixivError> {
-    const body = buildParams({ novelId: String(params.novelId) })
+    const body = buildParameters({ novelId: String(parameters.novelId) })
     return this.#http.post<Record<string, never>>(
       '/v1/novel/bookmark/delete',
       body.toString()

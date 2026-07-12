@@ -3,7 +3,7 @@
  */
 import type { HttpClient } from '../http'
 import type { PixivError } from '../errors'
-import { buildParams } from '../params'
+import { buildParameters } from '../parameters'
 import { PaginatedResultAsync } from '../paginated'
 import type { ResultAsync } from '../result'
 import {
@@ -24,7 +24,7 @@ import type {
 // === Request param types ===
 
 /** Parameters for fetching a single illust by ID. */
-export interface IllustDetailParams {
+export interface IllustDetailParameters {
   /** ID of the illust to fetch. */
   illustId: number
   /** OS filter to apply (default: `"for_ios"`). */
@@ -32,7 +32,7 @@ export interface IllustDetailParams {
 }
 
 /** Parameters for fetching related illusts. */
-export interface IllustRelatedParams {
+export interface IllustRelatedParameters {
   /** ID of the illust for which to fetch related works. */
   illustId: number
   /** Additional seed illust IDs to influence recommendations. */
@@ -42,7 +42,7 @@ export interface IllustRelatedParams {
 }
 
 /** Parameters for searching illusts. */
-export interface IllustSearchParams {
+export interface IllustSearchParameters {
   /** Search keyword. */
   word: string
   /** How to match the keyword against works (default: `"partial_match_for_tags"`). */
@@ -64,7 +64,7 @@ export interface IllustSearchParams {
 }
 
 /** Parameters for fetching the illust ranking. */
-export interface IllustRankingParams {
+export interface IllustRankingParameters {
   /** Ranking category (default: `"day"`). */
   mode?: (typeof RankingMode)[keyof typeof RankingMode]
   /** OS filter to apply (default: `"for_ios"`). */
@@ -76,7 +76,7 @@ export interface IllustRankingParams {
 }
 
 /** Parameters for fetching recommended illusts. */
-export interface IllustRecommendedParams {
+export interface IllustRecommendedParameters {
   /** OS filter to apply (default: `"for_ios"`). */
   filter?: (typeof OSFilter)[keyof typeof OSFilter]
   /** Zero-based offset for pagination. */
@@ -112,7 +112,7 @@ export interface IllustRecommendedParams {
 }
 
 /** Parameters for fetching an illust series. */
-export interface IllustSeriesParams {
+export interface IllustSeriesParameters {
   /** ID of the illust series to fetch. */
   illustSeriesId: number
   /** OS filter to apply (default: `"for_ios"`). */
@@ -120,7 +120,7 @@ export interface IllustSeriesParams {
 }
 
 /** Parameters for adding an illust bookmark. */
-export interface IllustBookmarkAddParams {
+export interface IllustBookmarkAddParameters {
   /** ID of the illust to bookmark. */
   illustId: number
   /** Bookmark visibility (default: `"public"`). */
@@ -130,7 +130,7 @@ export interface IllustBookmarkAddParams {
 }
 
 /** Parameters for removing an illust bookmark. */
-export interface IllustBookmarkDeleteParams {
+export interface IllustBookmarkDeleteParameters {
   /** ID of the illust to remove from bookmarks. */
   illustId: number
 }
@@ -147,7 +147,7 @@ export class IllustResource {
    * Fetches a single illust by ID.
    * GET /v1/illust/detail
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    *
    * @example
    * ```ts
@@ -160,11 +160,14 @@ export class IllustResource {
    * ```
    */
   detail(
-    params: IllustDetailParams
+    parameters: IllustDetailParameters
   ): ResultAsync<IllustDetailResponse, PixivError> {
     return this.#http.get<IllustDetailResponse>(
       '/v1/illust/detail',
-      buildParams({ illustId: params.illustId, filter: params.filter ?? 'for_ios' })
+      buildParameters({
+        illustId: parameters.illustId,
+        filter: parameters.filter ?? 'for_ios',
+      })
     )
   }
 
@@ -172,20 +175,20 @@ export class IllustResource {
    * Fetches related illusts for a given illust.
    * GET /v2/illust/related
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   related(
-    params: IllustRelatedParams
+    parameters: IllustRelatedParameters
   ): PaginatedResultAsync<IllustListPage, IllustListPage['illusts'][number]> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<IllustListPage>(
         '/v2/illust/related',
-        buildParams({
-          illustId: params.illustId,
-          filter: params.filter ?? 'for_ios',
-          ...(params.seedIllustIds
-            ? { seedIllustIds: params.seedIllustIds }
-            : {}),
+        buildParameters({
+          illustId: parameters.illustId,
+          filter: parameters.filter ?? 'for_ios',
+          ...(parameters.seedIllustIds && {
+            seedIllustIds: parameters.seedIllustIds,
+          }),
         })
       ),
       this.#http,
@@ -197,7 +200,7 @@ export class IllustResource {
    * Searches for illusts.
    * GET /v1/search/illust
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    *
    * @example
    * ```ts
@@ -214,21 +217,21 @@ export class IllustResource {
    * ```
    */
   search(
-    params: IllustSearchParams
+    parameters: IllustSearchParameters
   ): PaginatedResultAsync<IllustListPage, IllustListPage['illusts'][number]> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<IllustListPage>(
         '/v1/search/illust',
-        buildParams({
-          word: params.word,
-          searchTarget: params.searchTarget ?? 'partial_match_for_tags',
-          sort: params.sort ?? 'date_desc',
-          filter: params.filter ?? 'for_ios',
-          duration: params.duration,
-          startDate: params.startDate,
-          endDate: params.endDate,
-          searchAiType: params.searchAiType,
-          offset: params.offset,
+        buildParameters({
+          word: parameters.word,
+          searchTarget: parameters.searchTarget ?? 'partial_match_for_tags',
+          sort: parameters.sort ?? 'date_desc',
+          filter: parameters.filter ?? 'for_ios',
+          duration: parameters.duration,
+          startDate: parameters.startDate,
+          endDate: parameters.endDate,
+          searchAiType: parameters.searchAiType,
+          offset: parameters.offset,
         })
       ),
       this.#http,
@@ -240,19 +243,19 @@ export class IllustResource {
    * Fetches the illust ranking.
    * GET /v1/illust/ranking
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   ranking(
-    params: IllustRankingParams = {}
+    parameters: IllustRankingParameters = {}
   ): PaginatedResultAsync<IllustListPage, IllustListPage['illusts'][number]> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<IllustListPage>(
         '/v1/illust/ranking',
-        buildParams({
-          mode: params.mode ?? 'day',
-          filter: params.filter ?? 'for_ios',
-          date: params.date,
-          offset: params.offset,
+        buildParameters({
+          mode: parameters.mode ?? 'day',
+          filter: parameters.filter ?? 'for_ios',
+          date: parameters.date,
+          offset: parameters.offset,
         })
       ),
       this.#http,
@@ -264,10 +267,10 @@ export class IllustResource {
    * Fetches recommended illusts.
    * GET /v1/illust/recommended
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   recommended(
-    params: IllustRecommendedParams = {}
+    parameters: IllustRecommendedParameters = {}
   ): PaginatedResultAsync<
     IllustRecommendedPage,
     IllustRecommendedPage['illusts'][number]
@@ -275,16 +278,16 @@ export class IllustResource {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<IllustRecommendedPage>(
         '/v1/illust/recommended',
-        buildParams({
-          filter: params.filter ?? 'for_ios',
-          contentType: params.contentType,
-          includeRankingLabel: params.includeRankingLabel ?? true,
+        buildParameters({
+          filter: parameters.filter ?? 'for_ios',
+          contentType: parameters.contentType,
+          includeRankingLabel: parameters.includeRankingLabel ?? true,
           includeRankingIllusts: true,
           includePrivacyPolicy: true,
-          offset: params.offset,
-          maxBookmarkIdForRecommend: params.maxBookmarkIdForRecommend,
-          minBookmarkIdForRecentIllust: params.minBookmarkIdForRecentIllust,
-          ...(params.viewed ? { viewed: params.viewed } : {}),
+          offset: parameters.offset,
+          maxBookmarkIdForRecommend: parameters.maxBookmarkIdForRecommend,
+          minBookmarkIdForRecentIllust: parameters.minBookmarkIdForRecentIllust,
+          ...(parameters.viewed && { viewed: parameters.viewed }),
         })
       ),
       this.#http,
@@ -296,10 +299,10 @@ export class IllustResource {
    * Fetches an illust series.
    * GET /v1/illust/series
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   series(
-    params: IllustSeriesParams
+    parameters: IllustSeriesParameters
   ): PaginatedResultAsync<
     IllustSeriesPage,
     IllustSeriesPage['illusts'][number]
@@ -307,9 +310,9 @@ export class IllustResource {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<IllustSeriesPage>(
         '/v1/illust/series',
-        buildParams({
-          illustSeriesId: params.illustSeriesId,
-          filter: params.filter ?? 'for_ios',
+        buildParameters({
+          illustSeriesId: parameters.illustSeriesId,
+          filter: parameters.filter ?? 'for_ios',
         })
       ),
       this.#http,
@@ -321,15 +324,15 @@ export class IllustResource {
    * Adds an illust bookmark.
    * POST /v2/illust/bookmark/add
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   bookmarkAdd(
-    params: IllustBookmarkAddParams
+    parameters: IllustBookmarkAddParameters
   ): ResultAsync<Record<string, never>, PixivError> {
-    const body = buildParams({
-      illustId: params.illustId,
-      restrict: params.restrict ?? 'public',
-      ...(params.tags ? { tags: params.tags } : {}),
+    const body = buildParameters({
+      illustId: parameters.illustId,
+      restrict: parameters.restrict ?? 'public',
+      ...(parameters.tags && { tags: parameters.tags }),
     })
     return this.#http.post<Record<string, never>>(
       '/v2/illust/bookmark/add',
@@ -341,12 +344,12 @@ export class IllustResource {
    * Removes an illust bookmark.
    * POST /v1/illust/bookmark/delete
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   bookmarkDelete(
-    params: IllustBookmarkDeleteParams
+    parameters: IllustBookmarkDeleteParameters
   ): ResultAsync<Record<string, never>, PixivError> {
-    const body = buildParams({ illustId: String(params.illustId) })
+    const body = buildParameters({ illustId: String(parameters.illustId) })
     return this.#http.post<Record<string, never>>(
       '/v1/illust/bookmark/delete',
       body.toString()

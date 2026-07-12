@@ -25,18 +25,18 @@ export function camelToSnake(key: string): string {
  *
  * Values are preserved as-is; nested objects are NOT recursed into.
  *
- * @param obj - Object with camelCase keys
+ * @param object - Object with camelCase keys
  * @returns New object with snake_case keys
  */
-export function toSnakeKeys(obj: Record<string, unknown>): Record<string, unknown> {
+export function toSnakeKeys(object: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {}
-  for (const key of Object.keys(obj)) {
-    out[camelToSnake(key)] = obj[key]
+  for (const [key, value] of Object.entries(object)) {
+    out[camelToSnake(key)] = value
   }
   return out
 }
 
-type ParamValue =
+type ParameterValue =
   | string
   | number
   | boolean
@@ -54,14 +54,14 @@ type ParamValue =
  * - Booleans are serialised as `'true'` / `'false'`.
  * - Numbers are serialised via `.toString()`.
  *
- * @param params - Key/value pairs to serialise
+ * @param parameters - Key/value pairs to serialise
  * @returns Populated `URLSearchParams`
  */
-export function buildSearchParams(
-  params: Record<string, ParamValue>
+export function buildSearchParameters(
+  parameters: Record<string, ParameterValue>
 ): URLSearchParams {
   const usp = new URLSearchParams()
-  for (const [key, value] of Object.entries(params)) {
+  for (const [key, value] of Object.entries(parameters)) {
     if (value === null || value === undefined) continue
     if (Array.isArray(value)) {
       // The pixiv API (Rails backend) expects bracket-suffixed keys for arrays:
@@ -79,13 +79,15 @@ export function buildSearchParams(
  *
  * Convenience wrapper used by resource methods.
  *
- * @param params - camelCase record
+ * @param parameters - camelCase record
  * @returns Populated `URLSearchParams` with snake_case keys
  */
-export function buildParams(
-  params: Record<string, ParamValue>
+export function buildParameters(
+  parameters: Record<string, ParameterValue>
 ): URLSearchParams {
-  return buildSearchParams(toSnakeKeys(params) as Record<string, ParamValue>)
+  return buildSearchParameters(
+    toSnakeKeys(parameters) as Record<string, ParameterValue>
+  )
 }
 
 /**
@@ -184,28 +186,28 @@ export function parseNextUrl(url: string): ParsedNextUrl {
   const usp = new URL(url).searchParams
   const result: ParsedNextUrl = {}
 
-  const toNum = (key: string): number | undefined => {
+  const toNumber = (key: string): number | undefined => {
     const v = usp.get(key)
     if (v === null || v === '') return undefined
     const n = Number(v)
     return Number.isNaN(n) ? undefined : n
   }
 
-  const maxBookmarkId = toNum('max_bookmark_id')
+  const maxBookmarkId = toNumber('max_bookmark_id')
   if (maxBookmarkId !== undefined) result.maxBookmarkId = maxBookmarkId
 
-  const maxBookmarkIdForRecommend = toNum('max_bookmark_id_for_recommend')
+  const maxBookmarkIdForRecommend = toNumber('max_bookmark_id_for_recommend')
   if (maxBookmarkIdForRecommend !== undefined)
     result.maxBookmarkIdForRecommend = maxBookmarkIdForRecommend
 
-  const minBookmarkIdForRecentIllust = toNum('min_bookmark_id_for_recent_illust')
+  const minBookmarkIdForRecentIllust = toNumber('min_bookmark_id_for_recent_illust')
   if (minBookmarkIdForRecentIllust !== undefined)
     result.minBookmarkIdForRecentIllust = minBookmarkIdForRecentIllust
 
-  const offset = toNum('offset')
+  const offset = toNumber('offset')
   if (offset !== undefined) result.offset = offset
 
-  const lastOrder = toNum('last_order')
+  const lastOrder = toNumber('last_order')
   if (lastOrder !== undefined) result.lastOrder = lastOrder
 
   return result

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { err, ok, Result, ResultAsync } from '../src/result'
+import { err as error, ok, Result, ResultAsync } from '../src/result'
 import {
   apiError,
   authFailedError,
@@ -40,7 +40,7 @@ describe('ok()', () => {
   })
 
   it('andThen chains to Err', () => {
-    const r = ok(5).andThen<number, string>(() => err('oops'))
+    const r = ok(5).andThen<number, string>(() => error('oops'))
     expect(r.isErr).toBe(true)
     if (!r.isErr) return
     expect(r.error).toBe('oops')
@@ -61,40 +61,40 @@ describe('ok()', () => {
 
 describe('err()', () => {
   it('creates an ErrResult', () => {
-    const r = err('bad')
+    const r = error('bad')
     expect(r.isOk).toBe(false)
     expect(r.isErr).toBe(true)
     expect(r.error).toBe('bad')
   })
 
   it('map is a no-op', () => {
-    const r = err<string>('e').map(() => 42)
+    const r = error<string>('e').map(() => 42)
     expect(r.isErr).toBe(true)
     expect(r.error).toBe('e')
   })
 
   it('mapErr transforms the error', () => {
-    const r = err('e').mapErr((e) => e.toUpperCase())
+    const r = error('e').mapErr((error_) => error_.toUpperCase())
     expect(r.isErr).toBe(true)
     expect(r.error).toBe('E')
   })
 
   it('andThen is a no-op', () => {
-    const r = err<string>('e').andThen<number, string>(() => ok(1))
+    const r = error<string>('e').andThen<number, string>(() => ok(1))
     expect(r.isErr).toBe(true)
     expect(r.error).toBe('e')
   })
 
   it('match calls onErr', () => {
-    const out = err('boom').match(
+    const out = error('boom').match(
       () => 'ok',
-      (e) => `err:${e}`
+      (error_) => `err:${error_}`
     )
     expect(out).toBe('err:boom')
   })
 
   it('unwrapOr returns the fallback', () => {
-    expect(err('e').unwrapOr(42)).toBe(42)
+    expect(error('e').unwrapOr(42)).toBe(42)
   })
 })
 
@@ -113,7 +113,8 @@ describe('ResultAsync.fromPromise()', () => {
   it('wraps a rejected promise into Err', async () => {
     const r = await ResultAsync.fromPromise(
       Promise.reject(new Error('oops')),
-      (e: unknown) => (e instanceof Error ? e.message : String(e))
+      (error_: unknown) =>
+        error_ instanceof Error ? error_.message : String(error_)
     )
     expect(r.isErr).toBe(true)
     if (!r.isErr) return
@@ -130,7 +131,7 @@ describe('ResultAsync.fromResult()', () => {
   })
 
   it('wraps an Err result', async () => {
-    const r = await ResultAsync.fromResult(err('e'))
+    const r = await ResultAsync.fromResult(error('e'))
     expect(r.isErr).toBe(true)
     if (!r.isErr) return
     expect(r.error).toBe('e')
@@ -146,20 +147,20 @@ describe('ResultAsync.map()', () => {
   })
 
   it('does not call fn on Err', async () => {
-    let called = false
-    const r = await ResultAsync.fromResult(err('e')).map(() => {
-      called = true
+    let isCalled = false
+    const r = await ResultAsync.fromResult(error('e')).map(() => {
+      isCalled = true
       return 0
     })
-    expect(called).toBe(false)
+    expect(isCalled).toBe(false)
     expect(r.isErr).toBe(true)
   })
 })
 
 describe('ResultAsync.mapErr()', () => {
   it('transforms the error', async () => {
-    const r = await ResultAsync.fromResult(err('x')).mapErr((e) =>
-      e.toUpperCase()
+    const r = await ResultAsync.fromResult(error('x')).mapErr((error_) =>
+      error_.toUpperCase()
     )
     expect(r.isErr).toBe(true)
     if (!r.isErr) return
@@ -167,12 +168,12 @@ describe('ResultAsync.mapErr()', () => {
   })
 
   it('does not call fn on Ok', async () => {
-    let called = false
+    let isCalled = false
     const r = await ResultAsync.fromResult(ok(1)).mapErr(() => {
-      called = true
+      isCalled = true
       return 'e'
     })
-    expect(called).toBe(false)
+    expect(isCalled).toBe(false)
     expect(r.isOk).toBe(true)
   })
 })
@@ -188,12 +189,12 @@ describe('ResultAsync.andThen()', () => {
   })
 
   it('short-circuits on Err', async () => {
-    let called = false
-    const r = await ResultAsync.fromResult(err<string>('e')).andThen(() => {
-      called = true
+    let isCalled = false
+    const r = await ResultAsync.fromResult(error<string>('e')).andThen(() => {
+      isCalled = true
       return ResultAsync.fromResult(ok(1))
     })
-    expect(called).toBe(false)
+    expect(isCalled).toBe(false)
     expect(r.isErr).toBe(true)
     if (!r.isErr) return
     expect(r.error).toBe('e')
@@ -201,7 +202,7 @@ describe('ResultAsync.andThen()', () => {
 
   it('propagates Err from the chained fn', async () => {
     const r = await ResultAsync.fromResult(ok(1)).andThen<number, string>(() =>
-      ResultAsync.fromResult(err('chain-err'))
+      ResultAsync.fromResult(error('chain-err'))
     )
     expect(r.isErr).toBe(true)
     if (!r.isErr) return
@@ -219,9 +220,9 @@ describe('ResultAsync.match()', () => {
   })
 
   it('calls onErr for a failed result', async () => {
-    const out = await ResultAsync.fromResult(err('boom')).match(
+    const out = await ResultAsync.fromResult(error('boom')).match(
       () => 'ok',
-      (e) => `err:${e}`
+      (error_) => `err:${error_}`
     )
     expect(out).toBe('err:boom')
   })
@@ -233,7 +234,7 @@ describe('ResultAsync.unwrapOr()', () => {
   })
 
   it('returns the fallback on Err', async () => {
-    expect(await ResultAsync.fromResult(err('e')).unwrapOr(99)).toBe(99)
+    expect(await ResultAsync.fromResult(error('e')).unwrapOr(99)).toBe(99)
   })
 })
 
@@ -250,30 +251,30 @@ describe('ResultAsync await', () => {
 
 describe('PixivError constructors', () => {
   it('rateLimitError', () => {
-    const e: PixivError = rateLimitError(5000)
-    expect(e.type).toBe('rate_limit')
-    if (e.type === 'rate_limit') expect(e.retryAfter).toBe(5000)
+    const error_: PixivError = rateLimitError(5000)
+    expect(error_.type).toBe('rate_limit')
+    if (error_.type === 'rate_limit') expect(error_.retryAfter).toBe(5000)
   })
 
   it('authFailedError', () => {
-    const e = authFailedError(401)
-    expect(e.type).toBe('auth_failed')
-    if (e.type === 'auth_failed') expect(e.status).toBe(401)
+    const error_ = authFailedError(401)
+    expect(error_.type).toBe('auth_failed')
+    if (error_.type === 'auth_failed') expect(error_.status).toBe(401)
   })
 
   it('networkError', () => {
     const cause = new Error('ECONNREFUSED')
-    const e = networkError(cause)
-    expect(e.type).toBe('network')
-    if (e.type === 'network') expect(e.cause).toBe(cause)
+    const error_ = networkError(cause)
+    expect(error_.type).toBe('network')
+    if (error_.type === 'network') expect(error_.cause).toBe(cause)
   })
 
   it('apiError', () => {
-    const e = apiError(404, { error: 'not found' })
-    expect(e.type).toBe('api_error')
-    if (e.type === 'api_error') {
-      expect(e.status).toBe(404)
-      expect(e.body).toEqual({ error: 'not found' })
+    const error_ = apiError(404, { error: 'not found' })
+    expect(error_.type).toBe('api_error')
+    if (error_.type === 'api_error') {
+      expect(error_.status).toBe(404)
+      expect(error_.body).toEqual({ error: 'not found' })
     }
   })
 })

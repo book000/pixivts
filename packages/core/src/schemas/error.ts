@@ -21,12 +21,14 @@ import { z } from 'zod'
  * }
  * ```
  */
+const UserMessageDetailsSchema = z.record(z.string(), z.unknown())
+
 export const PixivApiErrorBodySchema = z.object({
   error: z.object({
     userMessage: z.string(),
     message: z.string(),
     reason: z.string(),
-    userMessageDetails: z.record(z.string(), z.unknown()).optional(),
+    userMessageDetails: UserMessageDetailsSchema.optional(),
   }),
 })
 

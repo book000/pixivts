@@ -24,28 +24,28 @@ export interface AuthCredentials {
 // ---------------------------------------------------------------------------
 
 // Per-round constants derived from sin (Table T in RFC 1321)
-const T: number[] = Array.from({ length: 64 }, (_, i) =>
-  Math.floor(Math.abs(Math.sin(i + 1)) * 2 ** 32)
+const T: number[] = Array.from({ length: 64 }, (_, index) =>
+  Math.floor(Math.abs(Math.sin(index + 1)) * 2 ** 32)
 )
 
 // Shift amounts per round
 const S = [
   7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5,
   9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11,
-  16, 23, 4, 11, 16, 23, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10,
-  15, 21,
+  16, 23, 4, 11, 16, 23, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15,
+  21,
 ]
 
 function md5Bytes(bytes: number[]): string {
-  const len = bytes.length
+  const length = bytes.length
   // Append bit 1 (0x80 byte)
   bytes.push(0x80)
   // Pad to 56 mod 64 bytes
   while (bytes.length % 64 !== 56) bytes.push(0)
   // Append original length in bits as little-endian 64-bit
-  const bitLen = len * 8
-  for (let i = 0; i < 8; i++) {
-    bytes.push(i < 4 ? (bitLen >>> (i * 8)) & 0xff : 0)
+  const bitLength = length * 8
+  for (let index = 0; index < 8; index++) {
+    bytes.push(index < 4 ? (bitLength >>> (index * 8)) & 0xff : 0)
   }
 
   // Initial hash state
@@ -73,30 +73,30 @@ function md5Bytes(bytes: number[]): string {
     let cc = c
     let dd = d
 
-    for (let i = 0; i < 64; i++) {
+    for (let index = 0; index < 64; index++) {
       let f: number
       let g: number
-      if (i < 16) {
+      if (index < 16) {
         f = (bb & cc) | (~bb & dd)
-        g = i
-      } else if (i < 32) {
+        g = index
+      } else if (index < 32) {
         f = (dd & bb) | (~dd & cc)
-        g = (5 * i + 1) % 16
-      } else if (i < 48) {
+        g = (5 * index + 1) % 16
+      } else if (index < 48) {
         f = bb ^ cc ^ dd
-        g = (3 * i + 5) % 16
+        g = (3 * index + 5) % 16
       } else {
         f = cc ^ (bb | ~dd)
-        g = (7 * i) % 16
+        g = (7 * index) % 16
       }
 
-      const tmp = dd
+      const temporary = dd
       dd = cc
       cc = bb
-      const sum = Math.trunc(aa + f + M[g] + T[i])
-      const rotated = (sum << S[i]) | (sum >>> (32 - S[i]))
+      const sum = Math.trunc(aa + f + M[g] + T[index])
+      const rotated = (sum << S[index]) | (sum >>> (32 - S[index]))
       bb = Math.trunc(bb + rotated)
-      aa = tmp
+      aa = temporary
     }
 
     a = Math.trunc(a + aa)
@@ -127,8 +127,8 @@ function md5Bytes(bytes: number[]): string {
 export function md5(input: string): string {
   // Encode the input string as a sequence of bytes (UTF-8)
   const bytes: number[] = []
-  for (let i = 0; i < input.length; i++) {
-    const code = input.codePointAt(i) ?? 0
+  for (let index = 0; index < input.length; index++) {
+    const code = input.codePointAt(index) ?? 0
     if (code < 0x80) {
       bytes.push(code)
     } else if (code < 0x8_00) {
@@ -144,7 +144,6 @@ export function md5(input: string): string {
 
   return md5Bytes(bytes)
 }
-
 
 // ---------------------------------------------------------------------------
 // AuthManager
@@ -222,9 +221,7 @@ export class AuthManager {
     })
 
     if (response.status !== 200) {
-      throw new Error(
-        `Failed to refresh pixiv token: HTTP ${response.status}`
-      )
+      throw new Error(`Failed to refresh pixiv token: HTTP ${response.status}`)
     }
 
     const data = (await response.json()) as {

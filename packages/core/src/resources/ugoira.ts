@@ -3,12 +3,12 @@
  */
 import type { HttpClient } from '../http'
 import type { PixivError } from '../errors'
-import { buildParams } from '../params'
+import { buildParameters } from '../parameters'
 import type { ResultAsync } from '../result'
 import type { UgoiraMetadataResponse } from '../types'
 
 /** Parameters for fetching ugoira metadata. */
-export interface UgoiraMetadataParams {
+export interface UgoiraMetadataParameters {
   /** ID of the ugoira illust whose metadata to fetch. */
   illustId: number
 }
@@ -25,14 +25,14 @@ export class UgoiraResource {
    * Fetches ugoira metadata (ZIP URL and per-frame timings).
    * GET /v1/ugoira/metadata
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   metadata(
-    params: UgoiraMetadataParams
+    parameters: UgoiraMetadataParameters
   ): ResultAsync<UgoiraMetadataResponse, PixivError> {
     return this.#http.get<UgoiraMetadataResponse>(
       '/v1/ugoira/metadata',
-      buildParams({ illustId: params.illustId })
+      buildParameters({ illustId: parameters.illustId })
     )
   }
 }

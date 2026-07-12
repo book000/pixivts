@@ -21,8 +21,16 @@
  */
 
 // Connection
+export { createDatabaseConnection } from './connection'
+export type { ConnectionOptions, DatabaseInstance } from './connection'
+
+// Deprecated aliases for the connection API above, kept for backward
+// compatibility with the pre-1.x `createDbConnection`/`DbInstance` naming
+// (renamed to satisfy the `unicorn/name-replacements` lint rule).
+// eslint-disable-next-line @typescript-eslint/no-deprecated -- re-exporting the deprecated binding itself for backward compatibility, not using it
 export { createDbConnection } from './connection'
-export type { ConnectionOptions, DbInstance } from './connection'
+// eslint-disable-next-line @typescript-eslint/no-deprecated -- re-exporting the deprecated alias itself for backward compatibility, not using it
+export type { DbInstance } from './connection'
 
 // Schema
 export { responsesTable } from './schema'

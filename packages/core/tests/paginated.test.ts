@@ -26,7 +26,11 @@ interface ItemPage extends PagedResponse {
 // ---------------------------------------------------------------------------
 
 function makeAuth(): AuthManager {
-  return new AuthManager({ userId: '1', accessToken: 'token', refreshToken: 'rt' })
+  return new AuthManager({
+    userId: '1',
+    accessToken: 'token',
+    refreshToken: 'rt',
+  })
 }
 
 function makeHttp(): HttpClient {
@@ -83,10 +87,7 @@ describe('PaginatedResultAsync — single page', () => {
       (page) => page.items
     )
 
-    const collected: ItemPage[] = []
-    for await (const page of paginated.pages()) {
-      collected.push(page)
-    }
+    const collected: ItemPage[] = await Array.fromAsync(paginated.pages())
     expect(collected).toHaveLength(1)
     expect(collected[0].items[0].id).toBe(1)
   })
@@ -111,12 +112,9 @@ describe('PaginatedResultAsync — single page', () => {
       (page) => page.items
     )
 
-    const collected: Item[] = []
-    for await (const item of paginated.items()) {
-      collected.push(item)
-    }
+    const collected: Item[] = await Array.fromAsync(paginated.items())
     expect(collected).toHaveLength(2)
-    expect(collected.map((i) => i.id)).toEqual([1, 2])
+    expect(collected.map((index) => index.id)).toEqual([1, 2])
   })
 })
 
@@ -161,7 +159,7 @@ describe('PaginatedResultAsync — multiple pages', () => {
 
     const ids: number[] = []
     for await (const page of paginated.pages()) {
-      ids.push(...page.items.map((i) => i.id))
+      ids.push(...page.items.map((index) => index.id))
     }
     expect(ids).toEqual([1, 2, 3])
   })
@@ -232,7 +230,7 @@ describe('PaginatedResultAsync — multiple pages', () => {
       if (collected.length === 2) break // stop before reaching next_url
     }
     expect(collected).toHaveLength(2)
-    expect(collected.map((i) => i.id)).toEqual([1, 2])
+    expect(collected.map((index) => index.id)).toEqual([1, 2])
   })
 
   it('pages() correctly counts page fetches', async () => {
@@ -262,10 +260,7 @@ describe('PaginatedResultAsync — multiple pages', () => {
       (page) => page.items
     )
 
-    const pages: ItemPage[] = []
-    for await (const page of paginated.pages()) {
-      pages.push(page)
-    }
+    const pages: ItemPage[] = await Array.fromAsync(paginated.pages())
 
     expect(pages).toHaveLength(2)
     expect(fetchCount).toBe(2)

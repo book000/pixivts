@@ -5,7 +5,15 @@
  */
 
 import { z } from 'zod'
-import { ImageUrlsSchema, PixivUserSchema, SeriesSchema, TagSchema } from './common'
+import {
+  ImageUrlsSchema,
+  PixivUserSchema,
+  SeriesSchema,
+  TagSchema,
+} from './common'
+
+/** Placeholder for novels with no series, where `series` is `{}`. */
+const EmptySeriesSchema = z.record(z.string(), z.never())
 
 /** A pixiv novel work item as returned by the API. */
 export const PixivNovelItemSchema = z.object({
@@ -35,7 +43,7 @@ export const PixivNovelItemSchema = z.object({
    *
    * Contains `{}` (empty object) if the novel does not belong to a series.
    */
-  series: z.union([SeriesSchema, z.record(z.string(), z.never())]),
+  series: z.union([SeriesSchema, EmptySeriesSchema]),
   isBookmarked: z.boolean(),
   totalBookmarks: z.number(),
   totalView: z.number(),

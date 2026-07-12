@@ -10,7 +10,7 @@
  */
 
 import { sql } from 'drizzle-orm'
-import type { DbInstance } from './connection'
+import type { DatabaseInstance } from './connection'
 
 /**
  * Creates the `responses` table if it does not already exist.
@@ -18,10 +18,12 @@ import type { DbInstance } from './connection'
  * This is a lightweight alternative to running drizzle-kit migrations in
  * environments where the table has not been set up yet.
  *
- * @param db - Drizzle ORM database instance
+ * @param database - Drizzle ORM database instance
  */
-export async function bootstrapSchema(db: DbInstance): Promise<void> {
-  await db.execute(sql`
+export async function bootstrapSchema(
+  database: DatabaseInstance
+): Promise<void> {
+  await database.execute(sql`
     CREATE TABLE IF NOT EXISTS responses (
       id           INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Response ID',
       method       VARCHAR(10)   NOT NULL COMMENT 'HTTP method',

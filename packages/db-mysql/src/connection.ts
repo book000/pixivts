@@ -46,11 +46,18 @@ export interface ConnectionOptions {
  *
  * Typed with the `schema` so that relational queries are available.
  */
-export type DbInstance = ReturnType<typeof drizzle<typeof schema>>
+export type DatabaseInstance = ReturnType<typeof drizzle<typeof schema>>
+
+/**
+ * @deprecated Use {@link DatabaseInstance} instead. Kept as a type alias for
+ * backward compatibility with the pre-1.x `DbInstance` naming (renamed to
+ * `DatabaseInstance` to satisfy the `unicorn/name-replacements` lint rule).
+ */
+export type DbInstance = DatabaseInstance
 
 function parsePort(value: string | undefined): number {
   if (!value) return 3306
-  const parsed = Number.parseInt(value, 10)
+  const parsed = Number(value)
   return Number.isNaN(parsed) ? 3306 : parsed
 }
 
@@ -58,19 +65,19 @@ function parsePort(value: string | undefined): number {
  * Creates a mysql2 connection pool and returns both the raw pool and the
  * Drizzle ORM wrapper.
  *
- * @param opts - Connection options (fall back to environment variables)
+ * @param options - Connection options (fall back to environment variables)
  * @returns `{ pool, db }` — raw pool for `close()`, db for queries
  */
-export function createDbConnection(opts: ConnectionOptions): {
+export function createDatabaseConnection(options: ConnectionOptions): {
   pool: mysql.Pool
-  db: DbInstance
+  db: DatabaseInstance
 } {
   const pool = mysql.createPool({
-    host: opts.host ?? process.env.RESPONSE_DB_HOSTNAME ?? 'localhost',
-    port: opts.port ?? parsePort(process.env.RESPONSE_DB_PORT),
-    user: opts.user ?? process.env.RESPONSE_DB_USERNAME,
-    password: opts.password ?? process.env.RESPONSE_DB_PASSWORD,
-    database: opts.database ?? process.env.RESPONSE_DB_DATABASE,
+    host: options.host ?? process.env.RESPONSE_DB_HOSTNAME ?? 'localhost',
+    port: options.port ?? parsePort(process.env.RESPONSE_DB_PORT),
+    user: options.user ?? process.env.RESPONSE_DB_USERNAME,
+    password: options.password ?? process.env.RESPONSE_DB_PASSWORD,
+    database: options.database ?? process.env.RESPONSE_DB_DATABASE,
     timezone: '+09:00',
     supportBigNumbers: true,
     bigNumberStrings: true,
@@ -79,6 +86,21 @@ export function createDbConnection(opts: ConnectionOptions): {
   // Type assertion required: pnpm's peer-dep resolution for the patched drizzle-orm
   // creates a structurally-incompatible Pool type for the $client property.
   // The runtime value is correct; only the declaration paths differ.
-  const db = drizzle(pool, { schema, mode: 'default' }) as unknown as DbInstance
-  return { pool, db }
+  const database = drizzle(pool, {
+    schema,
+    mode: 'default',
+  }) as unknown as DatabaseInstance
+  return { pool, db: database }
+}
+
+/**
+ * @deprecated Use {@link createDatabaseConnection} instead. Kept as a wrapper
+ * for backward compatibility with the pre-1.x `createDbConnection` naming
+ * (renamed to satisfy the `unicorn/name-replacements` lint rule).
+ */
+export function createDbConnection(options: ConnectionOptions): {
+  pool: mysql.Pool
+  db: DatabaseInstance
+} {
+  return createDatabaseConnection(options)
 }

@@ -17,6 +17,9 @@ export const MetaSinglePageSchema = z.object({
   originalImageUrl: z.string().optional(),
 })
 
+/** Placeholder for multi-page works, where `metaSinglePage` is `{}`. */
+const EmptyMetaSinglePageSchema = z.record(z.string(), z.never())
+
 /** Multi-page illust detail (imageUrls for each page). */
 export const MetaPagesSchema = z.object({
   imageUrls: ImageUrlsSchema.extend({
@@ -55,7 +58,7 @@ export const PixivIllustItemSchema = z.object({
    * For single-page works this is `{ originalImageUrl: string }`.
    * For multi-page works this is an empty object `{}`.
    */
-  metaSinglePage: z.union([MetaSinglePageSchema, z.record(z.string(), z.never())]),
+  metaSinglePage: z.union([MetaSinglePageSchema, EmptyMetaSinglePageSchema]),
   metaPages: z.array(MetaPagesSchema),
   totalView: z.number(),
   totalBookmarks: z.number(),

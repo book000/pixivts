@@ -14,9 +14,12 @@ function makeAuth(accessToken = 'test-token'): AuthManager {
 
 function makeClient(
   auth: AuthManager = makeAuth(),
-  opts?: ConstructorParameters<typeof HttpClient>[1]
+  options?: ConstructorParameters<typeof HttpClient>[1]
 ): HttpClient {
-  return new HttpClient(auth, { retry: { maxRetries: 2, waitMs: 10 }, ...opts })
+  return new HttpClient(auth, {
+    retry: { maxRetries: 2, waitMs: 10 },
+    ...options,
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -68,8 +71,8 @@ describe('HttpClient.get()', () => {
         return HttpResponse.json({ illusts: [] })
       })
     )
-    const params = new URLSearchParams({ word: 'cat', filter: 'for_ios' })
-    await makeClient().get('/v1/search/illust', params)
+    const parameters = new URLSearchParams({ word: 'cat', filter: 'for_ios' })
+    await makeClient().get('/v1/search/illust', parameters)
     expect(captured).toContain('word=cat')
     expect(captured).toContain('filter=for_ios')
   })
@@ -130,14 +133,18 @@ describe('429 retry', () => {
 
   it('returns Err(rate_limit) after exhausting retries', async () => {
     server.use(
-      http.get('https://app-api.pixiv.net/v1/always-429', () =>
-        new HttpResponse(null, {
-          status: 429,
-          headers: { 'Retry-After': '0' },
-        })
+      http.get(
+        'https://app-api.pixiv.net/v1/always-429',
+        () =>
+          new HttpResponse(null, {
+            status: 429,
+            headers: { 'Retry-After': '0' },
+          })
       )
     )
-    const client = makeClient(makeAuth(), { retry: { maxRetries: 1, waitMs: 0 } })
+    const client = makeClient(makeAuth(), {
+      retry: { maxRetries: 1, waitMs: 0 },
+    })
     const r = await client.get('/v1/always-429')
     expect(r.isErr).toBe(true)
     if (r.isErr) expect(r.error.type).toBe('rate_limit')
@@ -171,7 +178,7 @@ describe('429 retry', () => {
 describe('401 auth refresh', () => {
   it('refreshes the token and retries on 401', async () => {
     let calls = 0
-    let sawNewToken = false
+    let isSawNewToken = false
 
     // Token refresh endpoint
     server.use(
@@ -187,7 +194,7 @@ describe('401 auth refresh', () => {
       http.get('https://app-api.pixiv.net/v1/auth-test', ({ request }) => {
         calls++
         if (request.headers.get('authorization') === 'Bearer refreshed-token') {
-          sawNewToken = true
+          isSawNewToken = true
           return HttpResponse.json({ ok: true })
         }
         return new HttpResponse(null, { status: 401 })
@@ -197,17 +204,19 @@ describe('401 auth refresh', () => {
     const auth = makeAuth('old-token')
     const r = await makeClient(auth).get('/v1/auth-test')
     expect(r.isOk).toBe(true)
-    expect(sawNewToken).toBe(true)
+    expect(isSawNewToken).toBe(true)
     expect(calls).toBe(2)
   })
 
   it('returns Err(auth_failed) when refresh itself fails', async () => {
     server.use(
-      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
-        new HttpResponse(null, { status: 400 })
+      http.post(
+        'https://oauth.secure.pixiv.net/auth/token',
+        () => new HttpResponse(null, { status: 400 })
       ),
-      http.get('https://app-api.pixiv.net/v1/auth-fail', () =>
-        new HttpResponse(null, { status: 401 })
+      http.get(
+        'https://app-api.pixiv.net/v1/auth-fail',
+        () => new HttpResponse(null, { status: 401 })
       )
     )
     const r = await makeClient().get('/v1/auth-fail')

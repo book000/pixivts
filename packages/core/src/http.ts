@@ -9,11 +9,16 @@
  */
 
 import type { AuthManager } from './auth'
-import { apiError, authFailedError, networkError, rateLimitError } from './errors'
+import {
+  apiError,
+  authFailedError,
+  networkError,
+  rateLimitError,
+} from './errors'
 import type { ResponseInterceptor } from './interceptor'
 import { type HttpMethod, type ResponseRecord } from './interceptor'
-import { camelizeKeys } from './params'
-import { err, ok, ResultAsync } from './result'
+import { camelizeKeys } from './parameters'
+import { err as error, ok, ResultAsync } from './result'
 import type { PixivError } from './errors'
 import type { Result } from './result'
 
@@ -73,7 +78,7 @@ export function parseRetryAfter(
 
   // delay-seconds format
   if (/^\d+$/.test(retryAfter.trim())) {
-    return Number.parseInt(retryAfter, 10) * 1000
+    return Number(retryAfter) * 1000
   }
 
   // HTTP-date format (e.g. "Wed, 21 Oct 2026 07:28:00 GMT")
@@ -86,10 +91,7 @@ export function parseRetryAfter(
 }
 
 function headersToRecord(headers: Headers): Record<string, string> {
-  const result: Record<string, string> = {}
-  for (const [key, value] of headers) {
-    result[key] = value
-  }
+  const result: Record<string, string> = Object.fromEntries(headers)
   return result
 }
 
@@ -123,11 +125,14 @@ export class HttpClient {
    * Sends a GET request to the pixiv API.
    *
    * @param path - API endpoint path (e.g. "/v1/illust/detail")
-   * @param params - Query parameters as a URLSearchParams instance
+   * @param parameters - Query parameters as a URLSearchParams instance
    * @returns `ResultAsync<T, PixivError>`
    */
-  get<T>(path: string, params?: URLSearchParams): ResultAsync<T, PixivError> {
-    const qs = params ? `?${params.toString()}` : ''
+  get<T>(
+    path: string,
+    parameters?: URLSearchParams
+  ): ResultAsync<T, PixivError> {
+    const qs = parameters ? `?${parameters.toString()}` : ''
     const url = `${BASE_URL}${path}${qs}`
     return this.#send<T>(url, 'GET', path, undefined)
   }
@@ -165,11 +170,11 @@ export class HttpClient {
       networkError
     ).andThen((response) => {
       if (!response.ok) {
-        return ResultAsync.fromResult(
-          err(apiError(response.status, null))
-        )
+        return ResultAsync.fromResult(error(apiError(response.status, null)))
       }
-      return ResultAsync.fromResult(ok(response) as Result<Response, PixivError>)
+      return ResultAsync.fromResult(
+        ok(response) as Result<Response, PixivError>
+      )
     })
   }
 
@@ -210,7 +215,7 @@ export class HttpClient {
     method: HttpMethod,
     endpoint: string,
     body: string | undefined,
-    allowRefresh = true
+    shouldAllowRefresh = true
   ): Promise<Result<T, PixivError>> {
     const maxRetries = Math.max(0, this.#retry.maxRetries)
     const waitMs = Math.max(0, this.#retry.waitMs)
@@ -221,9 +226,9 @@ export class HttpClient {
       const requestHeaders: Record<string, string> = {
         ...DEFAULT_HEADERS,
         Authorization: `Bearer ${this.#auth.accessToken}`,
-        ...(method === 'POST'
-          ? { 'Content-Type': 'application/x-www-form-urlencoded' }
-          : {}),
+        ...(method === 'POST' && {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        }),
       }
 
       let response: Response
@@ -234,7 +239,7 @@ export class HttpClient {
           body: method === 'POST' ? body : undefined,
         })
       } catch (fetchError: unknown) {
-        return err(networkError(fetchError))
+        return error(networkError(fetchError))
       }
 
       // 429 Rate limit
@@ -251,22 +256,22 @@ export class HttpClient {
           continue
         }
 
-        return err(rateLimitError(lastRetryAfterMs))
+        return error(rateLimitError(lastRetryAfterMs))
       }
 
       // 401 Auth failed → try token refresh once
       if (response.status === 401) {
         await response.body?.cancel()
-        if (allowRefresh) {
+        if (shouldAllowRefresh) {
           try {
             await this.#auth.refresh()
           } catch {
-            return err(authFailedError(401))
+            return error(authFailedError(401))
           }
           // Retry once with the new token (no further refresh allowed)
           return this.#sendWithRetry<T>(url, method, endpoint, body, false)
         }
-        return err(authFailedError(401))
+        return error(authFailedError(401))
       }
 
       // Parse response body
@@ -288,7 +293,7 @@ export class HttpClient {
 
       // Non-2xx errors
       if (!response.ok) {
-        return err(apiError(response.status, data))
+        return error(apiError(response.status, data))
       }
 
       const httpResponse: HttpResponse<T> = {
@@ -314,12 +319,14 @@ export class HttpClient {
           responseHeaders: JSON.stringify(responseHeaders),
           responseBody: text,
         }
-        Promise.resolve(this.#interceptor(record)).catch(() => undefined)
+        Promise.resolve(this.#interceptor(record)).catch(() => {
+          // Interceptor errors must not fail the request (fire-and-forget).
+        })
       }
 
       return ok(httpResponse.data)
     }
 
-    return err(rateLimitError(lastRetryAfterMs))
+    return error(rateLimitError(lastRetryAfterMs))
   }
 }

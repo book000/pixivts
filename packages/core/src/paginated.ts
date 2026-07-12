@@ -14,7 +14,7 @@
 import type { HttpClient } from './http'
 import type { PixivError } from './errors'
 import { PixivFetchError } from './errors'
-import { err } from './result'
+import { err as error_ } from './result'
 import type { Result } from './result'
 import { ResultAsync } from './result'
 
@@ -132,7 +132,7 @@ export function failedPaginated<TPage extends PagedResponse, TItem>(
   getItems: (page: TPage) => TItem[]
 ): PaginatedResultAsync<TPage, TItem> {
   return new PaginatedResultAsync(
-    Promise.resolve(err(error)),
+    Promise.resolve(error_(error)),
     http,
     getItems
   )

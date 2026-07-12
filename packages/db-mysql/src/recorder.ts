@@ -13,7 +13,11 @@
 import crypto from 'node:crypto'
 import { and, count, desc, eq, gte, sql } from 'drizzle-orm'
 import type { ResponseInterceptor, ResponseRecord } from '@book000/pixivts'
-import { createDbConnection, type ConnectionOptions, type DbInstance } from './connection'
+import {
+  createDatabaseConnection,
+  type ConnectionOptions,
+  type DatabaseInstance,
+} from './connection'
 import { responsesTable, type ResponseRow } from './schema'
 import { bootstrapSchema } from './migrations'
 
@@ -30,7 +34,7 @@ export interface RecorderBundle {
   interceptor: ResponseInterceptor
 
   /** Drizzle ORM database instance for custom queries. */
-  db: DbInstance
+  db: DatabaseInstance
 
   /** Closes the underlying connection pool. */
   close(): Promise<void>
@@ -91,21 +95,18 @@ function ninetyDaysAgo(): Date {
  * If the unique composite index fires (duplicate method + endpoint + statusCode
  * + urlHash), the insert is silently ignored via `ON DUPLICATE KEY UPDATE id = id`.
  *
- * @param db - Drizzle ORM database instance
+ * @param database - Drizzle ORM database instance
  * @param record - Response record from the HTTP client interceptor
  */
 export async function addResponse(
-  db: DbInstance,
+  database: DatabaseInstance,
   record: ResponseRecord
 ): Promise<void> {
   // Hash the URL if present; fall back to "method:endpoint" so the column is never empty.
   const urlToHash = record.url ?? `${record.method}:${record.endpoint}`
-  const urlHash = crypto
-    .createHash('sha256')
-    .update(urlToHash)
-    .digest('hex')
+  const urlHash = crypto.createHash('sha256').update(urlToHash).digest('hex')
 
-  await db
+  await database
     .insert(responsesTable)
     .values({
       method: record.method,
@@ -128,23 +129,23 @@ export async function addResponse(
  *
  * Useful for testing — pass a mock `db` and a no-op `close`.
  *
- * @param db - Drizzle ORM database instance
+ * @param database - Drizzle ORM database instance
  * @param close - Function that closes the underlying connection
  */
 export function createRecorderBundle(
-  db: DbInstance,
+  database: DatabaseInstance,
   close: () => Promise<void>
 ): RecorderBundle {
   const interceptor: ResponseInterceptor = (record) =>
-    addResponse(db, record)
+    addResponse(database, record)
 
-  return { interceptor, db, close }
+  return { interceptor, db: database, close }
 }
 
 /**
  * Creates a response recorder that persists every pixiv API response to MySQL.
  *
- * @param opts - Connection and bootstrapping options
+ * @param options - Connection and bootstrapping options
  * @returns `{ interceptor, db, close }`
  *
  * @example
@@ -160,11 +161,11 @@ export function createRecorderBundle(
  * ```
  */
 export async function createResponseRecorder(
-  opts: RecorderOptions
+  options: RecorderOptions
 ): Promise<RecorderBundle> {
-  const { pool, db } = createDbConnection(opts)
+  const { pool, db } = createDatabaseConnection(options)
 
-  if (opts.bootstrap) {
+  if (options.bootstrap) {
     await bootstrapSchema(db)
   }
 
@@ -196,13 +197,13 @@ export interface RangeOptions {
 /**
  * Retrieves response records from the last 90 days.
  *
- * @param db - Drizzle ORM database instance
+ * @param database - Drizzle ORM database instance
  * @param filter - Optional filter criteria
  * @param range - Optional pagination options
  * @returns Array of response rows, newest first
  */
 export async function getResponses(
-  db: DbInstance,
+  database: DatabaseInstance,
   filter?: ResponseFilter,
   range?: RangeOptions
 ): Promise<ResponseRow[]> {
@@ -210,15 +211,13 @@ export async function getResponses(
   const limit = range?.limit ?? 100
   const offset = ((range?.page ?? 1) - 1) * limit
 
-  return db
+  return database
     .select()
     .from(responsesTable)
     .where(
       and(
         gte(responsesTable.createdAt, since),
-        filter?.method
-          ? eq(responsesTable.method, filter.method)
-          : undefined,
+        filter?.method ? eq(responsesTable.method, filter.method) : undefined,
         filter?.endpoint
           ? eq(responsesTable.endpoint, filter.endpoint)
           : undefined,
@@ -235,24 +234,22 @@ export async function getResponses(
 /**
  * Returns the total count of response records from the last 90 days.
  *
- * @param db - Drizzle ORM database instance
+ * @param database - Drizzle ORM database instance
  * @param filter - Optional filter criteria
  * @returns Total row count matching the filter
  */
 export async function getResponseCount(
-  db: DbInstance,
+  database: DatabaseInstance,
   filter?: ResponseFilter
 ): Promise<number> {
   const since = ninetyDaysAgo()
-  const rows = await db
+  const rows = await database
     .select({ value: count() })
     .from(responsesTable)
     .where(
       and(
         gte(responsesTable.createdAt, since),
-        filter?.method
-          ? eq(responsesTable.method, filter.method)
-          : undefined,
+        filter?.method ? eq(responsesTable.method, filter.method) : undefined,
         filter?.endpoint
           ? eq(responsesTable.endpoint, filter.endpoint)
           : undefined,
@@ -280,12 +277,14 @@ export interface EndpointWithCount {
  * Returns all unique (method, endpoint, statusCode) combinations seen in the
  * last 90 days, along with the count of matching records.
  *
- * @param db - Drizzle ORM database instance
+ * @param database - Drizzle ORM database instance
  * @returns Endpoints sorted by count descending
  */
-export async function getEndpoints(db: DbInstance): Promise<EndpointWithCount[]> {
+export async function getEndpoints(
+  database: DatabaseInstance
+): Promise<EndpointWithCount[]> {
   const since = ninetyDaysAgo()
-  const rows = await db
+  const rows = await database
     .select({
       method: responsesTable.method,
       endpoint: responsesTable.endpoint,

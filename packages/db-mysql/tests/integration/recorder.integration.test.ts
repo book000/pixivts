@@ -40,7 +40,7 @@ import type { ResponseRecord } from '@book000/pixivts'
 // Skip guard
 // ---------------------------------------------------------------------------
 
-const SKIP = !process.env.RESPONSE_DB_USERNAME
+const IS_SKIP = !process.env.RESPONSE_DB_USERNAME
 
 // ---------------------------------------------------------------------------
 // Test endpoints (isolated from production data via unusual paths)
@@ -73,7 +73,7 @@ function makeRecord(overrides: Partial<ResponseRecord> = {}): ResponseRecord {
 // Suite
 // ---------------------------------------------------------------------------
 
-describe.skipIf(SKIP)('db-mysql integration', () => {
+describe.skipIf(IS_SKIP)('db-mysql integration', () => {
   let bundle: RecorderBundle
 
   beforeAll(async () => {
@@ -149,9 +149,9 @@ describe.skipIf(SKIP)('db-mysql integration', () => {
 
   it('getResponses — returns rows ordered newest first', async () => {
     const rows = await getResponses(bundle.db, { endpoint: E2E_ENDPOINT_A })
-    for (let i = 1; i < rows.length; i++) {
-      expect(rows[i - 1].createdAt.getTime()).toBeGreaterThanOrEqual(
-        rows[i].createdAt.getTime()
+    for (let index = 1; index < rows.length; index++) {
+      expect(rows[index - 1].createdAt.getTime()).toBeGreaterThanOrEqual(
+        rows[index].createdAt.getTime()
       )
     }
   })
@@ -178,7 +178,7 @@ describe.skipIf(SKIP)('db-mysql integration', () => {
   it('getEndpoints — lists unique endpoints with counts', async () => {
     const endpoints = await getEndpoints(bundle.db)
     const entry = endpoints.find(
-      (e) => e.endpoint === E2E_ENDPOINT_A && e.method === 'GET'
+      (item) => item.endpoint === E2E_ENDPOINT_A && item.method === 'GET'
     )
     expect(entry).toBeDefined()
     expect(entry?.count).toBeGreaterThanOrEqual(1)
@@ -187,8 +187,10 @@ describe.skipIf(SKIP)('db-mysql integration', () => {
 
   it('getEndpoints — results are sorted by count descending', async () => {
     const endpoints = await getEndpoints(bundle.db)
-    for (let i = 1; i < endpoints.length; i++) {
-      expect(endpoints[i - 1].count).toBeGreaterThanOrEqual(endpoints[i].count)
+    for (let index = 1; index < endpoints.length; index++) {
+      expect(endpoints[index - 1].count).toBeGreaterThanOrEqual(
+        endpoints[index].count
+      )
     }
   })
 })

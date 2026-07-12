@@ -3,7 +3,7 @@
  */
 import type { HttpClient } from '../http'
 import type { PixivError } from '../errors'
-import { buildParams } from '../params'
+import { buildParameters } from '../parameters'
 import { PaginatedResultAsync } from '../paginated'
 import type { ResultAsync } from '../result'
 import {
@@ -27,7 +27,7 @@ import type {
 // === Request param types ===
 
 /** Parameters for fetching a user's bookmarked illusts. */
-export interface UserBookmarksIllustParams {
+export interface UserBookmarksIllustParameters {
   /** ID of the user whose bookmarks to fetch. */
   userId: number
   /** Visibility of the bookmarks to return (default: `"public"`). */
@@ -43,7 +43,7 @@ export interface UserBookmarksIllustParams {
 }
 
 /** Parameters for fetching a user's bookmarked novels. */
-export interface UserBookmarksNovelParams {
+export interface UserBookmarksNovelParameters {
   /** ID of the user whose bookmarks to fetch. */
   userId: number
   /** Visibility of the bookmarks to return (default: `"public"`). */
@@ -59,7 +59,7 @@ export interface UserBookmarksNovelParams {
 }
 
 /** Parameters for fetching a user's detail. */
-export interface UserDetailParams {
+export interface UserDetailParameters {
   /** ID of the user to fetch. */
   userId: number
   /** OS filter to apply (default: `"for_ios"`). */
@@ -67,7 +67,7 @@ export interface UserDetailParams {
 }
 
 /** Parameters for fetching a user's illusts. */
-export interface UserIllustsParams {
+export interface UserIllustsParameters {
   /** ID of the user whose illusts to fetch. */
   userId: number
   /** Work type to filter by (omit to return both illusts and manga). */
@@ -79,7 +79,7 @@ export interface UserIllustsParams {
 }
 
 /** Parameters for fetching a user's novels. */
-export interface UserNovelsParams {
+export interface UserNovelsParameters {
   /** ID of the user whose novels to fetch. */
   userId: number
   /** OS filter to apply (default: `"for_ios"`). */
@@ -89,7 +89,7 @@ export interface UserNovelsParams {
 }
 
 /** Parameters for fetching a user's following list. */
-export interface UserFollowingParams {
+export interface UserFollowingParameters {
   /** ID of the user whose following list to fetch. */
   userId: number
   /** Visibility of the follows to return (default: `"public"`). */
@@ -99,7 +99,7 @@ export interface UserFollowingParams {
 }
 
 /** Parameters for following a user. */
-export interface UserFollowAddParams {
+export interface UserFollowAddParameters {
   /** ID of the user to follow. */
   userId: number
   /** Visibility of the follow (default: `"public"`). */
@@ -107,7 +107,7 @@ export interface UserFollowAddParams {
 }
 
 /** Parameters for unfollowing a user. */
-export interface UserFollowDeleteParams {
+export interface UserFollowDeleteParameters {
   /** ID of the user to unfollow. */
   userId: number
 }
@@ -124,7 +124,7 @@ export class UserBookmarksResource {
    * Fetches a user's bookmarked illusts.
    * GET /v1/user/bookmarks/illust
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    *
    * @example
    * ```ts
@@ -146,18 +146,18 @@ export class UserBookmarksResource {
    * ```
    */
   illusts(
-    params: UserBookmarksIllustParams
+    parameters: UserBookmarksIllustParameters
   ): PaginatedResultAsync<UserBookmarksIllustPage, PixivIllustItem> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<UserBookmarksIllustPage>(
         '/v1/user/bookmarks/illust',
-        buildParams({
-          userId: params.userId,
-          restrict: params.restrict ?? 'public',
-          filter: params.filter ?? 'for_ios',
-          tag: params.tag,
-          maxBookmarkId: params.maxBookmarkId,
-          offset: params.offset,
+        buildParameters({
+          userId: parameters.userId,
+          restrict: parameters.restrict ?? 'public',
+          filter: parameters.filter ?? 'for_ios',
+          tag: parameters.tag,
+          maxBookmarkId: parameters.maxBookmarkId,
+          offset: parameters.offset,
         })
       ),
       this.#http,
@@ -169,7 +169,7 @@ export class UserBookmarksResource {
    * Fetches a user's bookmarked novels.
    * GET /v1/user/bookmarks/novel
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    *
    * @example
    * ```ts
@@ -180,18 +180,18 @@ export class UserBookmarksResource {
    * ```
    */
   novels(
-    params: UserBookmarksNovelParams
+    parameters: UserBookmarksNovelParameters
   ): PaginatedResultAsync<UserBookmarksNovelPage, PixivNovelItem> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<UserBookmarksNovelPage>(
         '/v1/user/bookmarks/novel',
-        buildParams({
-          userId: params.userId,
-          restrict: params.restrict ?? 'public',
-          filter: params.filter ?? 'for_ios',
-          tag: params.tag,
-          maxBookmarkId: params.maxBookmarkId,
-          offset: params.offset,
+        buildParameters({
+          userId: parameters.userId,
+          restrict: parameters.restrict ?? 'public',
+          filter: parameters.filter ?? 'for_ios',
+          tag: parameters.tag,
+          maxBookmarkId: parameters.maxBookmarkId,
+          offset: parameters.offset,
         })
       ),
       this.#http,
@@ -216,14 +216,17 @@ export class UserResource {
    * Fetches detailed profile information for a user.
    * GET /v1/user/detail
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   detail(
-    params: UserDetailParams
+    parameters: UserDetailParameters
   ): ResultAsync<UserDetailResponse, PixivError> {
     return this.#http.get<UserDetailResponse>(
       '/v1/user/detail',
-      buildParams({ userId: params.userId, filter: params.filter ?? 'for_ios' })
+      buildParameters({
+        userId: parameters.userId,
+        filter: parameters.filter ?? 'for_ios',
+      })
     )
   }
 
@@ -231,19 +234,19 @@ export class UserResource {
    * Fetches illusts posted by a user.
    * GET /v1/user/illusts
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   illusts(
-    params: UserIllustsParams
+    parameters: UserIllustsParameters
   ): PaginatedResultAsync<UserIllustsPage, PixivIllustItem> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<UserIllustsPage>(
         '/v1/user/illusts',
-        buildParams({
-          userId: params.userId,
-          type: params.type,
-          filter: params.filter ?? 'for_ios',
-          offset: params.offset,
+        buildParameters({
+          userId: parameters.userId,
+          type: parameters.type,
+          filter: parameters.filter ?? 'for_ios',
+          offset: parameters.offset,
         })
       ),
       this.#http,
@@ -255,18 +258,18 @@ export class UserResource {
    * Fetches novels posted by a user.
    * GET /v1/user/novels
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   novels(
-    params: UserNovelsParams
+    parameters: UserNovelsParameters
   ): PaginatedResultAsync<UserNovelsPage, PixivNovelItem> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<UserNovelsPage>(
         '/v1/user/novels',
-        buildParams({
-          userId: params.userId,
-          filter: params.filter ?? 'for_ios',
-          offset: params.offset,
+        buildParameters({
+          userId: parameters.userId,
+          filter: parameters.filter ?? 'for_ios',
+          offset: parameters.offset,
         })
       ),
       this.#http,
@@ -278,18 +281,18 @@ export class UserResource {
    * Fetches the list of users that a user is following.
    * GET /v1/user/following
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   following(
-    params: UserFollowingParams
+    parameters: UserFollowingParameters
   ): PaginatedResultAsync<UserFollowingPage, PixivUserPreviewItem> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<UserFollowingPage>(
         '/v1/user/following',
-        buildParams({
-          userId: params.userId,
-          restrict: params.restrict ?? 'public',
-          offset: params.offset,
+        buildParameters({
+          userId: parameters.userId,
+          restrict: parameters.restrict ?? 'public',
+          offset: parameters.offset,
         })
       ),
       this.#http,
@@ -301,14 +304,14 @@ export class UserResource {
    * Follows a user.
    * POST /v1/user/follow/add
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   followAdd(
-    params: UserFollowAddParams
+    parameters: UserFollowAddParameters
   ): ResultAsync<Record<string, never>, PixivError> {
-    const body = buildParams({
-      userId: params.userId,
-      restrict: params.restrict ?? 'public',
+    const body = buildParameters({
+      userId: parameters.userId,
+      restrict: parameters.restrict ?? 'public',
     })
     return this.#http.post<Record<string, never>>(
       '/v1/user/follow/add',
@@ -320,12 +323,12 @@ export class UserResource {
    * Unfollows a user.
    * POST /v1/user/follow/delete
    *
-   * @param params - Request parameters
+   * @param parameters - Request parameters
    */
   followDelete(
-    params: UserFollowDeleteParams
+    parameters: UserFollowDeleteParameters
   ): ResultAsync<Record<string, never>, PixivError> {
-    const body = buildParams({ userId: String(params.userId) })
+    const body = buildParameters({ userId: String(parameters.userId) })
     return this.#http.post<Record<string, never>>(
       '/v1/user/follow/delete',
       body.toString()

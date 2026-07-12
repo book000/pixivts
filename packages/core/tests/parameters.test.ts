@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import {
-  buildParams,
-  buildSearchParams,
+  buildParameters,
+  buildSearchParameters,
   camelToSnake,
   camelizeKeys,
   parseNextUrl,
   snakeToCamel,
   toSnakeKeys,
-} from '../src/params'
+} from '../src/parameters'
 
 describe('camelToSnake()', () => {
   it('converts a single uppercase letter', () => {
@@ -36,8 +36,8 @@ describe('toSnakeKeys()', () => {
   })
 
   it('preserves values unchanged', () => {
-    const obj = { maxBookmarkId: undefined, tag: 'test' }
-    const result = toSnakeKeys(obj)
+    const object = { maxBookmarkId: undefined, tag: 'test' }
+    const result = toSnakeKeys(object)
     expect(result.max_bookmark_id).toBeUndefined()
     expect(result.tag).toBe('test')
   })
@@ -45,46 +45,46 @@ describe('toSnakeKeys()', () => {
 
 describe('buildSearchParams()', () => {
   it('serialises strings and numbers', () => {
-    const usp = buildSearchParams({ word: 'hello', offset: 30 })
+    const usp = buildSearchParameters({ word: 'hello', offset: 30 })
     expect(usp.get('word')).toBe('hello')
     expect(usp.get('offset')).toBe('30')
   })
 
   it('skips null and undefined', () => {
-    const usp = buildSearchParams({ a: null, b: undefined, c: 'x' })
+    const usp = buildSearchParameters({ a: null, b: undefined, c: 'x' })
     expect(usp.has('a')).toBe(false)
     expect(usp.has('b')).toBe(false)
     expect(usp.get('c')).toBe('x')
   })
 
   it('serialises booleans', () => {
-    const usp = buildSearchParams({ flag: true, other: false })
+    const usp = buildSearchParameters({ flag: true, other: false })
     expect(usp.get('flag')).toBe('true')
     expect(usp.get('other')).toBe('false')
   })
 
   it('appends array values with bracket suffix (Rails/pixiv convention)', () => {
-    const usp = buildSearchParams({ ids: [1, 2, 3] })
+    const usp = buildSearchParameters({ ids: [1, 2, 3] })
     // pixiv API expects key[]=value1&key[]=value2, not key=value1&key=value2
     expect(usp.getAll('ids[]')).toEqual(['1', '2', '3'])
     expect(usp.has('ids')).toBe(false)
   })
 
   it('appends string arrays with bracket suffix', () => {
-    const usp = buildSearchParams({ tags: ['a', 'b'] })
+    const usp = buildSearchParameters({ tags: ['a', 'b'] })
     expect(usp.getAll('tags[]')).toEqual(['a', 'b'])
   })
 })
 
 describe('buildParams()', () => {
   it('converts keys to snake_case and builds URLSearchParams', () => {
-    const usp = buildParams({ illustId: 12_345, filter: 'for_ios' })
+    const usp = buildParameters({ illustId: 12_345, filter: 'for_ios' })
     expect(usp.get('illust_id')).toBe('12345')
     expect(usp.get('filter')).toBe('for_ios')
   })
 
   it('converts camelCase array keys to snake_case with bracket suffix', () => {
-    const usp = buildParams({ seedIllustIds: [1, 2, 3] })
+    const usp = buildParameters({ seedIllustIds: [1, 2, 3] })
     // camelCase → snake_case: seedIllustIds → seed_illust_ids
     // array → bracket suffix: seed_illust_ids → seed_illust_ids[]
     expect(usp.getAll('seed_illust_ids[]')).toEqual(['1', '2', '3'])
@@ -93,7 +93,7 @@ describe('buildParams()', () => {
   })
 
   it('converts camelCase string array keys (tags) to snake_case with bracket suffix', () => {
-    const usp = buildParams({ tags: ['foo', 'bar'] })
+    const usp = buildParameters({ tags: ['foo', 'bar'] })
     expect(usp.getAll('tags[]')).toEqual(['foo', 'bar'])
     expect(usp.has('tags')).toBe(false)
   })

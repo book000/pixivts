@@ -12,7 +12,7 @@ import { defineConfig } from 'drizzle-kit'
 // process is a Node.js global. @types/node is not available in the default
 // TypeScript project used for this file (it is outside tsconfig include), so
 // we cast to a minimal shape to satisfy ESLint's type-aware rules.
-const env = (
+const environment = (
   process as unknown as { env: Record<string, string | undefined> }
 ).env
 
@@ -21,10 +21,10 @@ export default defineConfig({
   out: './drizzle',
   dialect: 'mysql',
   dbCredentials: {
-    host: env.RESPONSE_DB_HOSTNAME ?? 'localhost',
-    port: Number.parseInt(env.RESPONSE_DB_PORT ?? '3306', 10),
-    user: env.RESPONSE_DB_USERNAME ?? 'root',
-    password: env.RESPONSE_DB_PASSWORD ?? '',
-    database: env.RESPONSE_DB_DATABASE ?? 'pixivts',
+    host: environment.RESPONSE_DB_HOSTNAME ?? 'localhost',
+    port: Number(environment.RESPONSE_DB_PORT ?? '3306'),
+    user: environment.RESPONSE_DB_USERNAME ?? 'root',
+    password: environment.RESPONSE_DB_PASSWORD ?? '',
+    database: environment.RESPONSE_DB_DATABASE ?? 'pixivts',
   },
 })

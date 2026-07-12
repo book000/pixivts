@@ -13,22 +13,34 @@
 
 // Result primitives
 export { ok, err, ResultAsync } from './result'
-export type { Result, OkResult, ErrResult } from './result'
+export type { Result, OkResult, ErrorResult } from './result'
+// eslint-disable-next-line @typescript-eslint/no-deprecated -- re-exporting the deprecated alias itself for backward compatibility, not using it
+export type { ErrResult } from './result'
 
 // Pagination
 export { PaginatedResultAsync, failedPaginated } from './paginated'
 export type { PagedResponse } from './paginated'
 
 // URL utilities
-export { parseNextUrl } from './params'
-export type { ParsedNextUrl } from './params'
+export { parseNextUrl } from './parameters'
+export type { ParsedNextUrl } from './parameters'
 
 // Error types
-export { rateLimitError, authFailedError, networkError, apiError, PixivFetchError } from './errors'
+export {
+  rateLimitError,
+  authFailedError,
+  networkError,
+  apiError,
+  PixivFetchError,
+} from './errors'
 export type { PixivError } from './errors'
 
 // Interceptor (DB seam)
-export type { ResponseRecord, ResponseInterceptor, HttpMethod } from './interceptor'
+export type {
+  ResponseRecord,
+  ResponseInterceptor,
+  HttpMethod,
+} from './interceptor'
 
 // Option constants and types (exported as values so callers can use e.g. BookmarkRestrict.PUBLIC)
 export {
@@ -87,37 +99,74 @@ export type {
 
 // Resource param types
 export type {
-  IllustDetailParams,
-  IllustRelatedParams,
-  IllustSearchParams,
-  IllustRankingParams,
-  IllustRecommendedParams,
-  IllustSeriesParams,
-  IllustBookmarkAddParams,
-  IllustBookmarkDeleteParams,
+  IllustDetailParameters,
+  IllustRelatedParameters,
+  IllustSearchParameters,
+  IllustRankingParameters,
+  IllustRecommendedParameters,
+  IllustSeriesParameters,
+  IllustBookmarkAddParameters,
+  IllustBookmarkDeleteParameters,
 } from './resources/illusts'
 
 export type {
-  NovelDetailParams,
-  NovelTextParams,
-  NovelRelatedParams,
-  NovelSearchParams,
-  NovelRankingParams,
-  NovelRecommendedParams,
-  NovelSeriesParams,
-  NovelBookmarkAddParams,
-  NovelBookmarkDeleteParams,
+  NovelDetailParameters,
+  NovelTextParameters,
+  NovelRelatedParameters,
+  NovelSearchParameters,
+  NovelRankingParameters,
+  NovelRecommendedParameters,
+  NovelSeriesParameters,
+  NovelBookmarkAddParameters,
+  NovelBookmarkDeleteParameters,
 } from './resources/novels'
 
 export type {
-  UserBookmarksIllustParams,
-  UserBookmarksNovelParams,
-  UserDetailParams,
-  UserIllustsParams,
-  UserNovelsParams,
-  UserFollowingParams,
-  UserFollowAddParams,
-  UserFollowDeleteParams,
+  UserBookmarksIllustParameters,
+  UserBookmarksNovelParameters,
+  UserDetailParameters,
+  UserIllustsParameters,
+  UserNovelsParameters,
+  UserFollowingParameters,
+  UserFollowAddParameters,
+  UserFollowDeleteParameters,
+} from './resources/users'
+
+// Deprecated aliases for the resource param types above, kept for backward
+// compatibility with the pre-1.x `*Params` naming (renamed to `*Parameters`
+// to satisfy the `unicorn/name-replacements` lint rule).
+export type {
+  IllustDetailParameters as IllustDetailParams,
+  IllustRelatedParameters as IllustRelatedParams,
+  IllustSearchParameters as IllustSearchParams,
+  IllustRankingParameters as IllustRankingParams,
+  IllustRecommendedParameters as IllustRecommendedParams,
+  IllustSeriesParameters as IllustSeriesParams,
+  IllustBookmarkAddParameters as IllustBookmarkAddParams,
+  IllustBookmarkDeleteParameters as IllustBookmarkDeleteParams,
+} from './resources/illusts'
+
+export type {
+  NovelDetailParameters as NovelDetailParams,
+  NovelTextParameters as NovelTextParams,
+  NovelRelatedParameters as NovelRelatedParams,
+  NovelSearchParameters as NovelSearchParams,
+  NovelRankingParameters as NovelRankingParams,
+  NovelRecommendedParameters as NovelRecommendedParams,
+  NovelSeriesParameters as NovelSeriesParams,
+  NovelBookmarkAddParameters as NovelBookmarkAddParams,
+  NovelBookmarkDeleteParameters as NovelBookmarkDeleteParams,
+} from './resources/novels'
+
+export type {
+  UserBookmarksIllustParameters as UserBookmarksIllustParams,
+  UserBookmarksNovelParameters as UserBookmarksNovelParams,
+  UserDetailParameters as UserDetailParams,
+  UserIllustsParameters as UserIllustsParams,
+  UserNovelsParameters as UserNovelsParams,
+  UserFollowingParameters as UserFollowingParams,
+  UserFollowAddParameters as UserFollowAddParams,
+  UserFollowDeleteParameters as UserFollowDeleteParams,
 } from './resources/users'
 
 // PixivClient
