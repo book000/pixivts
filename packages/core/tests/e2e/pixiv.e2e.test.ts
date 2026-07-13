@@ -430,9 +430,8 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
   it('PaginatedResultAsync.pages() — iterates at least one page', async () => {
     let pageCount = 0
     let totalIllusts = 0
-    for await (const page of client.illusts
-      .search({ word: 'ホロライブ' })
-      .pages()) {
+    const pageIterable = client.illusts.search({ word: 'ホロライブ' }).pages()
+    for await (const page of pageIterable) {
       pageCount++
       totalIllusts += page.illusts.length
       if (pageCount >= 2) break
@@ -443,9 +442,8 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
 
   it('PaginatedResultAsync.items() — yields individual items', async () => {
     const illusts: unknown[] = []
-    for await (const illust of client.illusts
-      .search({ word: 'ホロライブ' })
-      .items()) {
+    const itemIterable = client.illusts.search({ word: 'ホロライブ' }).items()
+    for await (const illust of itemIterable) {
       illusts.push(illust)
       if (illusts.length >= 60) break // stop after ~2 pages
     }

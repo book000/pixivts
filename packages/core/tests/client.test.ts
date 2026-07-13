@@ -145,26 +145,21 @@ describe('illusts.search().pages() — multi-page', () => {
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get(
-        'https://app-api.pixiv.net/v1/search/illust',
-        ({ request }) => {
-          const offset = new URL(request.url).searchParams.get('offset')
-          if (offset === '30') {
-            return HttpResponse.json({ illusts: [ILLUST2], next_url: null })
-          }
-          return HttpResponse.json({
-            illusts: [ILLUST],
-            next_url:
-              'https://app-api.pixiv.net/v1/search/illust?offset=30',
-          })
+      http.get('https://app-api.pixiv.net/v1/search/illust', ({ request }) => {
+        const offset = new URL(request.url).searchParams.get('offset')
+        if (offset === '30') {
+          return HttpResponse.json({ illusts: [ILLUST2], next_url: null })
         }
-      )
+        return HttpResponse.json({
+          illusts: [ILLUST],
+          next_url: 'https://app-api.pixiv.net/v1/search/illust?offset=30',
+        })
+      })
     )
     const client = await PixivClient.of('test-refresh-token')
     const pages: number[] = []
-    for await (const page of client.illusts
-      .search({ word: 'cat' })
-      .pages()) {
+    const pageIterable = client.illusts.search({ word: 'cat' }).pages()
+    for await (const page of pageIterable) {
       pages.push(page.illusts.length)
     }
     expect(pages).toHaveLength(2)
@@ -182,29 +177,24 @@ describe('illusts.search().items() — multi-page', () => {
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get(
-        'https://app-api.pixiv.net/v1/search/illust',
-        ({ request }) => {
-          const offset = new URL(request.url).searchParams.get('offset')
-          if (offset === '30') {
-            return HttpResponse.json({
-              illusts: [ILLUST3, ILLUST4],
-              next_url: null,
-            })
-          }
+      http.get('https://app-api.pixiv.net/v1/search/illust', ({ request }) => {
+        const offset = new URL(request.url).searchParams.get('offset')
+        if (offset === '30') {
           return HttpResponse.json({
-            illusts: [ILLUST, ILLUST2],
-            next_url:
-              'https://app-api.pixiv.net/v1/search/illust?offset=30',
+            illusts: [ILLUST3, ILLUST4],
+            next_url: null,
           })
         }
-      )
+        return HttpResponse.json({
+          illusts: [ILLUST, ILLUST2],
+          next_url: 'https://app-api.pixiv.net/v1/search/illust?offset=30',
+        })
+      })
     )
     const client = await PixivClient.of('test-refresh-token')
     const ids: number[] = []
-    for await (const illust of client.illusts
-      .search({ word: 'cat' })
-      .items()) {
+    const itemIterable = client.illusts.search({ word: 'cat' }).items()
+    for await (const illust of itemIterable) {
       ids.push(illust.id)
     }
     expect(ids).toHaveLength(4)
@@ -219,14 +209,10 @@ describe('illusts.ranking()', () => {
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get(
-        'https://app-api.pixiv.net/v1/illust/ranking',
-        ({ request }) => {
-          capturedMode =
-            new URL(request.url).searchParams.get('mode') ?? ''
-          return HttpResponse.json({ illusts: [ILLUST], next_url: null })
-        }
-      )
+      http.get('https://app-api.pixiv.net/v1/illust/ranking', ({ request }) => {
+        capturedMode = new URL(request.url).searchParams.get('mode') ?? ''
+        return HttpResponse.json({ illusts: [ILLUST], next_url: null })
+      })
     )
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.illusts.ranking({ mode: 'week' })
@@ -335,7 +321,9 @@ describe('illusts.recommended() — includeRankingLabel param', () => {
       )
     )
     const client = await PixivClient.of('test-refresh-token')
-    const result = await client.illusts.recommended({ includeRankingLabel: false })
+    const result = await client.illusts.recommended({
+      includeRankingLabel: false,
+    })
     expect(result.isOk).toBe(true)
     expect(capturedUrl).toBeDefined()
     if (capturedUrl === undefined) return
@@ -403,13 +391,11 @@ describe('illusts.recommended() — meta_single_page regression (PIXIVTS-39)', (
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get(
-        'https://app-api.pixiv.net/v1/illust/recommended',
-        () =>
-          HttpResponse.json({
-            ...RECOMMENDED_RESPONSE,
-            illusts: [MANGA_ILLUST],
-          })
+      http.get('https://app-api.pixiv.net/v1/illust/recommended', () =>
+        HttpResponse.json({
+          ...RECOMMENDED_RESPONSE,
+          illusts: [MANGA_ILLUST],
+        })
       )
     )
     const client = await PixivClient.of('test-refresh-token')
@@ -429,9 +415,8 @@ describe('illusts.bookmarkAdd()', () => {
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.post(
-        'https://app-api.pixiv.net/v2/illust/bookmark/add',
-        () => HttpResponse.json({})
+      http.post('https://app-api.pixiv.net/v2/illust/bookmark/add', () =>
+        HttpResponse.json({})
       )
     )
     const client = await PixivClient.of('test-refresh-token')
@@ -669,10 +654,12 @@ describe('images.fetch()', () => {
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get(imageUrl, () =>
-        new HttpResponse(new Uint8Array([0xff, 0xd8]).buffer, {
-          headers: { 'Content-Type': 'image/jpeg' },
-        })
+      http.get(
+        imageUrl,
+        () =>
+          new HttpResponse(new Uint8Array([0xff, 0xd8]).buffer, {
+            headers: { 'Content-Type': 'image/jpeg' },
+          })
       )
     )
     const client = await PixivClient.of('test-refresh-token')

@@ -26,7 +26,11 @@ interface ItemPage extends PagedResponse {
 // ---------------------------------------------------------------------------
 
 function makeAuth(): AuthManager {
-  return new AuthManager({ userId: '1', accessToken: 'token', refreshToken: 'rt' })
+  return new AuthManager({
+    userId: '1',
+    accessToken: 'token',
+    refreshToken: 'rt',
+  })
 }
 
 function makeHttp(): HttpClient {
@@ -83,10 +87,7 @@ describe('PaginatedResultAsync — single page', () => {
       (page) => page.items
     )
 
-    const collected: ItemPage[] = []
-    for await (const page of paginated.pages()) {
-      collected.push(page)
-    }
+    const collected = await Array.fromAsync(paginated.pages())
     expect(collected).toHaveLength(1)
     expect(collected[0].items[0].id).toBe(1)
   })
@@ -111,10 +112,7 @@ describe('PaginatedResultAsync — single page', () => {
       (page) => page.items
     )
 
-    const collected: Item[] = []
-    for await (const item of paginated.items()) {
-      collected.push(item)
-    }
+    const collected = await Array.fromAsync(paginated.items())
     expect(collected).toHaveLength(2)
     expect(collected.map((i) => i.id)).toEqual([1, 2])
   })
@@ -262,10 +260,7 @@ describe('PaginatedResultAsync — multiple pages', () => {
       (page) => page.items
     )
 
-    const pages: ItemPage[] = []
-    for await (const page of paginated.pages()) {
-      pages.push(page)
-    }
+    const pages = await Array.fromAsync(paginated.pages())
 
     expect(pages).toHaveLength(2)
     expect(fetchCount).toBe(2)
