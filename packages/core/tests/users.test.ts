@@ -2,6 +2,11 @@ import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from './msw/handlers'
 import { PixivClient } from '../src/client'
+import {
+  mockUserNovels,
+  mockUserFollowDelete,
+  mockUserBookmarksIllust,
+} from './msw/users'
 
 const NOVEL = {
   id: 100,
@@ -259,5 +264,144 @@ describe('users.bookmarks.novels()', () => {
     if (capturedUrl === undefined) return
     const params = new URL(capturedUrl).searchParams
     expect(params.get('max_bookmark_id')).toBe('9999')
+  })
+})
+
+describe('users.novels()', () => {
+  it('returns Ok with paginated novels', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockUserNovels({
+        user: {
+          id: 42,
+          name: 'Author',
+          account: 'author',
+          profile_image_urls: { medium: 'https://i.pximg.net/u.jpg' },
+        },
+        novels: [NOVEL],
+        next_url: null,
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.novels({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.novels).toHaveLength(1)
+      expect(result.value.novels[0].id).toBe(100)
+    }
+  })
+})
+
+describe('users.followAdd()', () => {
+  it('returns Ok and defaults restrict to public', async () => {
+    let capturedBody = ''
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.post(
+        'https://app-api.pixiv.net/v1/user/follow/add',
+        async ({ request }) => {
+          capturedBody = await request.text()
+          return HttpResponse.json({})
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.followAdd({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    expect(capturedBody).toContain('restrict=public')
+  })
+})
+
+describe('users.followDelete()', () => {
+  it('returns Ok', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockUserFollowDelete({})
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.followDelete({ userId: 42 })
+    expect(result.isOk).toBe(true)
+  })
+})
+
+describe('users.bookmarks.illusts()', () => {
+  it('returns Ok with bookmarked illusts', async () => {
+    const ILLUST = {
+      id: 1,
+      title: 'Test Illust',
+      type: 'illust' as const,
+      image_urls: {
+        square_medium: 'https://i.pximg.net/sq.jpg',
+        medium: 'https://i.pximg.net/m.jpg',
+        large: 'https://i.pximg.net/l.jpg',
+      },
+      caption: '',
+      restrict: 0,
+      user: {
+        id: 42,
+        name: 'Artist',
+        account: 'artist',
+        profile_image_urls: { medium: 'https://i.pximg.net/u.jpg' },
+      },
+      tags: [],
+      tools: [],
+      create_date: '2024-01-01T00:00:00+09:00',
+      page_count: 1,
+      width: 1000,
+      height: 800,
+      sanity_level: 2,
+      x_restrict: 0,
+      series: null,
+      meta_single_page: { original_image_url: 'https://i.pximg.net/orig.jpg' },
+      meta_pages: [],
+      total_view: 1000,
+      total_bookmarks: 50,
+      is_bookmarked: false,
+      visible: true,
+      is_muted: false,
+      illust_ai_type: 0,
+      illust_book_style: 0,
+    }
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockUserBookmarksIllust({ illusts: [ILLUST], next_url: null })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.bookmarks.illusts({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.illusts).toHaveLength(1)
+      expect(result.value.illusts[0].id).toBe(1)
+    }
+  })
+
+  it('forwards the tag param', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/user/bookmarks/illust',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({ illusts: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.bookmarks.illusts({ userId: 42, tag: 'favorite' })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('tag')).toBe('favorite')
   })
 })
