@@ -193,6 +193,46 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
     }
   })
 
+  it('illusts.follow', async () => {
+    const result = await client.illusts.follow({ restrict: 'public' })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.illusts)).toBe(true)
+  })
+
+  // Skipped: as of this writing, GET /v1/illust/comments returns an
+  // empty-bodied 404 against the live API for every path/param/method
+  // variant tried, while the same illust ID succeeds on /v1/illust/detail.
+  // This looks like a live-API-side issue (endpoint removed, or blocked by
+  // anti-bot filtering) rather than a bug in this method. Unskip once the
+  // live behavior is confirmed.
+  it.skip('illusts.comments', async () => {
+    const result = await client.illusts.comments({
+      illustId: ILLUST_ID,
+      includeTotalComments: true,
+    })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.comments)).toBe(true)
+  })
+
+  it('illusts.bookmarkDetail', async () => {
+    const result = await client.illusts.bookmarkDetail({
+      illustId: ILLUST_ID,
+    })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(typeof result.value.bookmarkDetail.isBookmarked).toBe('boolean')
+    expect(Array.isArray(result.value.bookmarkDetail.tags)).toBe(true)
+  })
+
+  it('illusts.new', async () => {
+    const result = await client.illusts.new({})
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value.illusts.length).toBeGreaterThan(0)
+  })
+
   // -------------------------------------------------------------------------
   // Manga
   // -------------------------------------------------------------------------
