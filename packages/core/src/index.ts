@@ -66,6 +66,7 @@ export type {
   MetaPages,
   IllustSeriesDetail,
   PixivNovelItem,
+  NovelComment,
   NovelSeriesDetail,
   PixivUserItem,
   PixivUserProfile,
@@ -92,6 +93,7 @@ export type {
   NovelListPage,
   NovelRecommendedPage,
   NovelSeriesPage,
+  NovelCommentsPage,
   UserDetailResponse,
   UserIllustsPage,
   UserNovelsPage,
@@ -126,6 +128,9 @@ export type {
   NovelSeriesParams,
   NovelBookmarkAddParams,
   NovelBookmarkDeleteParams,
+  NovelFollowParams,
+  NovelCommentsParams,
+  NovelNewParams,
 } from './resources/novels'
 
 export type {

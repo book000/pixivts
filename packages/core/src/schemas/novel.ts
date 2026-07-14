@@ -49,6 +49,27 @@ export const PixivNovelItemSchema = z.object({
   commentAccessControl: z.number().optional(),
 })
 
+/** A single comment on a novel. */
+export const NovelCommentSchema: z.ZodType<{
+  id: number
+  comment: string
+  date: string
+  user: z.infer<typeof PixivUserSchema>
+  hasReplies?: boolean
+  parentComment?: Record<string, never> | z.infer<typeof NovelCommentSchema>
+}> = z.lazy(() =>
+  z.object({
+    id: z.number(),
+    comment: z.string(),
+    date: z.string(),
+    user: PixivUserSchema,
+    hasReplies: z.boolean().optional(),
+    parentComment: z
+      .union([z.record(z.string(), z.never()), NovelCommentSchema])
+      .optional(),
+  })
+)
+
 /** Novel series details returned by GET /v2/novel/series. */
 export const NovelSeriesDetailSchema = z.object({
   id: z.number(),
@@ -66,4 +87,5 @@ export const NovelSeriesDetailSchema = z.object({
 })
 
 export type PixivNovelItem = z.infer<typeof PixivNovelItemSchema>
+export type NovelComment = z.infer<typeof NovelCommentSchema>
 export type NovelSeriesDetail = z.infer<typeof NovelSeriesDetailSchema>

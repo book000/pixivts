@@ -352,6 +352,85 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
     }
   })
 
+  it('novels.follow', async () => {
+    const result = await client.novels.follow({ restrict: 'public' })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.novels)).toBe(true)
+  })
+
+  it('novels.follow with restrict=private', async () => {
+    const result = await client.novels.follow({ restrict: 'private' })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.novels)).toBe(true)
+  })
+
+  it('novels.follow with offset', async () => {
+    const result = await client.novels.follow({ restrict: 'public', offset: 1 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.novels)).toBe(true)
+  })
+
+  it('novels.comments', async () => {
+    const result = await client.novels.comments({
+      novelId: NOVEL_ID,
+      includeTotalComments: true,
+    })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.comments)).toBe(true)
+    expect(typeof result.value.totalComments).toBe('number')
+    if (result.value.commentAccessControl !== undefined) {
+      expect(typeof result.value.commentAccessControl).toBe('number')
+    }
+    if (result.value.comments.length > 0) {
+      const [comment] = result.value.comments
+      expect(typeof comment.id).toBe('number')
+      expect(typeof comment.comment).toBe('string')
+      expect(typeof comment.date).toBe('string')
+      expect(typeof comment.user.id).toBe('number')
+    }
+  })
+
+  it('novels.comments with offset', async () => {
+    const result = await client.novels.comments({
+      novelId: NOVEL_ID,
+      offset: 1,
+    })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.comments)).toBe(true)
+  })
+
+  it('novels.new', async () => {
+    const result = await client.novels.new({})
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value.novels.length).toBeGreaterThan(0)
+  })
+
+  it('novels.new resumes pagination via the maxNovelId cursor', async () => {
+    const first = await client.novels.new({})
+    expect(first.isOk).toBe(true)
+    if (!first.isOk) return
+    expect(first.value.novels.length).toBeGreaterThan(0)
+    if (first.value.nextUrl === null) return // no further pages to resume
+
+    // `next_url` embeds `max_novel_id`, but `ParsedNextUrl` does not expose
+    // it as a typed field — extract it manually from the raw URL.
+    const maxNovelId = Number(
+      new URL(first.value.nextUrl).searchParams.get('max_novel_id')
+    )
+    expect(Number.isNaN(maxNovelId)).toBe(false)
+
+    const second = await client.novels.new({ maxNovelId })
+    expect(second.isOk).toBe(true)
+    if (!second.isOk) return
+    expect(second.value.novels.length).toBeGreaterThan(0)
+  })
+
   // -------------------------------------------------------------------------
   // Users
   // -------------------------------------------------------------------------
