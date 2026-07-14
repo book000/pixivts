@@ -2,6 +2,11 @@ import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from './msw/handlers'
 import { PixivClient } from '../src/client'
+import {
+  mockIllustRelated,
+  mockIllustSeries,
+  mockIllustBookmarkDelete,
+} from './msw/illusts'
 
 const ILLUST = {
   id: 1,
@@ -473,5 +478,135 @@ describe('illusts.new()', () => {
     const result = await client.illusts.new({ maxIllustId: 100 })
     expect(result.isOk).toBe(true)
     expect(capturedMaxIllustId).toBe('100')
+  })
+})
+
+describe('illusts.related()', () => {
+  it('returns Ok with related illusts', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockIllustRelated({ illusts: [ILLUST], next_url: null })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.illusts.related({ illustId: 1 })
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.illusts).toHaveLength(1)
+      expect(result.value.illusts[0].id).toBe(1)
+    }
+  })
+
+  it('sends seed_illust_ids[] when seedIllustIds is specified', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v2/illust/related', ({ request }) => {
+        capturedUrl = request.url
+        return HttpResponse.json({ illusts: [ILLUST], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.illusts.related({ illustId: 1, seedIllustIds: [2, 3] })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.getAll('seed_illust_ids[]')).toEqual(['2', '3'])
+  })
+})
+
+describe('illusts.series()', () => {
+  it('returns Ok with series detail and illusts', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockIllustSeries({
+        illust_series_detail: {
+          id: 500,
+          title: 'Test Series',
+          caption: '',
+          cover_image_urls: { medium: 'https://i.pximg.net/cover.jpg' },
+          series_work_count: 1,
+          create_date: '2024-01-01T00:00:00+09:00',
+          width: 600,
+          height: 600,
+          user: {
+            id: 42,
+            name: 'Artist',
+            account: 'artist',
+            profile_image_urls: { medium: 'https://i.pximg.net/u.jpg' },
+          },
+          watchlist_added: false,
+        },
+        illust_series_first_illust: ILLUST,
+        illusts: [ILLUST],
+        next_url: null,
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.illusts.series({ illustSeriesId: 500 })
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.illustSeriesDetail.id).toBe(500)
+      expect(result.value.illusts).toHaveLength(1)
+    }
+  })
+
+  it('passes illust_series_id in the URL', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/illust/series', ({ request }) => {
+        capturedUrl = request.url
+        return HttpResponse.json({
+          illust_series_detail: {
+            id: 500,
+            title: 'Test Series',
+            caption: '',
+            cover_image_urls: { medium: 'https://i.pximg.net/cover.jpg' },
+            series_work_count: 1,
+            create_date: '2024-01-01T00:00:00+09:00',
+            width: 600,
+            height: 600,
+            user: {
+              id: 42,
+              name: 'Artist',
+              account: 'artist',
+              profile_image_urls: { medium: 'https://i.pximg.net/u.jpg' },
+            },
+            watchlist_added: false,
+          },
+          illust_series_first_illust: ILLUST,
+          illusts: [ILLUST],
+          next_url: null,
+        })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.illusts.series({ illustSeriesId: 500 })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('illust_series_id')).toBe('500')
+  })
+})
+
+describe('illusts.bookmarkDelete()', () => {
+  it('returns Ok', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockIllustBookmarkDelete({})
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.illusts.bookmarkDelete({ illustId: 1 })
+    expect(result.isOk).toBe(true)
   })
 })
