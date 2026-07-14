@@ -481,6 +481,41 @@ describe('novels.follow()', () => {
     }
     expect(capturedRestrict).toBe('public')
   })
+
+  it('sends restrict=private when explicitly requested', async () => {
+    let capturedRestrict = ''
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/novel/follow', ({ request }) => {
+        capturedRestrict =
+          new URL(request.url).searchParams.get('restrict') ?? ''
+        return HttpResponse.json({ novels: [NOVEL], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.follow({ restrict: 'private' })
+    expect(result.isOk).toBe(true)
+    expect(capturedRestrict).toBe('private')
+  })
+
+  it('forwards the offset param', async () => {
+    let capturedOffset = ''
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/novel/follow', ({ request }) => {
+        capturedOffset = new URL(request.url).searchParams.get('offset') ?? ''
+        return HttpResponse.json({ novels: [NOVEL], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.follow({ offset: 30 })
+    expect(result.isOk).toBe(true)
+    expect(capturedOffset).toBe('30')
+  })
 })
 
 describe('novels.comments()', () => {
@@ -517,6 +552,90 @@ describe('novels.comments()', () => {
       expect(result.value.comments[0].comment).toBe('Nice!')
     }
   })
+
+  it('forwards the offset param', async () => {
+    let capturedOffset = ''
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/novel/comments', ({ request }) => {
+        capturedOffset = new URL(request.url).searchParams.get('offset') ?? ''
+        return HttpResponse.json({ comments: [], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.comments({ novelId: 100, offset: 10 })
+    expect(result.isOk).toBe(true)
+    expect(capturedOffset).toBe('10')
+  })
+
+  it('omits the includeTotalComments param when not requested', async () => {
+    let hasIncludeTotalComments = true
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/novel/comments', ({ request }) => {
+        hasIncludeTotalComments = new URL(request.url).searchParams.has(
+          'include_total_comments'
+        )
+        return HttpResponse.json({ comments: [], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.comments({ novelId: 100 })
+    expect(result.isOk).toBe(true)
+    expect(hasIncludeTotalComments).toBe(false)
+  })
+
+  it('maps commentAccessControl, hasReplies, and a nested parentComment', async () => {
+    const PARENT_COMMENT = {
+      id: 1,
+      comment: 'Original comment',
+      date: '2024-01-01T00:00:00+09:00',
+      user: {
+        id: 98,
+        name: 'Original commenter',
+        account: 'original-commenter',
+        profile_image_urls: { medium: 'https://i.pximg.net/u1.jpg' },
+      },
+      parent_comment: {},
+    }
+    const REPLY_COMMENT = {
+      id: 2,
+      comment: 'A reply',
+      date: '2024-01-02T00:00:00+09:00',
+      user: {
+        id: 99,
+        name: 'Commenter',
+        account: 'commenter',
+        profile_image_urls: { medium: 'https://i.pximg.net/u2.jpg' },
+      },
+      has_replies: true,
+      parent_comment: PARENT_COMMENT,
+    }
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/novel/comments', () =>
+        HttpResponse.json({
+          comments: [REPLY_COMMENT],
+          next_url: null,
+          comment_access_control: 1,
+        })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.comments({ novelId: 100 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value.commentAccessControl).toBe(1)
+    const [reply] = result.value.comments
+    expect(reply.hasReplies).toBe(true)
+    expect(reply.parentComment).toMatchObject({ id: 1, comment: 'Original comment' })
+  })
 })
 
 describe('novels.new()', () => {
@@ -539,6 +658,23 @@ describe('novels.new()', () => {
       expect(result.value.novels).toHaveLength(1)
     }
     expect(capturedMaxNovelId).toBe('100')
+  })
+
+  it('defaults filter to for_ios when omitted', async () => {
+    let capturedFilter = ''
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/novel/new', ({ request }) => {
+        capturedFilter = new URL(request.url).searchParams.get('filter') ?? ''
+        return HttpResponse.json({ novels: [NOVEL], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.new()
+    expect(result.isOk).toBe(true)
+    expect(capturedFilter).toBe('for_ios')
   })
 })
 
