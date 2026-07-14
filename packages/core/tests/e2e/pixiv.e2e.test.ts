@@ -312,6 +312,30 @@ describe.skipIf(SKIP)('PixivClient e2e', () => {
     }
   })
 
+  it('novels.follow', async () => {
+    const result = await client.novels.follow({ restrict: 'public' })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.novels)).toBe(true)
+  })
+
+  it('novels.comments', async () => {
+    const result = await client.novels.comments({
+      novelId: NOVEL_ID,
+      includeTotalComments: true,
+    })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.comments)).toBe(true)
+  })
+
+  it('novels.new', async () => {
+    const result = await client.novels.new({})
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value.novels.length).toBeGreaterThan(0)
+  })
+
   // -------------------------------------------------------------------------
   // Users
   // -------------------------------------------------------------------------

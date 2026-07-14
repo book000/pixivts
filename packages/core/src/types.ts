@@ -278,6 +278,26 @@ export interface PixivNovelItem {
   commentAccessControl?: number
 }
 
+/**
+ * A single comment on a novel.
+ *
+ * Returned by GET /v1/novel/comments.
+ */
+export interface NovelComment {
+  /** Comment ID. */
+  id: number
+  /** Comment body text. */
+  comment: string
+  /** ISO 8601 date-time string of when the comment was posted. */
+  date: string
+  /** Author of the comment. */
+  user: PixivUser
+  /** Whether this comment has replies. */
+  hasReplies?: boolean
+  /** The comment this is a reply to, or `{}` (empty object) for a top-level comment. */
+  parentComment?: NovelComment | Record<string, never>
+}
+
 /** Novel series details returned by GET /v2/novel/series. */
 export interface NovelSeriesDetail {
   /** Series ID. */
@@ -589,6 +609,18 @@ export interface NovelRecommendedPage {
   privacyPolicy?: PrivacyPolicy
   /** URL to the next page, or `null` when this is the last page. */
   nextUrl: string | null
+}
+
+/** Page response for GET /v1/novel/comments. */
+export interface NovelCommentsPage {
+  /** Total number of comments on the novel (present only when `includeTotalComments` is requested). */
+  totalComments?: number
+  /** Comments on this page. */
+  comments: NovelComment[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+  /** Who is permitted to post comments (may be absent). */
+  commentAccessControl?: number
 }
 
 /** Page response for GET /v2/novel/series. */

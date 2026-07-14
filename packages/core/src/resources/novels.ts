@@ -8,6 +8,7 @@ import { PaginatedResultAsync } from '../paginated'
 import type { ResultAsync } from '../result'
 import {
   BookmarkRestrict,
+  FollowRestrict,
   NovelRankingMode,
   OSFilter,
   SearchDuration,
@@ -15,6 +16,8 @@ import {
   SearchTarget,
 } from '../options'
 import type {
+  NovelComment,
+  NovelCommentsPage,
   NovelDetailResponse,
   NovelListPage,
   NovelRecommendedPage,
@@ -111,6 +114,32 @@ export interface NovelBookmarkAddParams {
 export interface NovelBookmarkDeleteParams {
   /** ID of the novel to remove from bookmarks. */
   novelId: number
+}
+
+/** Parameters for fetching novels posted by followed users. */
+export interface NovelFollowParams {
+  /** Follow visibility to fetch (default: `"public"`). */
+  restrict?: (typeof FollowRestrict)[keyof typeof FollowRestrict]
+  /** Zero-based offset for pagination. */
+  offset?: number
+}
+
+/** Parameters for fetching comments on a novel. */
+export interface NovelCommentsParams {
+  /** ID of the novel to fetch comments for. */
+  novelId: number
+  /** Zero-based offset for pagination. */
+  offset?: number
+  /** Whether to include the `totalComments` count in the response. */
+  includeTotalComments?: boolean
+}
+
+/** Parameters for fetching newly posted novels. */
+export interface NovelNewParams {
+  /** OS filter to apply (default: `"for_ios"`). */
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
+  /** Cursor: fetch novels posted before this novel ID. */
+  maxNovelId?: number
 }
 
 /** Methods for the novel API namespace. */
@@ -326,6 +355,73 @@ export class NovelResource {
     return this.#http.post<Record<string, never>>(
       '/v1/novel/bookmark/delete',
       body.toString()
+    )
+  }
+
+  /**
+   * Fetches novels posted by users the authenticated account follows.
+   * GET /v1/novel/follow
+   *
+   * @param params - Request parameters
+   */
+  follow(
+    params: NovelFollowParams = {}
+  ): PaginatedResultAsync<NovelListPage, PixivNovelItem> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<NovelListPage>(
+        '/v1/novel/follow',
+        buildParams({
+          restrict: params.restrict ?? 'public',
+          offset: params.offset,
+        })
+      ),
+      this.#http,
+      (page) => page.novels
+    )
+  }
+
+  /**
+   * Fetches comments posted on a novel.
+   * GET /v1/novel/comments
+   *
+   * @param params - Request parameters
+   */
+  comments(
+    params: NovelCommentsParams
+  ): PaginatedResultAsync<NovelCommentsPage, NovelComment> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<NovelCommentsPage>(
+        '/v1/novel/comments',
+        buildParams({
+          novelId: params.novelId,
+          offset: params.offset,
+          includeTotalComments: params.includeTotalComments,
+        })
+      ),
+      this.#http,
+      (page) => page.comments
+    )
+  }
+
+  /**
+   * Fetches newly posted novels.
+   * GET /v1/novel/new
+   *
+   * @param params - Request parameters
+   */
+  new(
+    params: NovelNewParams = {}
+  ): PaginatedResultAsync<NovelListPage, PixivNovelItem> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<NovelListPage>(
+        '/v1/novel/new',
+        buildParams({
+          filter: params.filter ?? 'for_ios',
+          maxNovelId: params.maxNovelId,
+        })
+      ),
+      this.#http,
+      (page) => page.novels
     )
   }
 }
