@@ -425,6 +425,111 @@ describe('illusts.bookmarkAdd()', () => {
   })
 })
 
+describe('illusts.follow()', () => {
+  it('returns Ok with followed illusts and defaults restrict to public', async () => {
+    let capturedRestrict = ''
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v2/illust/follow', ({ request }) => {
+        capturedRestrict =
+          new URL(request.url).searchParams.get('restrict') ?? ''
+        return HttpResponse.json({ illusts: [ILLUST], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.illusts.follow()
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.illusts).toHaveLength(1)
+    }
+    expect(capturedRestrict).toBe('public')
+  })
+})
+
+describe('illusts.comments()', () => {
+  it('returns Ok with comments', async () => {
+    const COMMENT = {
+      id: 1,
+      comment: 'Nice!',
+      date: '2024-01-01T00:00:00+09:00',
+      user: {
+        id: 99,
+        name: 'Commenter',
+        account: 'commenter',
+        profile_image_urls: { medium: 'https://i.pximg.net/u2.jpg' },
+      },
+      parent_comment: {},
+    }
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/illust/comments', () =>
+        HttpResponse.json({
+          total_comments: 1,
+          comments: [COMMENT],
+          next_url: null,
+        })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.illusts.comments({ illustId: 1 })
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.totalComments).toBe(1)
+      expect(result.value.comments[0].comment).toBe('Nice!')
+    }
+  })
+})
+
+describe('illusts.bookmarkDetail()', () => {
+  it('returns Ok with bookmark metadata', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v2/illust/bookmark/detail', () =>
+        HttpResponse.json({
+          bookmark_detail: {
+            is_bookmarked: true,
+            tags: [{ name: 'favorite', is_registered: true }],
+            restrict: 'public',
+          },
+        })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.illusts.bookmarkDetail({ illustId: 1 })
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.bookmarkDetail.isBookmarked).toBe(true)
+      expect(result.value.bookmarkDetail.tags[0].name).toBe('favorite')
+    }
+  })
+})
+
+describe('illusts.new()', () => {
+  it('passes the maxIllustId param in the URL', async () => {
+    let capturedMaxIllustId = ''
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/illust/new', ({ request }) => {
+        capturedMaxIllustId =
+          new URL(request.url).searchParams.get('max_illust_id') ?? ''
+        return HttpResponse.json({ illusts: [ILLUST], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.illusts.new({ maxIllustId: 100 })
+    expect(result.isOk).toBe(true)
+    expect(capturedMaxIllustId).toBe('100')
+  })
+})
+
 describe('novels.detail()', () => {
   it('returns Ok with the novel', async () => {
     server.use(
