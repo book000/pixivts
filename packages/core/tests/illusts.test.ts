@@ -2,11 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from './msw/handlers'
 import { PixivClient } from '../src/client'
-import {
-  mockIllustRelated,
-  mockIllustSeries,
-  mockIllustBookmarkDelete,
-} from './msw/illusts'
+import { mockIllustRelated, mockIllustSeries } from './msw/illusts'
 
 const ILLUST = {
   id: 1,
@@ -598,15 +594,24 @@ describe('illusts.series()', () => {
 })
 
 describe('illusts.bookmarkDelete()', () => {
-  it('returns Ok', async () => {
+  it('returns Ok and sends illust_id', async () => {
+    let capturedBody = ''
     server.use(
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      mockIllustBookmarkDelete({})
+      http.post(
+        'https://app-api.pixiv.net/v1/illust/bookmark/delete',
+        async ({ request }) => {
+          capturedBody = await request.text()
+          return HttpResponse.json({})
+        }
+      )
     )
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.illusts.bookmarkDelete({ illustId: 1 })
     expect(result.isOk).toBe(true)
+    const params = new URLSearchParams(capturedBody)
+    expect(params.get('illust_id')).toBe('1')
   })
 })

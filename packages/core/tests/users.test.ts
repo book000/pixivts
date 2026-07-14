@@ -2,11 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from './msw/handlers'
 import { PixivClient } from '../src/client'
-import {
-  mockUserNovels,
-  mockUserFollowDelete,
-  mockUserBookmarksIllust,
-} from './msw/users'
+import { mockUserNovels, mockUserBookmarksIllust } from './msw/users'
 
 const NOVEL = {
   id: 100,
@@ -292,6 +288,38 @@ describe('users.novels()', () => {
       expect(result.value.novels[0].id).toBe(100)
     }
   })
+
+  it('defaults filter to for_ios and forwards offset', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/user/novels',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({
+            user: {
+              id: 42,
+              name: 'Author',
+              account: 'author',
+              profile_image_urls: { medium: 'https://i.pximg.net/u.jpg' },
+            },
+            novels: [NOVEL],
+            next_url: null,
+          })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.novels({ userId: 42, offset: 30 })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('filter')).toBe('for_ios')
+    expect(params.get('offset')).toBe('30')
+  })
 })
 
 describe('users.followAdd()', () => {
@@ -317,16 +345,25 @@ describe('users.followAdd()', () => {
 })
 
 describe('users.followDelete()', () => {
-  it('returns Ok', async () => {
+  it('returns Ok and sends user_id', async () => {
+    let capturedBody = ''
     server.use(
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      mockUserFollowDelete({})
+      http.post(
+        'https://app-api.pixiv.net/v1/user/follow/delete',
+        async ({ request }) => {
+          capturedBody = await request.text()
+          return HttpResponse.json({})
+        }
+      )
     )
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.users.followDelete({ userId: 42 })
     expect(result.isOk).toBe(true)
+    const params = new URLSearchParams(capturedBody)
+    expect(params.get('user_id')).toBe('42')
   })
 })
 

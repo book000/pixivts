@@ -8,8 +8,6 @@ import {
   mockNovelSearch,
   mockNovelRecommended,
   mockNovelSeries,
-  mockNovelBookmarkAdd,
-  mockNovelBookmarkDelete,
 } from './msw/novels'
 
 const NOVEL = {
@@ -543,29 +541,71 @@ describe('novels.series()', () => {
 })
 
 describe('novels.bookmarkAdd()', () => {
-  it('returns Ok', async () => {
+  it('returns Ok and defaults restrict to public', async () => {
+    let capturedBody = ''
     server.use(
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      mockNovelBookmarkAdd({})
+      http.post(
+        'https://app-api.pixiv.net/v2/novel/bookmark/add',
+        async ({ request }) => {
+          capturedBody = await request.text()
+          return HttpResponse.json({})
+        }
+      )
     )
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.novels.bookmarkAdd({ novelId: 100 })
     expect(result.isOk).toBe(true)
+    const params = new URLSearchParams(capturedBody)
+    expect(params.get('novel_id')).toBe('100')
+    expect(params.get('restrict')).toBe('public')
   })
-})
 
-describe('novels.bookmarkDelete()', () => {
-  it('returns Ok', async () => {
+  it('sends tags[] when tags are specified', async () => {
+    let capturedBody = ''
     server.use(
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      mockNovelBookmarkDelete({})
+      http.post(
+        'https://app-api.pixiv.net/v2/novel/bookmark/add',
+        async ({ request }) => {
+          capturedBody = await request.text()
+          return HttpResponse.json({})
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.novels.bookmarkAdd({
+      novelId: 100,
+      tags: ['tag1', 'tag2'],
+    })
+    const params = new URLSearchParams(capturedBody)
+    expect(params.getAll('tags[]')).toEqual(['tag1', 'tag2'])
+  })
+})
+
+describe('novels.bookmarkDelete()', () => {
+  it('returns Ok and sends novel_id', async () => {
+    let capturedBody = ''
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.post(
+        'https://app-api.pixiv.net/v1/novel/bookmark/delete',
+        async ({ request }) => {
+          capturedBody = await request.text()
+          return HttpResponse.json({})
+        }
+      )
     )
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.novels.bookmarkDelete({ novelId: 100 })
     expect(result.isOk).toBe(true)
+    const params = new URLSearchParams(capturedBody)
+    expect(params.get('novel_id')).toBe('100')
   })
 })
