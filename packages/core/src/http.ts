@@ -9,7 +9,12 @@
  */
 
 import type { AuthManager } from './auth'
-import { apiError, authFailedError, networkError, rateLimitError } from './errors'
+import {
+  apiError,
+  authFailedError,
+  networkError,
+  rateLimitError,
+} from './errors'
 import type { ResponseInterceptor } from './interceptor'
 import { type HttpMethod, type ResponseRecord } from './interceptor'
 import { camelizeKeys } from './params'
@@ -86,11 +91,7 @@ export function parseRetryAfter(
 }
 
 function headersToRecord(headers: Headers): Record<string, string> {
-  const result: Record<string, string> = {}
-  for (const [key, value] of headers) {
-    result[key] = value
-  }
-  return result
+  return Object.fromEntries(headers)
 }
 
 /**
@@ -165,11 +166,11 @@ export class HttpClient {
       networkError
     ).andThen((response) => {
       if (!response.ok) {
-        return ResultAsync.fromResult(
-          err(apiError(response.status, null))
-        )
+        return ResultAsync.fromResult(err(apiError(response.status, null)))
       }
-      return ResultAsync.fromResult(ok(response) as Result<Response, PixivError>)
+      return ResultAsync.fromResult(
+        ok(response) as Result<Response, PixivError>
+      )
     })
   }
 
@@ -221,9 +222,9 @@ export class HttpClient {
       const requestHeaders: Record<string, string> = {
         ...DEFAULT_HEADERS,
         Authorization: `Bearer ${this.#auth.accessToken}`,
-        ...(method === 'POST'
-          ? { 'Content-Type': 'application/x-www-form-urlencoded' }
-          : {}),
+        ...(method === 'POST' && {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        }),
       }
 
       let response: Response

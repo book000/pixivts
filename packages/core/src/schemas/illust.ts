@@ -55,7 +55,10 @@ export const PixivIllustItemSchema = z.object({
    * For single-page works this is `{ originalImageUrl: string }`.
    * For multi-page works this is an empty object `{}`.
    */
-  metaSinglePage: z.union([MetaSinglePageSchema, z.record(z.string(), z.never())]),
+  metaSinglePage: z.union([
+    MetaSinglePageSchema,
+    z.record(z.string(), z.never()),
+  ]),
   metaPages: z.array(MetaPagesSchema),
   totalView: z.number(),
   totalBookmarks: z.number(),
@@ -84,7 +87,44 @@ export const IllustSeriesDetailSchema = z.object({
   watchlistAdded: z.boolean(),
 })
 
+/** A single comment on an illust. */
+export const IllustCommentSchema: z.ZodType<{
+  id: number
+  comment: string
+  date: string
+  user: z.infer<typeof PixivUserSchema>
+  hasReplies?: boolean
+  parentComment?: Record<string, never> | z.infer<typeof IllustCommentSchema>
+}> = z.lazy(() =>
+  z.object({
+    id: z.number(),
+    comment: z.string(),
+    date: z.string(),
+    user: PixivUserSchema,
+    hasReplies: z.boolean().optional(),
+    parentComment: z
+      .union([z.record(z.string(), z.never()), IllustCommentSchema])
+      .optional(),
+  })
+)
+
+/** Tag entry within a bookmark detail. */
+export const BookmarkDetailTagSchema = z.object({
+  name: z.string(),
+  isRegistered: z.boolean(),
+})
+
+/** Bookmark metadata for a single illust. */
+export const BookmarkDetailSchema = z.object({
+  isBookmarked: z.boolean(),
+  tags: z.array(BookmarkDetailTagSchema),
+  restrict: z.enum(['public', 'private', '']),
+})
+
 export type PixivIllustItem = z.infer<typeof PixivIllustItemSchema>
 export type MetaSinglePage = z.infer<typeof MetaSinglePageSchema>
 export type MetaPages = z.infer<typeof MetaPagesSchema>
 export type IllustSeriesDetail = z.infer<typeof IllustSeriesDetailSchema>
+export type IllustComment = z.infer<typeof IllustCommentSchema>
+export type BookmarkDetailTag = z.infer<typeof BookmarkDetailTagSchema>
+export type BookmarkDetail = z.infer<typeof BookmarkDetailSchema>

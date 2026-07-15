@@ -24,11 +24,21 @@ export { parseNextUrl } from './params'
 export type { ParsedNextUrl } from './params'
 
 // Error types
-export { rateLimitError, authFailedError, networkError, apiError, PixivFetchError } from './errors'
+export {
+  rateLimitError,
+  authFailedError,
+  networkError,
+  apiError,
+  PixivFetchError,
+} from './errors'
 export type { PixivError } from './errors'
 
 // Interceptor (DB seam)
-export type { ResponseRecord, ResponseInterceptor, HttpMethod } from './interceptor'
+export type {
+  ResponseRecord,
+  ResponseInterceptor,
+  HttpMethod,
+} from './interceptor'
 
 // Option constants and types (exported as values so callers can use e.g. BookmarkRestrict.PUBLIC)
 export {
@@ -56,6 +66,7 @@ export type {
   MetaPages,
   IllustSeriesDetail,
   PixivNovelItem,
+  NovelComment,
   NovelSeriesDetail,
   PixivUserItem,
   PixivUserProfile,
@@ -66,17 +77,23 @@ export type {
   Frame,
   PixivUgoiraItem,
   PixivApiErrorBody,
+  IllustComment,
+  BookmarkDetailTag,
+  BookmarkDetail,
   // Response types for API endpoints
   IllustDetailResponse,
   IllustListPage,
   IllustRecommendedPage,
   IllustSeriesPage,
+  IllustCommentsPage,
+  IllustBookmarkDetailResponse,
   MangaRecommendedPage,
   UgoiraMetadataResponse,
   NovelDetailResponse,
   NovelListPage,
   NovelRecommendedPage,
   NovelSeriesPage,
+  NovelCommentsPage,
   UserDetailResponse,
   UserIllustsPage,
   UserNovelsPage,
@@ -95,6 +112,10 @@ export type {
   IllustSeriesParams,
   IllustBookmarkAddParams,
   IllustBookmarkDeleteParams,
+  IllustFollowParams,
+  IllustCommentsParams,
+  IllustBookmarkDetailParams,
+  IllustNewParams,
 } from './resources/illusts'
 
 export type {
@@ -107,6 +128,9 @@ export type {
   NovelSeriesParams,
   NovelBookmarkAddParams,
   NovelBookmarkDeleteParams,
+  NovelFollowParams,
+  NovelCommentsParams,
+  NovelNewParams,
 } from './resources/novels'
 
 export type {

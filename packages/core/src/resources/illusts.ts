@@ -8,13 +8,18 @@ import { PaginatedResultAsync } from '../paginated'
 import type { ResultAsync } from '../result'
 import {
   BookmarkRestrict,
+  FollowRestrict,
   OSFilter,
   RankingMode,
   SearchDuration,
   SearchSort,
   SearchTarget,
+  UserIllustType,
 } from '../options'
 import type {
+  IllustBookmarkDetailResponse,
+  IllustComment,
+  IllustCommentsPage,
   IllustDetailResponse,
   IllustListPage,
   IllustRecommendedPage,
@@ -135,6 +140,40 @@ export interface IllustBookmarkDeleteParams {
   illustId: number
 }
 
+/** Parameters for fetching illusts posted by followed users. */
+export interface IllustFollowParams {
+  /** Follow visibility to fetch (default: `"public"`). */
+  restrict?: (typeof FollowRestrict)[keyof typeof FollowRestrict]
+  /** Zero-based offset for pagination. */
+  offset?: number
+}
+
+/** Parameters for fetching comments on an illust. */
+export interface IllustCommentsParams {
+  /** ID of the illust to fetch comments for. */
+  illustId: number
+  /** Zero-based offset for pagination. */
+  offset?: number
+  /** Whether to include the `totalComments` count in the response. */
+  includeTotalComments?: boolean
+}
+
+/** Parameters for fetching bookmark metadata for an illust. */
+export interface IllustBookmarkDetailParams {
+  /** ID of the illust to fetch bookmark metadata for. */
+  illustId: number
+}
+
+/** Parameters for fetching newly posted illusts. */
+export interface IllustNewParams {
+  /** Restrict results to illusts or manga (omit for both). */
+  contentType?: (typeof UserIllustType)[keyof typeof UserIllustType]
+  /** OS filter to apply (default: `"for_ios"`). */
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
+  /** Cursor: fetch illusts posted before this illust ID. */
+  maxIllustId?: number
+}
+
 /** Methods for the illust API namespace. */
 export class IllustResource {
   readonly #http: HttpClient
@@ -164,7 +203,10 @@ export class IllustResource {
   ): ResultAsync<IllustDetailResponse, PixivError> {
     return this.#http.get<IllustDetailResponse>(
       '/v1/illust/detail',
-      buildParams({ illustId: params.illustId, filter: params.filter ?? 'for_ios' })
+      buildParams({
+        illustId: params.illustId,
+        filter: params.filter ?? 'for_ios',
+      })
     )
   }
 
@@ -183,9 +225,7 @@ export class IllustResource {
         buildParams({
           illustId: params.illustId,
           filter: params.filter ?? 'for_ios',
-          ...(params.seedIllustIds
-            ? { seedIllustIds: params.seedIllustIds }
-            : {}),
+          ...(params.seedIllustIds && { seedIllustIds: params.seedIllustIds }),
         })
       ),
       this.#http,
@@ -284,7 +324,7 @@ export class IllustResource {
           offset: params.offset,
           maxBookmarkIdForRecommend: params.maxBookmarkIdForRecommend,
           minBookmarkIdForRecentIllust: params.minBookmarkIdForRecentIllust,
-          ...(params.viewed ? { viewed: params.viewed } : {}),
+          ...(params.viewed && { viewed: params.viewed }),
         })
       ),
       this.#http,
@@ -329,7 +369,7 @@ export class IllustResource {
     const body = buildParams({
       illustId: params.illustId,
       restrict: params.restrict ?? 'public',
-      ...(params.tags ? { tags: params.tags } : {}),
+      ...(params.tags && { tags: params.tags }),
     })
     return this.#http.post<Record<string, never>>(
       '/v2/illust/bookmark/add',
@@ -350,6 +390,89 @@ export class IllustResource {
     return this.#http.post<Record<string, never>>(
       '/v1/illust/bookmark/delete',
       body.toString()
+    )
+  }
+
+  /**
+   * Fetches illusts posted by users the authenticated account follows.
+   * GET /v2/illust/follow
+   *
+   * @param params - Request parameters
+   */
+  follow(
+    params: IllustFollowParams = {}
+  ): PaginatedResultAsync<IllustListPage, IllustListPage['illusts'][number]> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<IllustListPage>(
+        '/v2/illust/follow',
+        buildParams({
+          restrict: params.restrict ?? 'public',
+          offset: params.offset,
+        })
+      ),
+      this.#http,
+      (page) => page.illusts
+    )
+  }
+
+  /**
+   * Fetches comments posted on an illust.
+   * GET /v1/illust/comments
+   *
+   * @param params - Request parameters
+   */
+  comments(
+    params: IllustCommentsParams
+  ): PaginatedResultAsync<IllustCommentsPage, IllustComment> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<IllustCommentsPage>(
+        '/v1/illust/comments',
+        buildParams({
+          illustId: params.illustId,
+          offset: params.offset,
+          includeTotalComments: params.includeTotalComments,
+        })
+      ),
+      this.#http,
+      (page) => page.comments
+    )
+  }
+
+  /**
+   * Fetches bookmark metadata (tags, visibility) for an illust.
+   * GET /v2/illust/bookmark/detail
+   *
+   * @param params - Request parameters
+   */
+  bookmarkDetail(
+    params: IllustBookmarkDetailParams
+  ): ResultAsync<IllustBookmarkDetailResponse, PixivError> {
+    return this.#http.get<IllustBookmarkDetailResponse>(
+      '/v2/illust/bookmark/detail',
+      buildParams({ illustId: params.illustId })
+    )
+  }
+
+  /**
+   * Fetches newly posted illusts.
+   * GET /v1/illust/new
+   *
+   * @param params - Request parameters
+   */
+  new(
+    params: IllustNewParams = {}
+  ): PaginatedResultAsync<IllustListPage, IllustListPage['illusts'][number]> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<IllustListPage>(
+        '/v1/illust/new',
+        buildParams({
+          contentType: params.contentType,
+          filter: params.filter ?? 'for_ios',
+          maxIllustId: params.maxIllustId,
+        })
+      ),
+      this.#http,
+      (page) => page.illusts
     )
   }
 }

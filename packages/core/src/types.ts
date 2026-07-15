@@ -187,6 +187,44 @@ export interface PixivIllustItem {
   restrictionAttributes?: string[]
 }
 
+/**
+ * A single comment on an illust.
+ *
+ * Returned by GET /v1/illust/comments.
+ */
+export interface IllustComment {
+  /** Comment ID. */
+  id: number
+  /** Comment body text. */
+  comment: string
+  /** ISO 8601 date-time string of when the comment was posted. */
+  date: string
+  /** Author of the comment. */
+  user: PixivUser
+  /** Whether this comment has replies. */
+  hasReplies?: boolean
+  /** The comment this is a reply to, or `{}` (empty object) for a top-level comment. */
+  parentComment?: IllustComment | Record<string, never>
+}
+
+/** Tag entry within {@link BookmarkDetail}. */
+export interface BookmarkDetailTag {
+  /** Tag name. */
+  name: string
+  /** Whether the authenticated user has registered this tag on the bookmark. */
+  isRegistered: boolean
+}
+
+/** Bookmark metadata for a single illust, returned by GET /v2/illust/bookmark/detail. */
+export interface BookmarkDetail {
+  /** Whether the authenticated user has bookmarked this illust. */
+  isBookmarked: boolean
+  /** Tags attached to the bookmark. */
+  tags: BookmarkDetailTag[]
+  /** Bookmark visibility, or `""` when not bookmarked. */
+  restrict: 'public' | 'private' | ''
+}
+
 /** Illust series metadata returned by GET /v1/illust/series. */
 export interface IllustSeriesDetail {
   /** Series ID. */
@@ -276,6 +314,26 @@ export interface PixivNovelItem {
   novelAiType: number
   /** Controls who can post comments (may be absent). */
   commentAccessControl?: number
+}
+
+/**
+ * A single comment on a novel.
+ *
+ * Returned by GET /v1/novel/comments.
+ */
+export interface NovelComment {
+  /** Comment ID. */
+  id: number
+  /** Comment body text. */
+  comment: string
+  /** ISO 8601 date-time string of when the comment was posted. */
+  date: string
+  /** Author of the comment. */
+  user: PixivUser
+  /** Whether this comment has replies. */
+  hasReplies?: boolean
+  /** The comment this is a reply to, or `{}` (empty object) for a top-level comment. */
+  parentComment?: NovelComment | Record<string, never>
 }
 
 /** Novel series details returned by GET /v2/novel/series. */
@@ -523,6 +581,24 @@ export interface IllustRecommendedPage {
   nextUrl: string | null
 }
 
+/** Page response for GET /v1/illust/comments. */
+export interface IllustCommentsPage {
+  /** Total number of comments on the illust (present only when `includeTotalComments` is requested). */
+  totalComments?: number
+  /** Comments on this page. */
+  comments: IllustComment[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+  /** Who is permitted to post comments (may be absent). */
+  commentAccessControl?: number
+}
+
+/** Response shape for GET /v2/illust/bookmark/detail. */
+export interface IllustBookmarkDetailResponse {
+  /** Bookmark metadata for the requested illust. */
+  bookmarkDetail: BookmarkDetail
+}
+
 /** Page response for GET /v1/illust/series. */
 export interface IllustSeriesPage {
   /** Metadata for the series. */
@@ -589,6 +665,18 @@ export interface NovelRecommendedPage {
   privacyPolicy?: PrivacyPolicy
   /** URL to the next page, or `null` when this is the last page. */
   nextUrl: string | null
+}
+
+/** Page response for GET /v1/novel/comments. */
+export interface NovelCommentsPage {
+  /** Total number of comments on the novel (present only when `includeTotalComments` is requested). */
+  totalComments?: number
+  /** Comments on this page. */
+  comments: NovelComment[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+  /** Who is permitted to post comments (may be absent). */
+  commentAccessControl?: number
 }
 
 /** Page response for GET /v2/novel/series. */
