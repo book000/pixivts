@@ -98,7 +98,8 @@ describe.skipIf(SKIP)('PixivClient e2e — users', () => {
     const result = await client.users.list({ userId: STAFF_USER_ID })
     expect(result.isOk).toBe(true)
     if (!result.isOk) return
-    expect(Array.isArray(result.value.userPreviews)).toBe(true)
+    // Unlike sibling endpoints, the live API returns a `users` array, not `user_previews`.
+    expect(Array.isArray(result.value.users)).toBe(true)
   })
 
   it('users.bookmarkTagsIllust', async () => {

@@ -16,6 +16,7 @@ import type {
   BookmarkTag,
   PixivIllustItem,
   PixivNovelItem,
+  PixivUser,
   PixivUserPreviewItem,
   UserBookmarksIllustPage,
   UserBookmarksNovelPage,
@@ -495,11 +496,14 @@ export class UserResource {
    * Fetches a user list.
    * GET /v2/user/list
    *
+   * Returns plain `PixivUser` objects under a `users` key, unlike sibling
+   * endpoints that return `PixivUserPreviewItem` under `user_previews`.
+   *
    * @param params - Request parameters
    */
   list(
     params: UserListParams
-  ): PaginatedResultAsync<UserListPage, PixivUserPreviewItem> {
+  ): PaginatedResultAsync<UserListPage, PixivUser> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<UserListPage>(
         '/v2/user/list',
@@ -510,7 +514,7 @@ export class UserResource {
         })
       ),
       this.#http,
-      (page) => page.userPreviews
+      (page) => page.users
     )
   }
 

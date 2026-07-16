@@ -616,19 +616,26 @@ describe('users.mypixiv()', () => {
   })
 })
 
+const PLAIN_USER = {
+  id: 99,
+  name: 'Listed',
+  account: 'listed',
+  profile_image_urls: { medium: 'https://i.pximg.net/u.jpg' },
+}
+
 describe('users.list()', () => {
-  it('returns Ok with user previews', async () => {
+  it('returns Ok with users', async () => {
     server.use(
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      mockUserList({ user_previews: [USER_PREVIEW], next_url: null })
+      mockUserList({ users: [PLAIN_USER], next_url: null })
     )
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.users.list({ userId: 42 })
     expect(result.isOk).toBe(true)
     if (result.isOk) {
-      expect(result.value.userPreviews).toHaveLength(1)
+      expect(result.value.users).toHaveLength(1)
     }
   })
 
@@ -640,7 +647,7 @@ describe('users.list()', () => {
       ),
       http.get('https://app-api.pixiv.net/v2/user/list', ({ request }) => {
         capturedUrl = request.url
-        return HttpResponse.json({ user_previews: [], next_url: null })
+        return HttpResponse.json({ users: [], next_url: null })
       })
     )
     const client = await PixivClient.of('test-refresh-token')

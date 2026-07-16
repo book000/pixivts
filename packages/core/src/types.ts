@@ -783,10 +783,18 @@ export interface UserMypixivPage {
   nextUrl: string | null
 }
 
-/** Page response for GET /v2/user/list. */
+/**
+ * Page response for GET /v2/user/list.
+ *
+ * NOTE: unlike sibling endpoints (`following`, `follower`, `mypixiv`, `related`,
+ * `recommended`), the live pixiv API returns this list under a `users` key with
+ * plain `PixivUser` objects, not `user_previews` with `PixivUserPreviewItem`
+ * (confirmed by direct API verification; no `user_previews` wrapper is present
+ * on the wire for this endpoint).
+ */
 export interface UserListPage {
-  /** User preview items on this page. */
-  userPreviews: PixivUserPreviewItem[]
+  /** User items on this page. */
+  users: PixivUser[]
   /** URL to the next page, or `null` when this is the last page. */
   nextUrl: string | null
 }

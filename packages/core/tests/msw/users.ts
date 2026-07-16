@@ -48,6 +48,7 @@ export function mockUserMypixiv(body: JsonBodyType) {
   )
 }
 
+/** Mocks GET /v2/user/list. Note: real API returns `users`, not `user_previews`. */
 export function mockUserList(body: JsonBodyType) {
   return http.get('https://app-api.pixiv.net/v2/user/list', () =>
     HttpResponse.json(body)
