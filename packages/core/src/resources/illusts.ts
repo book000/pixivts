@@ -24,6 +24,7 @@ import type {
   IllustListPage,
   IllustRecommendedPage,
   IllustSeriesPage,
+  TrendingTagsIllustResponse,
 } from '../types'
 
 // === Request param types ===
@@ -172,6 +173,12 @@ export interface IllustNewParams {
   filter?: (typeof OSFilter)[keyof typeof OSFilter]
   /** Cursor: fetch illusts posted before this illust ID. */
   maxIllustId?: number
+}
+
+/** Parameters for fetching trending illust tags. */
+export interface IllustTrendingTagsParams {
+  /** OS filter to apply (default: `"for_ios"`). */
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
 }
 
 /** Methods for the illust API namespace. */
@@ -473,6 +480,21 @@ export class IllustResource {
       ),
       this.#http,
       (page) => page.illusts
+    )
+  }
+
+  /**
+   * Fetches currently trending illust tags, each with a representative illust.
+   * GET /v1/trending-tags/illust
+   *
+   * @param params - Request parameters
+   */
+  trendingTags(
+    params: IllustTrendingTagsParams = {}
+  ): ResultAsync<TrendingTagsIllustResponse, PixivError> {
+    return this.#http.get<TrendingTagsIllustResponse>(
+      '/v1/trending-tags/illust',
+      buildParams({ filter: params.filter ?? 'for_ios' })
     )
   }
 }

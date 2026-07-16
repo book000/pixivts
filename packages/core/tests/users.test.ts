@@ -12,6 +12,7 @@ import {
   mockUserList,
   mockUserBookmarkTagsIllust,
   mockUserEditAiShowSettings,
+  mockUserSearch,
 } from './msw/users'
 
 const NOVEL = {
@@ -736,5 +737,87 @@ describe('users.editAiShowSettings()', () => {
     await client.users.editAiShowSettings({ setting: 1 })
     const params = new URLSearchParams(capturedBody)
     expect(params.get('setting')).toBe('1')
+  })
+})
+
+describe('users.search()', () => {
+  it('returns Ok with user previews', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockUserSearch({
+        user_previews: [USER_PREVIEW],
+        next_url: null,
+        search_span_limit: 1000,
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.search({ word: 'artist' })
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.userPreviews).toHaveLength(1)
+      expect(result.value.userPreviews[0].user.id).toBe(99)
+      expect(result.value.searchSpanLimit).toBe(1000)
+    }
+  })
+
+  it('sends word and defaults sort/filter', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/search/user', ({ request }) => {
+        capturedUrl = request.url
+        return HttpResponse.json({
+          user_previews: [],
+          next_url: null,
+          search_span_limit: 1000,
+        })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.search({ word: 'artist' })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('word')).toBe('artist')
+    expect(params.get('sort')).toBe('date_desc')
+    expect(params.get('filter')).toBe('for_ios')
+  })
+
+  it('yields all items across pages', async () => {
+    const USER_PREVIEW2 = {
+      ...USER_PREVIEW,
+      user: { ...USER_PREVIEW.user, id: 100 },
+    }
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/search/user', ({ request }) => {
+        const offset = new URL(request.url).searchParams.get('offset')
+        if (offset === '30') {
+          return HttpResponse.json({
+            user_previews: [USER_PREVIEW2],
+            next_url: null,
+            search_span_limit: 1000,
+          })
+        }
+        return HttpResponse.json({
+          user_previews: [USER_PREVIEW],
+          next_url: 'https://app-api.pixiv.net/v1/search/user?offset=30',
+          search_span_limit: 1000,
+        })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const ids: number[] = []
+    const previews = client.users.search({ word: 'artist' }).items()
+    for await (const preview of previews) {
+      ids.push(preview.user.id)
+    }
+    expect(ids).toEqual([99, 100])
   })
 })

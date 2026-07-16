@@ -10,6 +10,8 @@ import {
   BookmarkRestrict,
   FollowRestrict,
   OSFilter,
+  SearchDuration,
+  SearchSort,
   UserIllustType,
 } from '../options'
 import type {
@@ -30,6 +32,7 @@ import type {
   UserNovelsPage,
   UserRecommendedPage,
   UserRelatedPage,
+  UserSearchPage,
 } from '../types'
 
 // === Request param types ===
@@ -176,6 +179,20 @@ export interface UserBookmarkTagsIllustParams {
   offset?: number
 }
 
+/** Parameters for searching users. */
+export interface UserSearchParams {
+  /** Search keyword. */
+  word: string
+  /** Sort order for results (default: `"date_desc"`). */
+  sort?: (typeof SearchSort)[keyof typeof SearchSort]
+  /** Date range preset filter (omit for no restriction). */
+  duration?: (typeof SearchDuration)[keyof typeof SearchDuration]
+  /** OS filter to apply (default: `"for_ios"`). */
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
+  /** Zero-based offset for pagination. */
+  offset?: number
+}
+
 /** Parameters for editing the AI-generated-work display setting. */
 export interface UserEditAiShowSettingsParams {
   /** New display setting value: `0` = hide AI works, `1` = show AI works. */
@@ -294,6 +311,39 @@ export class UserResource {
     return this.#http.get<UserDetailResponse>(
       '/v1/user/detail',
       buildParams({ userId: params.userId, filter: params.filter ?? 'for_ios' })
+    )
+  }
+
+  /**
+   * Searches for users.
+   * GET /v1/search/user
+   *
+   * @param params - Request parameters
+   *
+   * @example
+   * ```ts
+   * // Iterate all results across pages
+   * for await (const preview of client.users.search({ word: 'artist' }).items()) {
+   *   console.log(preview.user.name)
+   * }
+   * ```
+   */
+  search(
+    params: UserSearchParams
+  ): PaginatedResultAsync<UserSearchPage, PixivUserPreviewItem> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<UserSearchPage>(
+        '/v1/search/user',
+        buildParams({
+          word: params.word,
+          sort: params.sort ?? 'date_desc',
+          duration: params.duration,
+          filter: params.filter ?? 'for_ios',
+          offset: params.offset,
+        })
+      ),
+      this.#http,
+      (page) => page.userPreviews
     )
   }
 

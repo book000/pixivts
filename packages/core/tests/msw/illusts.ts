@@ -23,3 +23,9 @@ export function mockIllustBookmarkDelete(body: JsonBodyType) {
     HttpResponse.json(body)
   )
 }
+
+export function mockIllustTrendingTags(body: JsonBodyType) {
+  return http.get('https://app-api.pixiv.net/v1/trending-tags/illust', () =>
+    HttpResponse.json(body)
+  )
+}

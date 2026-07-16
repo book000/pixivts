@@ -87,6 +87,8 @@ export type {
   IllustSeriesPage,
   IllustCommentsPage,
   IllustBookmarkDetailResponse,
+  TrendingTagIllust,
+  TrendingTagsIllustResponse,
   MangaRecommendedPage,
   UgoiraMetadataResponse,
   NovelDetailResponse,
@@ -104,6 +106,7 @@ export type {
   UserRecommendedPage,
   UserFollowerPage,
   UserMypixivPage,
+  UserSearchPage,
   UserListPage,
   BookmarkTag,
   UserBookmarkTagsIllustPage,
@@ -123,6 +126,7 @@ export type {
   IllustCommentsParams,
   IllustBookmarkDetailParams,
   IllustNewParams,
+  IllustTrendingTagsParams,
 } from './resources/illusts'
 
 export type {
@@ -156,6 +160,7 @@ export type {
   UserListParams,
   UserBookmarkTagsIllustParams,
   UserEditAiShowSettingsParams,
+  UserSearchParams,
 } from './resources/users'
 
 // PixivClient

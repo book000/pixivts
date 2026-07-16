@@ -177,4 +177,13 @@ describe.skipIf(SKIP)('PixivClient e2e — illusts', () => {
     if (!result.isOk) return
     expect(result.value.illusts.length).toBeGreaterThan(0)
   })
+
+  it('illusts.trendingTags', async () => {
+    const result = await client.illusts.trendingTags()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value.trendTags.length).toBeGreaterThan(0)
+    expect(result.value.trendTags[0].tag.length).toBeGreaterThan(0)
+    expect(result.value.trendTags[0].illust.id).toBeGreaterThan(0)
+  })
 })
