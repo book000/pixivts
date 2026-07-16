@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from './msw/handlers'
 import { PixivClient } from '../src/client'
-import { mockIllustRelated, mockIllustSeries } from './msw/illusts'
+import {
+  mockIllustRelated,
+  mockIllustSeries,
+  mockIllustTrendingTags,
+} from './msw/illusts'
 
 const ILLUST = {
   id: 1,
@@ -613,5 +617,51 @@ describe('illusts.bookmarkDelete()', () => {
     expect(result.isOk).toBe(true)
     const params = new URLSearchParams(capturedBody)
     expect(params.get('illust_id')).toBe('1')
+  })
+})
+
+describe('illusts.trendingTags()', () => {
+  it('returns Ok with trend tags', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockIllustTrendingTags({
+        trend_tags: [
+          { tag: 'cat', translated_name: 'Cat', illust: ILLUST },
+        ],
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.illusts.trendingTags()
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.trendTags).toHaveLength(1)
+      expect(result.value.trendTags[0].tag).toBe('cat')
+      expect(result.value.trendTags[0].translatedName).toBe('Cat')
+      expect(result.value.trendTags[0].illust.id).toBe(1)
+    }
+  })
+
+  it('defaults filter to for_ios', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/trending-tags/illust',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({ trend_tags: [] })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.illusts.trendingTags()
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('filter')).toBe('for_ios')
   })
 })

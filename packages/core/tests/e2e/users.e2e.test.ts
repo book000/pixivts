@@ -102,6 +102,13 @@ describe.skipIf(SKIP)('PixivClient e2e — users', () => {
     expect(Array.isArray(result.value.users)).toBe(true)
   })
 
+  it('users.search', async () => {
+    const result = await client.users.search({ word: 'pixiv' })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.userPreviews)).toBe(true)
+  })
+
   it('users.bookmarkTagsIllust', async () => {
     const result = await client.users.bookmarkTagsIllust({
       userId: STAFF_USER_ID,

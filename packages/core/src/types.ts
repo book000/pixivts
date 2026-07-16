@@ -611,6 +611,24 @@ export interface IllustSeriesPage {
   nextUrl: string | null
 }
 
+/**
+ * A single trending tag entry, paired with a representative illust.
+ */
+export interface TrendingTagIllust {
+  /** Tag name in Japanese. */
+  tag: string
+  /** Translated tag name, or `null` if no translation is available. */
+  translatedName: string | null
+  /** Representative illust for this tag. */
+  illust: PixivIllustItem
+}
+
+/** Response shape for GET /v1/trending-tags/illust. */
+export interface TrendingTagsIllustResponse {
+  /** Currently trending tags, each with a representative illust. */
+  trendTags: TrendingTagIllust[]
+}
+
 // Manga endpoint responses
 
 /** Page response for GET /v1/manga/recommended. */
@@ -781,6 +799,16 @@ export interface UserMypixivPage {
   userPreviews: PixivUserPreviewItem[]
   /** URL to the next page, or `null` when this is the last page. */
   nextUrl: string | null
+}
+
+/** Page response for GET /v1/search/user. */
+export interface UserSearchPage {
+  /** User preview items matching the search. */
+  userPreviews: PixivUserPreviewItem[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+  /** Maximum number of results the search will return across all pages. */
+  searchSpanLimit: number
 }
 
 /**

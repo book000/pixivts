@@ -68,3 +68,9 @@ export function mockUserEditAiShowSettings(body: JsonBodyType) {
     () => HttpResponse.json(body)
   )
 }
+
+export function mockUserSearch(body: JsonBodyType) {
+  return http.get('https://app-api.pixiv.net/v1/search/user', () =>
+    HttpResponse.json(body)
+  )
+}
