@@ -23,3 +23,47 @@ export function mockUserBookmarksIllust(body: JsonBodyType) {
     HttpResponse.json(body)
   )
 }
+
+export function mockUserRelated(body: JsonBodyType) {
+  return http.get('https://app-api.pixiv.net/v1/user/related', () =>
+    HttpResponse.json(body)
+  )
+}
+
+export function mockUserRecommended(body: JsonBodyType) {
+  return http.get('https://app-api.pixiv.net/v1/user/recommended', () =>
+    HttpResponse.json(body)
+  )
+}
+
+export function mockUserFollower(body: JsonBodyType) {
+  return http.get('https://app-api.pixiv.net/v1/user/follower', () =>
+    HttpResponse.json(body)
+  )
+}
+
+export function mockUserMypixiv(body: JsonBodyType) {
+  return http.get('https://app-api.pixiv.net/v1/user/mypixiv', () =>
+    HttpResponse.json(body)
+  )
+}
+
+export function mockUserList(body: JsonBodyType) {
+  return http.get('https://app-api.pixiv.net/v2/user/list', () =>
+    HttpResponse.json(body)
+  )
+}
+
+export function mockUserBookmarkTagsIllust(body: JsonBodyType) {
+  return http.get(
+    'https://app-api.pixiv.net/v1/user/bookmark-tags/illust',
+    () => HttpResponse.json(body)
+  )
+}
+
+export function mockUserEditAiShowSettings(body: JsonBodyType) {
+  return http.post(
+    'https://app-api.pixiv.net/v1/user/ai-show-settings/edit',
+    () => HttpResponse.json(body)
+  )
+}

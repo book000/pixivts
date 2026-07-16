@@ -66,6 +66,50 @@ describe.skipIf(SKIP)('PixivClient e2e — users', () => {
     expect(Array.isArray(result.value.novels)).toBe(true)
   })
 
+  it('users.related', async () => {
+    const result = await client.users.related({ seedUserId: STAFF_USER_ID })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.userPreviews)).toBe(true)
+  })
+
+  it('users.recommended', async () => {
+    const result = await client.users.recommended()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.userPreviews)).toBe(true)
+  })
+
+  it('users.follower', async () => {
+    const result = await client.users.follower({ userId: STAFF_USER_ID })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.userPreviews)).toBe(true)
+  })
+
+  it('users.mypixiv', async () => {
+    const result = await client.users.mypixiv({ userId: STAFF_USER_ID })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.userPreviews)).toBe(true)
+  })
+
+  it('users.list', async () => {
+    const result = await client.users.list({ userId: STAFF_USER_ID })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.userPreviews)).toBe(true)
+  })
+
+  it('users.bookmarkTagsIllust', async () => {
+    const result = await client.users.bookmarkTagsIllust({
+      userId: STAFF_USER_ID,
+    })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.bookmarkTags)).toBe(true)
+  })
+
   it('users.followAdd and users.followDelete', async () => {
     const detailResult = await client.users.detail({ userId: STAFF_USER_ID })
     expect(detailResult.isOk).toBe(true)
