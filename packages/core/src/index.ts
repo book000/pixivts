@@ -100,6 +100,13 @@ export type {
   UserBookmarksIllustPage,
   UserBookmarksNovelPage,
   UserFollowingPage,
+  UserRelatedPage,
+  UserRecommendedPage,
+  UserFollowerPage,
+  UserMypixivPage,
+  UserListPage,
+  BookmarkTag,
+  UserBookmarkTagsIllustPage,
 } from './types'
 
 // Resource param types
@@ -142,6 +149,13 @@ export type {
   UserFollowingParams,
   UserFollowAddParams,
   UserFollowDeleteParams,
+  UserRelatedParams,
+  UserRecommendedParams,
+  UserFollowerParams,
+  UserMypixivParams,
+  UserListParams,
+  UserBookmarkTagsIllustParams,
+  UserEditAiShowSettingsParams,
 } from './resources/users'
 
 // PixivClient

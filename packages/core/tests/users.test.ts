@@ -2,7 +2,17 @@ import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from './msw/handlers'
 import { PixivClient } from '../src/client'
-import { mockUserNovels, mockUserBookmarksIllust } from './msw/users'
+import {
+  mockUserNovels,
+  mockUserBookmarksIllust,
+  mockUserRelated,
+  mockUserRecommended,
+  mockUserFollower,
+  mockUserMypixiv,
+  mockUserList,
+  mockUserBookmarkTagsIllust,
+  mockUserEditAiShowSettings,
+} from './msw/users'
 
 const NOVEL = {
   id: 100,
@@ -440,5 +450,291 @@ describe('users.bookmarks.illusts()', () => {
     if (capturedUrl === undefined) return
     const params = new URL(capturedUrl).searchParams
     expect(params.get('tag')).toBe('favorite')
+  })
+})
+
+const USER_PREVIEW = {
+  user: {
+    id: 99,
+    name: 'Related',
+    account: 'related',
+    profile_image_urls: { medium: 'https://i.pximg.net/u.jpg' },
+  },
+  illusts: [],
+  novels: [],
+  is_muted: false,
+}
+
+describe('users.related()', () => {
+  it('returns Ok with user previews', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockUserRelated({ user_previews: [USER_PREVIEW], next_url: null })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.related({ seedUserId: 42 })
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.userPreviews).toHaveLength(1)
+      expect(result.value.userPreviews[0].user.id).toBe(99)
+    }
+  })
+
+  it('sends seed_user_id and defaults filter to for_ios', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/user/related', ({ request }) => {
+        capturedUrl = request.url
+        return HttpResponse.json({ user_previews: [], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.related({ seedUserId: 42 })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('seed_user_id')).toBe('42')
+    expect(params.get('filter')).toBe('for_ios')
+  })
+})
+
+describe('users.recommended()', () => {
+  it('returns Ok with user previews', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockUserRecommended({ user_previews: [USER_PREVIEW], next_url: null })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.recommended()
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.userPreviews).toHaveLength(1)
+    }
+  })
+
+  it('accepts no arguments and forwards offset', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/user/recommended',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({ user_previews: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.recommended({ offset: 10 })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('offset')).toBe('10')
+  })
+})
+
+describe('users.follower()', () => {
+  it('returns Ok with user previews', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockUserFollower({ user_previews: [USER_PREVIEW], next_url: null })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.follower({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.userPreviews).toHaveLength(1)
+    }
+  })
+
+  it('sends user_id and defaults filter to for_ios', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/user/follower', ({ request }) => {
+        capturedUrl = request.url
+        return HttpResponse.json({ user_previews: [], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.follower({ userId: 42 })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('user_id')).toBe('42')
+    expect(params.get('filter')).toBe('for_ios')
+  })
+})
+
+describe('users.mypixiv()', () => {
+  it('returns Ok with user previews', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockUserMypixiv({ user_previews: [USER_PREVIEW], next_url: null })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.mypixiv({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.userPreviews).toHaveLength(1)
+    }
+  })
+
+  it('sends user_id and forwards offset', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/user/mypixiv', ({ request }) => {
+        capturedUrl = request.url
+        return HttpResponse.json({ user_previews: [], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.mypixiv({ userId: 42, offset: 5 })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('user_id')).toBe('42')
+    expect(params.get('offset')).toBe('5')
+  })
+})
+
+const PLAIN_USER = {
+  id: 99,
+  name: 'Listed',
+  account: 'listed',
+  profile_image_urls: { medium: 'https://i.pximg.net/u.jpg' },
+}
+
+describe('users.list()', () => {
+  it('returns Ok with users', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockUserList({ users: [PLAIN_USER], next_url: null })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.list({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.users).toHaveLength(1)
+    }
+  })
+
+  it('sends user_id and defaults filter to for_ios', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v2/user/list', ({ request }) => {
+        capturedUrl = request.url
+        return HttpResponse.json({ users: [], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.list({ userId: 42 })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('user_id')).toBe('42')
+    expect(params.get('filter')).toBe('for_ios')
+  })
+})
+
+describe('users.bookmarkTagsIllust()', () => {
+  it('returns Ok with bookmark tags', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockUserBookmarkTagsIllust({
+        bookmark_tags: [{ name: 'favorite', count: 3, is_registered: true }],
+        next_url: null,
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.bookmarkTagsIllust({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.bookmarkTags).toHaveLength(1)
+      expect(result.value.bookmarkTags[0].name).toBe('favorite')
+      expect(result.value.bookmarkTags[0].count).toBe(3)
+    }
+  })
+
+  it('defaults restrict to public and forwards offset', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/user/bookmark-tags/illust',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({ bookmark_tags: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.bookmarkTagsIllust({ userId: 42, offset: 20 })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('restrict')).toBe('public')
+    expect(params.get('offset')).toBe('20')
+  })
+})
+
+describe('users.editAiShowSettings()', () => {
+  it('returns Ok', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockUserEditAiShowSettings({})
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.editAiShowSettings({ setting: 1 })
+    expect(result.isOk).toBe(true)
+  })
+
+  it('sends the setting value in the request body', async () => {
+    let capturedBody = ''
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.post(
+        'https://app-api.pixiv.net/v1/user/ai-show-settings/edit',
+        async ({ request }) => {
+          capturedBody = await request.text()
+          return HttpResponse.json({})
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.editAiShowSettings({ setting: 1 })
+    const params = new URLSearchParams(capturedBody)
+    expect(params.get('setting')).toBe('1')
   })
 })

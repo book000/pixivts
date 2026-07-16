@@ -750,3 +750,69 @@ export interface UserFollowingPage {
   /** URL to the next page, or `null` when this is the last page. */
   nextUrl: string | null
 }
+
+/** Page response for GET /v1/user/related. */
+export interface UserRelatedPage {
+  /** User preview items related to the seed user. */
+  userPreviews: PixivUserPreviewItem[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Page response for GET /v1/user/recommended. */
+export interface UserRecommendedPage {
+  /** Recommended user preview items. */
+  userPreviews: PixivUserPreviewItem[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Page response for GET /v1/user/follower. */
+export interface UserFollowerPage {
+  /** User preview items on this page. */
+  userPreviews: PixivUserPreviewItem[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Page response for GET /v1/user/mypixiv. */
+export interface UserMypixivPage {
+  /** User preview items on this page. */
+  userPreviews: PixivUserPreviewItem[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/**
+ * Page response for GET /v2/user/list.
+ *
+ * NOTE: unlike sibling endpoints (`following`, `follower`, `mypixiv`, `related`,
+ * `recommended`), the live pixiv API returns this list under a `users` key with
+ * plain `PixivUser` objects, not `user_previews` with `PixivUserPreviewItem`
+ * (confirmed by direct API verification; no `user_previews` wrapper is present
+ * on the wire for this endpoint).
+ */
+export interface UserListPage {
+  /** User items on this page. */
+  users: PixivUser[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** A bookmark tag with usage count, as returned by GET /v1/user/bookmark-tags/illust. */
+export interface BookmarkTag {
+  /** Tag name. */
+  name: string
+  /** Number of bookmarked illusts carrying this tag. */
+  count: number
+  /** Whether this tag is registered by the authenticated user (may be absent). */
+  isRegistered?: boolean
+}
+
+/** Page response for GET /v1/user/bookmark-tags/illust. */
+export interface UserBookmarkTagsIllustPage {
+  /** Bookmark tags on this page. */
+  bookmarkTags: BookmarkTag[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}

@@ -74,7 +74,7 @@ Creates a `PixivClient` by exchanging the given refresh token for an access toke
 |---|---|
 | `illusts` | `detail`, `related`, `search`, `ranking`, `recommended`, `series`, `bookmarkAdd`, `bookmarkDelete` |
 | `novels` | `detail`, `text`, `related`, `search`, `ranking`, `recommended`, `series`, `bookmarkAdd`, `bookmarkDelete` |
-| `users` | `detail`, `illusts`, `novels`, `following`, `followAdd`, `followDelete` |
+| `users` | `detail`, `illusts`, `novels`, `following`, `followAdd`, `followDelete`, `related`, `recommended`, `follower`, `mypixiv`, `list`, `bookmarkTagsIllust`, `editAiShowSettings` |
 | `users.bookmarks` | `illusts`, `novels` |
 | `manga` | `recommended` |
 | `ugoira` | `metadata` |
