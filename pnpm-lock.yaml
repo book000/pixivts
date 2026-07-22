@@ -66,8 +66,8 @@ importers:
         specifier: 2.15.0
         version: 2.15.0(@types/node@24.13.3)(typescript@6.0.3)
       tsdown:
-        specifier: 0.22.11
-        version: 0.22.11(tsx@4.23.0)(typescript@6.0.3)
+        specifier: 0.22.12
+        version: 0.22.12(tsx@4.23.0)(typescript@6.0.3)
       typedoc:
         specifier: 0.28.20
         version: 0.28.20(typescript@6.0.3)
@@ -103,8 +103,8 @@ importers:
         specifier: 0.31.10
         version: 0.31.10
       tsdown:
-        specifier: 0.22.11
-        version: 0.22.11(tsx@4.23.0)(typescript@6.0.3)
+        specifier: 0.22.12
+        version: 0.22.12(tsx@4.23.0)(typescript@6.0.3)
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -3666,14 +3666,14 @@ packages:
     peerDependencies:
       typescript: '>=4.0.0'
 
-  tsdown@0.22.11:
-    resolution: {integrity: sha512-BERdQpqAltv3vYGC0pE4n+mRGPIN91T/on+Ud73bYRkbptknelFm27tJgBBUz4RJ5d3VNeVH90HfjBo1Ouj8yQ==}
+  tsdown@0.22.12:
+    resolution: {integrity: sha512-IzGRfGwSsufXJWOcQ0tmECKMG/dbxhUwDOySTS7JE1AM8pkB9+bpcTPs8bTxxSNrSvGocSczrBlOh97tZObq9Q==}
     engines: {node: ^22.18.0 || >=24.11.0}
     hasBin: true
     peerDependencies:
       '@arethetypeswrong/core': ^0.18.1
-      '@tsdown/css': 0.22.11
-      '@tsdown/exe': 0.22.11
+      '@tsdown/css': 0.22.12
+      '@tsdown/exe': 0.22.12
       '@vitejs/devtools': '*'
       publint: ^0.3.8
       tsx: '*'
@@ -3841,6 +3841,10 @@ packages:
 
   validate-npm-package-license@3.0.4:
     resolution: {integrity: sha512-DpKm2Ui/xN7/HQKCtpZxoRWBhZ9Z0kqtygG8XCgNQ8ZlDnxuQmWhj566j8fN4Cu3/JmbhsDo7fcAJq4s9h27Ew==}
+
+  verkit@0.1.2:
+    resolution: {integrity: sha512-WqkT8n3hqizuCu71W3bUzf5fjBmkbXcudsehe/NbxA8PgqoKnSOY5K0Ba2ckg1qaRaSpSz7as/n9K1R9JXjQKg==}
+    engines: {node: '>=18.12.0'}
 
   vite@8.1.4:
     resolution: {integrity: sha512-bTT9PsdWO+MQMNG9ZXIP/qM9wGh37DFxTV/sPq9cFpHr3w4jkgef032PkAL9jAqhk3Nz8NQw3O8n6/xFkqO4QQ==}
@@ -4935,7 +4939,7 @@ snapshots:
       istanbul-lib-report: 3.0.1
       istanbul-reports: 3.2.0
       magicast: 0.5.3
-      obug: 2.1.3
+      obug: 2.1.4
       std-env: 4.2.0
       tinyrainbow: 3.1.0
       vitest: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(msw@2.15.0(@types/node@24.13.3)(typescript@6.0.3))(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(tsx@4.23.0)(yaml@2.9.0))
@@ -7049,7 +7053,7 @@ snapshots:
     dependencies:
       dts-resolver: 3.0.0
       get-tsconfig: 5.0.0-beta.5
-      obug: 2.1.3
+      obug: 2.1.4
       rolldown: 1.2.0
       yuku-ast: 0.1.7
       yuku-codegen: 0.6.3
@@ -7464,7 +7468,7 @@ snapshots:
       picomatch: 4.0.5
       typescript: 6.0.3
 
-  tsdown@0.22.11(tsx@4.23.0)(typescript@6.0.3):
+  tsdown@0.22.12(tsx@4.23.0)(typescript@6.0.3):
     dependencies:
       ansis: 4.3.1
       cac: 7.0.0
@@ -7476,11 +7480,11 @@ snapshots:
       picomatch: 4.0.5
       rolldown: 1.2.0
       rolldown-plugin-dts: 0.27.9(rolldown@1.2.0)(typescript@6.0.3)
-      semver: 7.8.5
       tinyexec: 1.2.4
       tinyglobby: 0.2.17
       tree-kill: 1.2.2
       unconfig-core: 7.5.0
+      verkit: 0.1.2
     optionalDependencies:
       tsx: 4.23.0
       typescript: 6.0.3
@@ -7629,6 +7633,8 @@ snapshots:
     dependencies:
       spdx-correct: 3.2.0
       spdx-expression-parse: 3.0.1
+
+  verkit@0.1.2: {}
 
   vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(tsx@4.23.0)(yaml@2.9.0):
     dependencies:
