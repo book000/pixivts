@@ -226,3 +226,32 @@ console.log(client.getRefreshToken()) // current refresh token
 ### DB Recording
 
 The `@book000/pixivts-db-mysql` package continues to save **raw snake_case** response bodies to the database for archival fidelity. This behaviour is unchanged.
+
+---
+
+# Migration Guide: ≤ 0.62.x → ≥ 0.63.0
+
+## `novels.text()`: string → `WebviewNovel`
+
+`client.novels.text()` previously resolved to the raw HTML body of the WebView
+novel page. It now parses that page and resolves to a structured
+`WebviewNovel` object (title, tags, rating counters, series navigation, body
+text, etc.), matching the response shape of other endpoints in this library.
+This is a **breaking change**.
+
+```typescript
+// ≤ 0.62.x
+const result = await client.novels.text({ novelId })
+if (result.isOk) {
+  const html = result.value // raw HTML string
+}
+
+// ≥ 0.63.0
+const result = await client.novels.text({ novelId })
+if (result.isOk) {
+  const novel = result.value // WebviewNovel
+  console.log(novel.title, novel.text)
+} else if (result.error.type === 'parse_error') {
+  // the embedded novel data could not be located or parsed
+}
+```
