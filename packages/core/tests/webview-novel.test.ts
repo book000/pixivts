@@ -19,7 +19,7 @@ describe('parseWebviewNovel()', () => {
       cdate: '2024-01-01T00:00:00+09:00',
       rating: { like: 1, bookmark: 2, view: 3 },
       text: 'body text',
-      series_navigation: {},
+      series_navigation: null,
       ai_type: 0,
       is_original: true,
     })
@@ -31,6 +31,7 @@ describe('parseWebviewNovel()', () => {
     expect(result.value.userId).toBe('42')
     expect(result.value.rating).toEqual({ like: 1, bookmark: 2, view: 3 })
     expect(result.value.isOriginal).toBe(true)
+    expect(result.value.seriesNavigation).toBeNull()
   })
 
   it('parses nested series navigation', () => {

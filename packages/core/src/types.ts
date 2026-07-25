@@ -786,9 +786,11 @@ export interface WebviewNovel {
   /**
    * Prev/next navigation for the series this novel belongs to.
    *
-   * `{}` (empty object) if the novel does not belong to a series.
+   * `null` if the novel does not belong to a series (confirmed against real
+   * WebView responses — pixiv sends this field as `null`, not `{}`, in that
+   * case).
    */
-  seriesNavigation: WebviewNovelSeriesNavigation | Record<string, never>
+  seriesNavigation: WebviewNovelSeriesNavigation | null
   /** AI-generated content flag: 0 = no AI, 1 = partial AI, 2 = fully AI */
   aiType: number
   /** Whether the novel is an original work (not fan fiction). */
