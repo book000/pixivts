@@ -29,6 +29,7 @@ export {
   authFailedError,
   networkError,
   apiError,
+  parseError,
   PixivFetchError,
 } from './errors'
 export type { PixivError } from './errors'
@@ -96,6 +97,10 @@ export type {
   NovelRecommendedPage,
   NovelSeriesPage,
   NovelCommentsPage,
+  WebviewNovelRating,
+  WebviewNovelNavigationInfo,
+  WebviewNovelSeriesNavigation,
+  WebviewNovel,
   UserDetailResponse,
   UserIllustsPage,
   UserNovelsPage,

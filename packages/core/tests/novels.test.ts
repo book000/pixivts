@@ -52,6 +52,32 @@ const AUTH_RESPONSE = {
   },
 }
 
+/** Wraps a WebviewNovel-shaped object literal in the HTML pixiv's WebView page embeds it in. */
+function webviewNovelHtml(novel: Record<string, unknown>): string {
+  return `<html><body><script>pixiv.context.novel = {novel: ${JSON.stringify(
+    novel
+  )}, isOwnWork: false, isMuteAll: false}</script></body></html>`
+}
+
+const WEBVIEW_NOVEL = {
+  id: '100',
+  title: 'Test Novel',
+  series_id: undefined,
+  series_title: undefined,
+  series_is_watched: undefined,
+  user_id: '42',
+  cover_url: 'https://i.pximg.net/c.jpg',
+  tags: ['tag1', 'tag2'],
+  caption: 'A caption',
+  cdate: '2024-01-01T00:00:00+09:00',
+  rating: { like: 10, bookmark: 20, view: 500 },
+  text: 'Chapter 1 text',
+  marker: undefined,
+  series_navigation: {},
+  ai_type: 0,
+  is_original: false,
+}
+
 describe('novels.detail()', () => {
   it('returns Ok with the novel', async () => {
     server.use(
@@ -294,22 +320,24 @@ describe('novels.new()', () => {
 })
 
 describe('novels.text()', () => {
-  it('returns Ok with the raw WebView HTML', async () => {
+  it('returns Ok with the parsed WebviewNovel', async () => {
     server.use(
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      mockNovelText('<html><body>Chapter 1 text</body></html>')
+      mockNovelText(webviewNovelHtml(WEBVIEW_NOVEL))
     )
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.novels.text({ novelId: 100 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value).toContain('Chapter 1 text')
-    }
+    if (!result.isOk) return
+    expect(result.value.id).toBe('100')
+    expect(result.value.text).toBe('Chapter 1 text')
+    expect(result.value.rating).toEqual({ like: 10, bookmark: 20, view: 500 })
+    expect(result.value.seriesId).toBeUndefined()
   })
 
-  it('passes id (not novel_id) in the query string', async () => {
+  it('passes id (not novel_id) and viewer_version in the query string', async () => {
     let capturedUrl: string | undefined
     server.use(
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
@@ -317,7 +345,7 @@ describe('novels.text()', () => {
       ),
       http.get('https://app-api.pixiv.net/webview/v2/novel', ({ request }) => {
         capturedUrl = request.url
-        return HttpResponse.text('<html></html>')
+        return HttpResponse.text(webviewNovelHtml(WEBVIEW_NOVEL))
       })
     )
     const client = await PixivClient.of('test-refresh-token')
@@ -327,6 +355,37 @@ describe('novels.text()', () => {
     const params = new URL(capturedUrl).searchParams
     expect(params.get('id')).toBe('100')
     expect(params.has('novel_id')).toBe(false)
+    expect(params.get('viewer_version')).toBe('20221031_ai')
+  })
+
+  it('returns Err with type parse_error when the embedded JSON cannot be found', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockNovelText('<html><body>not a webview page</body></html>')
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.text({ novelId: 100 })
+    expect(result.isOk).toBe(false)
+    if (result.isOk) return
+    expect(result.error.type).toBe('parse_error')
+  })
+
+  it('returns Err with type parse_error when the embedded JSON is malformed', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      mockNovelText(
+        '<html><body><script>pixiv.context.novel = {novel: {id: "100", not valid json}, isOwnWork: false}</script></body></html>'
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.text({ novelId: 100 })
+    expect(result.isOk).toBe(false)
+    if (result.isOk) return
+    expect(result.error.type).toBe('parse_error')
   })
 })
 
