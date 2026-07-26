@@ -611,6 +611,24 @@ export interface IllustSeriesPage {
   nextUrl: string | null
 }
 
+/**
+ * A single trending tag entry, paired with a representative illust.
+ */
+export interface TrendingTagIllust {
+  /** Tag name in Japanese. */
+  tag: string
+  /** Translated tag name, or `null` if no translation is available. */
+  translatedName: string | null
+  /** Representative illust for this tag. */
+  illust: PixivIllustItem
+}
+
+/** Response shape for GET /v1/trending-tags/illust. */
+export interface TrendingTagsIllustResponse {
+  /** Currently trending tags, each with a representative illust. */
+  trendTags: TrendingTagIllust[]
+}
+
 // Manga endpoint responses
 
 /** Page response for GET /v1/manga/recommended. */
@@ -693,6 +711,92 @@ export interface NovelSeriesPage {
   nextUrl: string | null
 }
 
+/** Bookmark / view counters embedded in a WebView novel page. */
+export interface WebviewNovelRating {
+  /** Number of "likes" (lightweight reactions). */
+  like: number
+  /** Number of bookmarks. */
+  bookmark: number
+  /** Number of views. */
+  view: number
+}
+
+/** Navigation info for a sibling novel in a series, as embedded in the WebView novel page. */
+export interface WebviewNovelNavigationInfo {
+  /** Work ID of the sibling novel. */
+  id: number
+  /** Whether the authenticated user is allowed to view this novel. */
+  viewable: boolean
+  /** Position of the novel within the series' reading order. */
+  contentOrder: string
+  /** Title of the sibling novel. */
+  title: string
+  /** Cover image URL of the sibling novel. */
+  coverUrl: string
+  /** Reason the novel is not viewable (present only when `viewable` is `false`). */
+  viewableMessage?: string | null
+}
+
+/** Prev/next navigation for a novel that belongs to a series, as embedded in the WebView novel page. */
+export interface WebviewNovelSeriesNavigation {
+  /** Previous novel in the series (`null` or absent if this is the first). */
+  prev?: WebviewNovelNavigationInfo | null
+  /** Next novel in the series (`null` or absent if this is the latest). */
+  next?: WebviewNovelNavigationInfo | null
+}
+
+/**
+ * Structured novel content parsed from the WebView HTML page.
+ *
+ * Returned by `client.novels.text()` (GET /webview/v2/novel). pixiv embeds
+ * this data as a JavaScript object literal inside the HTML page rather than
+ * returning JSON directly, so several id-like fields are strings rather than
+ * numbers — unlike the numeric ids used throughout the rest of this library.
+ */
+export interface WebviewNovel {
+  /** Work ID, as a string. */
+  id: string
+  /** Title of the novel. */
+  title: string
+  /** Series ID (`null` or absent if the novel does not belong to a series). */
+  seriesId?: string | null
+  /** Series title (`null` or absent if the novel does not belong to a series). */
+  seriesTitle?: string | null
+  /**
+   * Whether the authenticated user is watching (following) the series
+   * (`null` or absent if the novel does not belong to a series).
+   */
+  seriesIsWatched?: boolean | null
+  /** Author's user ID, as a string. */
+  userId: string
+  /** Cover image URL. */
+  coverUrl: string
+  /** Tags attached to the novel. */
+  tags: string[]
+  /** Synopsis / caption (may contain HTML). */
+  caption: string
+  /** ISO 8601 date-time string of when the novel was posted. */
+  cdate: string
+  /** Like / bookmark / view counters. */
+  rating: WebviewNovelRating
+  /** Full novel body text. */
+  text: string
+  /** Reading-position marker for the authenticated user (`null` or absent if none). */
+  marker?: string | null
+  /**
+   * Prev/next navigation for the series this novel belongs to.
+   *
+   * `null` if the novel does not belong to a series (confirmed against real
+   * WebView responses — pixiv sends this field as `null`, not `{}`, in that
+   * case).
+   */
+  seriesNavigation: WebviewNovelSeriesNavigation | null
+  /** AI-generated content flag: 0 = no AI, 1 = partial AI, 2 = fully AI */
+  aiType: number
+  /** Whether the novel is an original work (not fan fiction). */
+  isOriginal: boolean
+}
+
 // User endpoint responses
 
 /** Response shape for GET /v1/user/detail. */
@@ -747,6 +851,82 @@ export interface UserBookmarksNovelPage {
 export interface UserFollowingPage {
   /** User preview items on this page. */
   userPreviews: PixivUserPreviewItem[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Page response for GET /v1/user/related. */
+export interface UserRelatedPage {
+  /** User preview items related to the seed user. */
+  userPreviews: PixivUserPreviewItem[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Page response for GET /v1/user/recommended. */
+export interface UserRecommendedPage {
+  /** Recommended user preview items. */
+  userPreviews: PixivUserPreviewItem[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Page response for GET /v1/user/follower. */
+export interface UserFollowerPage {
+  /** User preview items on this page. */
+  userPreviews: PixivUserPreviewItem[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Page response for GET /v1/user/mypixiv. */
+export interface UserMypixivPage {
+  /** User preview items on this page. */
+  userPreviews: PixivUserPreviewItem[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Page response for GET /v1/search/user. */
+export interface UserSearchPage {
+  /** User preview items matching the search. */
+  userPreviews: PixivUserPreviewItem[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+  /** Maximum number of results the search will return across all pages. */
+  searchSpanLimit: number
+}
+
+/**
+ * Page response for GET /v2/user/list.
+ *
+ * NOTE: unlike sibling endpoints (`following`, `follower`, `mypixiv`, `related`,
+ * `recommended`), the live pixiv API returns this list under a `users` key with
+ * plain `PixivUser` objects, not `user_previews` with `PixivUserPreviewItem`
+ * (confirmed by direct API verification; no `user_previews` wrapper is present
+ * on the wire for this endpoint).
+ */
+export interface UserListPage {
+  /** User items on this page. */
+  users: PixivUser[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** A bookmark tag with usage count, as returned by GET /v1/user/bookmark-tags/illust. */
+export interface BookmarkTag {
+  /** Tag name. */
+  name: string
+  /** Number of bookmarked illusts carrying this tag. */
+  count: number
+  /** Whether this tag is registered by the authenticated user (may be absent). */
+  isRegistered?: boolean
+}
+
+/** Page response for GET /v1/user/bookmark-tags/illust. */
+export interface UserBookmarkTagsIllustPage {
+  /** Bookmark tags on this page. */
+  bookmarkTags: BookmarkTag[]
   /** URL to the next page, or `null` when this is the last page. */
   nextUrl: string | null
 }

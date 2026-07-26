@@ -10,18 +10,29 @@ import {
   BookmarkRestrict,
   FollowRestrict,
   OSFilter,
+  SearchDuration,
+  SearchSort,
   UserIllustType,
 } from '../options'
 import type {
+  BookmarkTag,
   PixivIllustItem,
   PixivNovelItem,
+  PixivUser,
   PixivUserPreviewItem,
   UserBookmarksIllustPage,
   UserBookmarksNovelPage,
+  UserBookmarkTagsIllustPage,
   UserDetailResponse,
+  UserFollowerPage,
   UserFollowingPage,
   UserIllustsPage,
+  UserListPage,
+  UserMypixivPage,
   UserNovelsPage,
+  UserRecommendedPage,
+  UserRelatedPage,
+  UserSearchPage,
 } from '../types'
 
 // === Request param types ===
@@ -110,6 +121,82 @@ export interface UserFollowAddParams {
 export interface UserFollowDeleteParams {
   /** ID of the user to unfollow. */
   userId: number
+}
+
+/** Parameters for fetching users related to a seed user. */
+export interface UserRelatedParams {
+  /** ID of the seed user to base recommendations on. */
+  seedUserId: number
+  /** OS filter to apply (default: `"for_ios"`). */
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
+  /** Zero-based offset for pagination. */
+  offset?: number
+}
+
+/** Parameters for fetching recommended users. */
+export interface UserRecommendedParams {
+  /** OS filter to apply (default: `"for_ios"`). */
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
+  /** Zero-based offset for pagination. */
+  offset?: number
+}
+
+/** Parameters for fetching a user's followers. */
+export interface UserFollowerParams {
+  /** ID of the user whose followers to fetch. */
+  userId: number
+  /** OS filter to apply (default: `"for_ios"`). */
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
+  /** Zero-based offset for pagination. */
+  offset?: number
+}
+
+/** Parameters for fetching a user's myPixiv users. */
+export interface UserMypixivParams {
+  /** ID of the user whose myPixiv users to fetch. */
+  userId: number
+  /** Zero-based offset for pagination. */
+  offset?: number
+}
+
+/** Parameters for fetching a user list. */
+export interface UserListParams {
+  /** ID of the user whose list to fetch. */
+  userId: number
+  /** OS filter to apply (default: `"for_ios"`). */
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
+  /** Zero-based offset for pagination. */
+  offset?: number
+}
+
+/** Parameters for fetching a user's illust bookmark tags. */
+export interface UserBookmarkTagsIllustParams {
+  /** ID of the user whose bookmark tags to fetch. */
+  userId: number
+  /** Visibility of the bookmarks to aggregate tags from (default: `"public"`). */
+  restrict?: (typeof BookmarkRestrict)[keyof typeof BookmarkRestrict]
+  /** Zero-based offset for pagination. */
+  offset?: number
+}
+
+/** Parameters for searching users. */
+export interface UserSearchParams {
+  /** Search keyword. */
+  word: string
+  /** Sort order for results (default: `"date_desc"`). */
+  sort?: (typeof SearchSort)[keyof typeof SearchSort]
+  /** Date range preset filter (omit for no restriction). */
+  duration?: (typeof SearchDuration)[keyof typeof SearchDuration]
+  /** OS filter to apply (default: `"for_ios"`). */
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
+  /** Zero-based offset for pagination. */
+  offset?: number
+}
+
+/** Parameters for editing the AI-generated-work display setting. */
+export interface UserEditAiShowSettingsParams {
+  /** New display setting value: `0` = hide AI works, `1` = show AI works. */
+  setting: 0 | 1
 }
 
 /** Methods for the user bookmarks sub-namespace. */
@@ -228,6 +315,39 @@ export class UserResource {
   }
 
   /**
+   * Searches for users.
+   * GET /v1/search/user
+   *
+   * @param params - Request parameters
+   *
+   * @example
+   * ```ts
+   * // Iterate all results across pages
+   * for await (const preview of client.users.search({ word: 'artist' }).items()) {
+   *   console.log(preview.user.name)
+   * }
+   * ```
+   */
+  search(
+    params: UserSearchParams
+  ): PaginatedResultAsync<UserSearchPage, PixivUserPreviewItem> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<UserSearchPage>(
+        '/v1/search/user',
+        buildParams({
+          word: params.word,
+          sort: params.sort ?? 'date_desc',
+          duration: params.duration,
+          filter: params.filter ?? 'for_ios',
+          offset: params.offset,
+        })
+      ),
+      this.#http,
+      (page) => page.userPreviews
+    )
+  }
+
+  /**
    * Fetches illusts posted by a user.
    * GET /v1/user/illusts
    *
@@ -328,6 +448,161 @@ export class UserResource {
     const body = buildParams({ userId: String(params.userId) })
     return this.#http.post<Record<string, never>>(
       '/v1/user/follow/delete',
+      body.toString()
+    )
+  }
+
+  /**
+   * Fetches users related to a seed user.
+   * GET /v1/user/related
+   *
+   * @param params - Request parameters
+   */
+  related(
+    params: UserRelatedParams
+  ): PaginatedResultAsync<UserRelatedPage, PixivUserPreviewItem> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<UserRelatedPage>(
+        '/v1/user/related',
+        buildParams({
+          seedUserId: params.seedUserId,
+          filter: params.filter ?? 'for_ios',
+          offset: params.offset,
+        })
+      ),
+      this.#http,
+      (page) => page.userPreviews
+    )
+  }
+
+  /**
+   * Fetches recommended users.
+   * GET /v1/user/recommended
+   *
+   * @param params - Request parameters
+   */
+  recommended(
+    params: UserRecommendedParams = {}
+  ): PaginatedResultAsync<UserRecommendedPage, PixivUserPreviewItem> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<UserRecommendedPage>(
+        '/v1/user/recommended',
+        buildParams({
+          filter: params.filter ?? 'for_ios',
+          offset: params.offset,
+        })
+      ),
+      this.#http,
+      (page) => page.userPreviews
+    )
+  }
+
+  /**
+   * Fetches the list of users following a user.
+   * GET /v1/user/follower
+   *
+   * @param params - Request parameters
+   */
+  follower(
+    params: UserFollowerParams
+  ): PaginatedResultAsync<UserFollowerPage, PixivUserPreviewItem> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<UserFollowerPage>(
+        '/v1/user/follower',
+        buildParams({
+          userId: params.userId,
+          filter: params.filter ?? 'for_ios',
+          offset: params.offset,
+        })
+      ),
+      this.#http,
+      (page) => page.userPreviews
+    )
+  }
+
+  /**
+   * Fetches a user's myPixiv users.
+   * GET /v1/user/mypixiv
+   *
+   * @param params - Request parameters
+   */
+  mypixiv(
+    params: UserMypixivParams
+  ): PaginatedResultAsync<UserMypixivPage, PixivUserPreviewItem> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<UserMypixivPage>(
+        '/v1/user/mypixiv',
+        buildParams({
+          userId: params.userId,
+          offset: params.offset,
+        })
+      ),
+      this.#http,
+      (page) => page.userPreviews
+    )
+  }
+
+  /**
+   * Fetches a user list.
+   * GET /v2/user/list
+   *
+   * Returns plain `PixivUser` objects under a `users` key, unlike sibling
+   * endpoints that return `PixivUserPreviewItem` under `user_previews`.
+   *
+   * @param params - Request parameters
+   */
+  list(
+    params: UserListParams
+  ): PaginatedResultAsync<UserListPage, PixivUser> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<UserListPage>(
+        '/v2/user/list',
+        buildParams({
+          userId: params.userId,
+          filter: params.filter ?? 'for_ios',
+          offset: params.offset,
+        })
+      ),
+      this.#http,
+      (page) => page.users
+    )
+  }
+
+  /**
+   * Fetches a user's illust bookmark tags, with the number of bookmarks under each tag.
+   * GET /v1/user/bookmark-tags/illust
+   *
+   * @param params - Request parameters
+   */
+  bookmarkTagsIllust(
+    params: UserBookmarkTagsIllustParams
+  ): PaginatedResultAsync<UserBookmarkTagsIllustPage, BookmarkTag> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<UserBookmarkTagsIllustPage>(
+        '/v1/user/bookmark-tags/illust',
+        buildParams({
+          userId: params.userId,
+          restrict: params.restrict ?? 'public',
+          offset: params.offset,
+        })
+      ),
+      this.#http,
+      (page) => page.bookmarkTags
+    )
+  }
+
+  /**
+   * Edits the authenticated user's AI-generated-work display setting.
+   * POST /v1/user/ai-show-settings/edit
+   *
+   * @param params - Request parameters
+   */
+  editAiShowSettings(
+    params: UserEditAiShowSettingsParams
+  ): ResultAsync<Record<string, never>, PixivError> {
+    const body = buildParams({ setting: params.setting })
+    return this.#http.post<Record<string, never>>(
+      '/v1/user/ai-show-settings/edit',
       body.toString()
     )
   }

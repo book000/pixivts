@@ -6,6 +6,7 @@ import type { PixivError } from '../errors'
 import { buildParams } from '../params'
 import { PaginatedResultAsync } from '../paginated'
 import type { ResultAsync } from '../result'
+import { parseWebviewNovel } from '../webview-novel'
 import {
   BookmarkRestrict,
   FollowRestrict,
@@ -23,6 +24,7 @@ import type {
   NovelRecommendedPage,
   NovelSeriesPage,
   PixivNovelItem,
+  WebviewNovel,
 } from '../types'
 
 // === Request param types ===
@@ -176,20 +178,26 @@ export class NovelResource {
   }
 
   /**
-   * Fetches the WebView HTML for a novel.
+   * Fetches the structured content of a novel's WebView page.
    * GET /webview/v2/novel
    *
-   * Returns the raw HTML page that the pixiv app renders in a WebView.
-   * To extract the plain text, parse the returned HTML (e.g. strip tags).
+   * The endpoint itself returns an HTML page that the pixiv app renders in a
+   * WebView; this method extracts the `WebviewNovel` object embedded in that
+   * page (body text, rating counters, series navigation, etc.) so callers
+   * don't need to parse HTML themselves.
    *
    * @param params - Request parameters
+   * @returns `Err` with `type: 'parse_error'` if the embedded data cannot be
+   *   located or parsed
    */
-  text(params: NovelTextParams): ResultAsync<string, PixivError> {
-    return this.#http.get<string>(
-      '/webview/v2/novel',
-      // The webview endpoint uses the query parameter 'id', not 'novel_id'
-      buildParams({ id: params.novelId })
-    )
+  text(params: NovelTextParams): ResultAsync<WebviewNovel, PixivError> {
+    return this.#http
+      .get<string>(
+        '/webview/v2/novel',
+        // The webview endpoint uses the query parameter 'id', not 'novel_id'
+        buildParams({ id: params.novelId, viewerVersion: '20221031_ai' })
+      )
+      .andThen(parseWebviewNovel)
   }
 
   /**

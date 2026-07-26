@@ -36,6 +36,16 @@ export type PixivError =
       /** Parsed response body (object if JSON, string otherwise). */
       body: unknown
     }
+  | {
+      /** Structured data embedded in a non-JSON response could not be extracted or parsed. */
+      type: 'parse_error'
+      /** Description of what failed to parse. */
+      message: string
+      /** Raw response body that failed to parse. */
+      body: string
+      /** The underlying error thrown during parsing, if any (e.g. a `SyntaxError` from `JSON.parse`). */
+      cause?: unknown
+    }
 
 // ---------------------------------------------------------------------------
 // PixivFetchError — a proper Error subclass wrapping PixivError
@@ -95,4 +105,13 @@ export function networkError(cause: unknown): PixivError {
 /** Creates an API error. */
 export function apiError(status: number, body: unknown): PixivError {
   return { type: 'api_error', status, body }
+}
+
+/** Creates a parse error. */
+export function parseError(
+  message: string,
+  body: string,
+  cause?: unknown
+): PixivError {
+  return { type: 'parse_error', message, body, cause }
 }

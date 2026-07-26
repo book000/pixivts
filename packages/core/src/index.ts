@@ -29,6 +29,7 @@ export {
   authFailedError,
   networkError,
   apiError,
+  parseError,
   PixivFetchError,
 } from './errors'
 export type { PixivError } from './errors'
@@ -87,6 +88,8 @@ export type {
   IllustSeriesPage,
   IllustCommentsPage,
   IllustBookmarkDetailResponse,
+  TrendingTagIllust,
+  TrendingTagsIllustResponse,
   MangaRecommendedPage,
   UgoiraMetadataResponse,
   NovelDetailResponse,
@@ -94,12 +97,24 @@ export type {
   NovelRecommendedPage,
   NovelSeriesPage,
   NovelCommentsPage,
+  WebviewNovelRating,
+  WebviewNovelNavigationInfo,
+  WebviewNovelSeriesNavigation,
+  WebviewNovel,
   UserDetailResponse,
   UserIllustsPage,
   UserNovelsPage,
   UserBookmarksIllustPage,
   UserBookmarksNovelPage,
   UserFollowingPage,
+  UserRelatedPage,
+  UserRecommendedPage,
+  UserFollowerPage,
+  UserMypixivPage,
+  UserSearchPage,
+  UserListPage,
+  BookmarkTag,
+  UserBookmarkTagsIllustPage,
 } from './types'
 
 // Resource param types
@@ -116,6 +131,7 @@ export type {
   IllustCommentsParams,
   IllustBookmarkDetailParams,
   IllustNewParams,
+  IllustTrendingTagsParams,
 } from './resources/illusts'
 
 export type {
@@ -142,6 +158,14 @@ export type {
   UserFollowingParams,
   UserFollowAddParams,
   UserFollowDeleteParams,
+  UserRelatedParams,
+  UserRecommendedParams,
+  UserFollowerParams,
+  UserMypixivParams,
+  UserListParams,
+  UserBookmarkTagsIllustParams,
+  UserEditAiShowSettingsParams,
+  UserSearchParams,
 } from './resources/users'
 
 // PixivClient

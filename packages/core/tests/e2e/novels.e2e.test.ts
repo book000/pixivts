@@ -30,8 +30,8 @@ describe.skipIf(SKIP)('PixivClient e2e — novels', () => {
     const result = await client.novels.text({ novelId: NOVEL_ID })
     expect(result.isOk).toBe(true)
     if (!result.isOk) return
-    // novels.text returns the raw novel text as a string
-    expect(result.value.length).toBeGreaterThan(0)
+    expect(result.value.id).toBe(String(NOVEL_ID))
+    expect(result.value.text.length).toBeGreaterThan(0)
   })
 
   it('novels.related', async () => {
