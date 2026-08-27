@@ -88,10 +88,10 @@ importers:
         version: link:../core
       drizzle-orm:
         specifier: 0.45.2
-        version: 0.45.2(patch_hash=9dd615b3fc671f6c630ff3b1b92da947f57e59e4c371bf2d416f57db794b07fd)(mysql2@3.23.4(@types/node@24.13.3))
+        version: 0.45.2(patch_hash=9dd615b3fc671f6c630ff3b1b92da947f57e59e4c371bf2d416f57db794b07fd)(mysql2@3.24.0(@types/node@24.13.3))
       mysql2:
-        specifier: 3.23.4
-        version: 3.23.4(@types/node@24.13.3)
+        specifier: 3.24.0
+        version: 3.24.0(@types/node@24.13.3)
     devDependencies:
       '@types/node':
         specifier: 24.13.3
@@ -2753,8 +2753,8 @@ packages:
     resolution: {integrity: sha512-dkEJPVvun4FryqBmZ5KhDo0K9iDXAwn08tMLDinNdRBNPcYEDiWYysLcc6k3mjTMlbP9KyylvRpd4wFtwrT9rw==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  mysql2@3.23.4:
-    resolution: {integrity: sha512-J1Rgl8Oy5iw3mOBjKeTMQ3cJNjMYtJYavQVXShsMtSj9rKV8Q1+QaGKNJqDVQFcNINqYYp6Vxd90r69cCoBxBA==}
+  mysql2@3.24.0:
+    resolution: {integrity: sha512-4aARlvTYrWPjnLvUqnHWATm7jOhjADqNc761Jt9V4QcIUoERKfoXau1PEW9VfQicq4Sl8W1CIZ6fW9jUImshew==}
     engines: {node: '>= 8.0'}
     peerDependencies:
       '@types/node': '>= 8'
@@ -5244,9 +5244,9 @@ snapshots:
       esbuild: 0.25.12
       tsx: 4.23.12
 
-  drizzle-orm@0.45.2(patch_hash=9dd615b3fc671f6c630ff3b1b92da947f57e59e4c371bf2d416f57db794b07fd)(mysql2@3.23.4(@types/node@24.13.3)):
+  drizzle-orm@0.45.2(patch_hash=9dd615b3fc671f6c630ff3b1b92da947f57e59e4c371bf2d416f57db794b07fd)(mysql2@3.24.0(@types/node@24.13.3)):
     optionalDependencies:
-      mysql2: 3.23.4(@types/node@24.13.3)
+      mysql2: 3.24.0(@types/node@24.13.3)
 
   dts-resolver@3.0.0: {}
 
@@ -6437,7 +6437,7 @@ snapshots:
 
   mute-stream@3.0.0: {}
 
-  mysql2@3.23.4(@types/node@24.13.3):
+  mysql2@3.24.0(@types/node@24.13.3):
     dependencies:
       '@types/node': 24.13.3
       aws-ssl-profiles: 1.1.2
