@@ -47,7 +47,7 @@
     "typedoc": "0.28.20",
     "typescript": "6.0.3",
     "vitest": "4.1.11",
-    "zod": "4.5.1"
+    "zod": "4.5.2"
   },
   "scripts": {
     "build": "tsdown",
