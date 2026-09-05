@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
-    "mysql2": "3.24.2"
+    "mysql2": "3.24.3"
   },
   "peerDependencies": {
     "@book000/pixivts": "workspace:*"
