@@ -129,10 +129,12 @@ describe('users.detail()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.users.detail({ userId: 42 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.user.id).toBe(42)
-      expect(result.value.user.name).toBe('Artist')
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.user.id).toBe(42)
+    expect(result.value.user.name).toBe('Artist')
   })
 })
 
@@ -194,10 +196,12 @@ describe('users.illusts()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.users.illusts({ userId: 42 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.illusts).toHaveLength(1)
-      expect(result.value.illusts[0].id).toBe(1)
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.illusts).toHaveLength(1)
+    expect(result.value.illusts[0].id).toBe(1)
   })
 })
 
@@ -225,10 +229,12 @@ describe('users.following()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.users.following({ userId: 42 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.userPreviews).toHaveLength(1)
-      expect(result.value.userPreviews[0].user.id).toBe(99)
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.userPreviews).toHaveLength(1)
+    expect(result.value.userPreviews[0].user.id).toBe(99)
   })
 })
 
@@ -245,10 +251,12 @@ describe('users.bookmarks.novels()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.users.bookmarks.novels({ userId: 42 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.novels).toHaveLength(1)
-      expect(result.value.novels[0].id).toBe(100)
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.novels).toHaveLength(1)
+    expect(result.value.novels[0].id).toBe(100)
   })
 
   it('sends max_bookmark_id when maxBookmarkId is specified', async () => {
@@ -294,10 +302,12 @@ describe('users.novels()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.users.novels({ userId: 42 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.novels).toHaveLength(1)
-      expect(result.value.novels[0].id).toBe(100)
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.novels).toHaveLength(1)
+    expect(result.value.novels[0].id).toBe(100)
   })
 
   it('defaults filter to for_ios and forwards offset', async () => {
@@ -425,10 +435,12 @@ describe('users.bookmarks.illusts()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.users.bookmarks.illusts({ userId: 42 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.illusts).toHaveLength(1)
-      expect(result.value.illusts[0].id).toBe(1)
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.illusts).toHaveLength(1)
+    expect(result.value.illusts[0].id).toBe(1)
   })
 
   it('forwards the tag param', async () => {
@@ -477,10 +489,12 @@ describe('users.related()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.users.related({ seedUserId: 42 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.userPreviews).toHaveLength(1)
-      expect(result.value.userPreviews[0].user.id).toBe(99)
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.userPreviews).toHaveLength(1)
+    expect(result.value.userPreviews[0].user.id).toBe(99)
   })
 
   it('sends seed_user_id and defaults filter to for_ios', async () => {
@@ -675,11 +689,13 @@ describe('users.bookmarkTagsIllust()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.users.bookmarkTagsIllust({ userId: 42 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.bookmarkTags).toHaveLength(1)
-      expect(result.value.bookmarkTags[0].name).toBe('favorite')
-      expect(result.value.bookmarkTags[0].count).toBe(3)
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.bookmarkTags).toHaveLength(1)
+    expect(result.value.bookmarkTags[0].name).toBe('favorite')
+    expect(result.value.bookmarkTags[0].count).toBe(3)
   })
 
   it('defaults restrict to public and forwards offset', async () => {
@@ -755,11 +771,13 @@ describe('users.search()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.users.search({ word: 'artist' })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.userPreviews).toHaveLength(1)
-      expect(result.value.userPreviews[0].user.id).toBe(99)
-      expect(result.value.searchSpanLimit).toBe(1000)
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.userPreviews).toHaveLength(1)
+    expect(result.value.userPreviews[0].user.id).toBe(99)
+    expect(result.value.searchSpanLimit).toBe(1000)
   })
 
   it('sends word and defaults sort/filter', async () => {
@@ -798,18 +816,15 @@ describe('users.search()', () => {
       ),
       http.get('https://app-api.pixiv.net/v1/search/user', ({ request }) => {
         const offset = new URL(request.url).searchParams.get('offset')
-        if (offset === '30') {
-          return HttpResponse.json({
+        return offset === '30' ? HttpResponse.json({
             user_previews: [USER_PREVIEW2],
             next_url: null,
             search_span_limit: 1000,
-          })
-        }
-        return HttpResponse.json({
+          }) : HttpResponse.json({
           user_previews: [USER_PREVIEW],
           next_url: 'https://app-api.pixiv.net/v1/search/user?offset=30',
           search_span_limit: 1000,
-        })
+        });
       })
     )
     const client = await PixivClient.of('test-refresh-token')

@@ -67,13 +67,10 @@ export function parseWebviewNovel(html: string): Result<WebviewNovel, PixivError
   }
 
   const camelized = camelizeKeys(parsed)
-  if (!isWebviewNovelShape(camelized)) {
-    return err(
+  return isWebviewNovelShape(camelized) ? ok(camelized) : err(
       parseError(
         'Embedded novel JSON does not match the expected WebviewNovel shape',
         html
       )
-    )
-  }
-  return ok(camelized)
+    );
 }
