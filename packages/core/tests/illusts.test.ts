@@ -66,10 +66,12 @@ describe('illusts.detail()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.illusts.detail({ illustId: 1 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.illust.id).toBe(1)
-      expect(result.value.illust.title).toBe('Test Illust')
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.illust.id).toBe(1)
+    expect(result.value.illust.title).toBe('Test Illust')
   })
 })
 
@@ -102,13 +104,10 @@ describe('illusts.search().pages() — multi-page', () => {
       ),
       http.get('https://app-api.pixiv.net/v1/search/illust', ({ request }) => {
         const offset = new URL(request.url).searchParams.get('offset')
-        if (offset === '30') {
-          return HttpResponse.json({ illusts: [ILLUST2], next_url: null })
-        }
-        return HttpResponse.json({
+        return offset === '30' ? HttpResponse.json({ illusts: [ILLUST2], next_url: null }) : HttpResponse.json({
           illusts: [ILLUST],
           next_url: 'https://app-api.pixiv.net/v1/search/illust?offset=30',
-        })
+        });
       })
     )
     const client = await PixivClient.of('test-refresh-token')
@@ -134,16 +133,13 @@ describe('illusts.search().items() — multi-page', () => {
       ),
       http.get('https://app-api.pixiv.net/v1/search/illust', ({ request }) => {
         const offset = new URL(request.url).searchParams.get('offset')
-        if (offset === '30') {
-          return HttpResponse.json({
+        return offset === '30' ? HttpResponse.json({
             illusts: [ILLUST3, ILLUST4],
             next_url: null,
-          })
-        }
-        return HttpResponse.json({
+          }) : HttpResponse.json({
           illusts: [ILLUST, ILLUST2],
           next_url: 'https://app-api.pixiv.net/v1/search/illust?offset=30',
-        })
+        });
       })
     )
     const client = await PixivClient.of('test-refresh-token')
@@ -352,11 +348,10 @@ describe('illusts.recommended() — meta_single_page regression (PIXIVTS-39)', (
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.illusts.recommended()
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      const illust = result.value.illusts[0]
-      expect(illust.type).toBe('manga')
-      expect(illust.metaSinglePage.originalImageUrl).toBeUndefined()
-    }
+    if (!result.isOk) return
+    const illust = result.value.illusts[0]
+    expect(illust.type).toBe('manga')
+    expect(illust.metaSinglePage.originalImageUrl).toBeUndefined()
   })
 })
 
@@ -428,10 +423,12 @@ describe('illusts.comments()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.illusts.comments({ illustId: 1 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.totalComments).toBe(1)
-      expect(result.value.comments[0].comment).toBe('Nice!')
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.totalComments).toBe(1)
+    expect(result.value.comments[0].comment).toBe('Nice!')
   })
 })
 
@@ -454,10 +451,12 @@ describe('illusts.bookmarkDetail()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.illusts.bookmarkDetail({ illustId: 1 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.bookmarkDetail.isBookmarked).toBe(true)
-      expect(result.value.bookmarkDetail.tags[0].name).toBe('favorite')
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.bookmarkDetail.isBookmarked).toBe(true)
+    expect(result.value.bookmarkDetail.tags[0].name).toBe('favorite')
   })
 })
 
@@ -492,10 +491,12 @@ describe('illusts.related()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.illusts.related({ illustId: 1 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.illusts).toHaveLength(1)
-      expect(result.value.illusts[0].id).toBe(1)
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.illusts).toHaveLength(1)
+    expect(result.value.illusts[0].id).toBe(1)
   })
 
   it('sends seed_illust_ids[] when seedIllustIds is specified', async () => {
@@ -550,10 +551,12 @@ describe('illusts.series()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.illusts.series({ illustSeriesId: 500 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.illustSeriesDetail.id).toBe(500)
-      expect(result.value.illusts).toHaveLength(1)
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.illustSeriesDetail.id).toBe(500)
+    expect(result.value.illusts).toHaveLength(1)
   })
 
   it('passes illust_series_id in the URL', async () => {
@@ -635,12 +638,14 @@ describe('illusts.trendingTags()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.illusts.trendingTags()
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.trendTags).toHaveLength(1)
-      expect(result.value.trendTags[0].tag).toBe('cat')
-      expect(result.value.trendTags[0].translatedName).toBe('Cat')
-      expect(result.value.trendTags[0].illust.id).toBe(1)
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.trendTags).toHaveLength(1)
+    expect(result.value.trendTags[0].tag).toBe('cat')
+    expect(result.value.trendTags[0].translatedName).toBe('Cat')
+    expect(result.value.trendTags[0].illust.id).toBe(1)
   })
 
   it('defaults filter to for_ios', async () => {

@@ -82,10 +82,12 @@ describe('HttpClient.get()', () => {
     )
     const r = await makeClient().get('/v1/missing')
     expect(r.isErr).toBe(true)
-    if (r.isErr) {
-      expect(r.error.type).toBe('api_error')
-      if (r.error.type === 'api_error') expect(r.error.status).toBe(404)
+    if (!r.isErr) {
+    	return;
     }
+
+    expect(r.error.type).toBe('api_error')
+    if (r.error.type === 'api_error') expect(r.error.status).toBe(404)
   })
 })
 
@@ -119,8 +121,7 @@ describe('429 retry', () => {
     server.use(
       http.get('https://app-api.pixiv.net/v1/retry-test', () => {
         calls++
-        if (calls < 2) return new HttpResponse(null, { status: 429 })
-        return HttpResponse.json({ ok: true })
+        return calls < 2 ? new HttpResponse(null, { status: 429 }) : HttpResponse.json({ ok: true });
       })
     )
     const r = await makeClient().get('/v1/retry-test')
@@ -149,13 +150,10 @@ describe('429 retry', () => {
     server.use(
       http.get('https://app-api.pixiv.net/v1/slow-retry', () => {
         calls++
-        if (calls < 2) {
-          return new HttpResponse(null, {
+        return calls < 2 ? new HttpResponse(null, {
             status: 429,
             headers: { 'Retry-After': '0' },
-          })
-        }
-        return HttpResponse.json({ done: true })
+          }) : HttpResponse.json({ done: true });
       })
     )
     await makeClient().get('/v1/slow-retry')

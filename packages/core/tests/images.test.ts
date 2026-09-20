@@ -29,9 +29,11 @@ describe('images.fetch()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.images.fetch(imageUrl)
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.ok).toBe(true)
-      expect(result.value.status).toBe(200)
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.ok).toBe(true)
+    expect(result.value.status).toBe(200)
   })
 })

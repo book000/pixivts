@@ -64,10 +64,12 @@ describe('PaginatedResultAsync — single page', () => {
 
     const result = await paginated
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.items).toHaveLength(1)
-      expect(result.value.items[0].id).toBe(1)
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.items).toHaveLength(1)
+    expect(result.value.items[0].id).toBe(1)
   })
 
   it('pages() yields the single page then stops', async () => {

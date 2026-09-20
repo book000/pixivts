@@ -67,11 +67,13 @@ describe('manga.recommended()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.manga.recommended()
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.illusts).toHaveLength(1)
-      expect(result.value.illusts[0].type).toBe('manga')
-      expect(result.value.illusts[0].pageCount).toBe(3)
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.illusts).toHaveLength(1)
+    expect(result.value.illusts[0].type).toBe('manga')
+    expect(result.value.illusts[0].pageCount).toBe(3)
   })
 
   it('defaults filter to for_ios and forwards offset', async () => {
