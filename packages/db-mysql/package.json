@@ -42,7 +42,7 @@
     }
   },
   "dependencies": {
-    "drizzle-orm": "0.45.2",
+    "drizzle-orm": "0.45.3",
     "mysql2": "3.24.4"
   },
   "peerDependencies": {
