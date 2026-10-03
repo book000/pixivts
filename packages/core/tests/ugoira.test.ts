@@ -32,9 +32,11 @@ describe('ugoira.metadata()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.ugoira.metadata({ illustId: 1 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.ugoiraMetadata.frames).toHaveLength(2)
-      expect(result.value.ugoiraMetadata.frames[0].file).toBe('000000.jpg')
+    if (!result.isOk) {
+    	return;
     }
+
+    expect(result.value.ugoiraMetadata.frames).toHaveLength(2)
+    expect(result.value.ugoiraMetadata.frames[0].file).toBe('000000.jpg')
   })
 })

@@ -216,7 +216,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
    */
   map<U>(fn: (value: T) => U): ResultAsync<U, E> {
     return new ResultAsync(
-      // eslint-disable-next-line unicorn/no-array-callback-reference -- r.map(fn) is safe here; fn is a user-supplied mapper, not a DOM/Array method reference
+       
       this._promise.then((r) => r.map(fn) as Result<U, E>)
     )
   }
@@ -248,10 +248,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
       this._promise.then(async (r): Promise<Result<U, E | F>> => {
         if (r.isErr) return r
         const next = fn(r.value)
-        if (next instanceof ResultAsync) {
-          return next._promise
-        }
-        return next
+        return next instanceof ResultAsync ? next._promise : next;
       })
     )
   }
@@ -268,8 +265,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
     onErr: (error: E) => U | Promise<U>
   ): Promise<U> {
     const r = await this._promise
-    if (r.isOk) return onOk(r.value)
-    return onErr(r.error)
+    return r.isOk ? onOk(r.value) : onErr(r.error);
   }
 
   /**
@@ -281,7 +277,6 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
     const r = await this._promise
     // Avoid calling r.unwrapOr(fallback) directly to work around TypeScript 6
     // Awaited<T> inference issues with union method signatures.
-    if (r.isOk) return r.value
-    return fallback
+    return r.isOk ? r.value : fallback;
   }
 }

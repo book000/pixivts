@@ -83,11 +83,7 @@ export function parseRetryAfter(
 
   // HTTP-date format (e.g. "Wed, 21 Oct 2026 07:28:00 GMT")
   const retryDate = Date.parse(retryAfter)
-  if (!Number.isNaN(retryDate)) {
-    return Math.max(0, retryDate - Date.now())
-  }
-
-  return defaultMs
+  return Number.isNaN(retryDate) ? defaultMs : Math.max(0, retryDate - Date.now());
 }
 
 function headersToRecord(headers: Headers): Record<string, string> {
@@ -165,12 +161,9 @@ export class HttpClient {
       }),
       networkError
     ).andThen((response) => {
-      if (!response.ok) {
-        return ResultAsync.fromResult(err(apiError(response.status, null)))
-      }
-      return ResultAsync.fromResult(
+      return response.ok ? ResultAsync.fromResult(
         ok(response) as Result<Response, PixivError>
-      )
+      ) : ResultAsync.fromResult(err(apiError(response.status, null)));
     })
   }
 
