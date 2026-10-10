@@ -271,9 +271,11 @@ describe('PixivError constructors', () => {
   it('apiError', () => {
     const e = apiError(404, { error: 'not found' })
     expect(e.type).toBe('api_error')
-    if (e.type === 'api_error') {
-      expect(e.status).toBe(404)
-      expect(e.body).toEqual({ error: 'not found' })
+    if (e.type !== 'api_error') {
+    	return;
     }
+
+    expect(e.status).toBe(404)
+    expect(e.body).toEqual({ error: 'not found' })
   })
 })

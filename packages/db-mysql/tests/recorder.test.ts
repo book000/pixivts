@@ -143,14 +143,13 @@ describe('addResponse()', () => {
 
     // The error (if any) should come from Drizzle's mock client, not from
     // our urlHash logic or other preprocessing.
-    if (caughtError !== null) {
-      const errMsg =
-        caughtError instanceof Error
-          ? caughtError.message
-          : JSON.stringify(caughtError)
-      expect(errMsg).not.toContain('urlHash')
-      expect(errMsg).not.toContain('Cannot read')
-    }
+    if (caughtError === null) return
+    const errMsg =
+      caughtError instanceof Error
+        ? caughtError.message
+        : JSON.stringify(caughtError)
+    expect(errMsg).not.toContain('urlHash')
+    expect(errMsg).not.toContain('Cannot read')
   })
 })
 
@@ -205,10 +204,7 @@ describe('createResponseRecorder()', () => {
     const sqlTexts = allArgs.map((args) => {
       const arg = args[0]
       if (typeof arg === 'string') return arg.toLowerCase()
-      if (arg && typeof arg === 'object' && 'sql' in arg) {
-        return (arg as { sql: string }).sql.toLowerCase()
-      }
-      return JSON.stringify(arg).toLowerCase()
+      return arg && typeof arg === 'object' && 'sql' in arg ? (arg as { sql: string }).sql.toLowerCase() : JSON.stringify(arg).toLowerCase();
     })
     const hasCreateTable = sqlTexts.some(
       (s) => s.includes('create table if not exists') && s.includes('responses')
