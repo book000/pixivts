@@ -1,3 +1,10 @@
 {
-  "extends": ["github>book000/templates//renovate/base-public"]
+  "extends": ["github>book000/templates//renovate/base-public"],
+  "packageRules": [
+    {
+      "description": "v10 needs conventional-changelog-writer@9, but @semantic-release/release-notes-generator@14 loads writer@8 (breaks the Release workflow). Lift when release-notes-generator@15 is stable.",
+      "matchPackageNames": ["conventional-changelog-conventionalcommits"],
+      "allowedVersions": "<10"
+    }
+  ]
 }

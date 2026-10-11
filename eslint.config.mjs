@@ -29,6 +29,11 @@ export default [
     },
   },
   {
+    // Tool configs must `export default` a factory call (defineConfig(...)).
+    files: ['**/*.config.{ts,mjs}'],
+    rules: { 'unicorn/no-top-level-side-effects': 'off' },
+  },
+  {
     // Require JSDoc on every exported interface property signature.
     // This enforces documentation of public API surface (TSDoc style).
     plugins: { jsdoc },
