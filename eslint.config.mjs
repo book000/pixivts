@@ -17,16 +17,17 @@ export default [
         // project: false overrides @book000/eslint-config's project setting.
         project: false,
         projectService: {
-          allowDefaultProject: [
-            'packages/*/*.config.ts',
-            '*.mjs',
-            '*.ts',
-          ],
+          allowDefaultProject: ['packages/*/*.config.ts', '*.mjs', '*.ts'],
           maximumDefaultProjectFileMatchCount_THIS_WILL_SLOW_DOWN_LINTING: 30,
         },
         tsconfigRootDir: __dirname,
       },
     },
+  },
+  {
+    // Tool configs must `export default` a factory call (defineConfig(...)).
+    files: ['**/*.config.{ts,mjs}'],
+    rules: { 'unicorn/no-top-level-side-effects': 'off' },
   },
   {
     // Require JSDoc on every exported interface property signature.

@@ -91,10 +91,12 @@ describe('novels.detail()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.novels.detail({ novelId: 100 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.novel.id).toBe(100)
-      expect(result.value.novel.title).toBe('Test Novel')
+    if (!result.isOk) {
+      return
     }
+
+    expect(result.value.novel.id).toBe(100)
+    expect(result.value.novel.title).toBe('Test Novel')
   })
 })
 
@@ -185,10 +187,12 @@ describe('novels.comments()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.novels.comments({ novelId: 100 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.totalComments).toBe(1)
-      expect(result.value.comments[0].comment).toBe('Nice!')
+    if (!result.isOk) {
+      return
     }
+
+    expect(result.value.totalComments).toBe(1)
+    expect(result.value.comments[0].comment).toBe('Nice!')
   })
 
   it('forwards the offset param', async () => {
@@ -400,10 +404,12 @@ describe('novels.related()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.novels.related({ novelId: 100 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.novels).toHaveLength(1)
-      expect(result.value.novels[0].id).toBe(100)
+    if (!result.isOk) {
+      return
     }
+
+    expect(result.value.novels).toHaveLength(1)
+    expect(result.value.novels[0].id).toBe(100)
   })
 })
 
@@ -502,10 +508,13 @@ describe('novels.recommended()', () => {
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get('https://app-api.pixiv.net/v1/novel/recommended', ({ request }) => {
-        capturedUrl = request.url
-        return HttpResponse.json({ novels: [NOVEL], next_url: null })
-      })
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/recommended',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({ novels: [NOVEL], next_url: null })
+        }
+      )
     )
     const client = await PixivClient.of('test-refresh-token')
     await client.novels.recommended()
@@ -550,10 +559,12 @@ describe('novels.series()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.novels.series({ seriesId: 700 })
     expect(result.isOk).toBe(true)
-    if (result.isOk) {
-      expect(result.value.novelSeriesDetail.id).toBe(700)
-      expect(result.value.novels).toHaveLength(1)
+    if (!result.isOk) {
+      return
     }
+
+    expect(result.value.novelSeriesDetail.id).toBe(700)
+    expect(result.value.novels).toHaveLength(1)
   })
 
   it('forwards the lastOrder param', async () => {

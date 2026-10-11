@@ -551,9 +551,7 @@ export class UserResource {
    *
    * @param params - Request parameters
    */
-  list(
-    params: UserListParams
-  ): PaginatedResultAsync<UserListPage, PixivUser> {
+  list(params: UserListParams): PaginatedResultAsync<UserListPage, PixivUser> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<UserListPage>(
         '/v2/user/list',

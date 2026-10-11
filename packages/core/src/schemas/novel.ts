@@ -5,7 +5,12 @@
  */
 
 import { z } from 'zod'
-import { ImageUrlsSchema, PixivUserSchema, SeriesSchema, TagSchema } from './common'
+import {
+  ImageUrlsSchema,
+  PixivUserSchema,
+  SeriesSchema,
+  TagSchema,
+} from './common'
 
 /** A pixiv novel work item as returned by the API. */
 export const PixivNovelItemSchema = z.object({

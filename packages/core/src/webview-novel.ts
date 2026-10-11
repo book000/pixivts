@@ -45,7 +45,9 @@ function isWebviewNovelShape(value: unknown): value is WebviewNovel {
  *   if the embedded JSON cannot be located, parsed, or does not have the
  *   expected `WebviewNovel` shape
  */
-export function parseWebviewNovel(html: string): Result<WebviewNovel, PixivError> {
+export function parseWebviewNovel(
+  html: string
+): Result<WebviewNovel, PixivError> {
   const match = NOVEL_JSON_PATTERN.exec(html)
   if (!match) {
     return err(
@@ -67,13 +69,12 @@ export function parseWebviewNovel(html: string): Result<WebviewNovel, PixivError
   }
 
   const camelized = camelizeKeys(parsed)
-  if (!isWebviewNovelShape(camelized)) {
-    return err(
-      parseError(
-        'Embedded novel JSON does not match the expected WebviewNovel shape',
-        html
+  return isWebviewNovelShape(camelized)
+    ? ok(camelized)
+    : err(
+        parseError(
+          'Embedded novel JSON does not match the expected WebviewNovel shape',
+          html
+        )
       )
-    )
-  }
-  return ok(camelized)
 }

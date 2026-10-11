@@ -10,7 +10,11 @@ import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { drizzle } from 'drizzle-orm/mysql2'
 import type { ResponseRecord } from '@book000/pixivts'
 import * as schema from '../src/schema'
-import { addResponse, createRecorderBundle, createResponseRecorder } from '../src/recorder'
+import {
+  addResponse,
+  createRecorderBundle,
+  createResponseRecorder,
+} from '../src/recorder'
 
 // ---------------------------------------------------------------------------
 // Hoisted mock state — created before vi.mock() factory runs
@@ -65,7 +69,9 @@ function sha256(input: string): string {
 
 describe('URL hash computation', () => {
   it('SHA-256 produces a 64-char hex string', () => {
-    const hash = sha256('https://app-api.pixiv.net/v1/illust/detail?illust_id=1')
+    const hash = sha256(
+      'https://app-api.pixiv.net/v1/illust/detail?illust_id=1'
+    )
     expect(hash).toHaveLength(64)
     expect(hash).toMatch(/^[\da-f]{64}$/)
   })
@@ -143,14 +149,13 @@ describe('addResponse()', () => {
 
     // The error (if any) should come from Drizzle's mock client, not from
     // our urlHash logic or other preprocessing.
-    if (caughtError !== null) {
-      const errMsg =
-        caughtError instanceof Error
-          ? caughtError.message
-          : JSON.stringify(caughtError)
-      expect(errMsg).not.toContain('urlHash')
-      expect(errMsg).not.toContain('Cannot read')
-    }
+    if (caughtError === null) return
+    const errMsg =
+      caughtError instanceof Error
+        ? caughtError.message
+        : JSON.stringify(caughtError)
+    expect(errMsg).not.toContain('urlHash')
+    expect(errMsg).not.toContain('Cannot read')
   })
 })
 
@@ -164,7 +169,10 @@ describe('createResponseRecorder()', () => {
     mockExecute.mockReset()
     mockEnd.mockReset()
     // db.execute(sql`DDL`) goes through client.query() (text protocol)
-    const okPacket = [{ insertId: 0, affectedRows: 0, fieldCount: 0, serverStatus: 2 }, []]
+    const okPacket = [
+      { insertId: 0, affectedRows: 0, fieldCount: 0, serverStatus: 2 },
+      [],
+    ]
     mockQuery.mockResolvedValue(okPacket)
     // db.insert/select goes through client.execute() (prepared statements)
     mockExecute.mockResolvedValue(okPacket)
@@ -205,10 +213,9 @@ describe('createResponseRecorder()', () => {
     const sqlTexts = allArgs.map((args) => {
       const arg = args[0]
       if (typeof arg === 'string') return arg.toLowerCase()
-      if (arg && typeof arg === 'object' && 'sql' in arg) {
-        return (arg as { sql: string }).sql.toLowerCase()
-      }
-      return JSON.stringify(arg).toLowerCase()
+      return arg && typeof arg === 'object' && 'sql' in arg
+        ? (arg as { sql: string }).sql.toLowerCase()
+        : JSON.stringify(arg).toLowerCase()
     })
     const hasCreateTable = sqlTexts.some(
       (s) => s.includes('create table if not exists') && s.includes('responses')

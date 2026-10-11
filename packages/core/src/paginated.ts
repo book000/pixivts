@@ -131,9 +131,5 @@ export function failedPaginated<TPage extends PagedResponse, TItem>(
   http: HttpClient,
   getItems: (page: TPage) => TItem[]
 ): PaginatedResultAsync<TPage, TItem> {
-  return new PaginatedResultAsync(
-    Promise.resolve(err(error)),
-    http,
-    getItems
-  )
+  return new PaginatedResultAsync(Promise.resolve(err(error)), http, getItems)
 }

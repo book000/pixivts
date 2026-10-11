@@ -140,13 +140,12 @@ describe.skipIf(SKIP)('PixivClient e2e — novels', () => {
     if (result.value.commentAccessControl !== undefined) {
       expect(typeof result.value.commentAccessControl).toBe('number')
     }
-    if (result.value.comments.length > 0) {
-      const [comment] = result.value.comments
-      expect(typeof comment.id).toBe('number')
-      expect(typeof comment.comment).toBe('string')
-      expect(typeof comment.date).toBe('string')
-      expect(typeof comment.user.id).toBe('number')
-    }
+    if (result.value.comments.length === 0) return
+    const [comment] = result.value.comments
+    expect(typeof comment.id).toBe('number')
+    expect(typeof comment.comment).toBe('string')
+    expect(typeof comment.date).toBe('string')
+    expect(typeof comment.user.id).toBe('number')
   })
 
   it('novels.comments with offset', async () => {

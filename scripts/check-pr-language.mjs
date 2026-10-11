@@ -38,11 +38,7 @@ function calculateJapaneseRatio(text) {
   const latinCount = (text.match(LATIN_PATTERN) ?? []).length
   const total = japaneseCount + latinCount
 
-  if (total === 0) {
-    return 0
-  }
-
-  return japaneseCount / total
+  return total === 0 ? 0 : japaneseCount / total
 }
 
 /**
@@ -53,11 +49,11 @@ function calculateJapaneseRatio(text) {
  * The body is skipped if it is empty (or only whitespace).
  *
  * @param title - PR title
- * @param body - PR body (may be `null`/`undefined`/empty)
+ * @param body - PR body (may be `undefined`/empty)
  * @returns An array of human-readable failure messages. Empty if both the
  *   title and body pass the check.
  */
-function checkPullRequestLanguage(title, body) {
+function checkPullRequestLanguage(title, body = '') {
   const failures = []
 
   const titleRatio = calculateJapaneseRatio(title ?? '')
@@ -67,7 +63,7 @@ function checkPullRequestLanguage(title, body) {
     )
   }
 
-  const trimmedBody = (body ?? '').trim()
+  const trimmedBody = body.trim()
   if (trimmedBody.length > 0) {
     const strippedBody = stripMarkdownCode(trimmedBody)
     const bodyRatio = calculateJapaneseRatio(strippedBody)
