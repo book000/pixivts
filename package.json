@@ -8,6 +8,7 @@
     "clean": "pnpm -r clean",
     "test": "vitest run",
     "lint": "pnpm --filter @book000/pixivts build && pnpm -r lint && eslint .",
+    "format:check": "prettier --check \"**/*.{ts,mjs}\"",
     "fix": "pnpm -r fix && eslint . --fix"
   },
   "devDependencies": {

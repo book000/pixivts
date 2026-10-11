@@ -132,7 +132,9 @@ describe('parseNextUrl()', () => {
   })
 
   it('returns an empty object when no cursor params are present', () => {
-    const result = parseNextUrl('https://app-api.pixiv.net/v1/illust/ranking?filter=for_ios')
+    const result = parseNextUrl(
+      'https://app-api.pixiv.net/v1/illust/ranking?filter=for_ios'
+    )
     expect(result).toEqual({})
   })
 
@@ -226,8 +228,8 @@ describe('camelizeKeys()', () => {
   })
 
   it('converts dynamic map keys uniformly', () => {
-    expect(
-      camelizeKeys({ user_message_details: { error_code: 123 } })
-    ).toEqual({ userMessageDetails: { errorCode: 123 } })
+    expect(camelizeKeys({ user_message_details: { error_code: 123 } })).toEqual(
+      { userMessageDetails: { errorCode: 123 } }
+    )
   })
 })

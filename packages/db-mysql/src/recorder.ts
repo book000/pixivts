@@ -13,7 +13,11 @@
 import crypto from 'node:crypto'
 import { and, count, desc, eq, gte, sql } from 'drizzle-orm'
 import type { ResponseInterceptor, ResponseRecord } from '@book000/pixivts'
-import { createDbConnection, type ConnectionOptions, type DbInstance } from './connection'
+import {
+  createDbConnection,
+  type ConnectionOptions,
+  type DbInstance,
+} from './connection'
 import { responsesTable, type ResponseRow } from './schema'
 import { bootstrapSchema } from './migrations'
 
@@ -100,10 +104,7 @@ export async function addResponse(
 ): Promise<void> {
   // Hash the URL if present; fall back to "method:endpoint" so the column is never empty.
   const urlToHash = record.url ?? `${record.method}:${record.endpoint}`
-  const urlHash = crypto
-    .createHash('sha256')
-    .update(urlToHash)
-    .digest('hex')
+  const urlHash = crypto.createHash('sha256').update(urlToHash).digest('hex')
 
   await db
     .insert(responsesTable)
@@ -135,8 +136,7 @@ export function createRecorderBundle(
   db: DbInstance,
   close: () => Promise<void>
 ): RecorderBundle {
-  const interceptor: ResponseInterceptor = (record) =>
-    addResponse(db, record)
+  const interceptor: ResponseInterceptor = (record) => addResponse(db, record)
 
   return { interceptor, db, close }
 }
@@ -216,9 +216,7 @@ export async function getResponses(
     .where(
       and(
         gte(responsesTable.createdAt, since),
-        filter?.method
-          ? eq(responsesTable.method, filter.method)
-          : undefined,
+        filter?.method ? eq(responsesTable.method, filter.method) : undefined,
         filter?.endpoint
           ? eq(responsesTable.endpoint, filter.endpoint)
           : undefined,
@@ -250,9 +248,7 @@ export async function getResponseCount(
     .where(
       and(
         gte(responsesTable.createdAt, since),
-        filter?.method
-          ? eq(responsesTable.method, filter.method)
-          : undefined,
+        filter?.method ? eq(responsesTable.method, filter.method) : undefined,
         filter?.endpoint
           ? eq(responsesTable.endpoint, filter.endpoint)
           : undefined,
@@ -283,7 +279,9 @@ export interface EndpointWithCount {
  * @param db - Drizzle ORM database instance
  * @returns Endpoints sorted by count descending
  */
-export async function getEndpoints(db: DbInstance): Promise<EndpointWithCount[]> {
+export async function getEndpoints(
+  db: DbInstance
+): Promise<EndpointWithCount[]> {
   const since = ninetyDaysAgo()
   const rows = await db
     .select({

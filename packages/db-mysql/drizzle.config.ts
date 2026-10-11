@@ -12,9 +12,8 @@ import { defineConfig } from 'drizzle-kit'
 // process is a Node.js global. @types/node is not available in the default
 // TypeScript project used for this file (it is outside tsconfig include), so
 // we cast to a minimal shape to satisfy ESLint's type-aware rules.
-const env = (
-  process as unknown as { env: Record<string, string | undefined> }
-).env
+const env = (process as unknown as { env: Record<string, string | undefined> })
+  .env
 
 export default defineConfig({
   schema: './src/schema.ts',
