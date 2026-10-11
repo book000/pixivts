@@ -30,7 +30,7 @@ describe('images.fetch()', () => {
     const result = await client.images.fetch(imageUrl)
     expect(result.isOk).toBe(true)
     if (!result.isOk) {
-    	return;
+      return
     }
 
     expect(result.value.ok).toBe(true)

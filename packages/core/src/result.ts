@@ -170,11 +170,9 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
   // eslint-disable-next-line unicorn/no-thenable -- ResultAsync intentionally implements PromiseLike to be directly awaitable
   then<TResult1 = Result<T, E>, TResult2 = never>(
     onfulfilled?:
-      | ((value: Result<T, E>) => TResult1 | PromiseLike<TResult1>)
-      | null,
+      ((value: Result<T, E>) => TResult1 | PromiseLike<TResult1>) | null,
     onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
   ): PromiseLike<TResult1 | TResult2> {
-
     return this._promise.then(onfulfilled, onrejected as any)
   }
 
@@ -215,10 +213,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
    * @param fn - Synchronous mapper
    */
   map<U>(fn: (value: T) => U): ResultAsync<U, E> {
-    return new ResultAsync(
-       
-      this._promise.then((r) => r.map(fn) as Result<U, E>)
-    )
+    return new ResultAsync(this._promise.then((r) => r.map(fn) as Result<U, E>))
   }
 
   /**
@@ -248,7 +243,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
       this._promise.then(async (r): Promise<Result<U, E | F>> => {
         if (r.isErr) return r
         const next = fn(r.value)
-        return next instanceof ResultAsync ? next._promise : next;
+        return next instanceof ResultAsync ? next._promise : next
       })
     )
   }
@@ -265,7 +260,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
     onErr: (error: E) => U | Promise<U>
   ): Promise<U> {
     const r = await this._promise
-    return r.isOk ? onOk(r.value) : onErr(r.error);
+    return r.isOk ? onOk(r.value) : onErr(r.error)
   }
 
   /**
@@ -277,6 +272,6 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
     const r = await this._promise
     // Avoid calling r.unwrapOr(fallback) directly to work around TypeScript 6
     // Awaited<T> inference issues with union method signatures.
-    return r.isOk ? r.value : fallback;
+    return r.isOk ? r.value : fallback
   }
 }

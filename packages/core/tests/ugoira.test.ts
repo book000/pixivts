@@ -33,7 +33,7 @@ describe('ugoira.metadata()', () => {
     const result = await client.ugoira.metadata({ illustId: 1 })
     expect(result.isOk).toBe(true)
     if (!result.isOk) {
-    	return;
+      return
     }
 
     expect(result.value.ugoiraMetadata.frames).toHaveLength(2)

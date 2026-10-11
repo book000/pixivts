@@ -83,7 +83,7 @@ describe('HttpClient.get()', () => {
     const r = await makeClient().get('/v1/missing')
     expect(r.isErr).toBe(true)
     if (!r.isErr) {
-    	return;
+      return
     }
 
     expect(r.error.type).toBe('api_error')
@@ -121,7 +121,9 @@ describe('429 retry', () => {
     server.use(
       http.get('https://app-api.pixiv.net/v1/retry-test', () => {
         calls++
-        return calls < 2 ? new HttpResponse(null, { status: 429 }) : HttpResponse.json({ ok: true });
+        return calls < 2
+          ? new HttpResponse(null, { status: 429 })
+          : HttpResponse.json({ ok: true })
       })
     )
     const r = await makeClient().get('/v1/retry-test')
@@ -131,14 +133,18 @@ describe('429 retry', () => {
 
   it('returns Err(rate_limit) after exhausting retries', async () => {
     server.use(
-      http.get('https://app-api.pixiv.net/v1/always-429', () =>
-        new HttpResponse(null, {
-          status: 429,
-          headers: { 'Retry-After': '0' },
-        })
+      http.get(
+        'https://app-api.pixiv.net/v1/always-429',
+        () =>
+          new HttpResponse(null, {
+            status: 429,
+            headers: { 'Retry-After': '0' },
+          })
       )
     )
-    const client = makeClient(makeAuth(), { retry: { maxRetries: 1, waitMs: 0 } })
+    const client = makeClient(makeAuth(), {
+      retry: { maxRetries: 1, waitMs: 0 },
+    })
     const r = await client.get('/v1/always-429')
     expect(r.isErr).toBe(true)
     if (r.isErr) expect(r.error.type).toBe('rate_limit')
@@ -150,10 +156,12 @@ describe('429 retry', () => {
     server.use(
       http.get('https://app-api.pixiv.net/v1/slow-retry', () => {
         calls++
-        return calls < 2 ? new HttpResponse(null, {
-            status: 429,
-            headers: { 'Retry-After': '0' },
-          }) : HttpResponse.json({ done: true });
+        return calls < 2
+          ? new HttpResponse(null, {
+              status: 429,
+              headers: { 'Retry-After': '0' },
+            })
+          : HttpResponse.json({ done: true })
       })
     )
     await makeClient().get('/v1/slow-retry')
@@ -201,11 +209,13 @@ describe('401 auth refresh', () => {
 
   it('returns Err(auth_failed) when refresh itself fails', async () => {
     server.use(
-      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
-        new HttpResponse(null, { status: 400 })
+      http.post(
+        'https://oauth.secure.pixiv.net/auth/token',
+        () => new HttpResponse(null, { status: 400 })
       ),
-      http.get('https://app-api.pixiv.net/v1/auth-fail', () =>
-        new HttpResponse(null, { status: 401 })
+      http.get(
+        'https://app-api.pixiv.net/v1/auth-fail',
+        () => new HttpResponse(null, { status: 401 })
       )
     )
     const r = await makeClient().get('/v1/auth-fail')
