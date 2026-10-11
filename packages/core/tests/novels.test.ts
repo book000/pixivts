@@ -92,7 +92,7 @@ describe('novels.detail()', () => {
     const result = await client.novels.detail({ novelId: 100 })
     expect(result.isOk).toBe(true)
     if (!result.isOk) {
-    	return;
+      return
     }
 
     expect(result.value.novel.id).toBe(100)
@@ -188,7 +188,7 @@ describe('novels.comments()', () => {
     const result = await client.novels.comments({ novelId: 100 })
     expect(result.isOk).toBe(true)
     if (!result.isOk) {
-    	return;
+      return
     }
 
     expect(result.value.totalComments).toBe(1)
@@ -405,7 +405,7 @@ describe('novels.related()', () => {
     const result = await client.novels.related({ novelId: 100 })
     expect(result.isOk).toBe(true)
     if (!result.isOk) {
-    	return;
+      return
     }
 
     expect(result.value.novels).toHaveLength(1)
@@ -508,10 +508,13 @@ describe('novels.recommended()', () => {
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get('https://app-api.pixiv.net/v1/novel/recommended', ({ request }) => {
-        capturedUrl = request.url
-        return HttpResponse.json({ novels: [NOVEL], next_url: null })
-      })
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/recommended',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({ novels: [NOVEL], next_url: null })
+        }
+      )
     )
     const client = await PixivClient.of('test-refresh-token')
     await client.novels.recommended()
@@ -557,7 +560,7 @@ describe('novels.series()', () => {
     const result = await client.novels.series({ seriesId: 700 })
     expect(result.isOk).toBe(true)
     if (!result.isOk) {
-    	return;
+      return
     }
 
     expect(result.value.novelSeriesDetail.id).toBe(700)

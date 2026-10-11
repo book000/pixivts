@@ -32,8 +32,8 @@ const T: number[] = Array.from({ length: 64 }, (_, i) =>
 const S = [
   7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5,
   9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11,
-  16, 23, 4, 11, 16, 23, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10,
-  15, 21,
+  16, 23, 4, 11, 16, 23, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15,
+  21,
 ]
 
 function md5Bytes(bytes: number[]): string {
@@ -145,7 +145,6 @@ export function md5(input: string): string {
   return md5Bytes(bytes)
 }
 
-
 // ---------------------------------------------------------------------------
 // AuthManager
 // ---------------------------------------------------------------------------
@@ -222,9 +221,7 @@ export class AuthManager {
     })
 
     if (response.status !== 200) {
-      throw new Error(
-        `Failed to refresh pixiv token: HTTP ${response.status}`
-      )
+      throw new Error(`Failed to refresh pixiv token: HTTP ${response.status}`)
     }
 
     const data = (await response.json()) as {

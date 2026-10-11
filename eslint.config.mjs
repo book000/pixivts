@@ -17,11 +17,7 @@ export default [
         // project: false overrides @book000/eslint-config's project setting.
         project: false,
         projectService: {
-          allowDefaultProject: [
-            'packages/*/*.config.ts',
-            '*.mjs',
-            '*.ts',
-          ],
+          allowDefaultProject: ['packages/*/*.config.ts', '*.mjs', '*.ts'],
           maximumDefaultProjectFileMatchCount_THIS_WILL_SLOW_DOWN_LINTING: 30,
         },
         tsconfigRootDir: __dirname,

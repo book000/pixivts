@@ -68,7 +68,7 @@ describe('manga.recommended()', () => {
     const result = await client.manga.recommended()
     expect(result.isOk).toBe(true)
     if (!result.isOk) {
-    	return;
+      return
     }
 
     expect(result.value.illusts).toHaveLength(1)

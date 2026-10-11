@@ -65,7 +65,7 @@ describe('PaginatedResultAsync — single page', () => {
     const result = await paginated
     expect(result.isOk).toBe(true)
     if (!result.isOk) {
-    	return;
+      return
     }
 
     expect(result.value.items).toHaveLength(1)

@@ -67,7 +67,7 @@ describe('illusts.detail()', () => {
     const result = await client.illusts.detail({ illustId: 1 })
     expect(result.isOk).toBe(true)
     if (!result.isOk) {
-    	return;
+      return
     }
 
     expect(result.value.illust.id).toBe(1)
@@ -104,10 +104,12 @@ describe('illusts.search().pages() — multi-page', () => {
       ),
       http.get('https://app-api.pixiv.net/v1/search/illust', ({ request }) => {
         const offset = new URL(request.url).searchParams.get('offset')
-        return offset === '30' ? HttpResponse.json({ illusts: [ILLUST2], next_url: null }) : HttpResponse.json({
-          illusts: [ILLUST],
-          next_url: 'https://app-api.pixiv.net/v1/search/illust?offset=30',
-        });
+        return offset === '30'
+          ? HttpResponse.json({ illusts: [ILLUST2], next_url: null })
+          : HttpResponse.json({
+              illusts: [ILLUST],
+              next_url: 'https://app-api.pixiv.net/v1/search/illust?offset=30',
+            })
       })
     )
     const client = await PixivClient.of('test-refresh-token')
@@ -133,13 +135,15 @@ describe('illusts.search().items() — multi-page', () => {
       ),
       http.get('https://app-api.pixiv.net/v1/search/illust', ({ request }) => {
         const offset = new URL(request.url).searchParams.get('offset')
-        return offset === '30' ? HttpResponse.json({
-            illusts: [ILLUST3, ILLUST4],
-            next_url: null,
-          }) : HttpResponse.json({
-          illusts: [ILLUST, ILLUST2],
-          next_url: 'https://app-api.pixiv.net/v1/search/illust?offset=30',
-        });
+        return offset === '30'
+          ? HttpResponse.json({
+              illusts: [ILLUST3, ILLUST4],
+              next_url: null,
+            })
+          : HttpResponse.json({
+              illusts: [ILLUST, ILLUST2],
+              next_url: 'https://app-api.pixiv.net/v1/search/illust?offset=30',
+            })
       })
     )
     const client = await PixivClient.of('test-refresh-token')
@@ -424,7 +428,7 @@ describe('illusts.comments()', () => {
     const result = await client.illusts.comments({ illustId: 1 })
     expect(result.isOk).toBe(true)
     if (!result.isOk) {
-    	return;
+      return
     }
 
     expect(result.value.totalComments).toBe(1)
@@ -452,7 +456,7 @@ describe('illusts.bookmarkDetail()', () => {
     const result = await client.illusts.bookmarkDetail({ illustId: 1 })
     expect(result.isOk).toBe(true)
     if (!result.isOk) {
-    	return;
+      return
     }
 
     expect(result.value.bookmarkDetail.isBookmarked).toBe(true)
@@ -492,7 +496,7 @@ describe('illusts.related()', () => {
     const result = await client.illusts.related({ illustId: 1 })
     expect(result.isOk).toBe(true)
     if (!result.isOk) {
-    	return;
+      return
     }
 
     expect(result.value.illusts).toHaveLength(1)
@@ -552,7 +556,7 @@ describe('illusts.series()', () => {
     const result = await client.illusts.series({ illustSeriesId: 500 })
     expect(result.isOk).toBe(true)
     if (!result.isOk) {
-    	return;
+      return
     }
 
     expect(result.value.illustSeriesDetail.id).toBe(500)
@@ -630,16 +634,14 @@ describe('illusts.trendingTags()', () => {
         HttpResponse.json(AUTH_RESPONSE)
       ),
       mockIllustTrendingTags({
-        trend_tags: [
-          { tag: 'cat', translated_name: 'Cat', illust: ILLUST },
-        ],
+        trend_tags: [{ tag: 'cat', translated_name: 'Cat', illust: ILLUST }],
       })
     )
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.illusts.trendingTags()
     expect(result.isOk).toBe(true)
     if (!result.isOk) {
-    	return;
+      return
     }
 
     expect(result.value.trendTags).toHaveLength(1)

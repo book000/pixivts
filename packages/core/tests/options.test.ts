@@ -196,14 +196,10 @@ describe('SearchTarget used as API param', () => {
     let capturedTarget: string | null = null
     stubAuth()
     server.use(
-      http.get(
-        'https://app-api.pixiv.net/v1/search/illust',
-        ({ request }) => {
-          capturedTarget =
-            new URL(request.url).searchParams.get('search_target')
-          return HttpResponse.json({ illusts: [], next_url: null })
-        }
-      )
+      http.get('https://app-api.pixiv.net/v1/search/illust', ({ request }) => {
+        capturedTarget = new URL(request.url).searchParams.get('search_target')
+        return HttpResponse.json({ illusts: [], next_url: null })
+      })
     )
     const client = await PixivClient.of('test-refresh-token')
     await client.illusts.search({
@@ -219,13 +215,10 @@ describe('RankingMode used as API param', () => {
     let capturedMode: string | null = null
     stubAuth()
     server.use(
-      http.get(
-        'https://app-api.pixiv.net/v1/illust/ranking',
-        ({ request }) => {
-          capturedMode = new URL(request.url).searchParams.get('mode')
-          return HttpResponse.json({ illusts: [], next_url: null })
-        }
-      )
+      http.get('https://app-api.pixiv.net/v1/illust/ranking', ({ request }) => {
+        capturedMode = new URL(request.url).searchParams.get('mode')
+        return HttpResponse.json({ illusts: [], next_url: null })
+      })
     )
     const client = await PixivClient.of('test-refresh-token')
     await client.illusts.ranking({ mode: RankingMode.WEEK })
@@ -238,50 +231,47 @@ describe('OSFilter used as API param', () => {
     let capturedFilter: string | null = null
     stubAuth()
     server.use(
-      http.get(
-        'https://app-api.pixiv.net/v1/illust/detail',
-        ({ request }) => {
-          capturedFilter = new URL(request.url).searchParams.get('filter')
-          return HttpResponse.json({
-            illust: {
-              id: 1,
-              title: 'T',
-              type: 'illust',
-              image_urls: {
-                square_medium: '',
-                medium: '',
-                large: '',
-              },
-              caption: '',
-              restrict: 0,
-              user: {
-                id: 1,
-                name: 'A',
-                account: 'a',
-                profile_image_urls: { medium: '' },
-              },
-              tags: [],
-              tools: [],
-              create_date: '2024-01-01T00:00:00+09:00',
-              page_count: 1,
-              width: 100,
-              height: 100,
-              sanity_level: 2,
-              x_restrict: 0,
-              series: null,
-              meta_single_page: { original_image_url: '' },
-              meta_pages: [],
-              total_view: 0,
-              total_bookmarks: 0,
-              is_bookmarked: false,
-              visible: true,
-              is_muted: false,
-              illust_ai_type: 0,
-              illust_book_style: 0,
+      http.get('https://app-api.pixiv.net/v1/illust/detail', ({ request }) => {
+        capturedFilter = new URL(request.url).searchParams.get('filter')
+        return HttpResponse.json({
+          illust: {
+            id: 1,
+            title: 'T',
+            type: 'illust',
+            image_urls: {
+              square_medium: '',
+              medium: '',
+              large: '',
             },
-          })
-        }
-      )
+            caption: '',
+            restrict: 0,
+            user: {
+              id: 1,
+              name: 'A',
+              account: 'a',
+              profile_image_urls: { medium: '' },
+            },
+            tags: [],
+            tools: [],
+            create_date: '2024-01-01T00:00:00+09:00',
+            page_count: 1,
+            width: 100,
+            height: 100,
+            sanity_level: 2,
+            x_restrict: 0,
+            series: null,
+            meta_single_page: { original_image_url: '' },
+            meta_pages: [],
+            total_view: 0,
+            total_bookmarks: 0,
+            is_bookmarked: false,
+            visible: true,
+            is_muted: false,
+            illust_ai_type: 0,
+            illust_book_style: 0,
+          },
+        })
+      })
     )
     const client = await PixivClient.of('test-refresh-token')
     await client.illusts.detail({ illustId: 1, filter: OSFilter.FOR_ANDROID })
