@@ -221,8 +221,8 @@ importers:
         specifier: 5.0.3
         version: 5.0.3(vitest@5.0.3)
       msw:
-        specifier: 3.0.0
-        version: 3.0.0(@types/node@24.19.1)(graphql@16.14.2)(supports-color@7.2.0)(typescript@6.0.3)(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1))
+        specifier: 3.0.2
+        version: 3.0.2(@types/node@24.19.1)(graphql@16.14.2)(supports-color@7.2.0)(typescript@6.0.3)(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1))
       tsdown:
         specifier: 0.23.0
         version: 0.23.0(tsx@4.23.15)(typescript@6.0.3)
@@ -234,7 +234,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: 5.0.3
-        version: 5.0.3(@types/node@24.19.1)(@vitest/coverage-v8@5.0.3)(msw@3.0.0(@types/node@24.19.1)(graphql@16.14.2)(supports-color@7.2.0)(typescript@6.0.3)(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)))(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1))
+        version: 5.0.3(@types/node@24.19.1)(@vitest/coverage-v8@5.0.3)(msw@3.0.2(@types/node@24.19.1)(graphql@16.14.2)(supports-color@7.2.0)(typescript@6.0.3)(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)))(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1))
       zod:
         specifier: 4.6.5
         version: 4.6.5
@@ -2979,8 +2979,8 @@ packages:
       typescript:
         optional: true
 
-  msw@3.0.0:
-    resolution: {integrity: sha512-+q6kq14TdUPbDiYn1qdhGpdZ2wvMTl5FEdt6cA2gK78wh56erHPDRN/t/MsGJYyRi4zt3AEctKUQPgujeeZrQg==}
+  msw@3.0.2:
+    resolution: {integrity: sha512-/74rddlgCmlHvrXUkuYKoUjDJTiP4Nrz2uyIpOTLtxJNCS+2yY+DlLfzzRUc61cvRjCo6Jvi2+vRNZyZQa1j4A==}
     engines: {node: '>=22.12.0'}
     hasBin: true
     peerDependencies:
@@ -5144,14 +5144,14 @@ snapshots:
       msw: 2.15.0(@types/node@24.19.1)(typescript@6.0.3)
       vite: 8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)
 
-  '@vitest/mocker@5.0.3(msw@3.0.0(@types/node@24.19.1)(graphql@16.14.2)(supports-color@7.2.0)(typescript@6.0.3)(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)))(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1))':
+  '@vitest/mocker@5.0.3(msw@3.0.2(@types/node@24.19.1)(graphql@16.14.2)(supports-color@7.2.0)(typescript@6.0.3)(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)))(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1))':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       '@vitest/spy': 5.0.3
       estree-walker: 3.0.3
       magic-string: 1.4.2
     optionalDependencies:
-      msw: 3.0.0(@types/node@24.19.1)(graphql@16.14.2)(supports-color@7.2.0)(typescript@6.0.3)(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1))
+      msw: 3.0.2(@types/node@24.19.1)(graphql@16.14.2)(supports-color@7.2.0)(typescript@6.0.3)(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1))
       vite: 8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)
 
   '@vitest/spy@5.0.3': {}
@@ -6815,7 +6815,7 @@ snapshots:
       - '@types/node'
     optional: true
 
-  msw@3.0.0(@types/node@24.19.1)(graphql@16.14.2)(supports-color@7.2.0)(typescript@6.0.3)(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)):
+  msw@3.0.2(@types/node@24.19.1)(graphql@16.14.2)(supports-color@7.2.0)(typescript@6.0.3)(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)):
     dependencies:
       '@inquirer/confirm': 6.3.2(@types/node@24.19.1)
       '@msw/url': 0.1.2
@@ -7863,10 +7863,10 @@ snapshots:
     transitivePeerDependencies:
       - msw
 
-  vitest@5.0.3(@types/node@24.19.1)(@vitest/coverage-v8@5.0.3)(msw@3.0.0(@types/node@24.19.1)(graphql@16.14.2)(supports-color@7.2.0)(typescript@6.0.3)(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)))(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)):
+  vitest@5.0.3(@types/node@24.19.1)(@vitest/coverage-v8@5.0.3)(msw@3.0.2(@types/node@24.19.1)(graphql@16.14.2)(supports-color@7.2.0)(typescript@6.0.3)(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)))(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)):
     dependencies:
       '@types/chai': 5.2.3
-      '@vitest/mocker': 5.0.3(msw@3.0.0(@types/node@24.19.1)(graphql@16.14.2)(supports-color@7.2.0)(typescript@6.0.3)(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)))(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1))
+      '@vitest/mocker': 5.0.3(msw@3.0.2(@types/node@24.19.1)(graphql@16.14.2)(supports-color@7.2.0)(typescript@6.0.3)(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)))(vite@8.3.1(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1))
       chai: 6.2.2
       es-module-lexer: 2.3.2
       expect-type: 1.4.0
