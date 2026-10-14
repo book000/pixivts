@@ -399,28 +399,43 @@ describe('illusts.follow()', () => {
 })
 
 describe('illusts.comments()', () => {
-  it('returns Ok with comments', async () => {
-    const COMMENT = {
-      id: 1,
-      comment: 'Nice!',
-      date: '2024-01-01T00:00:00+09:00',
-      user: {
-        id: 99,
-        name: 'Commenter',
-        account: 'commenter',
-        profile_image_urls: { medium: 'https://i.pximg.net/u2.jpg' },
-      },
-      parent_comment: {},
-    }
+  const COMMENT_USER = {
+    id: 99,
+    name: 'Commenter',
+    account: 'commenter',
+    profile_image_urls: { medium: 'https://i.pximg.net/u2.jpg' },
+  }
+  const COMMENT_WITH_STAMP = {
+    id: 1,
+    comment: '',
+    date: '2024-01-01T00:00:00+09:00',
+    user: COMMENT_USER,
+    has_replies: false,
+    stamp: {
+      stamp_id: 101,
+      stamp_url:
+        'https://s.pximg.net/common/images/stamp/generated-stamps/101_s.jpg',
+    },
+  }
+  const COMMENT_WITHOUT_STAMP = {
+    id: 2,
+    comment: 'Nice!',
+    date: '2024-01-02T00:00:00+09:00',
+    user: COMMENT_USER,
+    has_replies: true,
+    stamp: null,
+  }
+
+  it('returns Ok with v3 comments including stamps', async () => {
     server.use(
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get('https://app-api.pixiv.net/v1/illust/comments', () =>
+      http.get('https://app-api.pixiv.net/v3/illust/comments', () =>
         HttpResponse.json({
-          total_comments: 1,
-          comments: [COMMENT],
+          comments: [COMMENT_WITH_STAMP, COMMENT_WITHOUT_STAMP],
           next_url: null,
+          comment_access_control: 0,
         })
       )
     )
@@ -431,8 +446,58 @@ describe('illusts.comments()', () => {
       return
     }
 
-    expect(result.value.totalComments).toBe(1)
-    expect(result.value.comments[0].comment).toBe('Nice!')
+    expect(result.value.totalComments).toBeUndefined()
+    expect(result.value.comments[0].stamp).toEqual({
+      stampId: 101,
+      stampUrl: COMMENT_WITH_STAMP.stamp.stamp_url,
+    })
+    expect(result.value.comments[1].comment).toBe('Nice!')
+    expect(result.value.comments[1].stamp).toBeNull()
+  })
+
+  it('requests /v3/illust/comments with illust_id and offset', async () => {
+    let requestUrl: URL | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v3/illust/comments',
+        ({ request }) => {
+          requestUrl = new URL(request.url)
+          return HttpResponse.json({ comments: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.illusts.comments({ illustId: 1, offset: 30 })
+    expect(result.isOk).toBe(true)
+
+    expect(requestUrl?.pathname).toBe('/v3/illust/comments')
+    expect(requestUrl?.searchParams.get('illust_id')).toBe('1')
+    expect(requestUrl?.searchParams.get('offset')).toBe('30')
+  })
+
+  it('does not send include_total_comments', async () => {
+    let hasIncludeTotalComments = true
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v3/illust/comments',
+        ({ request }) => {
+          hasIncludeTotalComments = new URL(request.url).searchParams.has(
+            'include_total_comments'
+          )
+          return HttpResponse.json({ comments: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.illusts.comments({ illustId: 1, includeTotalComments: true })
+
+    expect(hasIncludeTotalComments).toBe(false)
   })
 })
 

@@ -187,10 +187,18 @@ export interface PixivIllustItem {
   restrictionAttributes?: string[]
 }
 
+/** Stamp attached to an illust comment. */
+export interface IllustCommentStamp {
+  /** Stamp ID. */
+  stampId: number
+  /** URL of the stamp image. */
+  stampUrl: string
+}
+
 /**
  * A single comment on an illust.
  *
- * Returned by GET /v1/illust/comments.
+ * Returned by GET /v3/illust/comments.
  */
 export interface IllustComment {
   /** Comment ID. */
@@ -203,6 +211,8 @@ export interface IllustComment {
   user: PixivUser
   /** Whether this comment has replies. */
   hasReplies?: boolean
+  /** Stamp attached to this comment, or `null` when the comment has no stamp. */
+  stamp?: IllustCommentStamp | null
   /** The comment this is a reply to, or `{}` (empty object) for a top-level comment. */
   parentComment?: IllustComment | Record<string, never>
 }
@@ -581,9 +591,9 @@ export interface IllustRecommendedPage {
   nextUrl: string | null
 }
 
-/** Page response for GET /v1/illust/comments. */
+/** Page response for GET /v3/illust/comments. */
 export interface IllustCommentsPage {
-  /** Total number of comments on the illust (present only when `includeTotalComments` is requested). */
+  /** Total number of comments on the illust. Not returned by v3; use `illust.totalComments` from `illusts.detail()` instead. */
   totalComments?: number
   /** Comments on this page. */
   comments: IllustComment[]

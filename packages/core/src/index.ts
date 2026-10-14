@@ -79,6 +79,7 @@ export type {
   PixivUgoiraItem,
   PixivApiErrorBody,
   IllustComment,
+  IllustCommentStamp,
   BookmarkDetailTag,
   BookmarkDetail,
   // Response types for API endpoints

@@ -94,6 +94,7 @@ export const IllustCommentSchema: z.ZodType<{
   date: string
   user: z.infer<typeof PixivUserSchema>
   hasReplies?: boolean
+  stamp?: { stampId: number; stampUrl: string } | null
   parentComment?: Record<string, never> | z.infer<typeof IllustCommentSchema>
 }> = z.lazy(() =>
   z.object({
@@ -102,6 +103,10 @@ export const IllustCommentSchema: z.ZodType<{
     date: z.string(),
     user: PixivUserSchema,
     hasReplies: z.boolean().optional(),
+    stamp: z
+      .object({ stampId: z.number(), stampUrl: z.string() })
+      .nullable()
+      .optional(),
     parentComment: z
       .union([z.record(z.string(), z.never()), IllustCommentSchema])
       .optional(),

@@ -155,7 +155,12 @@ export interface IllustCommentsParams {
   illustId: number
   /** Zero-based offset for pagination. */
   offset?: number
-  /** Whether to include the `totalComments` count in the response. */
+  /**
+   * Has no effect: `/v3/illust/comments` does not return `totalComments`
+   * and this parameter is not sent.
+   *
+   * @deprecated Read `illust.totalComments` from `illusts.detail()` instead.
+   */
   includeTotalComments?: boolean
 }
 
@@ -424,7 +429,7 @@ export class IllustResource {
 
   /**
    * Fetches comments posted on an illust.
-   * GET /v1/illust/comments
+   * GET /v3/illust/comments
    *
    * @param params - Request parameters
    */
@@ -433,11 +438,10 @@ export class IllustResource {
   ): PaginatedResultAsync<IllustCommentsPage, IllustComment> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<IllustCommentsPage>(
-        '/v1/illust/comments',
+        '/v3/illust/comments',
         buildParams({
           illustId: params.illustId,
           offset: params.offset,
-          includeTotalComments: params.includeTotalComments,
         })
       ),
       this.#http,
