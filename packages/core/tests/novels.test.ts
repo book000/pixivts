@@ -176,7 +176,7 @@ describe('novels.comments()', () => {
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get('https://app-api.pixiv.net/v1/novel/comments', () =>
+      http.get('https://app-api.pixiv.net/v3/novel/comments', () =>
         HttpResponse.json({
           total_comments: 1,
           comments: [COMMENT],
@@ -201,7 +201,7 @@ describe('novels.comments()', () => {
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get('https://app-api.pixiv.net/v1/novel/comments', ({ request }) => {
+      http.get('https://app-api.pixiv.net/v3/novel/comments', ({ request }) => {
         capturedOffset = new URL(request.url).searchParams.get('offset') ?? ''
         return HttpResponse.json({ comments: [], next_url: null })
       })
@@ -212,13 +212,13 @@ describe('novels.comments()', () => {
     expect(capturedOffset).toBe('10')
   })
 
-  it('omits the includeTotalComments param when not requested', async () => {
+  it('does not send include_total_comments even when includeTotalComments is true', async () => {
     let hasIncludeTotalComments = true
     server.use(
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get('https://app-api.pixiv.net/v1/novel/comments', ({ request }) => {
+      http.get('https://app-api.pixiv.net/v3/novel/comments', ({ request }) => {
         hasIncludeTotalComments = new URL(request.url).searchParams.has(
           'include_total_comments'
         )
@@ -226,9 +226,69 @@ describe('novels.comments()', () => {
       })
     )
     const client = await PixivClient.of('test-refresh-token')
-    const result = await client.novels.comments({ novelId: 100 })
+    const result = await client.novels.comments({
+      novelId: 100,
+      includeTotalComments: true,
+    })
     expect(result.isOk).toBe(true)
     expect(hasIncludeTotalComments).toBe(false)
+  })
+
+  it('sends novel_id and offset and maps stamp to camelCase', async () => {
+    const USER = {
+      id: 99,
+      name: 'Commenter',
+      account: 'commenter',
+      profile_image_urls: { medium: 'https://i.pximg.net/u2.jpg' },
+    }
+    let capturedNovelId = ''
+    let capturedOffset = ''
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v3/novel/comments', ({ request }) => {
+        const params = new URL(request.url).searchParams
+        capturedNovelId = params.get('novel_id') ?? ''
+        capturedOffset = params.get('offset') ?? ''
+        return HttpResponse.json({
+          comments: [
+            {
+              id: 1,
+              comment: '',
+              date: '2024-01-01T00:00:00+09:00',
+              user: USER,
+              has_replies: false,
+              stamp: {
+                stamp_id: 101,
+                stamp_url: 'https://s.pximg.net/common/images/stamp/101.jpg',
+              },
+            },
+            {
+              id: 2,
+              comment: 'No stamp',
+              date: '2024-01-02T00:00:00+09:00',
+              user: USER,
+              has_replies: false,
+              stamp: null,
+            },
+          ],
+          next_url: null,
+          comment_access_control: 0,
+        })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.comments({ novelId: 100, offset: 30 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(capturedNovelId).toBe('100')
+    expect(capturedOffset).toBe('30')
+    expect(result.value.comments[0].stamp).toEqual({
+      stampId: 101,
+      stampUrl: 'https://s.pximg.net/common/images/stamp/101.jpg',
+    })
+    expect(result.value.comments[1].stamp).toBeNull()
   })
 
   it('maps commentAccessControl, hasReplies, and a nested parentComment', async () => {
@@ -261,7 +321,7 @@ describe('novels.comments()', () => {
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get('https://app-api.pixiv.net/v1/novel/comments', () =>
+      http.get('https://app-api.pixiv.net/v3/novel/comments', () =>
         HttpResponse.json({
           comments: [REPLY_COMMENT],
           next_url: null,

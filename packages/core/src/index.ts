@@ -80,6 +80,11 @@ export type {
   PixivApiErrorBody,
   IllustComment,
   IllustCommentStamp,
+  IllustRequest,
+  IllustRequestInfo,
+  IllustRequestCollaborateStatus,
+  IllustRequestCollaborateUserSample,
+  IllustRequestUser,
   BookmarkDetailTag,
   BookmarkDetail,
   // Response types for API endpoints

@@ -73,6 +73,83 @@ describe('illusts.detail()', () => {
     expect(result.value.illust.id).toBe(1)
     expect(result.value.illust.title).toBe('Test Illust')
   })
+
+  it('maps request, eventBanners, and seasonalEffectAnimationUrls to camelCase', async () => {
+    const REQUEST = {
+      request_info: {
+        fan_user_id: 7,
+        collaborate_status: {
+          collaborating: true,
+          collaborate_anonymous_flag: false,
+          collaborate_user_samples: [{ user_id: null, anonymous_flag: true }],
+        },
+        role: 'creator',
+      },
+      request_users: [
+        {
+          id: 8,
+          name: 'Requested',
+          account: 'requested',
+          profile_image_urls: { medium: 'https://i.pximg.net/r.jpg' },
+          is_followed: false,
+          is_access_blocking_user: false,
+          is_accept_request: true,
+        },
+      ],
+    }
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/illust/detail', () =>
+        HttpResponse.json({
+          illust: {
+            ...ILLUST,
+            request: REQUEST,
+            event_banners: null,
+            seasonal_effect_animation_urls: null,
+          },
+        })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.illusts.detail({ illustId: 1 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    const { illust } = result.value
+    expect(illust.eventBanners).toBeNull()
+    expect(illust.seasonalEffectAnimationUrls).toBeNull()
+    expect(illust.request?.requestInfo.fanUserId).toBe(7)
+    expect(
+      illust.request?.requestInfo.collaborateStatus.collaborateUserSamples[0]
+    ).toEqual({ userId: null, anonymousFlag: true })
+    expect(illust.request?.requestUsers[0].isAcceptRequest).toBe(true)
+    expect(illust.request?.requestUsers[0].profileImageUrls.medium).toBe(
+      'https://i.pximg.net/r.jpg'
+    )
+  })
+
+  it('maps a null request', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/illust/detail', () =>
+        HttpResponse.json({ illust: { ...ILLUST, request: null } })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.illusts.detail({ illustId: 1 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    expect(result.value.illust.request).toBeNull()
+  })
 })
 
 describe('illusts.search() — first page', () => {

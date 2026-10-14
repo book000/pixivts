@@ -129,14 +129,10 @@ describe.skipIf(SKIP)('PixivClient e2e — novels', () => {
   })
 
   it('novels.comments', async () => {
-    const result = await client.novels.comments({
-      novelId: NOVEL_ID,
-      includeTotalComments: true,
-    })
+    const result = await client.novels.comments({ novelId: NOVEL_ID })
     expect(result.isOk).toBe(true)
     if (!result.isOk) return
     expect(Array.isArray(result.value.comments)).toBe(true)
-    expect(typeof result.value.totalComments).toBe('number')
     if (result.value.commentAccessControl !== undefined) {
       expect(typeof result.value.commentAccessControl).toBe('number')
     }
@@ -146,6 +142,9 @@ describe.skipIf(SKIP)('PixivClient e2e — novels', () => {
     expect(typeof comment.comment).toBe('string')
     expect(typeof comment.date).toBe('string')
     expect(typeof comment.user.id).toBe('number')
+    if (!comment.stamp) return
+    expect(typeof comment.stamp.stampId).toBe('number')
+    expect(typeof comment.stamp.stampUrl).toBe('string')
   })
 
   it('novels.comments with offset', async () => {
