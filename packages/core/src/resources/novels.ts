@@ -22,9 +22,11 @@ import type {
   NovelCommentsPage,
   NovelDetailResponse,
   NovelListPage,
+  NovelPopularPreviewResponse,
   NovelRecommendedPage,
   NovelSeriesPage,
   PixivNovelItem,
+  TrendingTagsNovelResponse,
   WebviewNovel,
 } from '../types'
 
@@ -74,6 +76,20 @@ export interface NovelSearchParams {
   includePotentialViolationWorks?: boolean
   /** Zero-based offset for pagination. */
   offset?: number
+}
+
+/** Parameters for the popular-preview novel search. */
+export interface NovelPopularPreviewParams {
+  /** Search keyword. */
+  word: string
+  /** How to match the keyword against works (default: `"partial_match_for_tags"`). */
+  searchTarget?: (typeof SearchTarget)[keyof typeof SearchTarget]
+  /** AI-generated content filter: `0` = hide AI works, `1` = show only AI works. */
+  searchAiType?: 0 | 1
+  /** Include results matched through translated tags (sent only when set). */
+  includeTranslatedTagResults?: boolean
+  /** Merge plain-keyword results into tag results (sent only when set). */
+  mergePlainKeywordResults?: boolean
 }
 
 /** Parameters for fetching the novel ranking. */
@@ -283,6 +299,47 @@ export class NovelResource {
       this.#http,
       (page) => page.novels
     )
+  }
+
+  /**
+   * Fetches the popular-preview novel search results (a single page of 30).
+   * GET /v1/search/popular-preview/novel
+   *
+   * The endpoint returns no `next_url`, so the result is not paginated.
+   *
+   * @param params - Request parameters
+   *
+   * @example
+   * ```ts
+   * const result = await client.novels.popularPreview({ word: 'fantasy' })
+   * if (result.isOk) {
+   *   console.log(result.value.novels.length)
+   * }
+   * ```
+   */
+  popularPreview(
+    params: NovelPopularPreviewParams
+  ): ResultAsync<NovelPopularPreviewResponse, PixivError> {
+    return this.#http.get<NovelPopularPreviewResponse>(
+      '/v1/search/popular-preview/novel',
+      buildParams({
+        word: params.word,
+        searchTarget: params.searchTarget ?? 'partial_match_for_tags',
+        searchAiType: params.searchAiType,
+        includeTranslatedTagResults: params.includeTranslatedTagResults,
+        mergePlainKeywordResults: params.mergePlainKeywordResults,
+      })
+    )
+  }
+
+  /**
+   * Fetches currently trending novel tags, each with a representative illust.
+   * GET /v1/trending-tags/novel
+   *
+   * Takes no parameters: the endpoint ignores `filter`.
+   */
+  trendingTags(): ResultAsync<TrendingTagsNovelResponse, PixivError> {
+    return this.#http.get<TrendingTagsNovelResponse>('/v1/trending-tags/novel')
   }
 
   /**

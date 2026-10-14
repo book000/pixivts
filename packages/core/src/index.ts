@@ -97,6 +97,9 @@ export type {
   IllustBookmarkDetailResponse,
   TrendingTagIllust,
   TrendingTagsIllustResponse,
+  TrendingTagsNovelResponse,
+  IllustPopularPreviewResponse,
+  NovelPopularPreviewResponse,
   MangaRecommendedPage,
   SpotlightArticle,
   SpotlightArticlesPage,
@@ -148,6 +151,7 @@ export type {
   IllustBookmarkDetailParams,
   IllustNewParams,
   IllustTrendingTagsParams,
+  IllustPopularPreviewParams,
 } from './resources/illusts'
 
 export type {
@@ -164,6 +168,7 @@ export type {
   NovelCommentRepliesParams,
   NovelCommentsParams,
   NovelNewParams,
+  NovelPopularPreviewParams,
 } from './resources/novels'
 
 export type {
