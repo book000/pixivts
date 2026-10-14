@@ -674,6 +674,14 @@ export interface IllustCommentsPage {
   commentAccessControl?: number
 }
 
+/** Page response for GET /v2/illust/comment/replies. */
+export interface IllustCommentRepliesPage {
+  /** Replies on this page. */
+  comments: IllustComment[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
 /** Response shape for GET /v2/illust/bookmark/detail. */
 export interface IllustBookmarkDetailResponse {
   /** Bookmark metadata for the requested illust. */
@@ -808,6 +816,14 @@ export interface NovelCommentsPage {
   commentAccessControl?: number
 }
 
+/** Page response for GET /v2/novel/comment/replies. */
+export interface NovelCommentRepliesPage {
+  /** Replies on this page. */
+  comments: NovelComment[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
 /** Page response for GET /v2/novel/series. */
 export interface NovelSeriesPage {
   /** Metadata for the series. */
@@ -910,7 +926,111 @@ export interface WebviewNovel {
 
 // User endpoint responses
 
-/** Response shape for GET /v1/user/detail. */
+/** Badge shown on a user's profile, returned by GET /v2/user/detail. */
+export interface PixivUserProfileBadge {
+  /** Badge kind (observed: `"premium"`, `"official"`). */
+  type: string
+  /** Badge icon URL, or `null` when none is provided. */
+  url: string | null
+}
+
+/** Detailed profile information returned by GET /v2/user/detail. */
+export interface PixivUserProfileV2 {
+  /** Personal website URL, or `null` if not set. */
+  webpage: string | null
+  /** Numeric gender code (observed: 0, 1, 2), or `null` when not disclosed. */
+  gender: number | null
+  /** Birth date string, or `null` when not disclosed. */
+  birth: string | null
+  /** Birth day portion (MM-DD format), or `null` when not disclosed. */
+  birthDay: string | null
+  /** Birth year, or `null` when not disclosed. */
+  birthYear: number | null
+  /** Region / prefecture, or `null` when not disclosed. */
+  region: string | null
+  /** Internal address ID, or `null` when not disclosed. */
+  addressId: number | null
+  /** Country code, or `null` when not disclosed. */
+  countryCode: string | null
+  /** Occupation / job description, or `null` when not disclosed. */
+  job: string | null
+  /** Internal job category ID, or `null` when not disclosed. */
+  jobId: number | null
+  /** Number of users this user follows. */
+  totalFollowUsers: number
+  /** Number of mutual-follow (mypixiv) connections. */
+  totalMypixivUsers: number
+  /** Total number of public illusts. */
+  totalIllusts: number
+  /** Total number of public manga works. */
+  totalManga: number
+  /** Total number of public novels. */
+  totalNovels: number
+  /** Total number of illust series. */
+  totalIllustSeries: number
+  /** Total number of novel series. */
+  totalNovelSeries: number
+  /** Profile background image URL, or `null` if not set. */
+  backgroundImageUrl: string | null
+  /** Linked Twitter/X account name (without @), or `null` if not set. */
+  twitterAccount: string | null
+  /** Twitter/X profile URL, or `null` if not set. */
+  twitterUrl: string | null
+  /** Whether the user has a premium (paid) account. */
+  isPremium: boolean
+  /** Whether the user has set a custom profile image. */
+  isUsingCustomProfileImage: boolean
+  /** Profile badge, or `null` when the user has none. */
+  badge: PixivUserProfileBadge | null
+}
+
+/** Visibility settings returned by GET /v2/user/detail (each `null` when not exposed). */
+export interface PixivUserProfilePublicityV2 {
+  /** Visibility of the gender field. */
+  gender: Publicity | null
+  /** Visibility of the region field. */
+  region: Publicity | null
+  /** Visibility of the birth-day field. */
+  birthDay: Publicity | null
+  /** Visibility of the birth-year field. */
+  birthYear: Publicity | null
+  /** Visibility of the job field. */
+  job: Publicity | null
+}
+
+/** Workspace information returned by GET /v2/user/detail (no image URL). */
+export type PixivUserProfileWorkspaceV2 = Omit<
+  PixivUserProfileWorkspace,
+  'workspaceImageUrl'
+>
+
+/**
+ * Response shape for GET /v2/user/detail.
+ *
+ * Differs from {@link UserDetailResponse}: several profile values are nullable,
+ * `disabledLinks` and `profile.badge` are present, and the v1-only fields
+ * (`profile.pawooUrl`, `profile.totalIllustBookmarksPublic`,
+ * `profilePublicity.pawoo`, `workspace.workspaceImageUrl`) are absent.
+ */
+export interface UserDetailV2Response {
+  /** Basic user info with self-introduction. */
+  user: PixivUserItem & { isAcceptRequest: boolean }
+  /** Detailed profile data. */
+  profile: PixivUserProfileV2
+  /** Visibility settings for profile fields. */
+  profilePublicity: PixivUserProfilePublicityV2
+  /** Workspace / desk-setup information. */
+  workspace: PixivUserProfileWorkspaceV2
+  /** Links the user has disabled; the element shape is not yet known. */
+  disabledLinks: unknown[]
+}
+
+/**
+ * Response shape for GET /v1/user/detail.
+ *
+ * See {@link UserDetailV2Response} (`users.detailV2()`) for the v2 endpoint
+ * and its additional fields.
+ */
 export interface UserDetailResponse {
   /** Basic user info with self-introduction. */
   user: PixivUserItem

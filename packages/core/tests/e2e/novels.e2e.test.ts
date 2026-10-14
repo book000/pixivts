@@ -157,6 +157,20 @@ describe.skipIf(SKIP)('PixivClient e2e — novels', () => {
     expect(Array.isArray(result.value.comments)).toBe(true)
   })
 
+  it('novels.commentReplies', async () => {
+    const comments = await client.novels.comments({ novelId: NOVEL_ID })
+    expect(comments.isOk).toBe(true)
+    if (!comments.isOk) return
+    const parent = comments.value.comments.find((c) => c.hasReplies)
+    if (!parent) return
+    const result = await client.novels.commentReplies({
+      commentId: parent.id,
+    })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.comments)).toBe(true)
+  })
+
   it('novels.new', async () => {
     const result = await client.novels.new({})
     expect(result.isOk).toBe(true)

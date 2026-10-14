@@ -29,6 +29,7 @@ import type {
   UserBookmarksNovelPage,
   UserBookmarkTagsIllustPage,
   UserDetailResponse,
+  UserDetailV2Response,
   UserFollowerPage,
   UserFollowingPage,
   UserIllustsPage,
@@ -308,6 +309,9 @@ export class UserResource {
    * Fetches detailed profile information for a user.
    * GET /v1/user/detail
    *
+   * See {@link UserResource.detailV2} for the v2 endpoint, which exposes
+   * additional fields (`disabledLinks`, `profile.badge`).
+   *
    * @param params - Request parameters
    */
   detail(
@@ -315,6 +319,27 @@ export class UserResource {
   ): ResultAsync<UserDetailResponse, PixivError> {
     return this.#http.get<UserDetailResponse>(
       '/v1/user/detail',
+      buildParams({ userId: params.userId, filter: params.filter ?? 'for_ios' })
+    )
+  }
+
+  /**
+   * Fetches detailed profile information for a user using the v2 endpoint.
+   * GET /v2/user/detail
+   *
+   * Unlike {@link UserResource.detail}, the response includes `disabledLinks`
+   * and `profile.badge`, several profile values are `null` instead of empty
+   * strings or `0`, and the v1-only fields (`profile.pawooUrl`,
+   * `profile.totalIllustBookmarksPublic`, `profilePublicity.pawoo`,
+   * `workspace.workspaceImageUrl`) are absent.
+   *
+   * @param params - Request parameters
+   */
+  detailV2(
+    params: UserDetailParams
+  ): ResultAsync<UserDetailV2Response, PixivError> {
+    return this.#http.get<UserDetailV2Response>(
+      '/v2/user/detail',
       buildParams({ userId: params.userId, filter: params.filter ?? 'for_ios' })
     )
   }
