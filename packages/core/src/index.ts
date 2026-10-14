@@ -123,6 +123,14 @@ export type {
   UserListPage,
   BookmarkTag,
   UserBookmarkTagsIllustPage,
+  AiShowSettingsResponse,
+  RestrictedModeSettingsResponse,
+  MutedTag,
+  MuteListResponse,
+  UserMeState,
+  UserMeProfile,
+  UserMeStateResponse,
+  HasUnreadNotificationsResponse,
 } from './types'
 
 // Resource param types

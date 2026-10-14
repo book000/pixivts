@@ -922,6 +922,104 @@ export interface UserDetailResponse {
   workspace: PixivUserProfileWorkspace
 }
 
+/** Response shape for GET /v1/user/ai-show-settings. */
+export interface AiShowSettingsResponse {
+  /** Whether AI-generated works are shown. */
+  showAi: boolean
+}
+
+/** Response shape for GET /v1/user/restricted-mode-settings. */
+export interface RestrictedModeSettingsResponse {
+  /** Whether restricted mode is enabled. */
+  isRestrictedModeEnabled: boolean
+}
+
+/** A tag in the authenticated user's mute list. */
+export interface MutedTag {
+  /** The muted tag. */
+  tag: {
+    /** Tag name. */
+    name: string
+  }
+  /** Whether the tag occupies a premium-only mute slot. */
+  isPremiumSlot: boolean
+}
+
+/** Response shape for GET /v1/mute/list. */
+export interface MuteListResponse {
+  /** Muted tags. */
+  mutedTags: MutedTag[]
+  /** Muted users. The item shape is not known, so callers must narrow it. */
+  mutedUsers: unknown[]
+  /** Total number of muted items. */
+  mutedCount: number
+  /** Number of muted tags. */
+  mutedTagsCount: number
+  /** Number of muted users. */
+  mutedUsersCount: number
+  /** Maximum number of mute entries for the current account. */
+  muteLimitCount: number
+  /** Mute limits shown in the UI text, by premium status. */
+  forText: {
+    /** Mute limit for accounts without premium. */
+    muteLimitCountIfNoPremium: number
+    /** Mute limit for premium accounts. */
+    muteLimitCountIfPremium: number
+  }
+}
+
+/** Account state flags returned by GET /v1/user/me/state. */
+export interface UserMeState {
+  /** Whether the mail address is verified. */
+  isMailAuthorized: boolean
+  /** Whether a mail address is registered. */
+  hasMailAddress: boolean
+  /** Whether the pixiv ID has been changed. */
+  hasChangedPixivId: boolean
+  /** Whether the pixiv ID can be changed. */
+  canChangePixivId: boolean
+  /** Whether a password is set. */
+  hasPassword: boolean
+  /** Whether a policy agreement is required. */
+  requirePolicyAgreement: boolean
+  /** Whether the account has no login method. */
+  noLoginMethod: boolean
+  /** Whether the account is restricted. */
+  isUserRestricted: boolean
+  /** Whether official event notifications are enabled. */
+  isOfficialEventNotificationsEnabled: boolean
+}
+
+/** Profile of the authenticated user returned by GET /v1/user/me/state. */
+export interface UserMeProfile {
+  /** User ID. */
+  userId: number
+  /** pixiv ID (account name). */
+  pixivId: string
+  /** Display name. */
+  name: string
+  /** Profile image URLs. */
+  profileImageUrls: ProfileImageUrls
+  /** Whether the account has premium. */
+  isPremium: boolean
+  /** Restriction level of the account's content setting. */
+  xRestrict: number
+}
+
+/** Response shape for GET /v1/user/me/state. */
+export interface UserMeStateResponse {
+  /** Account state flags. */
+  userState: UserMeState
+  /** Profile of the authenticated user. */
+  profile: UserMeProfile
+}
+
+/** Response shape for GET /v1/notification/has-unread-notifications. */
+export interface HasUnreadNotificationsResponse {
+  /** Whether there are unread notifications. */
+  hasUnreadNotifications: boolean
+}
+
 /** Page response for GET /v1/user/illusts. */
 export interface UserIllustsPage {
   /** The user whose illusts are listed. */

@@ -835,3 +835,190 @@ describe('users.search()', () => {
     expect(ids).toEqual([99, 100])
   })
 })
+
+/** Registers a GET handler that records the request and returns `body`. */
+function useCapturedGet(path: string, body: Record<string, unknown>) {
+  const captured: { method: string; pathname: string; search: string }[] = []
+  server.use(
+    http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+      HttpResponse.json(AUTH_RESPONSE)
+    ),
+    http.get(`https://app-api.pixiv.net${path}`, ({ request }) => {
+      const url = new URL(request.url)
+      captured.push({
+        method: request.method,
+        pathname: url.pathname,
+        search: url.search,
+      })
+      return HttpResponse.json(body)
+    })
+  )
+  return captured
+}
+
+describe('users.aiShowSettings()', () => {
+  it('sends GET without params and returns camelCase values', async () => {
+    const captured = useCapturedGet('/v1/user/ai-show-settings', {
+      show_ai: true,
+    })
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.aiShowSettings()
+    expect(captured).toEqual([
+      { method: 'GET', pathname: '/v1/user/ai-show-settings', search: '' },
+    ])
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value).toEqual({ showAi: true })
+  })
+})
+
+describe('users.restrictedModeSettings()', () => {
+  it('sends GET without params and returns camelCase values', async () => {
+    const captured = useCapturedGet('/v1/user/restricted-mode-settings', {
+      is_restricted_mode_enabled: false,
+    })
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.restrictedModeSettings()
+    expect(captured).toEqual([
+      {
+        method: 'GET',
+        pathname: '/v1/user/restricted-mode-settings',
+        search: '',
+      },
+    ])
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value).toEqual({ isRestrictedModeEnabled: false })
+  })
+})
+
+describe('users.muteList()', () => {
+  const COUNTS = {
+    muted_count: 1,
+    muted_tags_count: 1,
+    muted_users_count: 0,
+    mute_limit_count: 10,
+    for_text: {
+      mute_limit_count_if_no_premium: 10,
+      mute_limit_count_if_premium: 100,
+    },
+  }
+
+  it('sends GET without params and returns camelCase values', async () => {
+    const captured = useCapturedGet('/v1/mute/list', {
+      muted_tags: [{ tag: { name: 'tag' }, is_premium_slot: false }],
+      muted_users: [],
+      ...COUNTS,
+    })
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.muteList()
+    expect(captured).toEqual([
+      { method: 'GET', pathname: '/v1/mute/list', search: '' },
+    ])
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value).toEqual({
+      mutedTags: [{ tag: { name: 'tag' }, isPremiumSlot: false }],
+      mutedUsers: [],
+      mutedCount: 1,
+      mutedTagsCount: 1,
+      mutedUsersCount: 0,
+      muteLimitCount: 10,
+      forText: {
+        muteLimitCountIfNoPremium: 10,
+        muteLimitCountIfPremium: 100,
+      },
+    })
+  })
+
+  it('returns empty arrays when nothing is muted', async () => {
+    useCapturedGet('/v1/mute/list', {
+      muted_tags: [],
+      muted_users: [],
+      ...COUNTS,
+      muted_count: 0,
+      muted_tags_count: 0,
+    })
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.muteList()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value.mutedTags).toEqual([])
+    expect(result.value.mutedUsers).toEqual([])
+  })
+})
+
+describe('users.meState()', () => {
+  it('sends GET without params and returns camelCase values', async () => {
+    const captured = useCapturedGet('/v1/user/me/state', {
+      user_state: {
+        is_mail_authorized: true,
+        has_mail_address: true,
+        has_changed_pixiv_id: false,
+        can_change_pixiv_id: true,
+        has_password: true,
+        require_policy_agreement: false,
+        no_login_method: false,
+        is_user_restricted: false,
+        is_official_event_notifications_enabled: true,
+      },
+      profile: {
+        user_id: 42,
+        pixiv_id: 'dummy_id',
+        name: 'Dummy',
+        profile_image_urls: { medium: 'https://i.pximg.net/u.jpg' },
+        is_premium: false,
+        x_restrict: 0,
+      },
+    })
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.meState()
+    expect(captured).toEqual([
+      { method: 'GET', pathname: '/v1/user/me/state', search: '' },
+    ])
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value).toEqual({
+      userState: {
+        isMailAuthorized: true,
+        hasMailAddress: true,
+        hasChangedPixivId: false,
+        canChangePixivId: true,
+        hasPassword: true,
+        requirePolicyAgreement: false,
+        noLoginMethod: false,
+        isUserRestricted: false,
+        isOfficialEventNotificationsEnabled: true,
+      },
+      profile: {
+        userId: 42,
+        pixivId: 'dummy_id',
+        name: 'Dummy',
+        profileImageUrls: { medium: 'https://i.pximg.net/u.jpg' },
+        isPremium: false,
+        xRestrict: 0,
+      },
+    })
+  })
+})
+
+describe('users.hasUnreadNotifications()', () => {
+  it('sends GET without params and returns camelCase values', async () => {
+    const captured = useCapturedGet(
+      '/v1/notification/has-unread-notifications',
+      { has_unread_notifications: true }
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.hasUnreadNotifications()
+    expect(captured).toEqual([
+      {
+        method: 'GET',
+        pathname: '/v1/notification/has-unread-notifications',
+        search: '',
+      },
+    ])
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value).toEqual({ hasUnreadNotifications: true })
+  })
+})

@@ -118,6 +118,46 @@ describe.skipIf(SKIP)('PixivClient e2e — users', () => {
     expect(Array.isArray(result.value.bookmarkTags)).toBe(true)
   })
 
+  it('users.aiShowSettings', async () => {
+    const result = await client.users.aiShowSettings()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(typeof result.value.showAi).toBe('boolean')
+  })
+
+  it('users.restrictedModeSettings', async () => {
+    const result = await client.users.restrictedModeSettings()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(typeof result.value.isRestrictedModeEnabled).toBe('boolean')
+  })
+
+  it('users.muteList', async () => {
+    const result = await client.users.muteList()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.mutedTags)).toBe(true)
+    expect(Array.isArray(result.value.mutedUsers)).toBe(true)
+    expect(typeof result.value.muteLimitCount).toBe('number')
+    expect(typeof result.value.forText.muteLimitCountIfPremium).toBe('number')
+  })
+
+  it('users.meState', async () => {
+    const result = await client.users.meState()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(typeof result.value.userState.hasPassword).toBe('boolean')
+    expect(typeof result.value.profile.userId).toBe('number')
+    expect(typeof result.value.profile.isPremium).toBe('boolean')
+  })
+
+  it('users.hasUnreadNotifications', async () => {
+    const result = await client.users.hasUnreadNotifications()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(typeof result.value.hasUnreadNotifications).toBe('boolean')
+  })
+
   it('users.followAdd and users.followDelete', async () => {
     const detailResult = await client.users.detail({ userId: STAFF_USER_ID })
     expect(detailResult.isOk).toBe(true)
