@@ -7,10 +7,16 @@ import type {
   Publicity,
 } from '../src/types'
 import type {
+  TrendingTagsNovelResponse,
+  IllustPopularPreviewResponse,
+  NovelPopularPreviewParams,
+  IllustPopularPreviewParams,
+  NovelPopularPreviewResponse,
   PixivUserProfileBadge,
   PixivUserProfilePublicityV2,
   PixivUserProfileV2,
   PixivUserProfileWorkspaceV2,
+  TrendingTagIllust,
   UserDetailV2Response,
 } from '../src/index'
 import { PixivIllustItemSchema } from '../src/schemas/illust'
@@ -131,6 +137,26 @@ describe('NovelComment types', () => {
     expect(
       NovelCommentSchema.safeParse({ ...NOVEL_COMMENT, stamp: null }).success
     ).toBe(true)
+  })
+})
+
+describe('popular preview and novel trending tag types', () => {
+  it('has the expected shapes', () => {
+    expectTypeOf<TrendingTagsNovelResponse['trendTags']>().toEqualTypeOf<
+      TrendingTagIllust[]
+    >()
+    expectTypeOf<
+      IllustPopularPreviewResponse['searchSpanLimit']
+    >().toEqualTypeOf<number>()
+    expectTypeOf<
+      NovelPopularPreviewResponse['searchSpanLimit']
+    >().toEqualTypeOf<number>()
+    expectTypeOf<
+      'filter' extends keyof NovelPopularPreviewParams ? true : false
+    >().toEqualTypeOf<false>()
+    expectTypeOf<
+      'filter' extends keyof IllustPopularPreviewParams ? true : false
+    >().toEqualTypeOf<true>()
   })
 })
 

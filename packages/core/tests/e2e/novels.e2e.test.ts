@@ -17,6 +17,21 @@ describe.skipIf(SKIP)('PixivClient e2e — novels', () => {
     client = await PixivClient.of(REFRESH_TOKEN ?? '')
   })
 
+  it('novels.trendingTags', async () => {
+    const result = await client.novels.trendingTags()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.trendTags)).toBe(true)
+  })
+
+  it('novels.popularPreview', async () => {
+    const result = await client.novels.popularPreview({ word: 'ホロライブ' })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.novels)).toBe(true)
+    expect(typeof result.value.searchSpanLimit).toBe('number')
+  })
+
   it('novels.detail', async () => {
     const result = await client.novels.detail({ novelId: NOVEL_ID })
     expect(result.isOk).toBe(true)

@@ -69,6 +69,14 @@ describe.skipIf(SKIP)('PixivClient e2e — illusts', () => {
     expect(result.value.illusts.length).toBeGreaterThan(0)
   })
 
+  it('illusts.popularPreview', async () => {
+    const result = await client.illusts.popularPreview({ word: 'ホロライブ' })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.illusts)).toBe(true)
+    expect(typeof result.value.searchSpanLimit).toBe('number')
+  })
+
   it('illusts.ranking', async () => {
     const result = await client.illusts.ranking({})
     expect(result.isOk).toBe(true)
