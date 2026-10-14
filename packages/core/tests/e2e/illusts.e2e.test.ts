@@ -166,6 +166,20 @@ describe.skipIf(SKIP)('PixivClient e2e — illusts', () => {
     }
   })
 
+  it('illusts.commentReplies', async () => {
+    const comments = await client.illusts.comments({ illustId: ILLUST_ID })
+    expect(comments.isOk).toBe(true)
+    if (!comments.isOk) return
+    const parent = comments.value.comments.find((c) => c.hasReplies)
+    if (!parent) return
+    const result = await client.illusts.commentReplies({
+      commentId: parent.id,
+    })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.comments)).toBe(true)
+  })
+
   it('illusts.bookmarkDetail', async () => {
     const result = await client.illusts.bookmarkDetail({
       illustId: ILLUST_ID,

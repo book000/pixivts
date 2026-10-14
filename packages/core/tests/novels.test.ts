@@ -343,6 +343,155 @@ describe('novels.comments()', () => {
   })
 })
 
+describe('novels.commentReplies()', () => {
+  const REPLY_USER = {
+    id: 99,
+    name: 'Replier',
+    account: 'replier',
+    profile_image_urls: { medium: 'https://i.pximg.net/u2.jpg' },
+  }
+  const REPLY_WITH_STAMP = {
+    id: 11,
+    comment: '',
+    date: '2024-01-01T00:00:00+09:00',
+    user: REPLY_USER,
+    has_replies: false,
+    stamp: {
+      stamp_id: 101,
+      stamp_url:
+        'https://s.pximg.net/common/images/stamp/generated-stamps/101_s.jpg',
+    },
+  }
+  const REPLY_WITHOUT_STAMP = {
+    id: 12,
+    comment: 'Thanks!',
+    date: '2024-01-02T00:00:00+09:00',
+    user: REPLY_USER,
+    has_replies: false,
+    stamp: null,
+  }
+  const AUTH_HANDLER = http.post(
+    'https://oauth.secure.pixiv.net/auth/token',
+    () => HttpResponse.json(AUTH_RESPONSE)
+  )
+
+  it('maps replies to camelCase', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get('https://app-api.pixiv.net/v2/novel/comment/replies', () =>
+        HttpResponse.json({
+          comments: [REPLY_WITH_STAMP, REPLY_WITHOUT_STAMP],
+          next_url: null,
+        })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.commentReplies({ commentId: 1 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    expect(result.value.nextUrl).toBeNull()
+    expect(result.value.comments[0].hasReplies).toBe(false)
+    expect(result.value.comments[0].stamp).toEqual({
+      stampId: 101,
+      stampUrl: REPLY_WITH_STAMP.stamp.stamp_url,
+    })
+    expect(result.value.comments[1].comment).toBe('Thanks!')
+    expect(result.value.comments[1].stamp).toBeNull()
+  })
+
+  it('requests /v2/novel/comment/replies with comment_id only by default', async () => {
+    let requestUrl: URL | undefined
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v2/novel/comment/replies',
+        ({ request }) => {
+          requestUrl = new URL(request.url)
+          return HttpResponse.json({ comments: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.commentReplies({ commentId: 7 })
+    expect(result.isOk).toBe(true)
+
+    expect(requestUrl?.pathname).toBe('/v2/novel/comment/replies')
+    expect(requestUrl?.searchParams.get('comment_id')).toBe('7')
+    expect(requestUrl?.searchParams.has('offset')).toBe(false)
+  })
+
+  it('sends offset verbatim, including 0', async () => {
+    const offsets: (string | null)[] = []
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v2/novel/comment/replies',
+        ({ request }) => {
+          offsets.push(new URL(request.url).searchParams.get('offset'))
+          return HttpResponse.json({ comments: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.novels.commentReplies({ commentId: 7, offset: 0 })
+    await client.novels.commentReplies({ commentId: 7, offset: 30 })
+
+    expect(offsets).toEqual(['0', '30'])
+  })
+
+  it('follows next_url across pages with pages() and items()', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v2/novel/comment/replies',
+        ({ request }) => {
+          const offset = new URL(request.url).searchParams.get('offset')
+          return offset === '30'
+            ? HttpResponse.json({
+                comments: [REPLY_WITHOUT_STAMP],
+                next_url: null,
+              })
+            : HttpResponse.json({
+                comments: [REPLY_WITH_STAMP],
+                next_url:
+                  'https://app-api.pixiv.net/v2/novel/comment/replies?comment_id=1&offset=30',
+              })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const pageSizes: number[] = []
+    const pageIterable = client.novels.commentReplies({ commentId: 1 }).pages()
+    for await (const page of pageIterable) {
+      pageSizes.push(page.comments.length)
+    }
+    expect(pageSizes).toEqual([1, 1])
+
+    const ids: number[] = []
+    const itemIterable = client.novels.commentReplies({ commentId: 1 }).items()
+    for await (const reply of itemIterable) {
+      ids.push(reply.id)
+    }
+    expect(ids).toEqual([11, 12])
+  })
+
+  it('returns Err on an HTTP error', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v2/novel/comment/replies',
+        () => new HttpResponse(null, { status: 404 })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.commentReplies({ commentId: 1 })
+    expect(result.isOk).toBe(false)
+  })
+})
+
 describe('novels.new()', () => {
   it('passes the maxNovelId param in the URL', async () => {
     let capturedMaxNovelId = ''

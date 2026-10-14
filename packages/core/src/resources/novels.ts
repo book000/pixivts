@@ -18,6 +18,7 @@ import {
 } from '../options'
 import type {
   NovelComment,
+  NovelCommentRepliesPage,
   NovelCommentsPage,
   NovelDetailResponse,
   NovelListPage,
@@ -161,6 +162,14 @@ export interface NovelCommentsParams {
    * @deprecated Read `novel.totalComments` from `novels.detail()` instead.
    */
   includeTotalComments?: boolean
+}
+
+/** Parameters for fetching replies to a novel comment. */
+export interface NovelCommentRepliesParams {
+  /** ID of the comment to fetch replies for. */
+  commentId: number
+  /** Zero-based offset for pagination. */
+  offset?: number
 }
 
 /** Parameters for fetching newly posted novels. */
@@ -473,6 +482,28 @@ export class NovelResource {
         '/v3/novel/comments',
         buildParams({
           novelId: params.novelId,
+          offset: params.offset,
+        })
+      ),
+      this.#http,
+      (page) => page.comments
+    )
+  }
+
+  /**
+   * Fetches replies to a comment on a novel.
+   * GET /v2/novel/comment/replies
+   *
+   * @param params - Request parameters
+   */
+  commentReplies(
+    params: NovelCommentRepliesParams
+  ): PaginatedResultAsync<NovelCommentRepliesPage, NovelComment> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<NovelCommentRepliesPage>(
+        '/v2/novel/comment/replies',
+        buildParams({
+          commentId: params.commentId,
           offset: params.offset,
         })
       ),

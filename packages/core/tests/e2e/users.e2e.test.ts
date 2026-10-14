@@ -21,6 +21,17 @@ describe.skipIf(SKIP)('PixivClient e2e — users', () => {
     expect(result.value.profile).toBeDefined()
   })
 
+  it('users.detailV2', async () => {
+    const result = await client.users.detailV2({ userId: STAFF_USER_ID })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value.user.id).toBe(STAFF_USER_ID)
+    expect(Array.isArray(result.value.disabledLinks)).toBe(true)
+    expect(typeof result.value.user.isAcceptRequest).toBe('boolean')
+    const { badge } = result.value.profile
+    expect(badge === null || typeof badge.type === 'string').toBe(true)
+  })
+
   it('users.illusts', async () => {
     const result = await client.users.illusts({ userId: STAFF_USER_ID })
     expect(result.isOk).toBe(true)
