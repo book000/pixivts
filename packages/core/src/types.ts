@@ -114,6 +114,65 @@ export interface MetaPages {
   imageUrls: Required<ImageUrls>
 }
 
+/** A user who can accept requests, listed in {@link IllustRequest}. */
+export interface IllustRequestUser {
+  /** User ID. */
+  id: number
+  /** Display name. */
+  name: string
+  /** Account name (used in URLs). */
+  account: string
+  /** Profile image URLs. */
+  profileImageUrls: ProfileImageUrls
+  /** Whether the authenticated user follows this user. */
+  isFollowed: boolean
+  /** Whether this user blocks the authenticated user's access. */
+  isAccessBlockingUser: boolean
+  /** Whether this user accepts requests. */
+  isAcceptRequest: boolean
+}
+
+/** A collaborating user sample in {@link IllustRequestCollaborateStatus}. */
+export interface IllustRequestCollaborateUserSample {
+  /** User ID, or `null` when the collaborator is anonymous. */
+  userId: number | null
+  /** Whether the collaborator is shown anonymously. */
+  anonymousFlag: boolean
+}
+
+/** Collaboration status of a request. */
+export interface IllustRequestCollaborateStatus {
+  /** Whether the work is being collaborated on. */
+  collaborating: boolean
+  /** Whether collaborators are shown anonymously. */
+  collaborateAnonymousFlag: boolean
+  /** Sample of collaborating users. */
+  collaborateUserSamples: IllustRequestCollaborateUserSample[]
+}
+
+/** Request details of an illust created from a request. */
+export interface IllustRequestInfo {
+  /** ID of the user who made the request, or `null` when not disclosed. */
+  fanUserId: number | null
+  /** Collaboration status. */
+  collaborateStatus: IllustRequestCollaborateStatus
+  /** Role of the author in the request (e.g. the requested creator). */
+  role: string
+}
+
+/**
+ * Request (commission) metadata attached to an illust.
+ *
+ * The shape is based on a small number of live responses and may be
+ * incomplete.
+ */
+export interface IllustRequest {
+  /** Request details. */
+  requestInfo: IllustRequestInfo
+  /** Users who can accept requests. */
+  requestUsers: IllustRequestUser[]
+}
+
 /**
  * A pixiv illust or manga work item as returned by the API.
  *
@@ -185,6 +244,12 @@ export interface PixivIllustItem {
   commentAccessControl?: number
   /** Additional access-restriction attributes (may be absent). */
   restrictionAttributes?: string[]
+  /** Request (commission) metadata, or `null` when the work is not request-related. */
+  request?: IllustRequest | null
+  /** Event banner data. Always `null` in observed responses; the non-null shape is unknown. */
+  eventBanners?: unknown
+  /** Seasonal-effect animation URLs. Always `null` in observed responses; the non-null shape is unknown. */
+  seasonalEffectAnimationUrls?: unknown
 }
 
 /** Stamp attached to an illust comment. */
@@ -329,7 +394,7 @@ export interface PixivNovelItem {
 /**
  * A single comment on a novel.
  *
- * Returned by GET /v1/novel/comments.
+ * Returned by GET /v3/novel/comments.
  */
 export interface NovelComment {
   /** Comment ID. */
@@ -342,7 +407,13 @@ export interface NovelComment {
   user: PixivUser
   /** Whether this comment has replies. */
   hasReplies?: boolean
-  /** The comment this is a reply to, or `{}` (empty object) for a top-level comment. */
+  /** Stamp attached to this comment, or `null` when the comment has no stamp. */
+  stamp?: IllustCommentStamp | null
+  /**
+   * The comment this is a reply to, or `{}` (empty object) for a top-level comment.
+   *
+   * Not returned by `/v3/novel/comments`.
+   */
   parentComment?: NovelComment | Record<string, never>
 }
 
@@ -725,9 +796,9 @@ export interface NovelRecommendedPage {
   nextUrl: string | null
 }
 
-/** Page response for GET /v1/novel/comments. */
+/** Page response for GET /v3/novel/comments. */
 export interface NovelCommentsPage {
-  /** Total number of comments on the novel (present only when `includeTotalComments` is requested). */
+  /** Total number of comments on the novel. Not returned by v3; use `novel.totalComments` from `novels.detail()` instead. */
   totalComments?: number
   /** Comments on this page. */
   comments: NovelComment[]

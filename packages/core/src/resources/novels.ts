@@ -132,7 +132,12 @@ export interface NovelCommentsParams {
   novelId: number
   /** Zero-based offset for pagination. */
   offset?: number
-  /** Whether to include the `totalComments` count in the response. */
+  /**
+   * Has no effect: `/v3/novel/comments` does not return `totalComments`
+   * and this parameter is not sent.
+   *
+   * @deprecated Read `novel.totalComments` from `novels.detail()` instead.
+   */
   includeTotalComments?: boolean
 }
 
@@ -390,7 +395,7 @@ export class NovelResource {
 
   /**
    * Fetches comments posted on a novel.
-   * GET /v1/novel/comments
+   * GET /v3/novel/comments
    *
    * @param params - Request parameters
    */
@@ -399,11 +404,10 @@ export class NovelResource {
   ): PaginatedResultAsync<NovelCommentsPage, NovelComment> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<NovelCommentsPage>(
-        '/v1/novel/comments',
+        '/v3/novel/comments',
         buildParams({
           novelId: params.novelId,
           offset: params.offset,
-          includeTotalComments: params.includeTotalComments,
         })
       ),
       this.#http,
