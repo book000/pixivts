@@ -679,3 +679,45 @@ describe('novels.bookmarkDelete()', () => {
     expect(params.get('novel_id')).toBe('100')
   })
 })
+
+describe('novels.search() — optional pass-through params', () => {
+  async function capture(
+    opts: Partial<Parameters<PixivClient['novels']['search']>[0]>
+  ) {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/search/novel', ({ request }) => {
+        capturedUrl = request.url
+        return HttpResponse.json({ novels: [NOVEL], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.novels.search({ word: 'cat', ...opts })
+    expect(capturedUrl).toBeDefined()
+    return new URL(capturedUrl ?? 'https://invalid.example').searchParams
+  }
+
+  it('omits the new params by default', async () => {
+    const params = await capture({})
+    for (const k of [
+      'include_translated_tag_results',
+      'merge_plain_keyword_results',
+      'include_potential_violation_works',
+    ])
+      expect(params.has(k)).toBe(false)
+  })
+
+  it('sends the new params as snake_case when provided', async () => {
+    const params = await capture({
+      includeTranslatedTagResults: true,
+      mergePlainKeywordResults: true,
+      includePotentialViolationWorks: false,
+    })
+    expect(params.get('include_translated_tag_results')).toBe('true')
+    expect(params.get('merge_plain_keyword_results')).toBe('true')
+    expect(params.get('include_potential_violation_works')).toBe('false')
+  })
+})
