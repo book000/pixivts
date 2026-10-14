@@ -65,6 +65,12 @@ export interface NovelSearchParams {
   endDate?: string
   /** AI-generated content filter: `0` = hide AI works, `1` = show only AI works. */
   searchAiType?: 0 | 1
+  /** Include results matched through translated tags (sent only when set). */
+  includeTranslatedTagResults?: boolean
+  /** Merge plain-keyword results into tag results (sent only when set). */
+  mergePlainKeywordResults?: boolean
+  /** Include works that may violate guidelines (sent only when set). */
+  includePotentialViolationWorks?: boolean
   /** Zero-based offset for pagination. */
   offset?: number
 }
@@ -254,6 +260,9 @@ export class NovelResource {
           startDate: params.startDate,
           endDate: params.endDate,
           searchAiType: params.searchAiType,
+          includeTranslatedTagResults: params.includeTranslatedTagResults,
+          mergePlainKeywordResults: params.mergePlainKeywordResults,
+          includePotentialViolationWorks: params.includePotentialViolationWorks,
           offset: params.offset,
         })
       ),

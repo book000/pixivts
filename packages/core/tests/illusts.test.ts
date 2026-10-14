@@ -737,3 +737,48 @@ describe('illusts.trendingTags()', () => {
     expect(params.get('filter')).toBe('for_ios')
   })
 })
+
+describe('illusts.search() — optional pass-through params', () => {
+  async function capture(
+    opts: Partial<Parameters<PixivClient['illusts']['search']>[0]>
+  ) {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/search/illust', ({ request }) => {
+        capturedUrl = request.url
+        return HttpResponse.json({ illusts: [ILLUST], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.illusts.search({ word: 'cat', ...opts })
+    expect(capturedUrl).toBeDefined()
+    return new URL(capturedUrl ?? 'https://invalid.example').searchParams
+  }
+
+  it('omits the new params by default', async () => {
+    const params = await capture({})
+    for (const k of [
+      'include_translated_tag_results',
+      'merge_plain_keyword_results',
+      'include_potential_violation_works',
+      'content_type',
+    ])
+      expect(params.has(k)).toBe(false)
+  })
+
+  it('sends the new params as snake_case when provided', async () => {
+    const params = await capture({
+      includeTranslatedTagResults: true,
+      mergePlainKeywordResults: true,
+      includePotentialViolationWorks: false,
+      contentType: 'illust_and_manga_and_ugoira',
+    })
+    expect(params.get('include_translated_tag_results')).toBe('true')
+    expect(params.get('merge_plain_keyword_results')).toBe('true')
+    expect(params.get('include_potential_violation_works')).toBe('false')
+    expect(params.get('content_type')).toBe('illust_and_manga_and_ugoira')
+  })
+})
