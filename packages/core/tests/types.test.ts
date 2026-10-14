@@ -4,10 +4,10 @@ import type {
   IllustRequest,
   NovelComment,
   PixivIllustItem,
-  TrendingTagsNovelResponse,
-  IllustPopularPreviewResponse,
 } from '../src/types'
 import type {
+  TrendingTagsNovelResponse,
+  IllustPopularPreviewResponse,
   NovelPopularPreviewParams,
   IllustPopularPreviewParams,
   NovelPopularPreviewResponse,
