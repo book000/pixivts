@@ -91,6 +91,8 @@ export type {
   TrendingTagIllust,
   TrendingTagsIllustResponse,
   MangaRecommendedPage,
+  SpotlightArticle,
+  SpotlightArticlesPage,
   UgoiraMetadataResponse,
   NovelDetailResponse,
   NovelListPage,
@@ -167,6 +169,8 @@ export type {
   UserEditAiShowSettingsParams,
   UserSearchParams,
 } from './resources/users'
+
+export type { SpotlightArticlesParams } from './resources/spotlight'
 
 // PixivClient
 export { PixivClient } from './client'

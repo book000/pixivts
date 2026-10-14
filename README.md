@@ -11,7 +11,7 @@ This is NOT a fork of [@ibaraki-douji/pixivts](https://www.npmjs.com/package/@ib
 - **Automatic token refresh** — exchanges the refresh token for an access token on startup, and retries on 401
 - **ESM + CJS dual output** — works in Node.js ESM/CJS and edge runtimes
 - **Paginated results** — `PaginatedResultAsync` with `.pages()` / `.items()` async generators for multi-page iteration
-- **Resource-based namespaces** — `illusts`, `novels`, `users`, `manga`, `ugoira`, `images`
+- **Resource-based namespaces** — `illusts`, `novels`, `users`, `manga`, `ugoira`, `spotlight`, `images`
 - **Optional MySQL recorder** — `@book000/pixivts-db-mysql` persists every API response via Drizzle ORM
 
 ## 📦 Packages
