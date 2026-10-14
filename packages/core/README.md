@@ -18,7 +18,7 @@ yarn add @book000/pixivts
 - **Result-typed API** — every method returns `Result<T, PixivError>` (no thrown exceptions)
 - **ESM + CJS dual output** — works in Node.js (ESM/CJS) and edge runtimes
 - **Paginated results** — `PaginatedResultAsync` with async generator for multi-page iteration
-- **Resource-based API** — `illusts`, `novels`, `users`, `manga`, `ugoira`, `images` namespaces
+- **Resource-based API** — `illusts`, `novels`, `users`, `manga`, `ugoira`, `spotlight`, `images` namespaces
 - **Token refresh** — automatic refresh-token → access-token exchange on startup and 401 retry
 
 ## Quick Start
@@ -78,6 +78,7 @@ Creates a `PixivClient` by exchanging the given refresh token for an access toke
 | `users.bookmarks` | `illusts`, `novels` |
 | `manga` | `recommended` |
 | `ugoira` | `metadata` |
+| `spotlight` | `articles` |
 | `images` | `fetch` |
 
 ### Error Handling

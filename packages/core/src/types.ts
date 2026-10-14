@@ -653,6 +653,36 @@ export interface MangaRecommendedPage {
   nextUrl: string | null
 }
 
+// Spotlight endpoint responses
+
+/** A pixivision spotlight article. */
+export interface SpotlightArticle {
+  /** Article ID. */
+  id: number
+  /** Article title. */
+  title: string
+  /** Article title without decoration. */
+  pureTitle: string
+  /** Thumbnail image URL. */
+  thumbnail: string
+  /** URL of the article on pixivision. */
+  articleUrl: string
+  /** Publication date-time (ISO 8601 with offset). */
+  publishDate: string
+  /** Kind of the article (e.g. `"spotlight"`, `"inspiration"`). */
+  category: string
+  /** Display label of the article's subcategory. */
+  subcategoryLabel: string
+}
+
+/** Page response for GET /v1/spotlight/articles. */
+export interface SpotlightArticlesPage {
+  /** Spotlight articles on this page (10 per page). */
+  spotlightArticles: SpotlightArticle[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
 // Ugoira endpoint responses
 
 /** Response shape for GET /v1/ugoira/metadata. */
