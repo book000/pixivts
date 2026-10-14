@@ -138,6 +138,161 @@ describe('users.detail()', () => {
   })
 })
 
+describe('users.detailV2()', () => {
+  const V2_USER = {
+    id: 42,
+    name: 'Artist',
+    account: 'artist',
+    profile_image_urls: { medium: 'https://i.pximg.net/u.jpg' },
+    comment: 'Hello!',
+    is_followed: false,
+    is_access_blocking_user: false,
+    is_accept_request: true,
+  }
+  const V2_PROFILE = {
+    webpage: null,
+    gender: null,
+    birth: null,
+    birth_day: null,
+    birth_year: null,
+    region: null,
+    address_id: null,
+    country_code: null,
+    job: null,
+    job_id: null,
+    total_follow_users: 1,
+    total_mypixiv_users: 2,
+    total_illusts: 3,
+    total_manga: 4,
+    total_novels: 5,
+    total_illust_series: 6,
+    total_novel_series: 7,
+    background_image_url: null,
+    twitter_account: null,
+    twitter_url: null,
+    is_premium: false,
+    is_using_custom_profile_image: false,
+    badge: null,
+  }
+  const V2_WORKSPACE = {
+    pc: '',
+    monitor: '',
+    tool: '',
+    scanner: '',
+    tablet: '',
+    mouse: '',
+    printer: '',
+    desktop: '',
+    music: '',
+    desk: '',
+    chair: '',
+    comment: '',
+  }
+  const v2Body = (profile: Record<string, unknown> = V2_PROFILE) => ({
+    user: V2_USER,
+    profile,
+    profile_publicity: {
+      gender: null,
+      region: null,
+      birth_day: null,
+      birth_year: null,
+      job: null,
+    },
+    workspace: V2_WORKSPACE,
+    disabled_links: [],
+  })
+
+  it('requests /v2/user/detail with user_id and the default filter', async () => {
+    let url: URL | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v2/user/detail', ({ request }) => {
+        url = new URL(request.url)
+        return HttpResponse.json(v2Body())
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.detailV2({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    expect(url?.searchParams.get('user_id')).toBe('42')
+    expect(url?.searchParams.get('filter')).toBe('for_ios')
+  })
+
+  it('honors an explicit filter', async () => {
+    let url: URL | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v2/user/detail', ({ request }) => {
+        url = new URL(request.url)
+        return HttpResponse.json(v2Body())
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.detailV2({ userId: 42, filter: 'for_android' })
+    expect(url?.searchParams.get('filter')).toBe('for_android')
+  })
+
+  it('exposes disabledLinks, profile.badge, and user.isAcceptRequest', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v2/user/detail', () =>
+        HttpResponse.json(
+          v2Body({
+            ...V2_PROFILE,
+            gender: 1,
+            birth_year: 1990,
+            badge: { type: 'premium', url: null },
+          })
+        )
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.detailV2({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    expect(result.value.disabledLinks).toEqual([])
+    expect(result.value.profile.badge).toEqual({ type: 'premium', url: null })
+    expect(result.value.user.isAcceptRequest).toBe(true)
+    expect(result.value.profile.gender).toBe(1)
+    expect(result.value.profile.birthYear).toBe(1990)
+    expect(result.value.profile.totalIllustSeries).toBe(6)
+  })
+
+  it('passes null badge and null profile fields through as null', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v2/user/detail', () =>
+        HttpResponse.json(v2Body())
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.detailV2({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    expect(result.value.profile.badge).toBeNull()
+    expect(result.value.profile.gender).toBeNull()
+    expect(result.value.profile.birth).toBeNull()
+    expect(result.value.profile.job).toBeNull()
+    expect(result.value.profilePublicity.gender).toBeNull()
+    expect(result.value.profile).not.toHaveProperty('pawooUrl')
+    expect(result.value.workspace).not.toHaveProperty('workspaceImageUrl')
+  })
+})
+
 describe('users.illusts()', () => {
   it('returns Ok with paginated illusts', async () => {
     const ILLUST = {
