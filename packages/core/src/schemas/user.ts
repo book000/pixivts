@@ -89,6 +89,61 @@ export const PixivUserPreviewItemSchema = z.object({
   isMuted: z.boolean(),
 })
 
+/** Profile badge returned by GET /v2/user/detail. */
+export const PixivUserProfileBadgeSchema = z.object({
+  type: z.string(),
+  url: z.string().nullable(),
+})
+
+/** Detailed profile information returned by GET /v2/user/detail. */
+export const PixivUserProfileV2Schema = z.object({
+  webpage: z.string().nullable(),
+  gender: z.number().nullable(),
+  birth: z.string().nullable(),
+  birthDay: z.string().nullable(),
+  birthYear: z.number().nullable(),
+  region: z.string().nullable(),
+  addressId: z.number().nullable(),
+  countryCode: z.string().nullable(),
+  job: z.string().nullable(),
+  jobId: z.number().nullable(),
+  totalFollowUsers: z.number(),
+  totalMypixivUsers: z.number(),
+  totalIllusts: z.number(),
+  totalManga: z.number(),
+  totalNovels: z.number(),
+  totalIllustSeries: z.number(),
+  totalNovelSeries: z.number(),
+  backgroundImageUrl: z.string().nullable(),
+  twitterAccount: z.string().nullable(),
+  twitterUrl: z.string().nullable(),
+  isPremium: z.boolean(),
+  isUsingCustomProfileImage: z.boolean(),
+  badge: PixivUserProfileBadgeSchema.nullable(),
+})
+
+/** Visibility settings returned by GET /v2/user/detail. */
+export const PixivUserProfilePublicityV2Schema = z.object({
+  gender: PublicitySchema.nullable(),
+  region: PublicitySchema.nullable(),
+  birthDay: PublicitySchema.nullable(),
+  birthYear: PublicitySchema.nullable(),
+  job: PublicitySchema.nullable(),
+})
+
+/** Workspace information returned by GET /v2/user/detail. */
+export const PixivUserProfileWorkspaceV2Schema =
+  PixivUserProfileWorkspaceSchema.omit({ workspaceImageUrl: true })
+
+/** Response shape for GET /v2/user/detail. */
+export const UserDetailV2ResponseSchema = z.object({
+  user: PixivUserItemSchema.extend({ isAcceptRequest: z.boolean() }),
+  profile: PixivUserProfileV2Schema,
+  profilePublicity: PixivUserProfilePublicityV2Schema,
+  workspace: PixivUserProfileWorkspaceV2Schema,
+  disabledLinks: z.array(z.unknown()),
+})
+
 export type PixivUserItem = z.infer<typeof PixivUserItemSchema>
 export type PixivUserProfile = z.infer<typeof PixivUserProfileSchema>
 export type PixivUserProfilePublicity = z.infer<
