@@ -19,6 +19,7 @@ import {
 import type {
   IllustBookmarkDetailResponse,
   IllustComment,
+  IllustCommentRepliesPage,
   IllustCommentsPage,
   IllustDetailResponse,
   IllustListPage,
@@ -173,6 +174,14 @@ export interface IllustCommentsParams {
    * @deprecated Read `illust.totalComments` from `illusts.detail()` instead.
    */
   includeTotalComments?: boolean
+}
+
+/** Parameters for fetching replies to an illust comment. */
+export interface IllustCommentRepliesParams {
+  /** ID of the comment to fetch replies for. */
+  commentId: number
+  /** Zero-based offset for pagination. */
+  offset?: number
 }
 
 /** Parameters for fetching bookmark metadata for an illust. */
@@ -456,6 +465,28 @@ export class IllustResource {
         '/v3/illust/comments',
         buildParams({
           illustId: params.illustId,
+          offset: params.offset,
+        })
+      ),
+      this.#http,
+      (page) => page.comments
+    )
+  }
+
+  /**
+   * Fetches replies to a comment on an illust.
+   * GET /v2/illust/comment/replies
+   *
+   * @param params - Request parameters
+   */
+  commentReplies(
+    params: IllustCommentRepliesParams
+  ): PaginatedResultAsync<IllustCommentRepliesPage, IllustComment> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<IllustCommentRepliesPage>(
+        '/v2/illust/comment/replies',
+        buildParams({
+          commentId: params.commentId,
           offset: params.offset,
         })
       ),

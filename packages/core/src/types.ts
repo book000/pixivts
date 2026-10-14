@@ -674,6 +674,14 @@ export interface IllustCommentsPage {
   commentAccessControl?: number
 }
 
+/** Page response for GET /v2/illust/comment/replies. */
+export interface IllustCommentRepliesPage {
+  /** Replies on this page. */
+  comments: IllustComment[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
 /** Response shape for GET /v2/illust/bookmark/detail. */
 export interface IllustBookmarkDetailResponse {
   /** Bookmark metadata for the requested illust. */
@@ -806,6 +814,14 @@ export interface NovelCommentsPage {
   nextUrl: string | null
   /** Who is permitted to post comments (may be absent). */
   commentAccessControl?: number
+}
+
+/** Page response for GET /v2/novel/comment/replies. */
+export interface NovelCommentRepliesPage {
+  /** Replies on this page. */
+  comments: NovelComment[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
 }
 
 /** Page response for GET /v2/novel/series. */
