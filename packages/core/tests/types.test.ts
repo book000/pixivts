@@ -4,7 +4,15 @@ import type {
   IllustRequest,
   NovelComment,
   PixivIllustItem,
+  TrendingTagsNovelResponse,
+  IllustPopularPreviewResponse,
 } from '../src/types'
+import type {
+  NovelPopularPreviewParams,
+  IllustPopularPreviewParams,
+  NovelPopularPreviewResponse,
+  TrendingTagIllust,
+} from '../src/index'
 import { PixivIllustItemSchema } from '../src/schemas/illust'
 import { NovelCommentSchema } from '../src/schemas/novel'
 
@@ -122,5 +130,25 @@ describe('NovelComment types', () => {
     expect(
       NovelCommentSchema.safeParse({ ...NOVEL_COMMENT, stamp: null }).success
     ).toBe(true)
+  })
+})
+
+describe('popular preview and novel trending tag types', () => {
+  it('has the expected shapes', () => {
+    expectTypeOf<TrendingTagsNovelResponse['trendTags']>().toEqualTypeOf<
+      TrendingTagIllust[]
+    >()
+    expectTypeOf<
+      IllustPopularPreviewResponse['searchSpanLimit']
+    >().toEqualTypeOf<number>()
+    expectTypeOf<
+      NovelPopularPreviewResponse['searchSpanLimit']
+    >().toEqualTypeOf<number>()
+    expectTypeOf<
+      'filter' extends keyof NovelPopularPreviewParams ? true : false
+    >().toEqualTypeOf<false>()
+    expectTypeOf<
+      'filter' extends keyof IllustPopularPreviewParams ? true : false
+    >().toEqualTypeOf<true>()
   })
 })

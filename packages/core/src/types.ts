@@ -710,6 +710,36 @@ export interface TrendingTagsIllustResponse {
   trendTags: TrendingTagIllust[]
 }
 
+/** Response shape for GET /v1/trending-tags/novel. */
+export interface TrendingTagsNovelResponse {
+  /** Currently trending novel tags, each with a representative illust. */
+  trendTags: TrendingTagIllust[]
+}
+
+/**
+ * Response shape for GET /v1/search/popular-preview/illust.
+ *
+ * Single page: the endpoint returns no `next_url`.
+ */
+export interface IllustPopularPreviewResponse {
+  /** Popular illusts for the search keyword. */
+  illusts: PixivIllustItem[]
+  /** Maximum number of results the search will return. */
+  searchSpanLimit: number
+}
+
+/**
+ * Response shape for GET /v1/search/popular-preview/novel.
+ *
+ * Single page: the endpoint returns no `next_url`.
+ */
+export interface NovelPopularPreviewResponse {
+  /** Popular novels for the search keyword. */
+  novels: PixivNovelItem[]
+  /** Maximum number of results the search will return. */
+  searchSpanLimit: number
+}
+
 // Manga endpoint responses
 
 /** Page response for GET /v1/manga/recommended. */

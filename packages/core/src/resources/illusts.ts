@@ -22,6 +22,7 @@ import type {
   IllustCommentsPage,
   IllustDetailResponse,
   IllustListPage,
+  IllustPopularPreviewResponse,
   IllustRecommendedPage,
   IllustSeriesPage,
   TrendingTagsIllustResponse,
@@ -78,6 +79,22 @@ export interface IllustSearchParams {
   contentType?: string
   /** Zero-based offset for pagination. */
   offset?: number
+}
+
+/** Parameters for the popular-preview illust search. */
+export interface IllustPopularPreviewParams {
+  /** Search keyword. */
+  word: string
+  /** How to match the keyword against works (default: `"partial_match_for_tags"`). */
+  searchTarget?: (typeof SearchTarget)[keyof typeof SearchTarget]
+  /** AI-generated content filter: `0` = hide AI works, `1` = show only AI works. */
+  searchAiType?: 0 | 1
+  /** Include results matched through translated tags (sent only when set). */
+  includeTranslatedTagResults?: boolean
+  /** Merge plain-keyword results into tag results (sent only when set). */
+  mergePlainKeywordResults?: boolean
+  /** OS filter to apply (default: `"for_ios"`). */
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
 }
 
 /** Parameters for fetching the illust ranking. */
@@ -300,6 +317,38 @@ export class IllustResource {
       ),
       this.#http,
       (page) => page.illusts
+    )
+  }
+
+  /**
+   * Fetches the popular-preview illust search results (a single page of 30).
+   * GET /v1/search/popular-preview/illust
+   *
+   * The endpoint returns no `next_url`, so the result is not paginated.
+   *
+   * @param params - Request parameters
+   *
+   * @example
+   * ```ts
+   * const result = await client.illusts.popularPreview({ word: 'cat' })
+   * if (result.isOk) {
+   *   console.log(result.value.illusts.length)
+   * }
+   * ```
+   */
+  popularPreview(
+    params: IllustPopularPreviewParams
+  ): ResultAsync<IllustPopularPreviewResponse, PixivError> {
+    return this.#http.get<IllustPopularPreviewResponse>(
+      '/v1/search/popular-preview/illust',
+      buildParams({
+        word: params.word,
+        searchTarget: params.searchTarget ?? 'partial_match_for_tags',
+        filter: params.filter ?? 'for_ios',
+        searchAiType: params.searchAiType,
+        includeTranslatedTagResults: params.includeTranslatedTagResults,
+        mergePlainKeywordResults: params.mergePlainKeywordResults,
+      })
     )
   }
 
