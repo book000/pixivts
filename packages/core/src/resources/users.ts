@@ -15,7 +15,12 @@ import {
   UserIllustType,
 } from '../options'
 import type {
+  AiShowSettingsResponse,
   BookmarkTag,
+  HasUnreadNotificationsResponse,
+  MuteListResponse,
+  RestrictedModeSettingsResponse,
+  UserMeStateResponse,
   PixivIllustItem,
   PixivNovelItem,
   PixivUser,
@@ -627,6 +632,56 @@ export class UserResource {
     return this.#http.post<Record<string, never>>(
       '/v1/user/ai-show-settings/edit',
       body.toString()
+    )
+  }
+
+  /**
+   * Fetches the authenticated user's AI-generated-work display setting.
+   * GET /v1/user/ai-show-settings
+   */
+  aiShowSettings(): ResultAsync<AiShowSettingsResponse, PixivError> {
+    return this.#http.get<AiShowSettingsResponse>('/v1/user/ai-show-settings')
+  }
+
+  /**
+   * Fetches the authenticated user's restricted-mode setting.
+   * GET /v1/user/restricted-mode-settings
+   */
+  restrictedModeSettings(): ResultAsync<
+    RestrictedModeSettingsResponse,
+    PixivError
+  > {
+    return this.#http.get<RestrictedModeSettingsResponse>(
+      '/v1/user/restricted-mode-settings'
+    )
+  }
+
+  /**
+   * Fetches the authenticated user's mute list.
+   * GET /v1/mute/list
+   */
+  muteList(): ResultAsync<MuteListResponse, PixivError> {
+    return this.#http.get<MuteListResponse>('/v1/mute/list')
+  }
+
+  /**
+   * Fetches the authenticated user's account state and profile.
+   * GET /v1/user/me/state
+   */
+  meState(): ResultAsync<UserMeStateResponse, PixivError> {
+    return this.#http.get<UserMeStateResponse>('/v1/user/me/state')
+  }
+
+  /**
+   * Fetches whether the authenticated user has unread notifications.
+   * GET /v1/notification/has-unread-notifications
+   */
+  hasUnreadNotifications(): ResultAsync<
+    HasUnreadNotificationsResponse,
+    PixivError
+  > {
+    return this.#http.get<HasUnreadNotificationsResponse>(
+      '/v1/notification/has-unread-notifications'
     )
   }
 }
