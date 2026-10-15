@@ -484,6 +484,9 @@ export class NovelResource {
    * follow) users.
    * GET /v1/novel/mypixiv
    *
+   * The endpoint ignores `offset`. Paginate with `maxNovelId`, or follow
+   * `next_url` via `.pages()` / `.items()`.
+   *
    * @param params - Request parameters
    */
   mypixiv(
