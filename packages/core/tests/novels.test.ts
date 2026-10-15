@@ -158,6 +158,80 @@ describe('novels.follow()', () => {
   })
 })
 
+describe('novels.mypixiv()', () => {
+  const AUTH_HANDLER = http.post(
+    'https://oauth.secure.pixiv.net/auth/token',
+    () => HttpResponse.json(AUTH_RESPONSE)
+  )
+
+  it('requests /v1/novel/mypixiv without a query and maps the response to camelCase', async () => {
+    let capturedSearch = 'unset'
+    server.use(
+      AUTH_HANDLER,
+      http.get('https://app-api.pixiv.net/v1/novel/mypixiv', ({ request }) => {
+        capturedSearch = new URL(request.url).search
+        return HttpResponse.json({
+          novels: [NOVEL],
+          next_url:
+            'https://app-api.pixiv.net/v1/novel/mypixiv?max_novel_id=100',
+        })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.mypixiv()
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.novels).toHaveLength(1)
+      expect(result.value.novels[0].textLength).toBe(2000)
+      expect(result.value.nextUrl).toBe(
+        'https://app-api.pixiv.net/v1/novel/mypixiv?max_novel_id=100'
+      )
+    }
+    expect(capturedSearch).toBe('')
+  })
+
+  it('sends max_novel_id when maxNovelId is specified', async () => {
+    let capturedMaxNovelId = ''
+    server.use(
+      AUTH_HANDLER,
+      http.get('https://app-api.pixiv.net/v1/novel/mypixiv', ({ request }) => {
+        capturedMaxNovelId =
+          new URL(request.url).searchParams.get('max_novel_id') ?? ''
+        return HttpResponse.json({ novels: [NOVEL], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.mypixiv({ maxNovelId: 100 })
+    expect(result.isOk).toBe(true)
+    expect(capturedMaxNovelId).toBe('100')
+  })
+
+  it('follows next_url across pages with items()', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get('https://app-api.pixiv.net/v1/novel/mypixiv', ({ request }) => {
+        const maxNovelId = new URL(request.url).searchParams.get('max_novel_id')
+        return maxNovelId === '100'
+          ? HttpResponse.json({
+              novels: [{ ...NOVEL, id: 99 }],
+              next_url: null,
+            })
+          : HttpResponse.json({
+              novels: [{ ...NOVEL, id: 100 }],
+              next_url:
+                'https://app-api.pixiv.net/v1/novel/mypixiv?max_novel_id=100',
+            })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const ids: number[] = []
+    for await (const novel of client.novels.mypixiv().items()) {
+      ids.push(novel.id)
+    }
+    expect(ids).toEqual([100, 99])
+  })
+})
+
 describe('novels.comments()', () => {
   it('returns Ok with comments', async () => {
     const COMMENT = {

@@ -166,6 +166,13 @@ describe.skipIf(SKIP)('PixivClient e2e — novels', () => {
     expect(Array.isArray(result.value.novels)).toBe(true)
   })
 
+  it('novels.mypixiv', async () => {
+    const result = await client.novels.mypixiv()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.novels)).toBe(true)
+  })
+
   it('novels.comments', async () => {
     const result = await client.novels.comments({ novelId: NOVEL_ID })
     expect(result.isOk).toBe(true)

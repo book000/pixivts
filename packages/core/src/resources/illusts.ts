@@ -182,6 +182,12 @@ export interface IllustFollowParams {
   offset?: number
 }
 
+/** Parameters for fetching illusts posted by mypixiv (mutual follow) users. */
+export interface IllustMypixivParams {
+  /** Zero-based offset for pagination. */
+  offset?: number
+}
+
 /** Parameters for fetching comments on an illust. */
 export interface IllustCommentsParams {
   /** ID of the illust to fetch comments for. */
@@ -498,6 +504,26 @@ export class IllustResource {
           restrict: params.restrict ?? 'public',
           offset: params.offset,
         })
+      ),
+      this.#http,
+      (page) => page.illusts
+    )
+  }
+
+  /**
+   * Fetches illusts posted by the authenticated account's mypixiv (mutual
+   * follow) users.
+   * GET /v2/illust/mypixiv
+   *
+   * @param params - Request parameters
+   */
+  mypixiv(
+    params: IllustMypixivParams = {}
+  ): PaginatedResultAsync<IllustListPage, IllustListPage['illusts'][number]> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<IllustListPage>(
+        '/v2/illust/mypixiv',
+        buildParams({ offset: params.offset })
       ),
       this.#http,
       (page) => page.illusts

@@ -153,6 +153,13 @@ describe.skipIf(SKIP)('PixivClient e2e — illusts', () => {
     expect(Array.isArray(result.value.illusts)).toBe(true)
   })
 
+  it('illusts.mypixiv', async () => {
+    const result = await client.illusts.mypixiv()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.illusts)).toBe(true)
+  })
+
   it('illusts.comments', async () => {
     const result = await client.illusts.comments({ illustId: ILLUST_ID })
     expect(result.isOk).toBe(true)
