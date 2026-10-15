@@ -175,6 +175,7 @@ export type {
   NovelSearchParams,
   NovelRankingParams,
   NovelRecommendedParams,
+  NovelViewedEntry,
   NovelSeriesParams,
   NovelBookmarkAddParams,
   NovelBookmarkDeleteParams,

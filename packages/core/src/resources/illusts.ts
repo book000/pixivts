@@ -142,6 +142,10 @@ export interface IllustRecommendedParams {
    * IDs of illusts already seen by the user.
    * The API will exclude these from the recommendations.
    * Serialised as repeated `viewed[]=<id>` query parameters.
+   *
+   * Sent with `GET`, so a long list fails with `414` (observed at about 500
+   * IDs, roughly 9.5 KB). `POST /v1/illust/recommended` returns `404`, so
+   * there is no POST alternative.
    */
   viewed?: number[]
 }

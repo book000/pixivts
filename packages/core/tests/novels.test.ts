@@ -732,6 +732,123 @@ describe('novels.recommended()', () => {
     const params = new URL(capturedUrl).searchParams
     expect(params.get('include_ranking_novels')).toBe('true')
   })
+
+  it('sends a GET without view history when viewed is omitted', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/recommended',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({ novels: [NOVEL], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.novels.recommended()
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.has('view_novel_ids[]')).toBe(false)
+    expect(params.has('view_novel_datetimes[]')).toBe(false)
+  })
+
+  it('sends a GET when viewed is an empty array', async () => {
+    let method: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/recommended',
+        ({ request }) => {
+          method = request.method
+          return HttpResponse.json({ novels: [NOVEL], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.recommended({ viewed: [] })
+    expect(result.isOk).toBe(true)
+    expect(method).toBe('GET')
+  })
+
+  it('sends view history as paired arrays in a POST body', async () => {
+    const viewedAt = new Date('2026-10-14T14:23:55.960Z')
+    let contentType: string | null = null
+    let body: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.post(
+        'https://app-api.pixiv.net/v1/novel/recommended',
+        async ({ request }) => {
+          contentType = request.headers.get('content-type')
+          body = await request.text()
+          return HttpResponse.json({ novels: [NOVEL], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.recommended({
+      viewed: [
+        { id: 1, viewedAt },
+        { id: 2, viewedAt: '2026-10-14T23:24:00.000+09:00' },
+      ],
+    })
+    expect(result.isOk).toBe(true)
+    expect(contentType).toBe('application/x-www-form-urlencoded')
+    expect(body).toBeDefined()
+    if (body === undefined) return
+    const params = new URLSearchParams(body)
+    expect(params.get('include_ranking_novels')).toBe('true')
+    expect(params.getAll('view_novel_ids[]')).toEqual(['1', '2'])
+    const datetimes = params.getAll('view_novel_datetimes[]')
+    expect(datetimes).toHaveLength(2)
+    expect(datetimes[0]).toMatch(
+      /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}[+-]\d\d:\d\d$/
+    )
+    expect(Date.parse(datetimes[0])).toBe(viewedAt.getTime())
+    expect(datetimes[1]).toBe('2026-10-14T23:24:00.000+09:00')
+  })
+
+  it('follows next_url with GET after a POST first page', async () => {
+    const methods: string[] = []
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.post(
+        'https://app-api.pixiv.net/v1/novel/recommended',
+        ({ request }) => {
+          methods.push(request.method)
+          return HttpResponse.json({
+            novels: [NOVEL],
+            next_url:
+              'https://app-api.pixiv.net/v1/novel/recommended?offset=15&include_ranking_novels=false',
+          })
+        }
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/recommended',
+        ({ request }) => {
+          methods.push(request.method)
+          return HttpResponse.json({ novels: [NOVEL], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const paginated = client.novels.recommended({
+      viewed: [{ id: 1, viewedAt: new Date() }],
+    })
+    const items = await Array.fromAsync(paginated.items())
+    expect(items).toHaveLength(2)
+    expect(methods).toEqual(['POST', 'GET'])
+  })
 })
 
 describe('novels.series()', () => {
