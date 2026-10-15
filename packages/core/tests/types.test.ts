@@ -7,6 +7,12 @@ import type {
   Publicity,
 } from '../src/types'
 import type {
+  MarkedNovel,
+  NovelMarker,
+  NovelMarkersPage,
+  WatchlistMangaPage,
+  WatchlistNovelPage,
+  WatchlistSeries,
   TrendingTagsNovelResponse,
   IllustPopularPreviewResponse,
   NovelPopularPreviewParams,
@@ -88,6 +94,24 @@ const NOVEL_COMMENT = {
   date: '2024-01-01T00:00:00+09:00',
   user: USER,
 }
+
+describe('watchlist and novel marker types', () => {
+  it('exposes the camelCase watchlist and marker shapes', () => {
+    expectTypeOf<WatchlistSeries['maskText']>().toEqualTypeOf<string | null>()
+    expectTypeOf<WatchlistMangaPage['series']>().toEqualTypeOf<
+      WatchlistSeries[]
+    >()
+    expectTypeOf<WatchlistNovelPage['series']>().toEqualTypeOf<
+      WatchlistSeries[]
+    >()
+    expectTypeOf<NovelMarker['page']>().toEqualTypeOf<number>()
+    expectTypeOf<MarkedNovel['novelMarker']>().toEqualTypeOf<NovelMarker>()
+    expectTypeOf<NovelMarkersPage['markedNovels']>().toEqualTypeOf<
+      MarkedNovel[]
+    >()
+    expectTypeOf<NovelMarkersPage['nextUrl']>().toEqualTypeOf<string | null>()
+  })
+})
 
 describe('PixivIllustItem types', () => {
   it('exposes request, eventBanners, and seasonalEffectAnimationUrls', () => {

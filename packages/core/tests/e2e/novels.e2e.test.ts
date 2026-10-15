@@ -32,6 +32,20 @@ describe.skipIf(SKIP)('PixivClient e2e — novels', () => {
     expect(typeof result.value.searchSpanLimit).toBe('number')
   })
 
+  it('novels.watchlist', async () => {
+    const result = await client.novels.watchlist()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.series)).toBe(true)
+  })
+
+  it('novels.markers', async () => {
+    const result = await client.novels.markers()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.markedNovels)).toBe(true)
+  })
+
   it('novels.detail', async () => {
     const result = await client.novels.detail({ novelId: NOVEL_ID })
     expect(result.isOk).toBe(true)
