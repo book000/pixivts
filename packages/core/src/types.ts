@@ -762,6 +762,42 @@ export interface MangaRecommendedPage {
   nextUrl: string | null
 }
 
+/** A series on the authenticated user's watchlist. */
+export interface WatchlistSeries {
+  /** Series ID. */
+  id: number
+  /** Series title. */
+  title: string
+  /** URL of the series page. */
+  url: string
+  /** Mask text shown in place of the title, or `null` when not masked. */
+  maskText: string | null
+  /** Number of published works in the series. */
+  publishedContentCount: number
+  /** Datetime (ISO 8601) of the most recently published work. */
+  lastPublishedContentDatetime: string
+  /** ID of the most recently published work. */
+  latestContentId: number
+  /** Author of the series. */
+  user: PixivUser
+}
+
+/** Page response for GET /v1/watchlist/manga. */
+export interface WatchlistMangaPage {
+  /** Manga series on this page. */
+  series: WatchlistSeries[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Page response for GET /v1/watchlist/novel. */
+export interface WatchlistNovelPage {
+  /** Novel series on this page. */
+  series: WatchlistSeries[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
 // Spotlight endpoint responses
 
 /** A pixivision spotlight article. */
@@ -864,6 +900,28 @@ export interface NovelSeriesPage {
   novelSeriesLatestNovel: PixivNovelItem
   /** Novels on this page. */
   novels: PixivNovelItem[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Saved reading position of a novel. */
+export interface NovelMarker {
+  /** Marked page number within the novel. */
+  page: number
+}
+
+/** A novel together with the authenticated user's saved marker. */
+export interface MarkedNovel {
+  /** The marked novel. */
+  novel: PixivNovelItem
+  /** The saved reading position. */
+  novelMarker: NovelMarker
+}
+
+/** Page response for GET /v2/novel/markers. */
+export interface NovelMarkersPage {
+  /** Marked novels on this page. */
+  markedNovels: MarkedNovel[]
   /** URL to the next page, or `null` when this is the last page. */
   nextUrl: string | null
 }

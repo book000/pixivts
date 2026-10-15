@@ -22,13 +22,17 @@ import type {
   NovelCommentsPage,
   NovelBookmarkUsersPage,
   NovelDetailResponse,
+  MarkedNovel,
   NovelListPage,
+  NovelMarkersPage,
   NovelPopularPreviewResponse,
   NovelRecommendedPage,
   NovelSeriesPage,
   PixivNovelItem,
   PixivUser,
   TrendingTagsNovelResponse,
+  WatchlistNovelPage,
+  WatchlistSeries,
   WebviewNovel,
 } from '../types'
 
@@ -417,6 +421,34 @@ export class NovelResource {
       ),
       this.#http,
       (page) => page.novels
+    )
+  }
+
+  /**
+   * Fetches the authenticated user's novel series watchlist.
+   * GET /v1/watchlist/novel
+   *
+   * Takes no parameters; later pages follow the server-provided `next_url`.
+   */
+  watchlist(): PaginatedResultAsync<WatchlistNovelPage, WatchlistSeries> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<WatchlistNovelPage>('/v1/watchlist/novel'),
+      this.#http,
+      (page) => page.series
+    )
+  }
+
+  /**
+   * Fetches the novels with a saved reading position (marker).
+   * GET /v2/novel/markers
+   *
+   * Takes no parameters; later pages follow the server-provided `next_url`.
+   */
+  markers(): PaginatedResultAsync<NovelMarkersPage, MarkedNovel> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<NovelMarkersPage>('/v2/novel/markers'),
+      this.#http,
+      (page) => page.markedNovels
     )
   }
 

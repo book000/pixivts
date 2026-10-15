@@ -104,3 +104,73 @@ describe('manga.recommended()', () => {
     expect(params.get('offset')).toBe('30')
   })
 })
+
+const WATCHLIST_USER = {
+  id: 42,
+  name: 'Author',
+  account: 'author',
+  profile_image_urls: { medium: 'https://i.pximg.net/u.jpg' },
+  is_accept_request: true,
+}
+
+describe('manga.watchlist()', () => {
+  it('requests the exact path without a query and maps keys to camelCase', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/watchlist/manga',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({
+            series: [
+              {
+                id: 1,
+                title: 'Unmasked',
+                url: 'https://www.pixiv.net/user/42/series/1',
+                mask_text: null,
+                published_content_count: 3,
+                last_published_content_datetime: '2024-01-01T00:00:00+09:00',
+                latest_content_id: 900,
+                user: WATCHLIST_USER,
+              },
+              {
+                id: 2,
+                title: 'Masked',
+                url: 'https://www.pixiv.net/user/42/series/2',
+                mask_text: 'masked',
+                published_content_count: 1,
+                last_published_content_datetime: '2024-02-01T00:00:00+09:00',
+                latest_content_id: 901,
+                user: WATCHLIST_USER,
+              },
+            ],
+            next_url: null,
+          })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.manga.watchlist()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const url = new URL(capturedUrl)
+    expect(url.pathname).toBe('/v1/watchlist/manga')
+    expect(url.search).toBe('')
+
+    const [first, second] = result.value.series
+    expect(first.maskText).toBeNull()
+    expect(first.publishedContentCount).toBe(3)
+    expect(first.lastPublishedContentDatetime).toBe('2024-01-01T00:00:00+09:00')
+    expect(first.latestContentId).toBe(900)
+    expect(first.user.profileImageUrls.medium).toBe('https://i.pximg.net/u.jpg')
+    expect(first.user.isAcceptRequest).toBe(true)
+    expect(second.maskText).toBe('masked')
+    expect(result.value.nextUrl).toBeNull()
+  })
+})

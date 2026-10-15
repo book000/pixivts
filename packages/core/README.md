@@ -73,10 +73,10 @@ Creates a `PixivClient` by exchanging the given refresh token for an access toke
 | Namespace | Methods |
 |---|---|
 | `illusts` | `detail`, `related`, `search`, `ranking`, `recommended`, `series`, `bookmarkAdd`, `bookmarkDelete`, `trendingTags`, `popularPreview` |
-| `novels` | `detail`, `text`, `related`, `search`, `ranking`, `recommended`, `series`, `bookmarkAdd`, `bookmarkDelete`, `bookmarkUsers`, `trendingTags`, `popularPreview` |
+| `novels` | `detail`, `text`, `related`, `search`, `ranking`, `recommended`, `series`, `bookmarkAdd`, `bookmarkDelete`, `bookmarkUsers`, `trendingTags`, `popularPreview`, `watchlist`, `markers` |
 | `users` | `detail`, `detailV2`, `search`, `illusts`, `novels`, `following`, `followAdd`, `followDelete`, `related`, `recommended`, `follower`, `mypixiv`, `list`, `bookmarkTagsIllust`, `bookmarkTagsNovel`, `followDetail`, `editAiShowSettings`, `aiShowSettings`, `restrictedModeSettings`, `muteList`, `meState`, `hasUnreadNotifications` |
 | `users.bookmarks` | `illusts`, `novels` |
-| `manga` | `recommended` |
+| `manga` | `recommended`, `watchlist` |
 | `ugoira` | `metadata` |
 | `spotlight` | `articles` |
 | `images` | `fetch` |
