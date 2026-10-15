@@ -99,7 +99,6 @@ class ErrResultImpl<E> implements ErrResult<E> {
   readonly isOk = false as const
   readonly isErr = true as const
 
-  // eslint-disable-next-line n/handle-callback-err -- 'error' is a stored value, not a Node.js callback error parameter
   constructor(readonly error: E) {}
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters, @typescript-eslint/no-unused-vars -- U is part of the public API contract; _fn is intentionally unused (ErrResult.map is a no-op)

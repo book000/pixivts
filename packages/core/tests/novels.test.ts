@@ -8,6 +8,7 @@ import {
   mockNovelSearch,
   mockNovelRecommended,
   mockNovelSeries,
+  mockNovelBookmarkUsers,
 } from './msw/novels'
 
 const NOVEL = {
@@ -158,6 +159,80 @@ describe('novels.follow()', () => {
   })
 })
 
+describe('novels.mypixiv()', () => {
+  const AUTH_HANDLER = http.post(
+    'https://oauth.secure.pixiv.net/auth/token',
+    () => HttpResponse.json(AUTH_RESPONSE)
+  )
+
+  it('requests /v1/novel/mypixiv without a query and maps the response to camelCase', async () => {
+    let capturedSearch = 'unset'
+    server.use(
+      AUTH_HANDLER,
+      http.get('https://app-api.pixiv.net/v1/novel/mypixiv', ({ request }) => {
+        capturedSearch = new URL(request.url).search
+        return HttpResponse.json({
+          novels: [NOVEL],
+          next_url:
+            'https://app-api.pixiv.net/v1/novel/mypixiv?max_novel_id=100',
+        })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.mypixiv()
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.novels).toHaveLength(1)
+      expect(result.value.novels[0].textLength).toBe(2000)
+      expect(result.value.nextUrl).toBe(
+        'https://app-api.pixiv.net/v1/novel/mypixiv?max_novel_id=100'
+      )
+    }
+    expect(capturedSearch).toBe('')
+  })
+
+  it('sends max_novel_id when maxNovelId is specified', async () => {
+    let capturedMaxNovelId = ''
+    server.use(
+      AUTH_HANDLER,
+      http.get('https://app-api.pixiv.net/v1/novel/mypixiv', ({ request }) => {
+        capturedMaxNovelId =
+          new URL(request.url).searchParams.get('max_novel_id') ?? ''
+        return HttpResponse.json({ novels: [NOVEL], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.mypixiv({ maxNovelId: 100 })
+    expect(result.isOk).toBe(true)
+    expect(capturedMaxNovelId).toBe('100')
+  })
+
+  it('follows next_url across pages with items()', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get('https://app-api.pixiv.net/v1/novel/mypixiv', ({ request }) => {
+        const maxNovelId = new URL(request.url).searchParams.get('max_novel_id')
+        return maxNovelId === '100'
+          ? HttpResponse.json({
+              novels: [{ ...NOVEL, id: 99 }],
+              next_url: null,
+            })
+          : HttpResponse.json({
+              novels: [{ ...NOVEL, id: 100 }],
+              next_url:
+                'https://app-api.pixiv.net/v1/novel/mypixiv?max_novel_id=100',
+            })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const ids: number[] = []
+    for await (const novel of client.novels.mypixiv().items()) {
+      ids.push(novel.id)
+    }
+    expect(ids).toEqual([100, 99])
+  })
+})
+
 describe('novels.comments()', () => {
   it('returns Ok with comments', async () => {
     const COMMENT = {
@@ -176,7 +251,7 @@ describe('novels.comments()', () => {
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get('https://app-api.pixiv.net/v1/novel/comments', () =>
+      http.get('https://app-api.pixiv.net/v3/novel/comments', () =>
         HttpResponse.json({
           total_comments: 1,
           comments: [COMMENT],
@@ -201,7 +276,7 @@ describe('novels.comments()', () => {
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get('https://app-api.pixiv.net/v1/novel/comments', ({ request }) => {
+      http.get('https://app-api.pixiv.net/v3/novel/comments', ({ request }) => {
         capturedOffset = new URL(request.url).searchParams.get('offset') ?? ''
         return HttpResponse.json({ comments: [], next_url: null })
       })
@@ -212,13 +287,13 @@ describe('novels.comments()', () => {
     expect(capturedOffset).toBe('10')
   })
 
-  it('omits the includeTotalComments param when not requested', async () => {
+  it('does not send include_total_comments even when includeTotalComments is true', async () => {
     let hasIncludeTotalComments = true
     server.use(
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get('https://app-api.pixiv.net/v1/novel/comments', ({ request }) => {
+      http.get('https://app-api.pixiv.net/v3/novel/comments', ({ request }) => {
         hasIncludeTotalComments = new URL(request.url).searchParams.has(
           'include_total_comments'
         )
@@ -226,9 +301,69 @@ describe('novels.comments()', () => {
       })
     )
     const client = await PixivClient.of('test-refresh-token')
-    const result = await client.novels.comments({ novelId: 100 })
+    const result = await client.novels.comments({
+      novelId: 100,
+      includeTotalComments: true,
+    })
     expect(result.isOk).toBe(true)
     expect(hasIncludeTotalComments).toBe(false)
+  })
+
+  it('sends novel_id and offset and maps stamp to camelCase', async () => {
+    const USER = {
+      id: 99,
+      name: 'Commenter',
+      account: 'commenter',
+      profile_image_urls: { medium: 'https://i.pximg.net/u2.jpg' },
+    }
+    let capturedNovelId = ''
+    let capturedOffset = ''
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v3/novel/comments', ({ request }) => {
+        const params = new URL(request.url).searchParams
+        capturedNovelId = params.get('novel_id') ?? ''
+        capturedOffset = params.get('offset') ?? ''
+        return HttpResponse.json({
+          comments: [
+            {
+              id: 1,
+              comment: '',
+              date: '2024-01-01T00:00:00+09:00',
+              user: USER,
+              has_replies: false,
+              stamp: {
+                stamp_id: 101,
+                stamp_url: 'https://s.pximg.net/common/images/stamp/101.jpg',
+              },
+            },
+            {
+              id: 2,
+              comment: 'No stamp',
+              date: '2024-01-02T00:00:00+09:00',
+              user: USER,
+              has_replies: false,
+              stamp: null,
+            },
+          ],
+          next_url: null,
+          comment_access_control: 0,
+        })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.comments({ novelId: 100, offset: 30 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(capturedNovelId).toBe('100')
+    expect(capturedOffset).toBe('30')
+    expect(result.value.comments[0].stamp).toEqual({
+      stampId: 101,
+      stampUrl: 'https://s.pximg.net/common/images/stamp/101.jpg',
+    })
+    expect(result.value.comments[1].stamp).toBeNull()
   })
 
   it('maps commentAccessControl, hasReplies, and a nested parentComment', async () => {
@@ -261,7 +396,7 @@ describe('novels.comments()', () => {
       http.post('https://oauth.secure.pixiv.net/auth/token', () =>
         HttpResponse.json(AUTH_RESPONSE)
       ),
-      http.get('https://app-api.pixiv.net/v1/novel/comments', () =>
+      http.get('https://app-api.pixiv.net/v3/novel/comments', () =>
         HttpResponse.json({
           comments: [REPLY_COMMENT],
           next_url: null,
@@ -280,6 +415,274 @@ describe('novels.comments()', () => {
       id: 1,
       comment: 'Original comment',
     })
+  })
+})
+
+describe('novels.commentReplies()', () => {
+  const REPLY_USER = {
+    id: 99,
+    name: 'Replier',
+    account: 'replier',
+    profile_image_urls: { medium: 'https://i.pximg.net/u2.jpg' },
+  }
+  const REPLY_WITH_STAMP = {
+    id: 11,
+    comment: '',
+    date: '2024-01-01T00:00:00+09:00',
+    user: REPLY_USER,
+    has_replies: false,
+    stamp: {
+      stamp_id: 101,
+      stamp_url:
+        'https://s.pximg.net/common/images/stamp/generated-stamps/101_s.jpg',
+    },
+  }
+  const REPLY_WITHOUT_STAMP = {
+    id: 12,
+    comment: 'Thanks!',
+    date: '2024-01-02T00:00:00+09:00',
+    user: REPLY_USER,
+    has_replies: false,
+    stamp: null,
+  }
+  const AUTH_HANDLER = http.post(
+    'https://oauth.secure.pixiv.net/auth/token',
+    () => HttpResponse.json(AUTH_RESPONSE)
+  )
+
+  it('maps replies to camelCase', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get('https://app-api.pixiv.net/v2/novel/comment/replies', () =>
+        HttpResponse.json({
+          comments: [REPLY_WITH_STAMP, REPLY_WITHOUT_STAMP],
+          next_url: null,
+        })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.commentReplies({ commentId: 1 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    expect(result.value.nextUrl).toBeNull()
+    expect(result.value.comments[0].hasReplies).toBe(false)
+    expect(result.value.comments[0].stamp).toEqual({
+      stampId: 101,
+      stampUrl: REPLY_WITH_STAMP.stamp.stamp_url,
+    })
+    expect(result.value.comments[1].comment).toBe('Thanks!')
+    expect(result.value.comments[1].stamp).toBeNull()
+  })
+
+  it('requests /v2/novel/comment/replies with comment_id only by default', async () => {
+    let requestUrl: URL | undefined
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v2/novel/comment/replies',
+        ({ request }) => {
+          requestUrl = new URL(request.url)
+          return HttpResponse.json({ comments: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.commentReplies({ commentId: 7 })
+    expect(result.isOk).toBe(true)
+
+    expect(requestUrl?.pathname).toBe('/v2/novel/comment/replies')
+    expect(requestUrl?.searchParams.get('comment_id')).toBe('7')
+    expect(requestUrl?.searchParams.has('offset')).toBe(false)
+  })
+
+  it('sends offset verbatim, including 0', async () => {
+    const offsets: (string | null)[] = []
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v2/novel/comment/replies',
+        ({ request }) => {
+          offsets.push(new URL(request.url).searchParams.get('offset'))
+          return HttpResponse.json({ comments: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.novels.commentReplies({ commentId: 7, offset: 0 })
+    await client.novels.commentReplies({ commentId: 7, offset: 30 })
+
+    expect(offsets).toEqual(['0', '30'])
+  })
+
+  it('follows next_url across pages with pages() and items()', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v2/novel/comment/replies',
+        ({ request }) => {
+          const offset = new URL(request.url).searchParams.get('offset')
+          return offset === '30'
+            ? HttpResponse.json({
+                comments: [REPLY_WITHOUT_STAMP],
+                next_url: null,
+              })
+            : HttpResponse.json({
+                comments: [REPLY_WITH_STAMP],
+                next_url:
+                  'https://app-api.pixiv.net/v2/novel/comment/replies?comment_id=1&offset=30',
+              })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const pageSizes: number[] = []
+    const pageIterable = client.novels.commentReplies({ commentId: 1 }).pages()
+    for await (const page of pageIterable) {
+      pageSizes.push(page.comments.length)
+    }
+    expect(pageSizes).toEqual([1, 1])
+
+    const ids: number[] = []
+    const itemIterable = client.novels.commentReplies({ commentId: 1 }).items()
+    for await (const reply of itemIterable) {
+      ids.push(reply.id)
+    }
+    expect(ids).toEqual([11, 12])
+  })
+
+  it('returns Err on an HTTP error', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v2/novel/comment/replies',
+        () => new HttpResponse(null, { status: 404 })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.commentReplies({ commentId: 1 })
+    expect(result.isOk).toBe(false)
+  })
+})
+
+describe('novels.bookmarkUsers()', () => {
+  const AUTH_HANDLER = http.post(
+    'https://oauth.secure.pixiv.net/auth/token',
+    () => HttpResponse.json(AUTH_RESPONSE)
+  )
+  const USER = {
+    id: 5,
+    name: 'Reader',
+    account: 'reader',
+    profile_image_urls: { medium: 'https://i.pximg.net/r.jpg' },
+    is_followed: true,
+    is_access_blocking_user: false,
+    is_accept_request: true,
+  }
+
+  it('maps users to camelCase', async () => {
+    server.use(
+      AUTH_HANDLER,
+      mockNovelBookmarkUsers({ users: [USER], next_url: null })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.bookmarkUsers({ novelId: 7 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    expect(result.value.users).toEqual([
+      {
+        id: 5,
+        name: 'Reader',
+        account: 'reader',
+        profileImageUrls: { medium: 'https://i.pximg.net/r.jpg' },
+        isFollowed: true,
+        isAccessBlockingUser: false,
+        isAcceptRequest: true,
+      },
+    ])
+    expect(result.value.nextUrl).toBeNull()
+  })
+
+  it('sends novel_id and omits offset when not given', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/bookmark/users',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({ users: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.novels.bookmarkUsers({ novelId: 7 })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('novel_id')).toBe('7')
+    expect(params.has('offset')).toBe(false)
+  })
+
+  it('forwards offset', async () => {
+    let capturedOffset: string | null = null
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/bookmark/users',
+        ({ request }) => {
+          capturedOffset = new URL(request.url).searchParams.get('offset')
+          return HttpResponse.json({ users: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.novels.bookmarkUsers({ novelId: 7, offset: 30 })
+    expect(capturedOffset).toBe('30')
+  })
+
+  it('follows next_url across pages with items()', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/bookmark/users',
+        ({ request }) => {
+          const offset = new URL(request.url).searchParams.get('offset')
+          return offset === '30'
+            ? HttpResponse.json({ users: [{ ...USER, id: 6 }], next_url: null })
+            : HttpResponse.json({
+                users: [USER],
+                next_url:
+                  'https://app-api.pixiv.net/v1/novel/bookmark/users?novel_id=7&offset=30',
+              })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const ids: number[] = []
+    const userIterable = client.novels.bookmarkUsers({ novelId: 7 }).items()
+    for await (const user of userIterable) {
+      ids.push(user.id)
+    }
+    expect(ids).toEqual([5, 6])
+  })
+
+  it('returns Err on an HTTP error', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/bookmark/users',
+        () => new HttpResponse(null, { status: 404 })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.bookmarkUsers({ novelId: 7 })
+    expect(result.isOk).toBe(false)
   })
 })
 
@@ -523,6 +926,123 @@ describe('novels.recommended()', () => {
     const params = new URL(capturedUrl).searchParams
     expect(params.get('include_ranking_novels')).toBe('true')
   })
+
+  it('sends a GET without view history when viewed is omitted', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/recommended',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({ novels: [NOVEL], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.novels.recommended()
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.has('view_novel_ids[]')).toBe(false)
+    expect(params.has('view_novel_datetimes[]')).toBe(false)
+  })
+
+  it('sends a GET when viewed is an empty array', async () => {
+    let method: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/recommended',
+        ({ request }) => {
+          method = request.method
+          return HttpResponse.json({ novels: [NOVEL], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.recommended({ viewed: [] })
+    expect(result.isOk).toBe(true)
+    expect(method).toBe('GET')
+  })
+
+  it('sends view history as paired arrays in a POST body', async () => {
+    const viewedAt = new Date('2026-10-14T14:23:55.960Z')
+    let contentType: string | null = null
+    let body: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.post(
+        'https://app-api.pixiv.net/v1/novel/recommended',
+        async ({ request }) => {
+          contentType = request.headers.get('content-type')
+          body = await request.text()
+          return HttpResponse.json({ novels: [NOVEL], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.recommended({
+      viewed: [
+        { id: 1, viewedAt },
+        { id: 2, viewedAt: '2026-10-14T23:24:00.000+09:00' },
+      ],
+    })
+    expect(result.isOk).toBe(true)
+    expect(contentType).toBe('application/x-www-form-urlencoded')
+    expect(body).toBeDefined()
+    if (body === undefined) return
+    const params = new URLSearchParams(body)
+    expect(params.get('include_ranking_novels')).toBe('true')
+    expect(params.getAll('view_novel_ids[]')).toEqual(['1', '2'])
+    const datetimes = params.getAll('view_novel_datetimes[]')
+    expect(datetimes).toHaveLength(2)
+    expect(datetimes[0]).toMatch(
+      /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}[+-]\d\d:\d\d$/
+    )
+    expect(Date.parse(datetimes[0])).toBe(viewedAt.getTime())
+    expect(datetimes[1]).toBe('2026-10-14T23:24:00.000+09:00')
+  })
+
+  it('follows next_url with GET after a POST first page', async () => {
+    const methods: string[] = []
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.post(
+        'https://app-api.pixiv.net/v1/novel/recommended',
+        ({ request }) => {
+          methods.push(request.method)
+          return HttpResponse.json({
+            novels: [NOVEL],
+            next_url:
+              'https://app-api.pixiv.net/v1/novel/recommended?offset=15&include_ranking_novels=false',
+          })
+        }
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/recommended',
+        ({ request }) => {
+          methods.push(request.method)
+          return HttpResponse.json({ novels: [NOVEL], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const paginated = client.novels.recommended({
+      viewed: [{ id: 1, viewedAt: new Date() }],
+    })
+    const items = await Array.fromAsync(paginated.items())
+    expect(items).toHaveLength(2)
+    expect(methods).toEqual(['POST', 'GET'])
+  })
 })
 
 describe('novels.series()', () => {
@@ -677,5 +1197,180 @@ describe('novels.bookmarkDelete()', () => {
     expect(result.isOk).toBe(true)
     const params = new URLSearchParams(capturedBody)
     expect(params.get('novel_id')).toBe('100')
+  })
+})
+
+describe('novels.search() — optional pass-through params', () => {
+  async function capture(
+    opts: Partial<Parameters<PixivClient['novels']['search']>[0]>
+  ) {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v1/search/novel', ({ request }) => {
+        capturedUrl = request.url
+        return HttpResponse.json({ novels: [NOVEL], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.novels.search({ word: 'cat', ...opts })
+    expect(capturedUrl).toBeDefined()
+    return new URL(capturedUrl ?? 'https://invalid.example').searchParams
+  }
+
+  it('omits the new params by default', async () => {
+    const params = await capture({})
+    for (const k of [
+      'include_translated_tag_results',
+      'merge_plain_keyword_results',
+      'include_potential_violation_works',
+    ])
+      expect(params.has(k)).toBe(false)
+  })
+
+  it('sends the new params as snake_case when provided', async () => {
+    const params = await capture({
+      includeTranslatedTagResults: true,
+      mergePlainKeywordResults: true,
+      includePotentialViolationWorks: false,
+    })
+    expect(params.get('include_translated_tag_results')).toBe('true')
+    expect(params.get('merge_plain_keyword_results')).toBe('true')
+    expect(params.get('include_potential_violation_works')).toBe('false')
+  })
+})
+
+const WATCHLIST_SERIES = {
+  id: 1,
+  title: 'Novel Series',
+  url: 'https://www.pixiv.net/user/42/series/1',
+  mask_text: null,
+  published_content_count: 5,
+  last_published_content_datetime: '2024-01-01T00:00:00+09:00',
+  latest_content_id: 700,
+  user: {
+    id: 42,
+    name: 'Author',
+    account: 'author',
+    profile_image_urls: { medium: 'https://i.pximg.net/u.jpg' },
+    is_accept_request: false,
+  },
+}
+
+describe('novels.watchlist()', () => {
+  it('requests the exact path without a query and maps keys to camelCase', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get(
+        'https://app-api.pixiv.net/v1/watchlist/novel',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({
+            series: [
+              WATCHLIST_SERIES,
+              { ...WATCHLIST_SERIES, id: 2, mask_text: 'masked' },
+            ],
+            next_url: null,
+          })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.watchlist()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const url = new URL(capturedUrl)
+    expect(url.pathname).toBe('/v1/watchlist/novel')
+    expect(url.search).toBe('')
+
+    const [first, second] = result.value.series
+    expect(first.maskText).toBeNull()
+    expect(first.publishedContentCount).toBe(5)
+    expect(first.lastPublishedContentDatetime).toBe('2024-01-01T00:00:00+09:00')
+    expect(first.latestContentId).toBe(700)
+    expect(first.user.profileImageUrls.medium).toBe('https://i.pximg.net/u.jpg')
+    expect(second.maskText).toBe('masked')
+  })
+})
+
+describe('novels.markers()', () => {
+  it('requests the exact path without a query and maps keys to camelCase', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v2/novel/markers', ({ request }) => {
+        capturedUrl = request.url
+        return HttpResponse.json({
+          marked_novels: [{ novel: NOVEL, novel_marker: { page: 3 } }],
+          next_url: null,
+        })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.markers()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const url = new URL(capturedUrl)
+    expect(url.pathname).toBe('/v2/novel/markers')
+    expect(url.search).toBe('')
+
+    expect(result.value.markedNovels).toHaveLength(1)
+    expect(result.value.markedNovels[0].novel.id).toBe(100)
+    expect(result.value.markedNovels[0].novelMarker.page).toBe(3)
+  })
+
+  it('yields items across pages', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v2/novel/markers', ({ request }) => {
+        const offset = new URL(request.url).searchParams.get('offset')
+        return offset === '30'
+          ? HttpResponse.json({
+              marked_novels: [
+                { novel: { ...NOVEL, id: 101 }, novel_marker: { page: 2 } },
+              ],
+              next_url: null,
+            })
+          : HttpResponse.json({
+              marked_novels: [{ novel: NOVEL, novel_marker: { page: 1 } }],
+              next_url: 'https://app-api.pixiv.net/v2/novel/markers?offset=30',
+            })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const pages: number[] = []
+    for await (const marked of client.novels.markers().items()) {
+      pages.push(marked.novelMarker.page)
+    }
+    expect(pages).toEqual([1, 2])
+  })
+
+  it('yields nothing for an empty page', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v2/novel/markers', () =>
+        HttpResponse.json({ marked_novels: [], next_url: null })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const items = await Array.fromAsync(client.novels.markers().items())
+    expect(items).toHaveLength(0)
   })
 })

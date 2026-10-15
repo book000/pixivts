@@ -8,6 +8,7 @@ import { z } from 'zod'
 import {
   ImageUrlsSchema,
   PixivUserSchema,
+  ProfileImageUrlsSchema,
   SeriesSchema,
   TagSchema,
 } from './common'
@@ -22,6 +23,35 @@ export const MetaPagesSchema = z.object({
   imageUrls: ImageUrlsSchema.extend({
     original: z.string(),
   }),
+})
+
+/** Request (commission) metadata attached to an illust. */
+export const IllustRequestSchema = z.object({
+  requestInfo: z.object({
+    fanUserId: z.number().nullable(),
+    collaborateStatus: z.object({
+      collaborating: z.boolean(),
+      collaborateAnonymousFlag: z.boolean(),
+      collaborateUserSamples: z.array(
+        z.object({
+          userId: z.number().nullable(),
+          anonymousFlag: z.boolean(),
+        })
+      ),
+    }),
+    role: z.string(),
+  }),
+  requestUsers: z.array(
+    z.object({
+      id: z.number(),
+      name: z.string(),
+      account: z.string(),
+      profileImageUrls: ProfileImageUrlsSchema,
+      isFollowed: z.boolean(),
+      isAccessBlockingUser: z.boolean(),
+      isAcceptRequest: z.boolean(),
+    })
+  ),
 })
 
 /** A pixiv illust or manga work item as returned by the API. */
@@ -71,6 +101,9 @@ export const PixivIllustItemSchema = z.object({
   illustBookStyle: z.number(),
   commentAccessControl: z.number().optional(),
   restrictionAttributes: z.array(z.string()).optional(),
+  request: IllustRequestSchema.nullable().optional(),
+  eventBanners: z.unknown().optional(),
+  seasonalEffectAnimationUrls: z.unknown().optional(),
 })
 
 /** Illust series metadata returned by GET /v1/illust/series. */
@@ -94,6 +127,7 @@ export const IllustCommentSchema: z.ZodType<{
   date: string
   user: z.infer<typeof PixivUserSchema>
   hasReplies?: boolean
+  stamp?: { stampId: number; stampUrl: string } | null
   parentComment?: Record<string, never> | z.infer<typeof IllustCommentSchema>
 }> = z.lazy(() =>
   z.object({
@@ -102,6 +136,10 @@ export const IllustCommentSchema: z.ZodType<{
     date: z.string(),
     user: PixivUserSchema,
     hasReplies: z.boolean().optional(),
+    stamp: z
+      .object({ stampId: z.number(), stampUrl: z.string() })
+      .nullable()
+      .optional(),
     parentComment: z
       .union([z.record(z.string(), z.never()), IllustCommentSchema])
       .optional(),

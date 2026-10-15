@@ -11,6 +11,8 @@ import {
   mockUserMypixiv,
   mockUserList,
   mockUserBookmarkTagsIllust,
+  mockUserBookmarkTagsNovel,
+  mockUserFollowDetail,
   mockUserEditAiShowSettings,
   mockUserSearch,
 } from './msw/users'
@@ -135,6 +137,161 @@ describe('users.detail()', () => {
 
     expect(result.value.user.id).toBe(42)
     expect(result.value.user.name).toBe('Artist')
+  })
+})
+
+describe('users.detailV2()', () => {
+  const V2_USER = {
+    id: 42,
+    name: 'Artist',
+    account: 'artist',
+    profile_image_urls: { medium: 'https://i.pximg.net/u.jpg' },
+    comment: 'Hello!',
+    is_followed: false,
+    is_access_blocking_user: false,
+    is_accept_request: true,
+  }
+  const V2_PROFILE = {
+    webpage: null,
+    gender: null,
+    birth: null,
+    birth_day: null,
+    birth_year: null,
+    region: null,
+    address_id: null,
+    country_code: null,
+    job: null,
+    job_id: null,
+    total_follow_users: 1,
+    total_mypixiv_users: 2,
+    total_illusts: 3,
+    total_manga: 4,
+    total_novels: 5,
+    total_illust_series: 6,
+    total_novel_series: 7,
+    background_image_url: null,
+    twitter_account: null,
+    twitter_url: null,
+    is_premium: false,
+    is_using_custom_profile_image: false,
+    badge: null,
+  }
+  const V2_WORKSPACE = {
+    pc: '',
+    monitor: '',
+    tool: '',
+    scanner: '',
+    tablet: '',
+    mouse: '',
+    printer: '',
+    desktop: '',
+    music: '',
+    desk: '',
+    chair: '',
+    comment: '',
+  }
+  const v2Body = (profile: Record<string, unknown> = V2_PROFILE) => ({
+    user: V2_USER,
+    profile,
+    profile_publicity: {
+      gender: null,
+      region: null,
+      birth_day: null,
+      birth_year: null,
+      job: null,
+    },
+    workspace: V2_WORKSPACE,
+    disabled_links: [],
+  })
+
+  it('requests /v2/user/detail with user_id and the default filter', async () => {
+    let url: URL | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v2/user/detail', ({ request }) => {
+        url = new URL(request.url)
+        return HttpResponse.json(v2Body())
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.detailV2({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    expect(url?.searchParams.get('user_id')).toBe('42')
+    expect(url?.searchParams.get('filter')).toBe('for_ios')
+  })
+
+  it('honors an explicit filter', async () => {
+    let url: URL | undefined
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v2/user/detail', ({ request }) => {
+        url = new URL(request.url)
+        return HttpResponse.json(v2Body())
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.detailV2({ userId: 42, filter: 'for_android' })
+    expect(url?.searchParams.get('filter')).toBe('for_android')
+  })
+
+  it('exposes disabledLinks, profile.badge, and user.isAcceptRequest', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v2/user/detail', () =>
+        HttpResponse.json(
+          v2Body({
+            ...V2_PROFILE,
+            gender: 1,
+            birth_year: 1990,
+            badge: { type: 'premium', url: null },
+          })
+        )
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.detailV2({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    expect(result.value.disabledLinks).toEqual([])
+    expect(result.value.profile.badge).toEqual({ type: 'premium', url: null })
+    expect(result.value.user.isAcceptRequest).toBe(true)
+    expect(result.value.profile.gender).toBe(1)
+    expect(result.value.profile.birthYear).toBe(1990)
+    expect(result.value.profile.totalIllustSeries).toBe(6)
+  })
+
+  it('passes null badge and null profile fields through as null', async () => {
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json(AUTH_RESPONSE)
+      ),
+      http.get('https://app-api.pixiv.net/v2/user/detail', () =>
+        HttpResponse.json(v2Body())
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.detailV2({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    expect(result.value.profile.badge).toBeNull()
+    expect(result.value.profile.gender).toBeNull()
+    expect(result.value.profile.birth).toBeNull()
+    expect(result.value.profile.job).toBeNull()
+    expect(result.value.profilePublicity.gender).toBeNull()
+    expect(result.value.profile).not.toHaveProperty('pawooUrl')
+    expect(result.value.workspace).not.toHaveProperty('workspaceImageUrl')
   })
 })
 
@@ -719,6 +876,175 @@ describe('users.bookmarkTagsIllust()', () => {
   })
 })
 
+describe('users.bookmarkTagsNovel()', () => {
+  const AUTH_HANDLER = http.post(
+    'https://oauth.secure.pixiv.net/auth/token',
+    () => HttpResponse.json(AUTH_RESPONSE)
+  )
+
+  it('returns Ok with bookmark tags mapped to camelCase', async () => {
+    server.use(
+      AUTH_HANDLER,
+      mockUserBookmarkTagsNovel({
+        bookmark_tags: [{ name: 'favorite', count: 3 }],
+        next_url: 'https://app-api.pixiv.net/v1/user/bookmark-tags/novel',
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.bookmarkTagsNovel({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    expect(result.value.bookmarkTags).toEqual([{ name: 'favorite', count: 3 }])
+    expect(result.value.nextUrl).toBe(
+      'https://app-api.pixiv.net/v1/user/bookmark-tags/novel'
+    )
+  })
+
+  it('defaults restrict to public', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/user/bookmark-tags/novel',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({ bookmark_tags: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.bookmarkTagsNovel({ userId: 42 })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('user_id')).toBe('42')
+    expect(params.get('restrict')).toBe('public')
+    expect(params.has('offset')).toBe(false)
+  })
+
+  it('forwards restrict and offset', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/user/bookmark-tags/novel',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({ bookmark_tags: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.bookmarkTagsNovel({
+      userId: 42,
+      restrict: 'private',
+      offset: 20,
+    })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('restrict')).toBe('private')
+    expect(params.get('offset')).toBe('20')
+  })
+
+  it('returns Err on an HTTP error', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/user/bookmark-tags/novel',
+        () => new HttpResponse(null, { status: 400 })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.bookmarkTagsNovel({ userId: 42 })
+    expect(result.isOk).toBe(false)
+  })
+})
+
+describe('users.followDetail()', () => {
+  const AUTH_HANDLER = http.post(
+    'https://oauth.secure.pixiv.net/auth/token',
+    () => HttpResponse.json(AUTH_RESPONSE)
+  )
+
+  it('maps a privately followed user', async () => {
+    server.use(
+      AUTH_HANDLER,
+      mockUserFollowDetail({
+        follow_detail: { is_followed: true, restrict: 'private' },
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.followDetail({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    expect(result.value.followDetail).toEqual({
+      isFollowed: true,
+      restrict: 'private',
+    })
+  })
+
+  it('maps a user who is not followed', async () => {
+    server.use(
+      AUTH_HANDLER,
+      mockUserFollowDetail({
+        follow_detail: { is_followed: false, restrict: '' },
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.followDetail({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    expect(result.value.followDetail).toEqual({
+      isFollowed: false,
+      restrict: '',
+    })
+  })
+
+  it('sends user_id in the query', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/user/follow/detail',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({
+            follow_detail: { is_followed: false, restrict: '' },
+          })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.followDetail({ userId: 42 })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    expect(new URL(capturedUrl).searchParams.get('user_id')).toBe('42')
+  })
+
+  it('returns Err on an HTTP error', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/user/follow/detail',
+        () => new HttpResponse(null, { status: 404 })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.followDetail({ userId: 42 })
+    expect(result.isOk).toBe(false)
+  })
+})
+
 describe('users.editAiShowSettings()', () => {
   it('returns Ok', async () => {
     server.use(
@@ -833,5 +1159,192 @@ describe('users.search()', () => {
       ids.push(preview.user.id)
     }
     expect(ids).toEqual([99, 100])
+  })
+})
+
+/** Registers a GET handler that records the request and returns `body`. */
+function useCapturedGet(path: string, body: Record<string, unknown>) {
+  const captured: { method: string; pathname: string; search: string }[] = []
+  server.use(
+    http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+      HttpResponse.json(AUTH_RESPONSE)
+    ),
+    http.get(`https://app-api.pixiv.net${path}`, ({ request }) => {
+      const url = new URL(request.url)
+      captured.push({
+        method: request.method,
+        pathname: url.pathname,
+        search: url.search,
+      })
+      return HttpResponse.json(body)
+    })
+  )
+  return captured
+}
+
+describe('users.aiShowSettings()', () => {
+  it('sends GET without params and returns camelCase values', async () => {
+    const captured = useCapturedGet('/v1/user/ai-show-settings', {
+      show_ai: true,
+    })
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.aiShowSettings()
+    expect(captured).toEqual([
+      { method: 'GET', pathname: '/v1/user/ai-show-settings', search: '' },
+    ])
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value).toEqual({ showAi: true })
+  })
+})
+
+describe('users.restrictedModeSettings()', () => {
+  it('sends GET without params and returns camelCase values', async () => {
+    const captured = useCapturedGet('/v1/user/restricted-mode-settings', {
+      is_restricted_mode_enabled: false,
+    })
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.restrictedModeSettings()
+    expect(captured).toEqual([
+      {
+        method: 'GET',
+        pathname: '/v1/user/restricted-mode-settings',
+        search: '',
+      },
+    ])
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value).toEqual({ isRestrictedModeEnabled: false })
+  })
+})
+
+describe('users.muteList()', () => {
+  const COUNTS = {
+    muted_count: 1,
+    muted_tags_count: 1,
+    muted_users_count: 0,
+    mute_limit_count: 10,
+    for_text: {
+      mute_limit_count_if_no_premium: 10,
+      mute_limit_count_if_premium: 100,
+    },
+  }
+
+  it('sends GET without params and returns camelCase values', async () => {
+    const captured = useCapturedGet('/v1/mute/list', {
+      muted_tags: [{ tag: { name: 'tag' }, is_premium_slot: false }],
+      muted_users: [],
+      ...COUNTS,
+    })
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.muteList()
+    expect(captured).toEqual([
+      { method: 'GET', pathname: '/v1/mute/list', search: '' },
+    ])
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value).toEqual({
+      mutedTags: [{ tag: { name: 'tag' }, isPremiumSlot: false }],
+      mutedUsers: [],
+      mutedCount: 1,
+      mutedTagsCount: 1,
+      mutedUsersCount: 0,
+      muteLimitCount: 10,
+      forText: {
+        muteLimitCountIfNoPremium: 10,
+        muteLimitCountIfPremium: 100,
+      },
+    })
+  })
+
+  it('returns empty arrays when nothing is muted', async () => {
+    useCapturedGet('/v1/mute/list', {
+      muted_tags: [],
+      muted_users: [],
+      ...COUNTS,
+      muted_count: 0,
+      muted_tags_count: 0,
+    })
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.muteList()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value.mutedTags).toEqual([])
+    expect(result.value.mutedUsers).toEqual([])
+  })
+})
+
+describe('users.meState()', () => {
+  it('sends GET without params and returns camelCase values', async () => {
+    const captured = useCapturedGet('/v1/user/me/state', {
+      user_state: {
+        is_mail_authorized: true,
+        has_mail_address: true,
+        has_changed_pixiv_id: false,
+        can_change_pixiv_id: true,
+        has_password: true,
+        require_policy_agreement: false,
+        no_login_method: false,
+        is_user_restricted: false,
+        is_official_event_notifications_enabled: true,
+      },
+      profile: {
+        user_id: 42,
+        pixiv_id: 'dummy_id',
+        name: 'Dummy',
+        profile_image_urls: { medium: 'https://i.pximg.net/u.jpg' },
+        is_premium: false,
+        x_restrict: 0,
+      },
+    })
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.meState()
+    expect(captured).toEqual([
+      { method: 'GET', pathname: '/v1/user/me/state', search: '' },
+    ])
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value).toEqual({
+      userState: {
+        isMailAuthorized: true,
+        hasMailAddress: true,
+        hasChangedPixivId: false,
+        canChangePixivId: true,
+        hasPassword: true,
+        requirePolicyAgreement: false,
+        noLoginMethod: false,
+        isUserRestricted: false,
+        isOfficialEventNotificationsEnabled: true,
+      },
+      profile: {
+        userId: 42,
+        pixivId: 'dummy_id',
+        name: 'Dummy',
+        profileImageUrls: { medium: 'https://i.pximg.net/u.jpg' },
+        isPremium: false,
+        xRestrict: 0,
+      },
+    })
+  })
+})
+
+describe('users.hasUnreadNotifications()', () => {
+  it('sends GET without params and returns camelCase values', async () => {
+    const captured = useCapturedGet(
+      '/v1/notification/has-unread-notifications',
+      { has_unread_notifications: true }
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.hasUnreadNotifications()
+    expect(captured).toEqual([
+      {
+        method: 'GET',
+        pathname: '/v1/notification/has-unread-notifications',
+        search: '',
+      },
+    ])
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value).toEqual({ hasUnreadNotifications: true })
   })
 })

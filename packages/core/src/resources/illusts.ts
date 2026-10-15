@@ -19,9 +19,11 @@ import {
 import type {
   IllustBookmarkDetailResponse,
   IllustComment,
+  IllustCommentRepliesPage,
   IllustCommentsPage,
   IllustDetailResponse,
   IllustListPage,
+  IllustPopularPreviewResponse,
   IllustRecommendedPage,
   IllustSeriesPage,
   TrendingTagsIllustResponse,
@@ -65,8 +67,35 @@ export interface IllustSearchParams {
   filter?: (typeof OSFilter)[keyof typeof OSFilter]
   /** AI-generated content filter: `0` = hide AI works, `1` = show only AI works. */
   searchAiType?: 0 | 1
+  /** Include results matched through translated tags (sent only when set). */
+  includeTranslatedTagResults?: boolean
+  /** Merge plain-keyword results into tag results (sent only when set). */
+  mergePlainKeywordResults?: boolean
+  /** Include works that may violate guidelines (sent only when set). */
+  includePotentialViolationWorks?: boolean
+  /**
+   * Content type selector as sent by the Android client, e.g.
+   * `"illust_and_manga_and_ugoira"` (sent only when set).
+   */
+  contentType?: string
   /** Zero-based offset for pagination. */
   offset?: number
+}
+
+/** Parameters for the popular-preview illust search. */
+export interface IllustPopularPreviewParams {
+  /** Search keyword. */
+  word: string
+  /** How to match the keyword against works (default: `"partial_match_for_tags"`). */
+  searchTarget?: (typeof SearchTarget)[keyof typeof SearchTarget]
+  /** AI-generated content filter: `0` = hide AI works, `1` = show only AI works. */
+  searchAiType?: 0 | 1
+  /** Include results matched through translated tags (sent only when set). */
+  includeTranslatedTagResults?: boolean
+  /** Merge plain-keyword results into tag results (sent only when set). */
+  mergePlainKeywordResults?: boolean
+  /** OS filter to apply (default: `"for_ios"`). */
+  filter?: (typeof OSFilter)[keyof typeof OSFilter]
 }
 
 /** Parameters for fetching the illust ranking. */
@@ -113,6 +142,10 @@ export interface IllustRecommendedParams {
    * IDs of illusts already seen by the user.
    * The API will exclude these from the recommendations.
    * Serialised as repeated `viewed[]=<id>` query parameters.
+   *
+   * Sent with `GET`, so a long list fails with `414` (observed at about 500
+   * IDs, roughly 9.5 KB). `POST /v1/illust/recommended` returns `404`, so
+   * there is no POST alternative.
    */
   viewed?: number[]
 }
@@ -149,14 +182,33 @@ export interface IllustFollowParams {
   offset?: number
 }
 
+/** Parameters for fetching illusts posted by mypixiv (mutual follow) users. */
+export interface IllustMypixivParams {
+  /** Zero-based offset for pagination. */
+  offset?: number
+}
+
 /** Parameters for fetching comments on an illust. */
 export interface IllustCommentsParams {
   /** ID of the illust to fetch comments for. */
   illustId: number
   /** Zero-based offset for pagination. */
   offset?: number
-  /** Whether to include the `totalComments` count in the response. */
+  /**
+   * Has no effect: `/v3/illust/comments` does not return `totalComments`
+   * and this parameter is not sent.
+   *
+   * @deprecated Read `illust.totalComments` from `illusts.detail()` instead.
+   */
   includeTotalComments?: boolean
+}
+
+/** Parameters for fetching replies to an illust comment. */
+export interface IllustCommentRepliesParams {
+  /** ID of the comment to fetch replies for. */
+  commentId: number
+  /** Zero-based offset for pagination. */
+  offset?: number
 }
 
 /** Parameters for fetching bookmark metadata for an illust. */
@@ -275,11 +327,47 @@ export class IllustResource {
           startDate: params.startDate,
           endDate: params.endDate,
           searchAiType: params.searchAiType,
+          includeTranslatedTagResults: params.includeTranslatedTagResults,
+          mergePlainKeywordResults: params.mergePlainKeywordResults,
+          includePotentialViolationWorks: params.includePotentialViolationWorks,
+          contentType: params.contentType,
           offset: params.offset,
         })
       ),
       this.#http,
       (page) => page.illusts
+    )
+  }
+
+  /**
+   * Fetches the popular-preview illust search results (a single page of 30).
+   * GET /v1/search/popular-preview/illust
+   *
+   * The endpoint returns no `next_url`, so the result is not paginated.
+   *
+   * @param params - Request parameters
+   *
+   * @example
+   * ```ts
+   * const result = await client.illusts.popularPreview({ word: 'cat' })
+   * if (result.isOk) {
+   *   console.log(result.value.illusts.length)
+   * }
+   * ```
+   */
+  popularPreview(
+    params: IllustPopularPreviewParams
+  ): ResultAsync<IllustPopularPreviewResponse, PixivError> {
+    return this.#http.get<IllustPopularPreviewResponse>(
+      '/v1/search/popular-preview/illust',
+      buildParams({
+        word: params.word,
+        searchTarget: params.searchTarget ?? 'partial_match_for_tags',
+        filter: params.filter ?? 'for_ios',
+        searchAiType: params.searchAiType,
+        includeTranslatedTagResults: params.includeTranslatedTagResults,
+        mergePlainKeywordResults: params.mergePlainKeywordResults,
+      })
     )
   }
 
@@ -423,8 +511,28 @@ export class IllustResource {
   }
 
   /**
+   * Fetches illusts posted by the authenticated account's mypixiv (mutual
+   * follow) users.
+   * GET /v2/illust/mypixiv
+   *
+   * @param params - Request parameters
+   */
+  mypixiv(
+    params: IllustMypixivParams = {}
+  ): PaginatedResultAsync<IllustListPage, IllustListPage['illusts'][number]> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<IllustListPage>(
+        '/v2/illust/mypixiv',
+        buildParams({ offset: params.offset })
+      ),
+      this.#http,
+      (page) => page.illusts
+    )
+  }
+
+  /**
    * Fetches comments posted on an illust.
-   * GET /v1/illust/comments
+   * GET /v3/illust/comments
    *
    * @param params - Request parameters
    */
@@ -433,11 +541,32 @@ export class IllustResource {
   ): PaginatedResultAsync<IllustCommentsPage, IllustComment> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<IllustCommentsPage>(
-        '/v1/illust/comments',
+        '/v3/illust/comments',
         buildParams({
           illustId: params.illustId,
           offset: params.offset,
-          includeTotalComments: params.includeTotalComments,
+        })
+      ),
+      this.#http,
+      (page) => page.comments
+    )
+  }
+
+  /**
+   * Fetches replies to a comment on an illust.
+   * GET /v2/illust/comment/replies
+   *
+   * @param params - Request parameters
+   */
+  commentReplies(
+    params: IllustCommentRepliesParams
+  ): PaginatedResultAsync<IllustCommentRepliesPage, IllustComment> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<IllustCommentRepliesPage>(
+        '/v2/illust/comment/replies',
+        buildParams({
+          commentId: params.commentId,
+          offset: params.offset,
         })
       ),
       this.#http,

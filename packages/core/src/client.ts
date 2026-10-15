@@ -18,6 +18,7 @@ import { NovelResource } from './resources/novels'
 import { UserResource } from './resources/users'
 import { MangaResource } from './resources/manga'
 import { UgoiraResource } from './resources/ugoira'
+import { SpotlightResource } from './resources/spotlight'
 import { ImageResource } from './resources/images'
 
 /** Options for constructing a {@link PixivClient}. */
@@ -45,6 +46,8 @@ export class PixivClient {
   readonly manga: MangaResource
   /** Ugoira API namespace. */
   readonly ugoira: UgoiraResource
+  /** Spotlight (pixivision) API namespace. */
+  readonly spotlight: SpotlightResource
   /** Image fetch helpers. */
   readonly images: ImageResource
 
@@ -57,6 +60,7 @@ export class PixivClient {
     this.users = new UserResource(http)
     this.manga = new MangaResource(http)
     this.ugoira = new UgoiraResource(http)
+    this.spotlight = new SpotlightResource(http)
     this.images = new ImageResource(http)
   }
 

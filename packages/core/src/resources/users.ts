@@ -15,7 +15,12 @@ import {
   UserIllustType,
 } from '../options'
 import type {
+  AiShowSettingsResponse,
   BookmarkTag,
+  HasUnreadNotificationsResponse,
+  MuteListResponse,
+  RestrictedModeSettingsResponse,
+  UserMeStateResponse,
   PixivIllustItem,
   PixivNovelItem,
   PixivUser,
@@ -23,7 +28,10 @@ import type {
   UserBookmarksIllustPage,
   UserBookmarksNovelPage,
   UserBookmarkTagsIllustPage,
+  UserBookmarkTagsNovelPage,
   UserDetailResponse,
+  UserDetailV2Response,
+  UserFollowDetailResponse,
   UserFollowerPage,
   UserFollowingPage,
   UserIllustsPage,
@@ -179,6 +187,22 @@ export interface UserBookmarkTagsIllustParams {
   offset?: number
 }
 
+/** Parameters for fetching a user's novel bookmark tags. */
+export interface UserBookmarkTagsNovelParams {
+  /** ID of the user whose bookmark tags to fetch. */
+  userId: number
+  /** Visibility of the bookmarks to aggregate tags from (default: `"public"`). */
+  restrict?: (typeof BookmarkRestrict)[keyof typeof BookmarkRestrict]
+  /** Zero-based offset for pagination. */
+  offset?: number
+}
+
+/** Parameters for fetching the follow state toward a user. */
+export interface UserFollowDetailParams {
+  /** ID of the user whose follow state to fetch. */
+  userId: number
+}
+
 /** Parameters for searching users. */
 export interface UserSearchParams {
   /** Search keyword. */
@@ -303,6 +327,9 @@ export class UserResource {
    * Fetches detailed profile information for a user.
    * GET /v1/user/detail
    *
+   * See {@link UserResource.detailV2} for the v2 endpoint, which exposes
+   * additional fields (`disabledLinks`, `profile.badge`).
+   *
    * @param params - Request parameters
    */
   detail(
@@ -310,6 +337,27 @@ export class UserResource {
   ): ResultAsync<UserDetailResponse, PixivError> {
     return this.#http.get<UserDetailResponse>(
       '/v1/user/detail',
+      buildParams({ userId: params.userId, filter: params.filter ?? 'for_ios' })
+    )
+  }
+
+  /**
+   * Fetches detailed profile information for a user using the v2 endpoint.
+   * GET /v2/user/detail
+   *
+   * Unlike {@link UserResource.detail}, the response includes `disabledLinks`
+   * and `profile.badge`, several profile values are `null` instead of empty
+   * strings or `0`, and the v1-only fields (`profile.pawooUrl`,
+   * `profile.totalIllustBookmarksPublic`, `profilePublicity.pawoo`,
+   * `workspace.workspaceImageUrl`) are absent.
+   *
+   * @param params - Request parameters
+   */
+  detailV2(
+    params: UserDetailParams
+  ): ResultAsync<UserDetailV2Response, PixivError> {
+    return this.#http.get<UserDetailV2Response>(
+      '/v2/user/detail',
       buildParams({ userId: params.userId, filter: params.filter ?? 'for_ios' })
     )
   }
@@ -590,6 +638,44 @@ export class UserResource {
   }
 
   /**
+   * Fetches a user's novel bookmark tags, with the number of bookmarks under each tag.
+   * GET /v1/user/bookmark-tags/novel
+   *
+   * @param params - Request parameters
+   */
+  bookmarkTagsNovel(
+    params: UserBookmarkTagsNovelParams
+  ): PaginatedResultAsync<UserBookmarkTagsNovelPage, BookmarkTag> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<UserBookmarkTagsNovelPage>(
+        '/v1/user/bookmark-tags/novel',
+        buildParams({
+          userId: params.userId,
+          restrict: params.restrict ?? 'public',
+          offset: params.offset,
+        })
+      ),
+      this.#http,
+      (page) => page.bookmarkTags
+    )
+  }
+
+  /**
+   * Fetches whether the authenticated user follows a user, and with which visibility.
+   * GET /v1/user/follow/detail
+   *
+   * @param params - Request parameters
+   */
+  followDetail(
+    params: UserFollowDetailParams
+  ): ResultAsync<UserFollowDetailResponse, PixivError> {
+    return this.#http.get<UserFollowDetailResponse>(
+      '/v1/user/follow/detail',
+      buildParams({ userId: params.userId })
+    )
+  }
+
+  /**
    * Edits the authenticated user's AI-generated-work display setting.
    * POST /v1/user/ai-show-settings/edit
    *
@@ -602,6 +688,56 @@ export class UserResource {
     return this.#http.post<Record<string, never>>(
       '/v1/user/ai-show-settings/edit',
       body.toString()
+    )
+  }
+
+  /**
+   * Fetches the authenticated user's AI-generated-work display setting.
+   * GET /v1/user/ai-show-settings
+   */
+  aiShowSettings(): ResultAsync<AiShowSettingsResponse, PixivError> {
+    return this.#http.get<AiShowSettingsResponse>('/v1/user/ai-show-settings')
+  }
+
+  /**
+   * Fetches the authenticated user's restricted-mode setting.
+   * GET /v1/user/restricted-mode-settings
+   */
+  restrictedModeSettings(): ResultAsync<
+    RestrictedModeSettingsResponse,
+    PixivError
+  > {
+    return this.#http.get<RestrictedModeSettingsResponse>(
+      '/v1/user/restricted-mode-settings'
+    )
+  }
+
+  /**
+   * Fetches the authenticated user's mute list.
+   * GET /v1/mute/list
+   */
+  muteList(): ResultAsync<MuteListResponse, PixivError> {
+    return this.#http.get<MuteListResponse>('/v1/mute/list')
+  }
+
+  /**
+   * Fetches the authenticated user's account state and profile.
+   * GET /v1/user/me/state
+   */
+  meState(): ResultAsync<UserMeStateResponse, PixivError> {
+    return this.#http.get<UserMeStateResponse>('/v1/user/me/state')
+  }
+
+  /**
+   * Fetches whether the authenticated user has unread notifications.
+   * GET /v1/notification/has-unread-notifications
+   */
+  hasUnreadNotifications(): ResultAsync<
+    HasUnreadNotificationsResponse,
+    PixivError
+  > {
+    return this.#http.get<HasUnreadNotificationsResponse>(
+      '/v1/notification/has-unread-notifications'
     )
   }
 }

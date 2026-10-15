@@ -69,6 +69,14 @@ describe.skipIf(SKIP)('PixivClient e2e — illusts', () => {
     expect(result.value.illusts.length).toBeGreaterThan(0)
   })
 
+  it('illusts.popularPreview', async () => {
+    const result = await client.illusts.popularPreview({ word: 'ホロライブ' })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.illusts)).toBe(true)
+    expect(typeof result.value.searchSpanLimit).toBe('number')
+  })
+
   it('illusts.ranking', async () => {
     const result = await client.illusts.ranking({})
     expect(result.isOk).toBe(true)
@@ -145,16 +153,34 @@ describe.skipIf(SKIP)('PixivClient e2e — illusts', () => {
     expect(Array.isArray(result.value.illusts)).toBe(true)
   })
 
-  // Skipped: as of this writing, GET /v1/illust/comments returns an
-  // empty-bodied 404 against the live API for every path/param/method
-  // variant tried, while the same illust ID succeeds on /v1/illust/detail.
-  // This looks like a live-API-side issue (endpoint removed, or blocked by
-  // anti-bot filtering) rather than a bug in this method. Unskip once the
-  // live behavior is confirmed.
-  it.skip('illusts.comments', async () => {
-    const result = await client.illusts.comments({
-      illustId: ILLUST_ID,
-      includeTotalComments: true,
+  it('illusts.mypixiv', async () => {
+    const result = await client.illusts.mypixiv()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.illusts)).toBe(true)
+  })
+
+  it('illusts.comments', async () => {
+    const result = await client.illusts.comments({ illustId: ILLUST_ID })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.comments)).toBe(true)
+    for (const comment of result.value.comments) {
+      expect(typeof comment.id).toBe('number')
+      if (!comment.stamp) continue
+      expect(typeof comment.stamp.stampId).toBe('number')
+      expect(typeof comment.stamp.stampUrl).toBe('string')
+    }
+  })
+
+  it('illusts.commentReplies', async () => {
+    const comments = await client.illusts.comments({ illustId: ILLUST_ID })
+    expect(comments.isOk).toBe(true)
+    if (!comments.isOk) return
+    const parent = comments.value.comments.find((c) => c.hasReplies)
+    if (!parent) return
+    const result = await client.illusts.commentReplies({
+      commentId: parent.id,
     })
     expect(result.isOk).toBe(true)
     if (!result.isOk) return

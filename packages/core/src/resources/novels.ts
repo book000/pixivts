@@ -18,12 +18,21 @@ import {
 } from '../options'
 import type {
   NovelComment,
+  NovelCommentRepliesPage,
   NovelCommentsPage,
+  NovelBookmarkUsersPage,
   NovelDetailResponse,
+  MarkedNovel,
   NovelListPage,
+  NovelMarkersPage,
+  NovelPopularPreviewResponse,
   NovelRecommendedPage,
   NovelSeriesPage,
   PixivNovelItem,
+  PixivUser,
+  TrendingTagsNovelResponse,
+  WatchlistNovelPage,
+  WatchlistSeries,
   WebviewNovel,
 } from '../types'
 
@@ -65,8 +74,28 @@ export interface NovelSearchParams {
   endDate?: string
   /** AI-generated content filter: `0` = hide AI works, `1` = show only AI works. */
   searchAiType?: 0 | 1
+  /** Include results matched through translated tags (sent only when set). */
+  includeTranslatedTagResults?: boolean
+  /** Merge plain-keyword results into tag results (sent only when set). */
+  mergePlainKeywordResults?: boolean
+  /** Include works that may violate guidelines (sent only when set). */
+  includePotentialViolationWorks?: boolean
   /** Zero-based offset for pagination. */
   offset?: number
+}
+
+/** Parameters for the popular-preview novel search. */
+export interface NovelPopularPreviewParams {
+  /** Search keyword. */
+  word: string
+  /** How to match the keyword against works (default: `"partial_match_for_tags"`). */
+  searchTarget?: (typeof SearchTarget)[keyof typeof SearchTarget]
+  /** AI-generated content filter: `0` = hide AI works, `1` = show only AI works. */
+  searchAiType?: 0 | 1
+  /** Include results matched through translated tags (sent only when set). */
+  includeTranslatedTagResults?: boolean
+  /** Merge plain-keyword results into tag results (sent only when set). */
+  mergePlainKeywordResults?: boolean
 }
 
 /** Parameters for fetching the novel ranking. */
@@ -81,6 +110,18 @@ export interface NovelRankingParams {
   offset?: number
 }
 
+/** A novel the user has viewed, sent as view history. */
+export interface NovelViewedEntry {
+  /** ID of the viewed novel. */
+  id: number
+  /**
+   * When the novel was viewed. A `Date` is formatted as ISO 8601 with
+   * milliseconds and the local UTC offset (e.g. `2026-10-14T23:23:55.960+09:00`);
+   * a string is sent as-is.
+   */
+  viewedAt: Date | string
+}
+
 /** Parameters for fetching recommended novels. */
 export interface NovelRecommendedParams {
   /** OS filter to apply (default: `"for_ios"`). */
@@ -92,6 +133,21 @@ export interface NovelRecommendedParams {
    * extracted from a previous page's `next_url` via {@link parseNextUrl}.
    */
   maxBookmarkIdForRecommend?: number
+  /**
+   * View history to send with the request.
+   * When non-empty, the first page is fetched with `POST` and the history is
+   * serialised as paired `view_novel_ids[]` / `view_novel_datetimes[]` body
+   * fields; pagination via `next_url` still uses `GET`. Omit (or pass an empty
+   * array) to keep the plain `GET` request.
+   *
+   * Observed limits: `GET` fails with `414` at 100 pairs, while `POST` succeeds
+   * with 200 pairs and fails with `500` at 1000 pairs. Whether the history
+   * changes the recommendations is unproven.
+   *
+   * When a response interceptor such as the DB recorder is used, the history
+   * is stored as part of the recorded request body.
+   */
+  viewed?: NovelViewedEntry[]
 }
 
 /** Parameters for fetching a novel series. */
@@ -118,6 +174,14 @@ export interface NovelBookmarkDeleteParams {
   novelId: number
 }
 
+/** Parameters for fetching the users who bookmarked a novel. */
+export interface NovelBookmarkUsersParams {
+  /** ID of the novel whose bookmarking users to fetch. */
+  novelId: number
+  /** Zero-based offset for pagination. */
+  offset?: number
+}
+
 /** Parameters for fetching novels posted by followed users. */
 export interface NovelFollowParams {
   /** Follow visibility to fetch (default: `"public"`). */
@@ -126,14 +190,38 @@ export interface NovelFollowParams {
   offset?: number
 }
 
+/**
+ * Parameters for fetching novels posted by mypixiv (mutual follow) users.
+ *
+ * The endpoint does not support `offset`; paginate with `maxNovelId` or by
+ * following `next_url` through the returned paginated result.
+ */
+export interface NovelMypixivParams {
+  /** Cursor: fetch novels posted before this novel ID. */
+  maxNovelId?: number
+}
+
 /** Parameters for fetching comments on a novel. */
 export interface NovelCommentsParams {
   /** ID of the novel to fetch comments for. */
   novelId: number
   /** Zero-based offset for pagination. */
   offset?: number
-  /** Whether to include the `totalComments` count in the response. */
+  /**
+   * Has no effect: `/v3/novel/comments` does not return `totalComments`
+   * and this parameter is not sent.
+   *
+   * @deprecated Read `novel.totalComments` from `novels.detail()` instead.
+   */
   includeTotalComments?: boolean
+}
+
+/** Parameters for fetching replies to a novel comment. */
+export interface NovelCommentRepliesParams {
+  /** ID of the comment to fetch replies for. */
+  commentId: number
+  /** Zero-based offset for pagination. */
+  offset?: number
 }
 
 /** Parameters for fetching newly posted novels. */
@@ -142,6 +230,24 @@ export interface NovelNewParams {
   filter?: (typeof OSFilter)[keyof typeof OSFilter]
   /** Cursor: fetch novels posted before this novel ID. */
   maxNovelId?: number
+}
+
+/**
+ * Formats a view timestamp as ISO 8601 with milliseconds and the local UTC
+ * offset of that instant. Strings are returned unchanged.
+ */
+function formatViewedAt(value: Date | string): string {
+  if (typeof value === 'string') return value
+  const pad = (n: number, width = 2) => String(n).padStart(width, '0')
+  const offsetMinutes = -value.getTimezoneOffset()
+  const sign = offsetMinutes < 0 ? '-' : '+'
+  const absOffset = Math.abs(offsetMinutes)
+  return (
+    `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())}` +
+    `T${pad(value.getHours())}:${pad(value.getMinutes())}:${pad(value.getSeconds())}` +
+    `.${pad(value.getMilliseconds(), 3)}` +
+    `${sign}${pad(Math.floor(absOffset / 60))}:${pad(absOffset % 60)}`
+  )
 }
 
 /** Methods for the novel API namespace. */
@@ -254,12 +360,56 @@ export class NovelResource {
           startDate: params.startDate,
           endDate: params.endDate,
           searchAiType: params.searchAiType,
+          includeTranslatedTagResults: params.includeTranslatedTagResults,
+          mergePlainKeywordResults: params.mergePlainKeywordResults,
+          includePotentialViolationWorks: params.includePotentialViolationWorks,
           offset: params.offset,
         })
       ),
       this.#http,
       (page) => page.novels
     )
+  }
+
+  /**
+   * Fetches the popular-preview novel search results (a single page of 30).
+   * GET /v1/search/popular-preview/novel
+   *
+   * The endpoint returns no `next_url`, so the result is not paginated.
+   *
+   * @param params - Request parameters
+   *
+   * @example
+   * ```ts
+   * const result = await client.novels.popularPreview({ word: 'fantasy' })
+   * if (result.isOk) {
+   *   console.log(result.value.novels.length)
+   * }
+   * ```
+   */
+  popularPreview(
+    params: NovelPopularPreviewParams
+  ): ResultAsync<NovelPopularPreviewResponse, PixivError> {
+    return this.#http.get<NovelPopularPreviewResponse>(
+      '/v1/search/popular-preview/novel',
+      buildParams({
+        word: params.word,
+        searchTarget: params.searchTarget ?? 'partial_match_for_tags',
+        searchAiType: params.searchAiType,
+        includeTranslatedTagResults: params.includeTranslatedTagResults,
+        mergePlainKeywordResults: params.mergePlainKeywordResults,
+      })
+    )
+  }
+
+  /**
+   * Fetches currently trending novel tags, each with a representative illust.
+   * GET /v1/trending-tags/novel
+   *
+   * Takes no parameters: the endpoint ignores `filter`.
+   */
+  trendingTags(): ResultAsync<TrendingTagsNovelResponse, PixivError> {
+    return this.#http.get<TrendingTagsNovelResponse>('/v1/trending-tags/novel')
   }
 
   /**
@@ -288,24 +438,38 @@ export class NovelResource {
 
   /**
    * Fetches recommended novels.
-   * GET /v1/novel/recommended
+   * GET /v1/novel/recommended, or POST /v1/novel/recommended when
+   * `params.viewed` is non-empty.
    *
    * @param params - Request parameters
    */
   recommended(
     params: NovelRecommendedParams = {}
   ): PaginatedResultAsync<NovelRecommendedPage, PixivNovelItem> {
+    const path = '/v1/novel/recommended'
+    const query = {
+      filter: params.filter ?? 'for_ios',
+      includeRankingNovels: true,
+      includePrivacyPolicy: true,
+      offset: params.offset,
+      maxBookmarkIdForRecommend: params.maxBookmarkIdForRecommend,
+    }
+    const viewed = params.viewed ?? []
+    const first =
+      viewed.length > 0
+        ? this.#http.post<NovelRecommendedPage>(
+            path,
+            buildParams({
+              ...query,
+              viewNovelIds: viewed.map((entry) => entry.id),
+              viewNovelDatetimes: viewed.map((entry) =>
+                formatViewedAt(entry.viewedAt)
+              ),
+            }).toString()
+          )
+        : this.#http.get<NovelRecommendedPage>(path, buildParams(query))
     return PaginatedResultAsync.fromResultAsync(
-      this.#http.get<NovelRecommendedPage>(
-        '/v1/novel/recommended',
-        buildParams({
-          filter: params.filter ?? 'for_ios',
-          includeRankingNovels: true,
-          includePrivacyPolicy: true,
-          offset: params.offset,
-          maxBookmarkIdForRecommend: params.maxBookmarkIdForRecommend,
-        })
-      ),
+      first,
       this.#http,
       (page) => page.novels
     )
@@ -327,6 +491,34 @@ export class NovelResource {
       ),
       this.#http,
       (page) => page.novels
+    )
+  }
+
+  /**
+   * Fetches the authenticated user's novel series watchlist.
+   * GET /v1/watchlist/novel
+   *
+   * Takes no parameters; later pages follow the server-provided `next_url`.
+   */
+  watchlist(): PaginatedResultAsync<WatchlistNovelPage, WatchlistSeries> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<WatchlistNovelPage>('/v1/watchlist/novel'),
+      this.#http,
+      (page) => page.series
+    )
+  }
+
+  /**
+   * Fetches the novels with a saved reading position (marker).
+   * GET /v2/novel/markers
+   *
+   * Takes no parameters; later pages follow the server-provided `next_url`.
+   */
+  markers(): PaginatedResultAsync<NovelMarkersPage, MarkedNovel> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<NovelMarkersPage>('/v2/novel/markers'),
+      this.#http,
+      (page) => page.markedNovels
     )
   }
 
@@ -367,6 +559,25 @@ export class NovelResource {
   }
 
   /**
+   * Fetches the users who bookmarked a novel.
+   * GET /v1/novel/bookmark/users
+   *
+   * @param params - Request parameters
+   */
+  bookmarkUsers(
+    params: NovelBookmarkUsersParams
+  ): PaginatedResultAsync<NovelBookmarkUsersPage, PixivUser> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<NovelBookmarkUsersPage>(
+        '/v1/novel/bookmark/users',
+        buildParams({ novelId: params.novelId, offset: params.offset })
+      ),
+      this.#http,
+      (page) => page.users
+    )
+  }
+
+  /**
    * Fetches novels posted by users the authenticated account follows.
    * GET /v1/novel/follow
    *
@@ -389,8 +600,31 @@ export class NovelResource {
   }
 
   /**
+   * Fetches novels posted by the authenticated account's mypixiv (mutual
+   * follow) users.
+   * GET /v1/novel/mypixiv
+   *
+   * The endpoint ignores `offset`. Paginate with `maxNovelId`, or follow
+   * `next_url` via `.pages()` / `.items()`.
+   *
+   * @param params - Request parameters
+   */
+  mypixiv(
+    params: NovelMypixivParams = {}
+  ): PaginatedResultAsync<NovelListPage, PixivNovelItem> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<NovelListPage>(
+        '/v1/novel/mypixiv',
+        buildParams({ maxNovelId: params.maxNovelId })
+      ),
+      this.#http,
+      (page) => page.novels
+    )
+  }
+
+  /**
    * Fetches comments posted on a novel.
-   * GET /v1/novel/comments
+   * GET /v3/novel/comments
    *
    * @param params - Request parameters
    */
@@ -399,11 +633,32 @@ export class NovelResource {
   ): PaginatedResultAsync<NovelCommentsPage, NovelComment> {
     return PaginatedResultAsync.fromResultAsync(
       this.#http.get<NovelCommentsPage>(
-        '/v1/novel/comments',
+        '/v3/novel/comments',
         buildParams({
           novelId: params.novelId,
           offset: params.offset,
-          includeTotalComments: params.includeTotalComments,
+        })
+      ),
+      this.#http,
+      (page) => page.comments
+    )
+  }
+
+  /**
+   * Fetches replies to a comment on a novel.
+   * GET /v2/novel/comment/replies
+   *
+   * @param params - Request parameters
+   */
+  commentReplies(
+    params: NovelCommentRepliesParams
+  ): PaginatedResultAsync<NovelCommentRepliesPage, NovelComment> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<NovelCommentRepliesPage>(
+        '/v2/novel/comment/replies',
+        buildParams({
+          commentId: params.commentId,
+          offset: params.offset,
         })
       ),
       this.#http,

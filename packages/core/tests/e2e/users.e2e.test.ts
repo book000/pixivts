@@ -21,6 +21,17 @@ describe.skipIf(SKIP)('PixivClient e2e — users', () => {
     expect(result.value.profile).toBeDefined()
   })
 
+  it('users.detailV2', async () => {
+    const result = await client.users.detailV2({ userId: STAFF_USER_ID })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value.user.id).toBe(STAFF_USER_ID)
+    expect(Array.isArray(result.value.disabledLinks)).toBe(true)
+    expect(typeof result.value.user.isAcceptRequest).toBe('boolean')
+    const { badge } = result.value.profile
+    expect(badge === null || typeof badge.type === 'string').toBe(true)
+  })
+
   it('users.illusts', async () => {
     const result = await client.users.illusts({ userId: STAFF_USER_ID })
     expect(result.isOk).toBe(true)
@@ -116,6 +127,62 @@ describe.skipIf(SKIP)('PixivClient e2e — users', () => {
     expect(result.isOk).toBe(true)
     if (!result.isOk) return
     expect(Array.isArray(result.value.bookmarkTags)).toBe(true)
+  })
+
+  it('users.bookmarkTagsNovel', async () => {
+    const result = await client.users.bookmarkTagsNovel({
+      userId: STAFF_USER_ID,
+    })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.bookmarkTags)).toBe(true)
+  })
+
+  it('users.followDetail', async () => {
+    const result = await client.users.followDetail({ userId: STAFF_USER_ID })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(typeof result.value.followDetail.isFollowed).toBe('boolean')
+  })
+
+  it('users.aiShowSettings', async () => {
+    const result = await client.users.aiShowSettings()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(typeof result.value.showAi).toBe('boolean')
+  })
+
+  it('users.restrictedModeSettings', async () => {
+    const result = await client.users.restrictedModeSettings()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(typeof result.value.isRestrictedModeEnabled).toBe('boolean')
+  })
+
+  it('users.muteList', async () => {
+    const result = await client.users.muteList()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.mutedTags)).toBe(true)
+    expect(Array.isArray(result.value.mutedUsers)).toBe(true)
+    expect(typeof result.value.muteLimitCount).toBe('number')
+    expect(typeof result.value.forText.muteLimitCountIfPremium).toBe('number')
+  })
+
+  it('users.meState', async () => {
+    const result = await client.users.meState()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(typeof result.value.userState.hasPassword).toBe('boolean')
+    expect(typeof result.value.profile.userId).toBe('number')
+    expect(typeof result.value.profile.isPremium).toBe('boolean')
+  })
+
+  it('users.hasUnreadNotifications', async () => {
+    const result = await client.users.hasUnreadNotifications()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(typeof result.value.hasUnreadNotifications).toBe('boolean')
   })
 
   it('users.followAdd and users.followDelete', async () => {

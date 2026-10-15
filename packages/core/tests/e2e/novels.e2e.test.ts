@@ -17,6 +17,42 @@ describe.skipIf(SKIP)('PixivClient e2e — novels', () => {
     client = await PixivClient.of(REFRESH_TOKEN ?? '')
   })
 
+  it('novels.bookmarkUsers', async () => {
+    const result = await client.novels.bookmarkUsers({ novelId: NOVEL_ID })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.users)).toBe(true)
+  })
+
+  it('novels.trendingTags', async () => {
+    const result = await client.novels.trendingTags()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.trendTags)).toBe(true)
+  })
+
+  it('novels.popularPreview', async () => {
+    const result = await client.novels.popularPreview({ word: 'ホロライブ' })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.novels)).toBe(true)
+    expect(typeof result.value.searchSpanLimit).toBe('number')
+  })
+
+  it('novels.watchlist', async () => {
+    const result = await client.novels.watchlist()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.series)).toBe(true)
+  })
+
+  it('novels.markers', async () => {
+    const result = await client.novels.markers()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.markedNovels)).toBe(true)
+  })
+
   it('novels.detail', async () => {
     const result = await client.novels.detail({ novelId: NOVEL_ID })
     expect(result.isOk).toBe(true)
@@ -57,6 +93,15 @@ describe.skipIf(SKIP)('PixivClient e2e — novels', () => {
 
   it('novels.recommended', async () => {
     const result = await client.novels.recommended({})
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value.novels.length).toBeGreaterThan(0)
+  })
+
+  it('novels.recommended with view history (POST)', async () => {
+    const result = await client.novels.recommended({
+      viewed: [{ id: NOVEL_ID, viewedAt: new Date() }],
+    })
     expect(result.isOk).toBe(true)
     if (!result.isOk) return
     expect(result.value.novels.length).toBeGreaterThan(0)
@@ -128,15 +173,18 @@ describe.skipIf(SKIP)('PixivClient e2e — novels', () => {
     expect(Array.isArray(result.value.novels)).toBe(true)
   })
 
+  it('novels.mypixiv', async () => {
+    const result = await client.novels.mypixiv()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.novels)).toBe(true)
+  })
+
   it('novels.comments', async () => {
-    const result = await client.novels.comments({
-      novelId: NOVEL_ID,
-      includeTotalComments: true,
-    })
+    const result = await client.novels.comments({ novelId: NOVEL_ID })
     expect(result.isOk).toBe(true)
     if (!result.isOk) return
     expect(Array.isArray(result.value.comments)).toBe(true)
-    expect(typeof result.value.totalComments).toBe('number')
     if (result.value.commentAccessControl !== undefined) {
       expect(typeof result.value.commentAccessControl).toBe('number')
     }
@@ -146,12 +194,29 @@ describe.skipIf(SKIP)('PixivClient e2e — novels', () => {
     expect(typeof comment.comment).toBe('string')
     expect(typeof comment.date).toBe('string')
     expect(typeof comment.user.id).toBe('number')
+    if (!comment.stamp) return
+    expect(typeof comment.stamp.stampId).toBe('number')
+    expect(typeof comment.stamp.stampUrl).toBe('string')
   })
 
   it('novels.comments with offset', async () => {
     const result = await client.novels.comments({
       novelId: NOVEL_ID,
       offset: 1,
+    })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.comments)).toBe(true)
+  })
+
+  it('novels.commentReplies', async () => {
+    const comments = await client.novels.comments({ novelId: NOVEL_ID })
+    expect(comments.isOk).toBe(true)
+    if (!comments.isOk) return
+    const parent = comments.value.comments.find((c) => c.hasReplies)
+    if (!parent) return
+    const result = await client.novels.commentReplies({
+      commentId: parent.id,
     })
     expect(result.isOk).toBe(true)
     if (!result.isOk) return

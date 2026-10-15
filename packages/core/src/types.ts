@@ -114,6 +114,65 @@ export interface MetaPages {
   imageUrls: Required<ImageUrls>
 }
 
+/** A user who can accept requests, listed in {@link IllustRequest}. */
+export interface IllustRequestUser {
+  /** User ID. */
+  id: number
+  /** Display name. */
+  name: string
+  /** Account name (used in URLs). */
+  account: string
+  /** Profile image URLs. */
+  profileImageUrls: ProfileImageUrls
+  /** Whether the authenticated user follows this user. */
+  isFollowed: boolean
+  /** Whether this user blocks the authenticated user's access. */
+  isAccessBlockingUser: boolean
+  /** Whether this user accepts requests. */
+  isAcceptRequest: boolean
+}
+
+/** A collaborating user sample in {@link IllustRequestCollaborateStatus}. */
+export interface IllustRequestCollaborateUserSample {
+  /** User ID, or `null` when the collaborator is anonymous. */
+  userId: number | null
+  /** Whether the collaborator is shown anonymously. */
+  anonymousFlag: boolean
+}
+
+/** Collaboration status of a request. */
+export interface IllustRequestCollaborateStatus {
+  /** Whether the work is being collaborated on. */
+  collaborating: boolean
+  /** Whether collaborators are shown anonymously. */
+  collaborateAnonymousFlag: boolean
+  /** Sample of collaborating users. */
+  collaborateUserSamples: IllustRequestCollaborateUserSample[]
+}
+
+/** Request details of an illust created from a request. */
+export interface IllustRequestInfo {
+  /** ID of the user who made the request, or `null` when not disclosed. */
+  fanUserId: number | null
+  /** Collaboration status. */
+  collaborateStatus: IllustRequestCollaborateStatus
+  /** Role of the author in the request (e.g. the requested creator). */
+  role: string
+}
+
+/**
+ * Request (commission) metadata attached to an illust.
+ *
+ * The shape is based on a small number of live responses and may be
+ * incomplete.
+ */
+export interface IllustRequest {
+  /** Request details. */
+  requestInfo: IllustRequestInfo
+  /** Users who can accept requests. */
+  requestUsers: IllustRequestUser[]
+}
+
 /**
  * A pixiv illust or manga work item as returned by the API.
  *
@@ -185,12 +244,26 @@ export interface PixivIllustItem {
   commentAccessControl?: number
   /** Additional access-restriction attributes (may be absent). */
   restrictionAttributes?: string[]
+  /** Request (commission) metadata, or `null` when the work is not request-related. */
+  request?: IllustRequest | null
+  /** Event banner data. Always `null` in observed responses; the non-null shape is unknown. */
+  eventBanners?: unknown
+  /** Seasonal-effect animation URLs. Always `null` in observed responses; the non-null shape is unknown. */
+  seasonalEffectAnimationUrls?: unknown
+}
+
+/** Stamp attached to an illust comment. */
+export interface IllustCommentStamp {
+  /** Stamp ID. */
+  stampId: number
+  /** URL of the stamp image. */
+  stampUrl: string
 }
 
 /**
  * A single comment on an illust.
  *
- * Returned by GET /v1/illust/comments.
+ * Returned by GET /v3/illust/comments.
  */
 export interface IllustComment {
   /** Comment ID. */
@@ -203,6 +276,8 @@ export interface IllustComment {
   user: PixivUser
   /** Whether this comment has replies. */
   hasReplies?: boolean
+  /** Stamp attached to this comment, or `null` when the comment has no stamp. */
+  stamp?: IllustCommentStamp | null
   /** The comment this is a reply to, or `{}` (empty object) for a top-level comment. */
   parentComment?: IllustComment | Record<string, never>
 }
@@ -319,7 +394,7 @@ export interface PixivNovelItem {
 /**
  * A single comment on a novel.
  *
- * Returned by GET /v1/novel/comments.
+ * Returned by GET /v3/novel/comments.
  */
 export interface NovelComment {
   /** Comment ID. */
@@ -332,7 +407,13 @@ export interface NovelComment {
   user: PixivUser
   /** Whether this comment has replies. */
   hasReplies?: boolean
-  /** The comment this is a reply to, or `{}` (empty object) for a top-level comment. */
+  /** Stamp attached to this comment, or `null` when the comment has no stamp. */
+  stamp?: IllustCommentStamp | null
+  /**
+   * The comment this is a reply to, or `{}` (empty object) for a top-level comment.
+   *
+   * Not returned by `/v3/novel/comments`.
+   */
   parentComment?: NovelComment | Record<string, never>
 }
 
@@ -581,9 +662,9 @@ export interface IllustRecommendedPage {
   nextUrl: string | null
 }
 
-/** Page response for GET /v1/illust/comments. */
+/** Page response for GET /v3/illust/comments. */
 export interface IllustCommentsPage {
-  /** Total number of comments on the illust (present only when `includeTotalComments` is requested). */
+  /** Total number of comments on the illust. Not returned by v3; use `illust.totalComments` from `illusts.detail()` instead. */
   totalComments?: number
   /** Comments on this page. */
   comments: IllustComment[]
@@ -591,6 +672,14 @@ export interface IllustCommentsPage {
   nextUrl: string | null
   /** Who is permitted to post comments (may be absent). */
   commentAccessControl?: number
+}
+
+/** Page response for GET /v2/illust/comment/replies. */
+export interface IllustCommentRepliesPage {
+  /** Replies on this page. */
+  comments: IllustComment[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
 }
 
 /** Response shape for GET /v2/illust/bookmark/detail. */
@@ -629,6 +718,36 @@ export interface TrendingTagsIllustResponse {
   trendTags: TrendingTagIllust[]
 }
 
+/** Response shape for GET /v1/trending-tags/novel. */
+export interface TrendingTagsNovelResponse {
+  /** Currently trending novel tags, each with a representative illust. */
+  trendTags: TrendingTagIllust[]
+}
+
+/**
+ * Response shape for GET /v1/search/popular-preview/illust.
+ *
+ * Single page: the endpoint returns no `next_url`.
+ */
+export interface IllustPopularPreviewResponse {
+  /** Popular illusts for the search keyword. */
+  illusts: PixivIllustItem[]
+  /** Maximum number of results the search will return. */
+  searchSpanLimit: number
+}
+
+/**
+ * Response shape for GET /v1/search/popular-preview/novel.
+ *
+ * Single page: the endpoint returns no `next_url`.
+ */
+export interface NovelPopularPreviewResponse {
+  /** Popular novels for the search keyword. */
+  novels: PixivNovelItem[]
+  /** Maximum number of results the search will return. */
+  searchSpanLimit: number
+}
+
 // Manga endpoint responses
 
 /** Page response for GET /v1/manga/recommended. */
@@ -639,6 +758,72 @@ export interface MangaRecommendedPage {
   rankingIllusts: PixivIllustItem[]
   /** Privacy-policy notice (present on the first page). */
   privacyPolicy?: PrivacyPolicy
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** A series on the authenticated user's watchlist. */
+export interface WatchlistSeries {
+  /** Series ID. */
+  id: number
+  /** Series title. */
+  title: string
+  /** URL of the series page. */
+  url: string
+  /** Mask text shown in place of the title, or `null` when not masked. */
+  maskText: string | null
+  /** Number of published works in the series. */
+  publishedContentCount: number
+  /** Datetime (ISO 8601) of the most recently published work. */
+  lastPublishedContentDatetime: string
+  /** ID of the most recently published work. */
+  latestContentId: number
+  /** Author of the series. */
+  user: PixivUser
+}
+
+/** Page response for GET /v1/watchlist/manga. */
+export interface WatchlistMangaPage {
+  /** Manga series on this page. */
+  series: WatchlistSeries[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Page response for GET /v1/watchlist/novel. */
+export interface WatchlistNovelPage {
+  /** Novel series on this page. */
+  series: WatchlistSeries[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+// Spotlight endpoint responses
+
+/** A pixivision spotlight article. */
+export interface SpotlightArticle {
+  /** Article ID. */
+  id: number
+  /** Article title. */
+  title: string
+  /** Article title without decoration. */
+  pureTitle: string
+  /** Thumbnail image URL. */
+  thumbnail: string
+  /** URL of the article on pixivision. */
+  articleUrl: string
+  /** Publication date-time (ISO 8601 with offset). */
+  publishDate: string
+  /** Kind of the article (e.g. `"spotlight"`, `"inspiration"`). */
+  category: string
+  /** Display label of the article's subcategory. */
+  subcategoryLabel: string
+}
+
+/** Page response for GET /v1/spotlight/articles. */
+export interface SpotlightArticlesPage {
+  /** Spotlight articles on this page (10 per page). */
+  spotlightArticles: SpotlightArticle[]
   /** URL to the next page, or `null` when this is the last page. */
   nextUrl: string | null
 }
@@ -685,9 +870,9 @@ export interface NovelRecommendedPage {
   nextUrl: string | null
 }
 
-/** Page response for GET /v1/novel/comments. */
+/** Page response for GET /v3/novel/comments. */
 export interface NovelCommentsPage {
-  /** Total number of comments on the novel (present only when `includeTotalComments` is requested). */
+  /** Total number of comments on the novel. Not returned by v3; use `novel.totalComments` from `novels.detail()` instead. */
   totalComments?: number
   /** Comments on this page. */
   comments: NovelComment[]
@@ -695,6 +880,14 @@ export interface NovelCommentsPage {
   nextUrl: string | null
   /** Who is permitted to post comments (may be absent). */
   commentAccessControl?: number
+}
+
+/** Page response for GET /v2/novel/comment/replies. */
+export interface NovelCommentRepliesPage {
+  /** Replies on this page. */
+  comments: NovelComment[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
 }
 
 /** Page response for GET /v2/novel/series. */
@@ -707,6 +900,28 @@ export interface NovelSeriesPage {
   novelSeriesLatestNovel: PixivNovelItem
   /** Novels on this page. */
   novels: PixivNovelItem[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Saved reading position of a novel. */
+export interface NovelMarker {
+  /** Marked page number within the novel. */
+  page: number
+}
+
+/** A novel together with the authenticated user's saved marker. */
+export interface MarkedNovel {
+  /** The marked novel. */
+  novel: PixivNovelItem
+  /** The saved reading position. */
+  novelMarker: NovelMarker
+}
+
+/** Page response for GET /v2/novel/markers. */
+export interface NovelMarkersPage {
+  /** Marked novels on this page. */
+  markedNovels: MarkedNovel[]
   /** URL to the next page, or `null` when this is the last page. */
   nextUrl: string | null
 }
@@ -799,7 +1014,111 @@ export interface WebviewNovel {
 
 // User endpoint responses
 
-/** Response shape for GET /v1/user/detail. */
+/** Badge shown on a user's profile, returned by GET /v2/user/detail. */
+export interface PixivUserProfileBadge {
+  /** Badge kind (observed: `"premium"`, `"official"`). */
+  type: string
+  /** Badge icon URL, or `null` when none is provided. */
+  url: string | null
+}
+
+/** Detailed profile information returned by GET /v2/user/detail. */
+export interface PixivUserProfileV2 {
+  /** Personal website URL, or `null` if not set. */
+  webpage: string | null
+  /** Numeric gender code (observed: 0, 1, 2), or `null` when not disclosed. */
+  gender: number | null
+  /** Birth date string, or `null` when not disclosed. */
+  birth: string | null
+  /** Birth day portion (MM-DD format), or `null` when not disclosed. */
+  birthDay: string | null
+  /** Birth year, or `null` when not disclosed. */
+  birthYear: number | null
+  /** Region / prefecture, or `null` when not disclosed. */
+  region: string | null
+  /** Internal address ID, or `null` when not disclosed. */
+  addressId: number | null
+  /** Country code, or `null` when not disclosed. */
+  countryCode: string | null
+  /** Occupation / job description, or `null` when not disclosed. */
+  job: string | null
+  /** Internal job category ID, or `null` when not disclosed. */
+  jobId: number | null
+  /** Number of users this user follows. */
+  totalFollowUsers: number
+  /** Number of mutual-follow (mypixiv) connections. */
+  totalMypixivUsers: number
+  /** Total number of public illusts. */
+  totalIllusts: number
+  /** Total number of public manga works. */
+  totalManga: number
+  /** Total number of public novels. */
+  totalNovels: number
+  /** Total number of illust series. */
+  totalIllustSeries: number
+  /** Total number of novel series. */
+  totalNovelSeries: number
+  /** Profile background image URL, or `null` if not set. */
+  backgroundImageUrl: string | null
+  /** Linked Twitter/X account name (without @), or `null` if not set. */
+  twitterAccount: string | null
+  /** Twitter/X profile URL, or `null` if not set. */
+  twitterUrl: string | null
+  /** Whether the user has a premium (paid) account. */
+  isPremium: boolean
+  /** Whether the user has set a custom profile image. */
+  isUsingCustomProfileImage: boolean
+  /** Profile badge, or `null` when the user has none. */
+  badge: PixivUserProfileBadge | null
+}
+
+/** Visibility settings returned by GET /v2/user/detail (each `null` when not exposed). */
+export interface PixivUserProfilePublicityV2 {
+  /** Visibility of the gender field. */
+  gender: Publicity | null
+  /** Visibility of the region field. */
+  region: Publicity | null
+  /** Visibility of the birth-day field. */
+  birthDay: Publicity | null
+  /** Visibility of the birth-year field. */
+  birthYear: Publicity | null
+  /** Visibility of the job field. */
+  job: Publicity | null
+}
+
+/** Workspace information returned by GET /v2/user/detail (no image URL). */
+export type PixivUserProfileWorkspaceV2 = Omit<
+  PixivUserProfileWorkspace,
+  'workspaceImageUrl'
+>
+
+/**
+ * Response shape for GET /v2/user/detail.
+ *
+ * Differs from {@link UserDetailResponse}: several profile values are nullable,
+ * `disabledLinks` and `profile.badge` are present, and the v1-only fields
+ * (`profile.pawooUrl`, `profile.totalIllustBookmarksPublic`,
+ * `profilePublicity.pawoo`, `workspace.workspaceImageUrl`) are absent.
+ */
+export interface UserDetailV2Response {
+  /** Basic user info with self-introduction. */
+  user: PixivUserItem & { isAcceptRequest: boolean }
+  /** Detailed profile data. */
+  profile: PixivUserProfileV2
+  /** Visibility settings for profile fields. */
+  profilePublicity: PixivUserProfilePublicityV2
+  /** Workspace / desk-setup information. */
+  workspace: PixivUserProfileWorkspaceV2
+  /** Links the user has disabled; the element shape is not yet known. */
+  disabledLinks: unknown[]
+}
+
+/**
+ * Response shape for GET /v1/user/detail.
+ *
+ * See {@link UserDetailV2Response} (`users.detailV2()`) for the v2 endpoint
+ * and its additional fields.
+ */
 export interface UserDetailResponse {
   /** Basic user info with self-introduction. */
   user: PixivUserItem
@@ -809,6 +1128,104 @@ export interface UserDetailResponse {
   profilePublicity: PixivUserProfilePublicity
   /** Workspace / desk-setup information. */
   workspace: PixivUserProfileWorkspace
+}
+
+/** Response shape for GET /v1/user/ai-show-settings. */
+export interface AiShowSettingsResponse {
+  /** Whether AI-generated works are shown. */
+  showAi: boolean
+}
+
+/** Response shape for GET /v1/user/restricted-mode-settings. */
+export interface RestrictedModeSettingsResponse {
+  /** Whether restricted mode is enabled. */
+  isRestrictedModeEnabled: boolean
+}
+
+/** A tag in the authenticated user's mute list. */
+export interface MutedTag {
+  /** The muted tag. */
+  tag: {
+    /** Tag name. */
+    name: string
+  }
+  /** Whether the tag occupies a premium-only mute slot. */
+  isPremiumSlot: boolean
+}
+
+/** Response shape for GET /v1/mute/list. */
+export interface MuteListResponse {
+  /** Muted tags. */
+  mutedTags: MutedTag[]
+  /** Muted users. The item shape is not known, so callers must narrow it. */
+  mutedUsers: unknown[]
+  /** Total number of muted items. */
+  mutedCount: number
+  /** Number of muted tags. */
+  mutedTagsCount: number
+  /** Number of muted users. */
+  mutedUsersCount: number
+  /** Maximum number of mute entries for the current account. */
+  muteLimitCount: number
+  /** Mute limits shown in the UI text, by premium status. */
+  forText: {
+    /** Mute limit for accounts without premium. */
+    muteLimitCountIfNoPremium: number
+    /** Mute limit for premium accounts. */
+    muteLimitCountIfPremium: number
+  }
+}
+
+/** Account state flags returned by GET /v1/user/me/state. */
+export interface UserMeState {
+  /** Whether the mail address is verified. */
+  isMailAuthorized: boolean
+  /** Whether a mail address is registered. */
+  hasMailAddress: boolean
+  /** Whether the pixiv ID has been changed. */
+  hasChangedPixivId: boolean
+  /** Whether the pixiv ID can be changed. */
+  canChangePixivId: boolean
+  /** Whether a password is set. */
+  hasPassword: boolean
+  /** Whether a policy agreement is required. */
+  requirePolicyAgreement: boolean
+  /** Whether the account has no login method. */
+  noLoginMethod: boolean
+  /** Whether the account is restricted. */
+  isUserRestricted: boolean
+  /** Whether official event notifications are enabled. */
+  isOfficialEventNotificationsEnabled: boolean
+}
+
+/** Profile of the authenticated user returned by GET /v1/user/me/state. */
+export interface UserMeProfile {
+  /** User ID. */
+  userId: number
+  /** pixiv ID (account name). */
+  pixivId: string
+  /** Display name. */
+  name: string
+  /** Profile image URLs. */
+  profileImageUrls: ProfileImageUrls
+  /** Whether the account has premium. */
+  isPremium: boolean
+  /** Restriction level of the account's content setting. */
+  xRestrict: number
+}
+
+/** Response shape for GET /v1/user/me/state. */
+export interface UserMeStateResponse {
+  /** Account state flags. */
+  userState: UserMeState
+  /** Profile of the authenticated user. */
+  profile: UserMeProfile
+}
+
+/** Response shape for GET /v1/notification/has-unread-notifications. */
+export interface HasUnreadNotificationsResponse {
+  /** Whether there are unread notifications. */
+  hasUnreadNotifications: boolean
 }
 
 /** Page response for GET /v1/user/illusts. */
@@ -913,11 +1330,14 @@ export interface UserListPage {
   nextUrl: string | null
 }
 
-/** A bookmark tag with usage count, as returned by GET /v1/user/bookmark-tags/illust. */
+/**
+ * A bookmark tag with usage count, as returned by GET /v1/user/bookmark-tags/illust
+ * and GET /v1/user/bookmark-tags/novel.
+ */
 export interface BookmarkTag {
   /** Tag name. */
   name: string
-  /** Number of bookmarked illusts carrying this tag. */
+  /** Number of bookmarked works (illusts or novels) carrying this tag. */
   count: number
   /** Whether this tag is registered by the authenticated user (may be absent). */
   isRegistered?: boolean
@@ -929,4 +1349,34 @@ export interface UserBookmarkTagsIllustPage {
   bookmarkTags: BookmarkTag[]
   /** URL to the next page, or `null` when this is the last page. */
   nextUrl: string | null
+}
+
+/** Page response for GET /v1/user/bookmark-tags/novel. */
+export interface UserBookmarkTagsNovelPage {
+  /** Bookmark tags on this page. */
+  bookmarkTags: BookmarkTag[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Page response for GET /v1/novel/bookmark/users. */
+export interface NovelBookmarkUsersPage {
+  /** Users who bookmarked the novel, on this page. */
+  users: PixivUser[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Follow state of the authenticated user toward another user. */
+export interface FollowDetail {
+  /** Whether the authenticated user follows the target user. */
+  isFollowed: boolean
+  /** Follow visibility, or `""` when the target user is not followed. */
+  restrict: 'public' | 'private' | ''
+}
+
+/** Response shape for GET /v1/user/follow/detail. */
+export interface UserFollowDetailResponse {
+  /** Follow state for the requested user. */
+  followDetail: FollowDetail
 }
