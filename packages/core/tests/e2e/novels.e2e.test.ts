@@ -91,6 +91,15 @@ describe.skipIf(SKIP)('PixivClient e2e — novels', () => {
     expect(result.value.novels.length).toBeGreaterThan(0)
   })
 
+  it('novels.recommended with view history (POST)', async () => {
+    const result = await client.novels.recommended({
+      viewed: [{ id: NOVEL_ID, viewedAt: new Date() }],
+    })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(result.value.novels.length).toBeGreaterThan(0)
+  })
+
   it('novels.series', async () => {
     const result = await client.novels.series({ seriesId: NOVEL_SERIES_ID })
     expect(result.isOk).toBe(true)
