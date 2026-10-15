@@ -149,6 +149,17 @@ export interface NovelFollowParams {
   offset?: number
 }
 
+/**
+ * Parameters for fetching novels posted by mypixiv (mutual follow) users.
+ *
+ * The endpoint does not support `offset`; paginate with `maxNovelId` or by
+ * following `next_url` through the returned paginated result.
+ */
+export interface NovelMypixivParams {
+  /** Cursor: fetch novels posted before this novel ID. */
+  maxNovelId?: number
+}
+
 /** Parameters for fetching comments on a novel. */
 export interface NovelCommentsParams {
   /** ID of the novel to fetch comments for. */
@@ -462,6 +473,26 @@ export class NovelResource {
           restrict: params.restrict ?? 'public',
           offset: params.offset,
         })
+      ),
+      this.#http,
+      (page) => page.novels
+    )
+  }
+
+  /**
+   * Fetches novels posted by the authenticated account's mypixiv (mutual
+   * follow) users.
+   * GET /v1/novel/mypixiv
+   *
+   * @param params - Request parameters
+   */
+  mypixiv(
+    params: NovelMypixivParams = {}
+  ): PaginatedResultAsync<NovelListPage, PixivNovelItem> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<NovelListPage>(
+        '/v1/novel/mypixiv',
+        buildParams({ maxNovelId: params.maxNovelId })
       ),
       this.#http,
       (page) => page.novels
