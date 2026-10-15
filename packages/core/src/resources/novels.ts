@@ -20,6 +20,7 @@ import type {
   NovelComment,
   NovelCommentRepliesPage,
   NovelCommentsPage,
+  NovelBookmarkUsersPage,
   NovelDetailResponse,
   MarkedNovel,
   NovelListPage,
@@ -28,6 +29,7 @@ import type {
   NovelRecommendedPage,
   NovelSeriesPage,
   PixivNovelItem,
+  PixivUser,
   TrendingTagsNovelResponse,
   WatchlistNovelPage,
   WatchlistSeries,
@@ -170,6 +172,14 @@ export interface NovelBookmarkAddParams {
 export interface NovelBookmarkDeleteParams {
   /** ID of the novel to remove from bookmarks. */
   novelId: number
+}
+
+/** Parameters for fetching the users who bookmarked a novel. */
+export interface NovelBookmarkUsersParams {
+  /** ID of the novel whose bookmarking users to fetch. */
+  novelId: number
+  /** Zero-based offset for pagination. */
+  offset?: number
 }
 
 /** Parameters for fetching novels posted by followed users. */
@@ -545,6 +555,25 @@ export class NovelResource {
     return this.#http.post<Record<string, never>>(
       '/v1/novel/bookmark/delete',
       body.toString()
+    )
+  }
+
+  /**
+   * Fetches the users who bookmarked a novel.
+   * GET /v1/novel/bookmark/users
+   *
+   * @param params - Request parameters
+   */
+  bookmarkUsers(
+    params: NovelBookmarkUsersParams
+  ): PaginatedResultAsync<NovelBookmarkUsersPage, PixivUser> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<NovelBookmarkUsersPage>(
+        '/v1/novel/bookmark/users',
+        buildParams({ novelId: params.novelId, offset: params.offset })
+      ),
+      this.#http,
+      (page) => page.users
     )
   }
 

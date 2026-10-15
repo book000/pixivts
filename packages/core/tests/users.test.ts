@@ -11,6 +11,8 @@ import {
   mockUserMypixiv,
   mockUserList,
   mockUserBookmarkTagsIllust,
+  mockUserBookmarkTagsNovel,
+  mockUserFollowDetail,
   mockUserEditAiShowSettings,
   mockUserSearch,
 } from './msw/users'
@@ -871,6 +873,175 @@ describe('users.bookmarkTagsIllust()', () => {
     const params = new URL(capturedUrl).searchParams
     expect(params.get('restrict')).toBe('public')
     expect(params.get('offset')).toBe('20')
+  })
+})
+
+describe('users.bookmarkTagsNovel()', () => {
+  const AUTH_HANDLER = http.post(
+    'https://oauth.secure.pixiv.net/auth/token',
+    () => HttpResponse.json(AUTH_RESPONSE)
+  )
+
+  it('returns Ok with bookmark tags mapped to camelCase', async () => {
+    server.use(
+      AUTH_HANDLER,
+      mockUserBookmarkTagsNovel({
+        bookmark_tags: [{ name: 'favorite', count: 3 }],
+        next_url: 'https://app-api.pixiv.net/v1/user/bookmark-tags/novel',
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.bookmarkTagsNovel({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    expect(result.value.bookmarkTags).toEqual([{ name: 'favorite', count: 3 }])
+    expect(result.value.nextUrl).toBe(
+      'https://app-api.pixiv.net/v1/user/bookmark-tags/novel'
+    )
+  })
+
+  it('defaults restrict to public', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/user/bookmark-tags/novel',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({ bookmark_tags: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.bookmarkTagsNovel({ userId: 42 })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('user_id')).toBe('42')
+    expect(params.get('restrict')).toBe('public')
+    expect(params.has('offset')).toBe(false)
+  })
+
+  it('forwards restrict and offset', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/user/bookmark-tags/novel',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({ bookmark_tags: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.bookmarkTagsNovel({
+      userId: 42,
+      restrict: 'private',
+      offset: 20,
+    })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('restrict')).toBe('private')
+    expect(params.get('offset')).toBe('20')
+  })
+
+  it('returns Err on an HTTP error', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/user/bookmark-tags/novel',
+        () => new HttpResponse(null, { status: 400 })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.bookmarkTagsNovel({ userId: 42 })
+    expect(result.isOk).toBe(false)
+  })
+})
+
+describe('users.followDetail()', () => {
+  const AUTH_HANDLER = http.post(
+    'https://oauth.secure.pixiv.net/auth/token',
+    () => HttpResponse.json(AUTH_RESPONSE)
+  )
+
+  it('maps a privately followed user', async () => {
+    server.use(
+      AUTH_HANDLER,
+      mockUserFollowDetail({
+        follow_detail: { is_followed: true, restrict: 'private' },
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.followDetail({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    expect(result.value.followDetail).toEqual({
+      isFollowed: true,
+      restrict: 'private',
+    })
+  })
+
+  it('maps a user who is not followed', async () => {
+    server.use(
+      AUTH_HANDLER,
+      mockUserFollowDetail({
+        follow_detail: { is_followed: false, restrict: '' },
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.followDetail({ userId: 42 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    expect(result.value.followDetail).toEqual({
+      isFollowed: false,
+      restrict: '',
+    })
+  })
+
+  it('sends user_id in the query', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/user/follow/detail',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({
+            follow_detail: { is_followed: false, restrict: '' },
+          })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.users.followDetail({ userId: 42 })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    expect(new URL(capturedUrl).searchParams.get('user_id')).toBe('42')
+  })
+
+  it('returns Err on an HTTP error', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/user/follow/detail',
+        () => new HttpResponse(null, { status: 404 })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.users.followDetail({ userId: 42 })
+    expect(result.isOk).toBe(false)
   })
 })
 

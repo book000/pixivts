@@ -42,6 +42,12 @@ export function mockNovelBookmarkAdd(body: JsonBodyType) {
   )
 }
 
+export function mockNovelBookmarkUsers(body: JsonBodyType) {
+  return http.get('https://app-api.pixiv.net/v1/novel/bookmark/users', () =>
+    HttpResponse.json(body)
+  )
+}
+
 export function mockNovelBookmarkDelete(body: JsonBodyType) {
   return http.post('https://app-api.pixiv.net/v1/novel/bookmark/delete', () =>
     HttpResponse.json(body)

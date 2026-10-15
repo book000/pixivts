@@ -17,6 +17,13 @@ describe.skipIf(SKIP)('PixivClient e2e — novels', () => {
     client = await PixivClient.of(REFRESH_TOKEN ?? '')
   })
 
+  it('novels.bookmarkUsers', async () => {
+    const result = await client.novels.bookmarkUsers({ novelId: NOVEL_ID })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.users)).toBe(true)
+  })
+
   it('novels.trendingTags', async () => {
     const result = await client.novels.trendingTags()
     expect(result.isOk).toBe(true)

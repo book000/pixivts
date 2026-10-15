@@ -62,6 +62,18 @@ export function mockUserBookmarkTagsIllust(body: JsonBodyType) {
   )
 }
 
+export function mockUserBookmarkTagsNovel(body: JsonBodyType) {
+  return http.get('https://app-api.pixiv.net/v1/user/bookmark-tags/novel', () =>
+    HttpResponse.json(body)
+  )
+}
+
+export function mockUserFollowDetail(body: JsonBodyType) {
+  return http.get('https://app-api.pixiv.net/v1/user/follow/detail', () =>
+    HttpResponse.json(body)
+  )
+}
+
 export function mockUserEditAiShowSettings(body: JsonBodyType) {
   return http.post(
     'https://app-api.pixiv.net/v1/user/ai-show-settings/edit',

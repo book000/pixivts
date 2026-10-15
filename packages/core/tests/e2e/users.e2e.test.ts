@@ -129,6 +129,22 @@ describe.skipIf(SKIP)('PixivClient e2e — users', () => {
     expect(Array.isArray(result.value.bookmarkTags)).toBe(true)
   })
 
+  it('users.bookmarkTagsNovel', async () => {
+    const result = await client.users.bookmarkTagsNovel({
+      userId: STAFF_USER_ID,
+    })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.bookmarkTags)).toBe(true)
+  })
+
+  it('users.followDetail', async () => {
+    const result = await client.users.followDetail({ userId: STAFF_USER_ID })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(typeof result.value.followDetail.isFollowed).toBe('boolean')
+  })
+
   it('users.aiShowSettings', async () => {
     const result = await client.users.aiShowSettings()
     expect(result.isOk).toBe(true)
