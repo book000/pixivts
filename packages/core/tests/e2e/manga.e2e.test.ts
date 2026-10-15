@@ -15,4 +15,11 @@ describe.skipIf(SKIP)('PixivClient e2e — manga', () => {
     if (!result.isOk) return
     expect(result.value.illusts.length).toBeGreaterThan(0)
   })
+
+  it('manga.watchlist', async () => {
+    const result = await client.manga.watchlist()
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) return
+    expect(Array.isArray(result.value.series)).toBe(true)
+  })
 })

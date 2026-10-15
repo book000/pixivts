@@ -5,7 +5,12 @@ import type { HttpClient } from '../http'
 import { buildParams } from '../params'
 import { PaginatedResultAsync } from '../paginated'
 import { OSFilter } from '../options'
-import type { MangaRecommendedPage, PixivIllustItem } from '../types'
+import type {
+  MangaRecommendedPage,
+  PixivIllustItem,
+  WatchlistMangaPage,
+  WatchlistSeries,
+} from '../types'
 
 /** Parameters for fetching recommended manga. */
 export interface MangaRecommendedParams {
@@ -44,6 +49,20 @@ export class MangaResource {
       ),
       this.#http,
       (page) => page.illusts
+    )
+  }
+
+  /**
+   * Fetches the authenticated user's manga series watchlist.
+   * GET /v1/watchlist/manga
+   *
+   * Takes no parameters; later pages follow the server-provided `next_url`.
+   */
+  watchlist(): PaginatedResultAsync<WatchlistMangaPage, WatchlistSeries> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<WatchlistMangaPage>('/v1/watchlist/manga'),
+      this.#http,
+      (page) => page.series
     )
   }
 }
