@@ -110,6 +110,18 @@ export interface NovelRankingParams {
   offset?: number
 }
 
+/** A novel the user has viewed, sent as view history. */
+export interface NovelViewedEntry {
+  /** ID of the viewed novel. */
+  id: number
+  /**
+   * When the novel was viewed. A `Date` is formatted as ISO 8601 with
+   * milliseconds and the local UTC offset (e.g. `2026-10-14T23:23:55.960+09:00`);
+   * a string is sent as-is.
+   */
+  viewedAt: Date | string
+}
+
 /** Parameters for fetching recommended novels. */
 export interface NovelRecommendedParams {
   /** OS filter to apply (default: `"for_ios"`). */
@@ -121,6 +133,21 @@ export interface NovelRecommendedParams {
    * extracted from a previous page's `next_url` via {@link parseNextUrl}.
    */
   maxBookmarkIdForRecommend?: number
+  /**
+   * View history to send with the request.
+   * When non-empty, the first page is fetched with `POST` and the history is
+   * serialised as paired `view_novel_ids[]` / `view_novel_datetimes[]` body
+   * fields; pagination via `next_url` still uses `GET`. Omit (or pass an empty
+   * array) to keep the plain `GET` request.
+   *
+   * Observed limits: `GET` fails with `414` at 100 pairs, while `POST` succeeds
+   * with 200 pairs and fails with `500` at 1000 pairs. Whether the history
+   * changes the recommendations is unproven.
+   *
+   * When a response interceptor such as the DB recorder is used, the history
+   * is stored as part of the recorded request body.
+   */
+  viewed?: NovelViewedEntry[]
 }
 
 /** Parameters for fetching a novel series. */
@@ -163,6 +190,17 @@ export interface NovelFollowParams {
   offset?: number
 }
 
+/**
+ * Parameters for fetching novels posted by mypixiv (mutual follow) users.
+ *
+ * The endpoint does not support `offset`; paginate with `maxNovelId` or by
+ * following `next_url` through the returned paginated result.
+ */
+export interface NovelMypixivParams {
+  /** Cursor: fetch novels posted before this novel ID. */
+  maxNovelId?: number
+}
+
 /** Parameters for fetching comments on a novel. */
 export interface NovelCommentsParams {
   /** ID of the novel to fetch comments for. */
@@ -192,6 +230,24 @@ export interface NovelNewParams {
   filter?: (typeof OSFilter)[keyof typeof OSFilter]
   /** Cursor: fetch novels posted before this novel ID. */
   maxNovelId?: number
+}
+
+/**
+ * Formats a view timestamp as ISO 8601 with milliseconds and the local UTC
+ * offset of that instant. Strings are returned unchanged.
+ */
+function formatViewedAt(value: Date | string): string {
+  if (typeof value === 'string') return value
+  const pad = (n: number, width = 2) => String(n).padStart(width, '0')
+  const offsetMinutes = -value.getTimezoneOffset()
+  const sign = offsetMinutes < 0 ? '-' : '+'
+  const absOffset = Math.abs(offsetMinutes)
+  return (
+    `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())}` +
+    `T${pad(value.getHours())}:${pad(value.getMinutes())}:${pad(value.getSeconds())}` +
+    `.${pad(value.getMilliseconds(), 3)}` +
+    `${sign}${pad(Math.floor(absOffset / 60))}:${pad(absOffset % 60)}`
+  )
 }
 
 /** Methods for the novel API namespace. */
@@ -382,24 +438,38 @@ export class NovelResource {
 
   /**
    * Fetches recommended novels.
-   * GET /v1/novel/recommended
+   * GET /v1/novel/recommended, or POST /v1/novel/recommended when
+   * `params.viewed` is non-empty.
    *
    * @param params - Request parameters
    */
   recommended(
     params: NovelRecommendedParams = {}
   ): PaginatedResultAsync<NovelRecommendedPage, PixivNovelItem> {
+    const path = '/v1/novel/recommended'
+    const query = {
+      filter: params.filter ?? 'for_ios',
+      includeRankingNovels: true,
+      includePrivacyPolicy: true,
+      offset: params.offset,
+      maxBookmarkIdForRecommend: params.maxBookmarkIdForRecommend,
+    }
+    const viewed = params.viewed ?? []
+    const first =
+      viewed.length > 0
+        ? this.#http.post<NovelRecommendedPage>(
+            path,
+            buildParams({
+              ...query,
+              viewNovelIds: viewed.map((entry) => entry.id),
+              viewNovelDatetimes: viewed.map((entry) =>
+                formatViewedAt(entry.viewedAt)
+              ),
+            }).toString()
+          )
+        : this.#http.get<NovelRecommendedPage>(path, buildParams(query))
     return PaginatedResultAsync.fromResultAsync(
-      this.#http.get<NovelRecommendedPage>(
-        '/v1/novel/recommended',
-        buildParams({
-          filter: params.filter ?? 'for_ios',
-          includeRankingNovels: true,
-          includePrivacyPolicy: true,
-          offset: params.offset,
-          maxBookmarkIdForRecommend: params.maxBookmarkIdForRecommend,
-        })
-      ),
+      first,
       this.#http,
       (page) => page.novels
     )
@@ -523,6 +593,29 @@ export class NovelResource {
           restrict: params.restrict ?? 'public',
           offset: params.offset,
         })
+      ),
+      this.#http,
+      (page) => page.novels
+    )
+  }
+
+  /**
+   * Fetches novels posted by the authenticated account's mypixiv (mutual
+   * follow) users.
+   * GET /v1/novel/mypixiv
+   *
+   * The endpoint ignores `offset`. Paginate with `maxNovelId`, or follow
+   * `next_url` via `.pages()` / `.items()`.
+   *
+   * @param params - Request parameters
+   */
+  mypixiv(
+    params: NovelMypixivParams = {}
+  ): PaginatedResultAsync<NovelListPage, PixivNovelItem> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<NovelListPage>(
+        '/v1/novel/mypixiv',
+        buildParams({ maxNovelId: params.maxNovelId })
       ),
       this.#http,
       (page) => page.novels

@@ -475,6 +475,79 @@ describe('illusts.follow()', () => {
   })
 })
 
+describe('illusts.mypixiv()', () => {
+  const AUTH_HANDLER = http.post(
+    'https://oauth.secure.pixiv.net/auth/token',
+    () => HttpResponse.json(AUTH_RESPONSE)
+  )
+
+  it('requests /v2/illust/mypixiv without a query and maps the response to camelCase', async () => {
+    let capturedSearch = 'unset'
+    server.use(
+      AUTH_HANDLER,
+      http.get('https://app-api.pixiv.net/v2/illust/mypixiv', ({ request }) => {
+        capturedSearch = new URL(request.url).search
+        return HttpResponse.json({
+          illusts: [ILLUST],
+          next_url: 'https://app-api.pixiv.net/v2/illust/mypixiv?offset=30',
+        })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.illusts.mypixiv()
+    expect(result.isOk).toBe(true)
+    if (result.isOk) {
+      expect(result.value.illusts).toHaveLength(1)
+      expect(result.value.illusts[0].imageUrls.medium).toBe(
+        'https://i.pximg.net/m.jpg'
+      )
+      expect(result.value.nextUrl).toBe(
+        'https://app-api.pixiv.net/v2/illust/mypixiv?offset=30'
+      )
+    }
+    expect(capturedSearch).toBe('')
+  })
+
+  it('sends offset when specified', async () => {
+    let capturedOffset = ''
+    server.use(
+      AUTH_HANDLER,
+      http.get('https://app-api.pixiv.net/v2/illust/mypixiv', ({ request }) => {
+        capturedOffset = new URL(request.url).searchParams.get('offset') ?? ''
+        return HttpResponse.json({ illusts: [ILLUST], next_url: null })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.illusts.mypixiv({ offset: 30 })
+    expect(result.isOk).toBe(true)
+    expect(capturedOffset).toBe('30')
+  })
+
+  it('follows next_url across pages with items()', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get('https://app-api.pixiv.net/v2/illust/mypixiv', ({ request }) => {
+        const offset = new URL(request.url).searchParams.get('offset')
+        return offset === '30'
+          ? HttpResponse.json({
+              illusts: [{ ...ILLUST, id: 2 }],
+              next_url: null,
+            })
+          : HttpResponse.json({
+              illusts: [ILLUST],
+              next_url: 'https://app-api.pixiv.net/v2/illust/mypixiv?offset=30',
+            })
+      })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const ids: number[] = []
+    for await (const illust of client.illusts.mypixiv().items()) {
+      ids.push(illust.id)
+    }
+    expect(ids).toEqual([1, 2])
+  })
+})
+
 describe('illusts.comments()', () => {
   const COMMENT_USER = {
     id: 99,
