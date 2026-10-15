@@ -8,6 +8,7 @@ import {
   mockNovelSearch,
   mockNovelRecommended,
   mockNovelSeries,
+  mockNovelBookmarkUsers,
 } from './msw/novels'
 
 const NOVEL = {
@@ -488,6 +489,125 @@ describe('novels.commentReplies()', () => {
     )
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.novels.commentReplies({ commentId: 1 })
+    expect(result.isOk).toBe(false)
+  })
+})
+
+describe('novels.bookmarkUsers()', () => {
+  const AUTH_HANDLER = http.post(
+    'https://oauth.secure.pixiv.net/auth/token',
+    () => HttpResponse.json(AUTH_RESPONSE)
+  )
+  const USER = {
+    id: 5,
+    name: 'Reader',
+    account: 'reader',
+    profile_image_urls: { medium: 'https://i.pximg.net/r.jpg' },
+    is_followed: true,
+    is_access_blocking_user: false,
+    is_accept_request: true,
+  }
+
+  it('maps users to camelCase', async () => {
+    server.use(
+      AUTH_HANDLER,
+      mockNovelBookmarkUsers({ users: [USER], next_url: null })
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.bookmarkUsers({ novelId: 7 })
+    expect(result.isOk).toBe(true)
+    if (!result.isOk) {
+      return
+    }
+
+    expect(result.value.users).toEqual([
+      {
+        id: 5,
+        name: 'Reader',
+        account: 'reader',
+        profileImageUrls: { medium: 'https://i.pximg.net/r.jpg' },
+        isFollowed: true,
+        isAccessBlockingUser: false,
+        isAcceptRequest: true,
+      },
+    ])
+    expect(result.value.nextUrl).toBeNull()
+  })
+
+  it('sends novel_id and omits offset when not given', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/bookmark/users',
+        ({ request }) => {
+          capturedUrl = request.url
+          return HttpResponse.json({ users: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.novels.bookmarkUsers({ novelId: 7 })
+    expect(capturedUrl).toBeDefined()
+    if (capturedUrl === undefined) return
+    const params = new URL(capturedUrl).searchParams
+    expect(params.get('novel_id')).toBe('7')
+    expect(params.has('offset')).toBe(false)
+  })
+
+  it('forwards offset', async () => {
+    let capturedOffset: string | null = null
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/bookmark/users',
+        ({ request }) => {
+          capturedOffset = new URL(request.url).searchParams.get('offset')
+          return HttpResponse.json({ users: [], next_url: null })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    await client.novels.bookmarkUsers({ novelId: 7, offset: 30 })
+    expect(capturedOffset).toBe('30')
+  })
+
+  it('follows next_url across pages with items()', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/bookmark/users',
+        ({ request }) => {
+          const offset = new URL(request.url).searchParams.get('offset')
+          return offset === '30'
+            ? HttpResponse.json({ users: [{ ...USER, id: 6 }], next_url: null })
+            : HttpResponse.json({
+                users: [USER],
+                next_url:
+                  'https://app-api.pixiv.net/v1/novel/bookmark/users?novel_id=7&offset=30',
+              })
+        }
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const ids: number[] = []
+    const userIterable = client.novels.bookmarkUsers({ novelId: 7 }).items()
+    for await (const user of userIterable) {
+      ids.push(user.id)
+    }
+    expect(ids).toEqual([5, 6])
+  })
+
+  it('returns Err on an HTTP error', async () => {
+    server.use(
+      AUTH_HANDLER,
+      http.get(
+        'https://app-api.pixiv.net/v1/novel/bookmark/users',
+        () => new HttpResponse(null, { status: 404 })
+      )
+    )
+    const client = await PixivClient.of('test-refresh-token')
+    const result = await client.novels.bookmarkUsers({ novelId: 7 })
     expect(result.isOk).toBe(false)
   })
 })

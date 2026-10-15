@@ -1272,11 +1272,14 @@ export interface UserListPage {
   nextUrl: string | null
 }
 
-/** A bookmark tag with usage count, as returned by GET /v1/user/bookmark-tags/illust. */
+/**
+ * A bookmark tag with usage count, as returned by GET /v1/user/bookmark-tags/illust
+ * and GET /v1/user/bookmark-tags/novel.
+ */
 export interface BookmarkTag {
   /** Tag name. */
   name: string
-  /** Number of bookmarked illusts carrying this tag. */
+  /** Number of bookmarked works (illusts or novels) carrying this tag. */
   count: number
   /** Whether this tag is registered by the authenticated user (may be absent). */
   isRegistered?: boolean
@@ -1288,4 +1291,34 @@ export interface UserBookmarkTagsIllustPage {
   bookmarkTags: BookmarkTag[]
   /** URL to the next page, or `null` when this is the last page. */
   nextUrl: string | null
+}
+
+/** Page response for GET /v1/user/bookmark-tags/novel. */
+export interface UserBookmarkTagsNovelPage {
+  /** Bookmark tags on this page. */
+  bookmarkTags: BookmarkTag[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Page response for GET /v1/novel/bookmark/users. */
+export interface NovelBookmarkUsersPage {
+  /** Users who bookmarked the novel, on this page. */
+  users: PixivUser[]
+  /** URL to the next page, or `null` when this is the last page. */
+  nextUrl: string | null
+}
+
+/** Follow state of the authenticated user toward another user. */
+export interface FollowDetail {
+  /** Whether the authenticated user follows the target user. */
+  isFollowed: boolean
+  /** Follow visibility, or `""` when the target user is not followed. */
+  restrict: 'public' | 'private' | ''
+}
+
+/** Response shape for GET /v1/user/follow/detail. */
+export interface UserFollowDetailResponse {
+  /** Follow state for the requested user. */
+  followDetail: FollowDetail
 }

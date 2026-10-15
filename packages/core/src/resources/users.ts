@@ -28,8 +28,10 @@ import type {
   UserBookmarksIllustPage,
   UserBookmarksNovelPage,
   UserBookmarkTagsIllustPage,
+  UserBookmarkTagsNovelPage,
   UserDetailResponse,
   UserDetailV2Response,
+  UserFollowDetailResponse,
   UserFollowerPage,
   UserFollowingPage,
   UserIllustsPage,
@@ -183,6 +185,22 @@ export interface UserBookmarkTagsIllustParams {
   restrict?: (typeof BookmarkRestrict)[keyof typeof BookmarkRestrict]
   /** Zero-based offset for pagination. */
   offset?: number
+}
+
+/** Parameters for fetching a user's novel bookmark tags. */
+export interface UserBookmarkTagsNovelParams {
+  /** ID of the user whose bookmark tags to fetch. */
+  userId: number
+  /** Visibility of the bookmarks to aggregate tags from (default: `"public"`). */
+  restrict?: (typeof BookmarkRestrict)[keyof typeof BookmarkRestrict]
+  /** Zero-based offset for pagination. */
+  offset?: number
+}
+
+/** Parameters for fetching the follow state toward a user. */
+export interface UserFollowDetailParams {
+  /** ID of the user whose follow state to fetch. */
+  userId: number
 }
 
 /** Parameters for searching users. */
@@ -616,6 +634,44 @@ export class UserResource {
       ),
       this.#http,
       (page) => page.bookmarkTags
+    )
+  }
+
+  /**
+   * Fetches a user's novel bookmark tags, with the number of bookmarks under each tag.
+   * GET /v1/user/bookmark-tags/novel
+   *
+   * @param params - Request parameters
+   */
+  bookmarkTagsNovel(
+    params: UserBookmarkTagsNovelParams
+  ): PaginatedResultAsync<UserBookmarkTagsNovelPage, BookmarkTag> {
+    return PaginatedResultAsync.fromResultAsync(
+      this.#http.get<UserBookmarkTagsNovelPage>(
+        '/v1/user/bookmark-tags/novel',
+        buildParams({
+          userId: params.userId,
+          restrict: params.restrict ?? 'public',
+          offset: params.offset,
+        })
+      ),
+      this.#http,
+      (page) => page.bookmarkTags
+    )
+  }
+
+  /**
+   * Fetches whether the authenticated user follows a user, and with which visibility.
+   * GET /v1/user/follow/detail
+   *
+   * @param params - Request parameters
+   */
+  followDetail(
+    params: UserFollowDetailParams
+  ): ResultAsync<UserFollowDetailResponse, PixivError> {
+    return this.#http.get<UserFollowDetailResponse>(
+      '/v1/user/follow/detail',
+      buildParams({ userId: params.userId })
     )
   }
 
