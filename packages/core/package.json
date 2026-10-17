@@ -41,13 +41,13 @@
   },
   "devDependencies": {
     "@types/node": "24.19.2",
-    "@vitest/coverage-v8": "5.0.3",
+    "@vitest/coverage-v8": "5.0.4",
     "msw": "3.0.3",
     "tsdown": "0.23.1",
     "typedoc": "0.28.20",
     "typescript": "6.0.3",
-    "vitest": "5.0.3",
-    "zod": "4.6.6"
+    "vitest": "5.0.4",
+    "zod": "4.6.7"
   },
   "scripts": {
     "build": "tsdown",
