@@ -43,18 +43,18 @@
   },
   "dependencies": {
     "drizzle-orm": "0.45.4",
-    "mysql2": "3.24.5"
+    "mysql2": "3.24.6"
   },
   "peerDependencies": {
     "@book000/pixivts": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "24.19.2",
-    "@vitest/coverage-v8": "5.0.3",
+    "@vitest/coverage-v8": "5.0.5",
     "drizzle-kit": "0.31.11",
     "tsdown": "0.23.1",
     "typescript": "6.0.3",
-    "vitest": "5.0.3"
+    "vitest": "5.0.5"
   },
   "scripts": {
     "build": "tsdown",
