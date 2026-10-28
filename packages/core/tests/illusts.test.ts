@@ -181,12 +181,15 @@ describe('illusts.search().pages() — multi-page', () => {
       ),
       http.get('https://app-api.pixiv.net/v1/search/illust', ({ request }) => {
         const offset = new URL(request.url).searchParams.get('offset')
-        return offset === '30'
-          ? HttpResponse.json({ illusts: [ILLUST2], next_url: null })
-          : HttpResponse.json({
-              illusts: [ILLUST],
-              next_url: 'https://app-api.pixiv.net/v1/search/illust?offset=30',
-            })
+        return HttpResponse.json(
+          offset === '30'
+            ? { illusts: [ILLUST2], next_url: null }
+            : {
+                illusts: [ILLUST],
+                next_url:
+                  'https://app-api.pixiv.net/v1/search/illust?offset=30',
+              }
+        )
       })
     )
     const client = await PixivClient.of('test-refresh-token')
@@ -212,15 +215,18 @@ describe('illusts.search().items() — multi-page', () => {
       ),
       http.get('https://app-api.pixiv.net/v1/search/illust', ({ request }) => {
         const offset = new URL(request.url).searchParams.get('offset')
-        return offset === '30'
-          ? HttpResponse.json({
-              illusts: [ILLUST3, ILLUST4],
-              next_url: null,
-            })
-          : HttpResponse.json({
-              illusts: [ILLUST, ILLUST2],
-              next_url: 'https://app-api.pixiv.net/v1/search/illust?offset=30',
-            })
+        return HttpResponse.json(
+          offset === '30'
+            ? {
+                illusts: [ILLUST3, ILLUST4],
+                next_url: null,
+              }
+            : {
+                illusts: [ILLUST, ILLUST2],
+                next_url:
+                  'https://app-api.pixiv.net/v1/search/illust?offset=30',
+              }
+        )
       })
     )
     const client = await PixivClient.of('test-refresh-token')
@@ -528,15 +534,18 @@ describe('illusts.mypixiv()', () => {
       AUTH_HANDLER,
       http.get('https://app-api.pixiv.net/v2/illust/mypixiv', ({ request }) => {
         const offset = new URL(request.url).searchParams.get('offset')
-        return offset === '30'
-          ? HttpResponse.json({
-              illusts: [{ ...ILLUST, id: 2 }],
-              next_url: null,
-            })
-          : HttpResponse.json({
-              illusts: [ILLUST],
-              next_url: 'https://app-api.pixiv.net/v2/illust/mypixiv?offset=30',
-            })
+        return HttpResponse.json(
+          offset === '30'
+            ? {
+                illusts: [{ ...ILLUST, id: 2 }],
+                next_url: null,
+              }
+            : {
+                illusts: [ILLUST],
+                next_url:
+                  'https://app-api.pixiv.net/v2/illust/mypixiv?offset=30',
+              }
+        )
       })
     )
     const client = await PixivClient.of('test-refresh-token')
@@ -757,16 +766,18 @@ describe('illusts.commentReplies()', () => {
         'https://app-api.pixiv.net/v2/illust/comment/replies',
         ({ request }) => {
           const offset = new URL(request.url).searchParams.get('offset')
-          return offset === '30'
-            ? HttpResponse.json({
-                comments: [REPLY_WITHOUT_STAMP],
-                next_url: null,
-              })
-            : HttpResponse.json({
-                comments: [REPLY_WITH_STAMP],
-                next_url:
-                  'https://app-api.pixiv.net/v2/illust/comment/replies?comment_id=1&offset=30',
-              })
+          return HttpResponse.json(
+            offset === '30'
+              ? {
+                  comments: [REPLY_WITHOUT_STAMP],
+                  next_url: null,
+                }
+              : {
+                  comments: [REPLY_WITH_STAMP],
+                  next_url:
+                    'https://app-api.pixiv.net/v2/illust/comment/replies?comment_id=1&offset=30',
+                }
+          )
         }
       )
     )

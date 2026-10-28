@@ -212,16 +212,18 @@ describe('novels.mypixiv()', () => {
       AUTH_HANDLER,
       http.get('https://app-api.pixiv.net/v1/novel/mypixiv', ({ request }) => {
         const maxNovelId = new URL(request.url).searchParams.get('max_novel_id')
-        return maxNovelId === '100'
-          ? HttpResponse.json({
-              novels: [{ ...NOVEL, id: 99 }],
-              next_url: null,
-            })
-          : HttpResponse.json({
-              novels: [{ ...NOVEL, id: 100 }],
-              next_url:
-                'https://app-api.pixiv.net/v1/novel/mypixiv?max_novel_id=100',
-            })
+        return HttpResponse.json(
+          maxNovelId === '100'
+            ? {
+                novels: [{ ...NOVEL, id: 99 }],
+                next_url: null,
+              }
+            : {
+                novels: [{ ...NOVEL, id: 100 }],
+                next_url:
+                  'https://app-api.pixiv.net/v1/novel/mypixiv?max_novel_id=100',
+              }
+        )
       })
     )
     const client = await PixivClient.of('test-refresh-token')
@@ -524,16 +526,18 @@ describe('novels.commentReplies()', () => {
         'https://app-api.pixiv.net/v2/novel/comment/replies',
         ({ request }) => {
           const offset = new URL(request.url).searchParams.get('offset')
-          return offset === '30'
-            ? HttpResponse.json({
-                comments: [REPLY_WITHOUT_STAMP],
-                next_url: null,
-              })
-            : HttpResponse.json({
-                comments: [REPLY_WITH_STAMP],
-                next_url:
-                  'https://app-api.pixiv.net/v2/novel/comment/replies?comment_id=1&offset=30',
-              })
+          return HttpResponse.json(
+            offset === '30'
+              ? {
+                  comments: [REPLY_WITHOUT_STAMP],
+                  next_url: null,
+                }
+              : {
+                  comments: [REPLY_WITH_STAMP],
+                  next_url:
+                    'https://app-api.pixiv.net/v2/novel/comment/replies?comment_id=1&offset=30',
+                }
+          )
         }
       )
     )
@@ -653,13 +657,15 @@ describe('novels.bookmarkUsers()', () => {
         'https://app-api.pixiv.net/v1/novel/bookmark/users',
         ({ request }) => {
           const offset = new URL(request.url).searchParams.get('offset')
-          return offset === '30'
-            ? HttpResponse.json({ users: [{ ...USER, id: 6 }], next_url: null })
-            : HttpResponse.json({
-                users: [USER],
-                next_url:
-                  'https://app-api.pixiv.net/v1/novel/bookmark/users?novel_id=7&offset=30',
-              })
+          return HttpResponse.json(
+            offset === '30'
+              ? { users: [{ ...USER, id: 6 }], next_url: null }
+              : {
+                  users: [USER],
+                  next_url:
+                    'https://app-api.pixiv.net/v1/novel/bookmark/users?novel_id=7&offset=30',
+                }
+          )
         }
       )
     )
@@ -1339,17 +1345,20 @@ describe('novels.markers()', () => {
       ),
       http.get('https://app-api.pixiv.net/v2/novel/markers', ({ request }) => {
         const offset = new URL(request.url).searchParams.get('offset')
-        return offset === '30'
-          ? HttpResponse.json({
-              marked_novels: [
-                { novel: { ...NOVEL, id: 101 }, novel_marker: { page: 2 } },
-              ],
-              next_url: null,
-            })
-          : HttpResponse.json({
-              marked_novels: [{ novel: NOVEL, novel_marker: { page: 1 } }],
-              next_url: 'https://app-api.pixiv.net/v2/novel/markers?offset=30',
-            })
+        return HttpResponse.json(
+          offset === '30'
+            ? {
+                marked_novels: [
+                  { novel: { ...NOVEL, id: 101 }, novel_marker: { page: 2 } },
+                ],
+                next_url: null,
+              }
+            : {
+                marked_novels: [{ novel: NOVEL, novel_marker: { page: 1 } }],
+                next_url:
+                  'https://app-api.pixiv.net/v2/novel/markers?offset=30',
+              }
+        )
       })
     )
     const client = await PixivClient.of('test-refresh-token')
