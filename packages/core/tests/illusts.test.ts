@@ -654,6 +654,7 @@ describe('illusts.comments()', () => {
       )
     )
     const client = await PixivClient.of('test-refresh-token')
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- verifies the deprecated option is ignored
     await client.illusts.comments({ illustId: 1, includeTotalComments: true })
 
     expect(hasIncludeTotalComments).toBe(false)

@@ -305,6 +305,7 @@ describe('novels.comments()', () => {
     const client = await PixivClient.of('test-refresh-token')
     const result = await client.novels.comments({
       novelId: 100,
+      // eslint-disable-next-line @typescript-eslint/no-deprecated -- verifies the deprecated option is ignored
       includeTotalComments: true,
     })
     expect(result.isOk).toBe(true)
