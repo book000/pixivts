@@ -9,12 +9,7 @@ export default defineConfig({
     // Real network calls take longer than unit tests.
     testTimeout: 120_000,
     hookTimeout: 30_000,
-    // Run serially to avoid triggering rate limits on the pixiv API.
-    pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
+    // Run files one at a time to avoid pixiv API rate limits.
+    fileParallelism: false,
   },
 })

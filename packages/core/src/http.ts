@@ -163,9 +163,11 @@ export class HttpClient {
       }),
       networkError
     ).andThen((response) => {
-      return response.ok
-        ? ResultAsync.fromResult(ok(response) as Result<Response, PixivError>)
-        : ResultAsync.fromResult(err(apiError(response.status, null)))
+      return ResultAsync.fromResult(
+        response.ok
+          ? (ok(response) as Result<Response, PixivError>)
+          : err(apiError(response.status, null))
+      )
     })
   }
 

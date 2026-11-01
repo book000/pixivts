@@ -18,7 +18,7 @@ jobs:
 
     services:
       mysql:
-        image: mysql:26.7
+        image: mysql:26.10
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_USER: pixiv-ts
@@ -81,6 +81,9 @@ jobs:
 
       - name: 🔄 Update core e2e snapshots
         # Skips automatically when PIXIV_REFRESH_TOKEN is not configured
+        id: e2e
+        # Keeps the snapshot PR flowing when the real API rate-limits.
+        continue-on-error: true
         run: pnpm --filter @book000/pixivts run test:e2e --update
         env:
           PIXIV_REFRESH_TOKEN: ${{ secrets.PIXIV_REFRESH_TOKEN }}
@@ -95,3 +98,9 @@ jobs:
           title: 'test: update snapshots'
           body: 'This PR updates vitest snapshots generated against the real pixiv API and MySQL.'
           assignees: 'book000'
+
+      - name: 🚨 Fail run when e2e failed
+        if: ${{ !cancelled() && steps.e2e.outcome == 'failure' }}
+        run: |
+          echo "::error::core e2e step failed; see that step's log"
+          exit 1
