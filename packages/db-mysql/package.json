@@ -52,7 +52,7 @@
     "@types/node": "26.6.6",
     "@vitest/coverage-v8": "5.0.5",
     "drizzle-kit": "0.31.11",
-    "tsdown": "0.23.3",
+    "tsdown": "0.23.4",
     "typescript": "6.0.3",
     "vitest": "5.0.5"
   },
