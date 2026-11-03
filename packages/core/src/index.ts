@@ -31,6 +31,7 @@ export {
   apiError,
   parseError,
   PixivFetchError,
+  PixivAuthError,
 } from './errors'
 export type { PixivError } from './errors'
 

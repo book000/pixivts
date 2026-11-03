@@ -9,6 +9,8 @@
  * `crypto.subtle` does not support MD5 (non-cryptographic hash).
  */
 
+import { PixivAuthError } from './errors'
+
 /** Auth credentials returned by the pixiv token endpoint. */
 export interface AuthCredentials {
   /** Numeric user ID returned as a string by the token endpoint. */
@@ -192,7 +194,7 @@ export class AuthManager {
    * Exchanges the stored refresh token for a fresh access token.
    *
    * Updates the internal credentials on success.
-   * Throws if the token endpoint returns a non-200 response.
+   * Throws `PixivAuthError` if the token endpoint returns a non-200 response.
    */
   async refresh(): Promise<void> {
     const localTime = new Date().toISOString().replace(/Z$/, '+00:00')
@@ -221,7 +223,10 @@ export class AuthManager {
     })
 
     if (response.status !== 200) {
-      throw new Error(`Failed to refresh pixiv token: HTTP ${response.status}`)
+      throw new PixivAuthError(
+        response.status,
+        await response.text().catch(() => '')
+      )
     }
 
     const data = (await response.json()) as {
