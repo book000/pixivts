@@ -89,9 +89,14 @@ export class PixivFetchError extends Error {
 
 const MAX_AUTH_BODY_LENGTH = 200
 
-/** Truncates a raw response body and redacts token-like strings. */
+/**
+ * Replaces control characters, redacts token-like strings and truncates to
+ * `MAX_AUTH_BODY_LENGTH` characters, so the result is safe to log on one line.
+ */
 function sanitizeAuthBody(raw: string): string {
-  const redacted = raw.replaceAll(/[\w-]{20,}/g, '[REDACTED]')
+  const redacted = raw
+    .replaceAll(/\p{Cc}/gu, ' ')
+    .replaceAll(/[\w-]{20,}/g, '[REDACTED]')
   return redacted.length > MAX_AUTH_BODY_LENGTH
     ? `${redacted.slice(0, MAX_AUTH_BODY_LENGTH)}...`
     : redacted

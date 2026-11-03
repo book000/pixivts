@@ -103,4 +103,19 @@ describe('AuthManager.refresh() failure', () => {
     expect(e.body.length).toBeLessThanOrEqual(203)
     expect(e.message).not.toContain(secret)
   })
+
+  it('replaces control characters in code and body', async () => {
+    const e = (await refreshWith(
+      400,
+      JSON.stringify({ error: 'invalid_grant\n[ERROR] forged\u001B[31m\u0000' })
+    ).catch((error: unknown) => error)) as PixivAuthError
+    expect(e.code).toBe('invalid_grant [ERROR] forged [31m ')
+    expect(e.message).toBe(
+      'Failed to refresh pixiv token: HTTP 400 (invalid_grant [ERROR] forged [31m )'
+    )
+    const raw = (await refreshWith(502, 'bad\nline\u001B[0m').catch(
+      (error: unknown) => error
+    )) as PixivAuthError
+    expect(raw.body).toBe('bad line [0m')
+  })
 })
