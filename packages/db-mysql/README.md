@@ -2,7 +2,7 @@
 
 MySQL response recorder for [`@book000/pixivts`](https://www.npmjs.com/package/@book000/pixivts).
 
-Persists every pixiv API response to a MySQL database using [Drizzle ORM](https://orm.drizzle.team/).
+Persists every successful (2xx) pixiv API response to a MySQL database using [Drizzle ORM](https://orm.drizzle.team/).
 
 ## Installation
 
@@ -37,7 +37,7 @@ const client = await PixivClient.of(process.env.PIXIV_REFRESH_TOKEN!, {
   onResponse: interceptor,
 })
 
-// Every API call is now recorded to MySQL automatically
+// Every successful API call is now recorded to MySQL automatically
 const result = await client.illusts.detail({ illustId: 12345 })
 
 // Close the pool when done
@@ -101,7 +101,7 @@ The `responses` table stores one row per API call:
 | `response_body` | `LONGTEXT` | NO | Raw response body |
 | `created_at` | `DATETIME(3)` | NO | Timestamp (millisecond precision) |
 
-Duplicate rows (same method + endpoint + statusCode + createdAt + urlHash) are silently ignored via `ON DUPLICATE KEY UPDATE`.
+Duplicate rows (same method + endpoint + statusCode + urlHash) are silently ignored via `ON DUPLICATE KEY UPDATE`, so the first recorded response for a given URL is kept.
 
 ## Database Migration
 

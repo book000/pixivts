@@ -16,7 +16,7 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 /**
- * The `responses` table stores every HTTP response returned by the pixiv API.
+ * The `responses` table stores every successful (2xx) HTTP response returned by the pixiv API.
  *
  * A unique composite index on (method, endpoint, status_code, url_hash) ensures
  * that each unique request/response combination is stored only once, regardless

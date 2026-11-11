@@ -10,9 +10,9 @@ pnpm add @book000/pixivts
 
 ## Authentication
 
-Create a client by passing your Pixiv refresh token.
-`PixivClient.of` performs the initial token exchange and stores the access
-token internally — subsequent calls refresh it automatically on 401.
+Create a client by passing your pixiv refresh token. `PixivClient.of` performs the initial token exchange and stores the access token internally. After that, a 401 response triggers one automatic token refresh and a single retry of the request.
+
+`PixivClient.of` rejects with a `PixivAuthError` (an `Error` subclass exposing `status`, `code` and `body`) when the token endpoint does not return HTTP 200, for example `invalid_grant` for a revoked refresh token.
 
 ```typescript
 import { PixivClient } from '@book000/pixivts'
@@ -25,9 +25,7 @@ console.log(client.userId)
 
 ## Result type
 
-Every API method returns `Result<T, PixivError>` — there are no thrown
-exceptions for API-level errors.
-Check `result.isOk` to narrow the union before accessing `.value` or `.error`:
+Every API method returns `Result<T, PixivError>` (awaitable) instead of throwing for API-level errors. Check `result.isOk` to narrow the union before accessing `.value` or `.error`:
 
 ```typescript
 const result = await client.illusts.detail({ illustId: 12345 })
@@ -38,6 +36,8 @@ if (result.isOk) {
   console.error(result.error)            // IntelliSense shows .error here
 }
 ```
+
+`PixivError` is a union discriminated by `type`: `rate_limit`, `auth_failed`, `network`, `api_error` and `parse_error`. The `.pages()` and `.items()` generators of paginated results (see [Pagination](pagination.md)) throw a `PixivFetchError` instead, because a generator cannot return a `Result`.
 
 You can also use the chainable helpers:
 

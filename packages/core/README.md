@@ -15,7 +15,7 @@ yarn add @book000/pixivts
 ## Features
 
 - **Zero runtime dependencies** — no axios, no zod at runtime; uses native `fetch`
-- **Result-typed API** — every method returns `Result<T, PixivError>` (no thrown exceptions)
+- **Result-typed API** — request methods return `Result<T, PixivError>` instead of throwing for API errors
 - **ESM + CJS dual output** — works in Node.js (ESM/CJS) and edge runtimes
 - **Paginated results** — `PaginatedResultAsync` with async generator for multi-page iteration
 - **Resource-based API** — `illusts`, `novels`, `users`, `manga`, `ugoira`, `spotlight`, `images` namespaces
@@ -66,14 +66,14 @@ Creates a `PixivClient` by exchanging the given refresh token for an access toke
 | `refreshToken` | `string` | — | pixiv OAuth refresh token |
 | `opts.retry.maxRetries` | `number` | `3` | Max 429 retry attempts |
 | `opts.retry.waitMs` | `number` | `10000` | Default wait (ms) when no `Retry-After` header is present |
-| `opts.onResponse` | `ResponseInterceptor` | — | Called after every API response (used by `@book000/pixivts-db-mysql`) |
+| `opts.onResponse` | `ResponseInterceptor` | — | Called after every successful (2xx) API response (used by `@book000/pixivts-db-mysql`) |
 
 ### Resources
 
 | Namespace | Methods |
 |---|---|
-| `illusts` | `detail`, `related`, `search`, `ranking`, `recommended`, `series`, `bookmarkAdd`, `bookmarkDelete`, `mypixiv`, `trendingTags`, `popularPreview` |
-| `novels` | `detail`, `text`, `related`, `search`, `ranking`, `recommended`, `series`, `bookmarkAdd`, `bookmarkDelete`, `bookmarkUsers`, `mypixiv`, `trendingTags`, `popularPreview`, `watchlist`, `markers` |
+| `illusts` | `detail`, `related`, `search`, `popularPreview`, `ranking`, `recommended`, `series`, `bookmarkAdd`, `bookmarkDelete`, `follow`, `mypixiv`, `comments`, `commentReplies`, `bookmarkDetail`, `new`, `trendingTags` |
+| `novels` | `detail`, `text`, `related`, `search`, `popularPreview`, `trendingTags`, `ranking`, `recommended`, `series`, `watchlist`, `markers`, `bookmarkAdd`, `bookmarkDelete`, `bookmarkUsers`, `follow`, `mypixiv`, `comments`, `commentReplies`, `new` |
 | `users` | `detail`, `detailV2`, `search`, `illusts`, `novels`, `following`, `followAdd`, `followDelete`, `related`, `recommended`, `follower`, `mypixiv`, `list`, `bookmarkTagsIllust`, `bookmarkTagsNovel`, `followDetail`, `editAiShowSettings`, `aiShowSettings`, `restrictedModeSettings`, `muteList`, `meState`, `hasUnreadNotifications` |
 | `users.bookmarks` | `illusts`, `novels` |
 | `manga` | `recommended`, `watchlist` |
@@ -103,9 +103,14 @@ if (result.isErr) {
     case 'network':
       console.error('Network error', err.cause)
       break
+    case 'parse_error':
+      console.error(`Parse error: ${err.message}`)
+      break
   }
 }
 ```
+
+`PixivClient.of` is the exception to the Result pattern: it rejects with a `PixivAuthError` when the initial token exchange fails. The `.pages()` and `.items()` generators throw a `PixivFetchError` when a page cannot be fetched.
 
 ### Result API
 

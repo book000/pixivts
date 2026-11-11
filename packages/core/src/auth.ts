@@ -6,7 +6,7 @@
  *
  * The MD5 implementation is pure TypeScript to ensure Edge/browser compatibility —
  * Node's `crypto.createHash('md5')` is unavailable in Edge runtimes, and
- * `crypto.subtle` does not support MD5 (non-cryptographic hash).
+ * `crypto.subtle` does not support MD5.
  */
 
 import { PixivAuthError } from './errors'
