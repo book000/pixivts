@@ -1,6 +1,6 @@
 # MySQL Response Recorder
 
-`@book000/pixivts-db-mysql` is an optional add-on package that persists every pixiv API response to a MySQL database via [Drizzle ORM](https://orm.drizzle.team/).
+`@book000/pixivts-db-mysql` is an optional add-on package that persists every successful (2xx) pixiv API response to a MySQL database via [Drizzle ORM](https://orm.drizzle.team/). Error responses, network failures and image downloads (`client.images.fetch`) are not recorded.
 
 ## Installation
 
@@ -8,7 +8,7 @@
 npm install @book000/pixivts-db-mysql
 ```
 
-Requires MySQL 5.7+ or MariaDB 10.3+.
+The integration tests run against the MySQL service image configured in `.github/workflows/nodejs-ci.yml`. Other MySQL-compatible servers are untested.
 
 ## Quick Start
 
@@ -28,7 +28,7 @@ const client = await PixivClient.of(process.env.PIXIV_REFRESH_TOKEN!, {
   onResponse: interceptor,
 })
 
-// Every API call is now persisted automatically
+// Every successful API call is now persisted automatically
 const result = await client.illusts.detail({ illustId: 12345 })
 // ...
 
@@ -81,7 +81,7 @@ Responses are stored in a single `responses` table.
 | `response_body` | LONGTEXT | Raw response body |
 | `created_at` | DATETIME(3) | Timestamp |
 
-A unique composite index on `(method, endpoint, status_code, url_hash)` ensures each unique request/response is stored only once.
+A unique composite index on `(method, endpoint, status_code, url_hash)` keeps one row per combination: if a later response to the same request URL has the same method, endpoint and status code, it is silently ignored (`ON DUPLICATE KEY UPDATE id = id`) and the first recorded response is kept. The `created_at` column is written through a connection pool configured with the fixed time zone `+09:00`.
 
 ## Query Helpers
 

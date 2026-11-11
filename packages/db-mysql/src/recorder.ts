@@ -56,28 +56,6 @@ export interface RecorderOptions extends ConnectionOptions {
 }
 
 // ---------------------------------------------------------------------------
-// Factory
-// ---------------------------------------------------------------------------
-
-/**
- * Creates a response recorder that persists every pixiv API response to MySQL.
- *
- * @param opts - Connection and bootstrapping options
- * @returns `{ interceptor, db, close }`
- *
- * @example
- * ```ts
- * const { interceptor, close } = await createResponseRecorder({
- *   host: 'localhost',
- *   database: 'pixivts',
- *   bootstrap: true,
- * })
- * const client = await PixivClient.of(token, { onResponse: interceptor })
- * // ...
- * await close()
- * ```
- */
-// ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
 
@@ -142,7 +120,7 @@ export function createRecorderBundle(
 }
 
 /**
- * Creates a response recorder that persists every pixiv API response to MySQL.
+ * Creates a response recorder that persists every successful (2xx) pixiv API response to MySQL.
  *
  * @param opts - Connection and bootstrapping options
  * @returns `{ interceptor, db, close }`

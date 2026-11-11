@@ -5,7 +5,7 @@
  * ```ts
  * import { PixivClient } from '@book000/pixivts'
  *
- * const client = await PixivClient.of(process.env.PIXIV_REFRESH_TOKEN)
+ * const client = await PixivClient.of(process.env.PIXIV_REFRESH_TOKEN!)
  * const result = await client.illusts.detail({ illustId: 12345 })
  * if (result.isOk) console.log(result.value.illust.title)
  * ```
@@ -42,7 +42,7 @@ export type {
   HttpMethod,
 } from './interceptor'
 
-// Option constants and types (exported as values so callers can use e.g. BookmarkRestrict.PUBLIC)
+// Option constants (runtime const objects, e.g. BookmarkRestrict.PUBLIC)
 export {
   SearchTarget,
   SearchSort,
@@ -55,7 +55,7 @@ export {
   UserIllustType,
 } from './options'
 
-// Public API types (zod stripped at runtime — see types.ts)
+// Public API types (hand-written interfaces — see types.ts)
 export type {
   ImageUrls,
   ProfileImageUrls,

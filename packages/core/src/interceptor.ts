@@ -50,11 +50,12 @@ export interface ResponseRecord {
 }
 
 /**
- * A callback invoked after every successful API response.
+ * A callback invoked after every successful (2xx) API response.
  *
- * Implementations should be non-blocking — awaiting a slow DB write here will
- * add latency to every API call.  Consider queueing the record and writing
- * asynchronously if persistence latency matters.
+ * The HTTP client does not await the returned promise, so a slow callback does
+ * not delay the API call. A rejected promise is silently discarded and does
+ * not fail the request, so implementations must handle and report their own
+ * errors.
  */
 export type ResponseInterceptor = (
   record: ResponseRecord
