@@ -217,6 +217,18 @@ export type {
 
 export type { SpotlightArticlesParams } from './resources/spotlight'
 
+// Resource classes (type-only: instances are created by PixivClient)
+export type { IllustResource } from './resources/illusts'
+export type { NovelResource } from './resources/novels'
+export type { UserResource, UserBookmarksResource } from './resources/users'
+export type { MangaResource, MangaRecommendedParams } from './resources/manga'
+export type { UgoiraResource, UgoiraMetadataParams } from './resources/ugoira'
+export type { SpotlightResource } from './resources/spotlight'
+export type { ImageResource } from './resources/images'
+
+// HTTP client options
+export type { RateLimitRetryOptions } from './http'
+
 // PixivClient
 export { PixivClient } from './client'
 export type { PixivClientOptions } from './client'
