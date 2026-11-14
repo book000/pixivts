@@ -254,4 +254,36 @@ describe('response interceptor', () => {
     expect(rec.responseType).toBe('JSON')
     expect(rec.statusCode).toBe(200)
   })
+
+  it('does not fail the request when the interceptor throws synchronously', async () => {
+    server.use(
+      http.get('https://app-api.pixiv.net/v1/intercepted', () =>
+        HttpResponse.json({ data: 42 })
+      )
+    )
+
+    const client = makeClient(makeAuth(), {
+      onResponse: () => {
+        throw new Error('sync interceptor failure')
+      },
+    })
+
+    const result = await client.get('/v1/intercepted')
+    expect(result.isOk).toBe(true)
+  })
+
+  it('does not fail the request when the interceptor rejects', async () => {
+    server.use(
+      http.get('https://app-api.pixiv.net/v1/intercepted', () =>
+        HttpResponse.json({ data: 42 })
+      )
+    )
+
+    const client = makeClient(makeAuth(), {
+      onResponse: () => Promise.reject(new Error('async interceptor failure')),
+    })
+
+    const result = await client.get('/v1/intercepted')
+    expect(result.isOk).toBe(true)
+  })
 })
