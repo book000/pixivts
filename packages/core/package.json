@@ -42,7 +42,7 @@
   "devDependencies": {
     "@types/node": "26.6.6",
     "@vitest/coverage-v8": "5.1.0",
-    "msw": "3.0.4",
+    "msw": "3.0.5",
     "tsdown": "0.23.7",
     "typedoc": "0.28.20",
     "typescript": "6.0.3",
