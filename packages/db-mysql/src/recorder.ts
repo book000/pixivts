@@ -277,5 +277,5 @@ export async function getEndpoints(
     )
     .orderBy(desc(count()))
 
-  return rows.map((r) => ({ ...r, count: r.count }))
+  return rows
 }
