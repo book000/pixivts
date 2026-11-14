@@ -300,7 +300,8 @@ export class HttpClient {
       }
 
       // Notify interceptor (fire-and-forget, errors do not fail the request)
-      if (this.#interceptor) {
+      const interceptor = this.#interceptor
+      if (interceptor) {
         const record: ResponseRecord = {
           method,
           endpoint,
@@ -312,7 +313,10 @@ export class HttpClient {
           responseHeaders: JSON.stringify(responseHeaders),
           responseBody: text,
         }
-        Promise.resolve(this.#interceptor(record)).catch(() => undefined)
+        // eslint-disable-next-line unicorn/prefer-promise-try -- Promise.try is ES2025; the library targets ES2022
+        new Promise<void>((resolve) => {
+          resolve(interceptor(record))
+        }).catch(() => undefined)
       }
 
       return ok(httpResponse.data)
