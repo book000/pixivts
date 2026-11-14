@@ -30,6 +30,27 @@ describe('md5()', () => {
     // Known MD5 of "Hello, World!"
     expect(md5('Hello, World!')).toBe('65a8e27d8879283831b664bd8b7f0ad4')
   })
+
+  // Expected digests below come from Node's crypto.createHash('md5') over UTF-8 bytes
+  it('2-byte UTF-8 character', () => {
+    expect(md5('é')).toBe('66ddcd97cfdeabb2f6fb8a999b4bc76f')
+  })
+
+  it('3-byte UTF-8 characters', () => {
+    expect(md5('日本語')).toBe('00110af8b4393ef3f72c50be5b332bec')
+  })
+
+  it('4-byte UTF-8 character (surrogate pair)', () => {
+    expect(md5('😀')).toBe('2a02eac39d716a70ecf37579185927b6')
+  })
+
+  it('4-byte UTF-8 character between ASCII characters', () => {
+    expect(md5('a😀b')).toBe('186ca4f1a2d2ac0d5381177c6719713b')
+  })
+
+  it('highest code point U+10FFFF', () => {
+    expect(md5('\u{10FFFF}')).toBe('317291ce605601732d9d1fe361ca887e')
+  })
 })
 
 describe('buildClientHash()', () => {
