@@ -50,6 +50,20 @@ export interface HttpResponse<T> {
 
 const DEFAULT_RETRY: RateLimitRetryOptions = { maxRetries: 3, waitMs: 10_000 }
 
+const REDACTED = '[REDACTED]'
+
+/** Returns a copy of the headers with the `Authorization` value masked. */
+function redactRequestHeaders(
+  headers: Record<string, string>
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(headers).map(([name, value]) => [
+      name,
+      name.toLowerCase() === 'authorization' ? REDACTED : value,
+    ])
+  )
+}
+
 const BASE_URL = 'https://app-api.pixiv.net'
 
 const DEFAULT_HEADERS: Record<string, string> = {
@@ -306,7 +320,7 @@ export class HttpClient {
           method,
           endpoint,
           url: response.url || url,
-          requestHeaders: JSON.stringify(requestHeaders),
+          requestHeaders: JSON.stringify(redactRequestHeaders(requestHeaders)),
           requestBody: body ?? null,
           responseType: isJson ? 'JSON' : 'TEXT',
           statusCode: response.status,

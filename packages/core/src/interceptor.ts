@@ -30,7 +30,10 @@ export interface ResponseRecord {
   /** Full request URL including query string (null if unavailable). */
   url: string | null
 
-  /** JSON-serialized request headers (null if unavailable). */
+  /**
+   * JSON-serialized request headers (null if unavailable).
+   * The `Authorization` header value is replaced with `[REDACTED]`.
+   */
   requestHeaders: string | null
 
   /** URL-encoded request body for POST requests (null for GET). */
