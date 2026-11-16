@@ -255,6 +255,107 @@ describe('response interceptor', () => {
     expect(rec.statusCode).toBe(200)
   })
 
+  it('redacts the Authorization header in the record while still sending the real token', async () => {
+    let sentAuthorization: string | null = null
+    server.use(
+      http.get('https://app-api.pixiv.net/v1/intercepted', ({ request }) => {
+        sentAuthorization = request.headers.get('authorization')
+        return HttpResponse.json({ data: 42 })
+      })
+    )
+
+    const records: { requestHeaders: string | null }[] = []
+    const client = makeClient(makeAuth('secret-access-token'), {
+      onResponse: (rec) => {
+        records.push(rec)
+      },
+    })
+
+    await client.get('/v1/intercepted')
+
+    expect(sentAuthorization).toBe('Bearer secret-access-token')
+    expect(records).toHaveLength(1)
+    const raw = records[0].requestHeaders ?? ''
+    expect(raw).not.toContain('secret-access-token')
+    expect((JSON.parse(raw) as Record<string, string>).Authorization).toBe(
+      '[REDACTED]'
+    )
+  })
+
+  it('keeps the other request headers unchanged in the record for POST', async () => {
+    server.use(
+      http.post('https://app-api.pixiv.net/v1/intercepted', () =>
+        HttpResponse.json({ data: 42 })
+      )
+    )
+
+    const records: { requestHeaders: string | null }[] = []
+    const client = makeClient(makeAuth('secret-access-token'), {
+      onResponse: (rec) => {
+        records.push(rec)
+      },
+    })
+
+    await client.post('/v1/intercepted', 'a=b')
+
+    expect(records).toHaveLength(1)
+    const headers = JSON.parse(records[0].requestHeaders ?? '') as Record<
+      string,
+      string
+    >
+    expect(headers).toEqual({
+      Host: 'app-api.pixiv.net',
+      'App-OS': 'ios',
+      'App-OS-Version': '14.6',
+      'User-Agent': 'PixivIOSApp/7.13.3 (iOS 14.6; iPhone13,2)',
+      'Accept-Language': 'ja',
+      Authorization: '[REDACTED]',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    })
+  })
+
+  it('redacts the record after a 401 refresh and retry', async () => {
+    let retriedAuthorization: string | null = null
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json({
+          user: { id: '42' },
+          response: {
+            access_token: 'refreshed-token',
+            refresh_token: 'new-rt',
+          },
+        })
+      ),
+      http.get('https://app-api.pixiv.net/v1/intercepted', ({ request }) => {
+        const authorization = request.headers.get('authorization')
+        if (authorization === 'Bearer refreshed-token') {
+          retriedAuthorization = authorization
+          return HttpResponse.json({ data: 42 })
+        }
+        return new HttpResponse(null, { status: 401 })
+      })
+    )
+
+    const records: { requestHeaders: string | null }[] = []
+    const client = makeClient(makeAuth('old-token'), {
+      onResponse: (rec) => {
+        records.push(rec)
+      },
+    })
+
+    const result = await client.get('/v1/intercepted')
+
+    expect(result.isOk).toBe(true)
+    expect(retriedAuthorization).toBe('Bearer refreshed-token')
+    expect(records).toHaveLength(1)
+    const raw = records[0].requestHeaders ?? ''
+    expect(raw).not.toContain('old-token')
+    expect(raw).not.toContain('refreshed-token')
+    expect((JSON.parse(raw) as Record<string, string>).Authorization).toBe(
+      '[REDACTED]'
+    )
+  })
+
   it('does not fail the request when the interceptor throws synchronously', async () => {
     server.use(
       http.get('https://app-api.pixiv.net/v1/intercepted', () =>

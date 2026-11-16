@@ -93,7 +93,7 @@ The `responses` table stores one row per API call:
 | `endpoint` | `VARCHAR(255)` | NO | API path |
 | `url` | `TEXT` | YES | Full request URL |
 | `url_hash` | `VARCHAR(255)` | NO | SHA-256 hex of URL (for deduplication) |
-| `request_headers` | `LONGTEXT` | YES | Serialised request headers (JSON) |
+| `request_headers` | `LONGTEXT` | YES | Serialised request headers (JSON); the `Authorization` value is stored as `[REDACTED]` (see [docs/db-mysql.md](../../docs/db-mysql.md#credential-redaction)) |
 | `request_body` | `LONGTEXT` | YES | Request body (null for GET) |
 | `response_type` | `VARCHAR(10)` | NO | Response content type (`"JSON"` or `"TEXT"`) |
 | `status_code` | `INT` | NO | HTTP status code |
