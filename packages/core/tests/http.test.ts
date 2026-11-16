@@ -277,9 +277,9 @@ describe('response interceptor', () => {
     expect(records).toHaveLength(1)
     const raw = records[0].requestHeaders ?? ''
     expect(raw).not.toContain('secret-access-token')
-    expect(
-      (JSON.parse(raw) as Record<string, string>).Authorization
-    ).toBe('[REDACTED]')
+    expect((JSON.parse(raw) as Record<string, string>).Authorization).toBe(
+      '[REDACTED]'
+    )
   })
 
   it('keeps the other request headers unchanged in the record for POST', async () => {
@@ -351,9 +351,9 @@ describe('response interceptor', () => {
     const raw = records[0].requestHeaders ?? ''
     expect(raw).not.toContain('old-token')
     expect(raw).not.toContain('refreshed-token')
-    expect(
-      (JSON.parse(raw) as Record<string, string>).Authorization
-    ).toBe('[REDACTED]')
+    expect((JSON.parse(raw) as Record<string, string>).Authorization).toBe(
+      '[REDACTED]'
+    )
   })
 
   it('does not fail the request when the interceptor throws synchronously', async () => {
