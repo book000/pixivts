@@ -13,6 +13,7 @@ import {
   apiError,
   authFailedError,
   networkError,
+  parseError,
   rateLimitError,
 } from './errors'
 import type { ResponseInterceptor } from './interceptor'
@@ -285,11 +286,20 @@ export class HttpClient {
       const contentType = response.headers.get('content-type') ?? ''
       const text = await response.text()
       let data: T
+      let malformedJson: PixivError | undefined
       const isJson = contentType.includes('application/json')
       if (isJson) {
         try {
           data = camelizeKeys(JSON.parse(text)) as T
-        } catch {
+        } catch (error) {
+          // An empty 2xx body (e.g. bookmark/follow delete) is not malformed JSON.
+          if (response.ok && text.trim() !== '') {
+            malformedJson = parseError(
+              `Malformed JSON in ${response.status} response from ${endpoint}`,
+              text,
+              error
+            )
+          }
           data = text as unknown as T
         }
       } else {
@@ -333,7 +343,7 @@ export class HttpClient {
         }).catch(() => undefined)
       }
 
-      return ok(httpResponse.data)
+      return malformedJson ? err(malformedJson) : ok(httpResponse.data)
     }
 
     return err(rateLimitError(lastRetryAfterMs))
