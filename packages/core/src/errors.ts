@@ -23,9 +23,9 @@ export type PixivError =
       status: number
     }
   | {
-      /** A network-level error occurred (fetch threw). */
+      /** A network-level error occurred while fetching or consuming the response. */
       type: 'network'
-      /** The underlying error thrown by fetch. */
+      /** The underlying error thrown by fetch or the response body stream. */
       cause: unknown
     }
   | {

@@ -249,9 +249,16 @@ export class HttpClient {
         return err(networkError(fetchError))
       }
 
+      if (response.status === 429 || response.status === 401) {
+        try {
+          await response.body?.cancel()
+        } catch (error: unknown) {
+          return err(networkError(error))
+        }
+      }
+
       // 429 Rate limit
       if (response.status === 429) {
-        await response.body?.cancel()
         const retryAfterMs = parseRetryAfter(
           response.headers.get('Retry-After'),
           waitMs
@@ -268,7 +275,6 @@ export class HttpClient {
 
       // 401 Auth failed → try token refresh once
       if (response.status === 401) {
-        await response.body?.cancel()
         if (allowRefresh) {
           try {
             await this.#auth.refresh()
@@ -283,7 +289,12 @@ export class HttpClient {
 
       // Parse response body
       const contentType = response.headers.get('content-type') ?? ''
-      const text = await response.text()
+      let text: string
+      try {
+        text = await response.text()
+      } catch (error: unknown) {
+        return err(networkError(error))
+      }
       let data: T
       const isJson = contentType.includes('application/json')
       if (isJson) {

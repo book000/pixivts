@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from './msw/handlers'
 import { AuthManager } from '../src/auth'
@@ -387,4 +387,56 @@ describe('response interceptor', () => {
     const result = await client.get('/v1/intercepted')
     expect(result.isOk).toBe(true)
   })
+})
+
+describe('response body stream failures', () => {
+  it.each([200, 404])(
+    'returns a network error when reading a %i response fails',
+    async (status) => {
+      const cause = new Error('body stream interrupted')
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode('partial'))
+        },
+        pull(controller) {
+          controller.error(cause)
+        },
+      })
+      const fetchSpy = vi
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValue(new Response(stream, { status }))
+      try {
+        const result = await makeClient().get('/v1/test')
+        expect(result.isErr).toBe(true)
+        if (result.isErr)
+          expect(result.error).toEqual({ type: 'network', cause })
+      } finally {
+        fetchSpy.mockRestore()
+      }
+    }
+  )
+
+  it.each([401, 429])(
+    'returns a network error when cancelling a %i response fails',
+    async (status) => {
+      const cause = new Error('body cancellation failed')
+      const stream = new ReadableStream({
+        cancel() {
+          return Promise.reject(cause)
+        },
+      })
+      const fetchSpy = vi
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValue(new Response(stream, { status }))
+      try {
+        const result = await makeClient().get('/v1/test')
+        expect(result.isErr).toBe(true)
+        if (result.isErr)
+          expect(result.error).toEqual({ type: 'network', cause })
+        expect(fetchSpy).toHaveBeenCalledTimes(1)
+      } finally {
+        fetchSpy.mockRestore()
+      }
+    }
+  )
 })
