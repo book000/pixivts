@@ -89,6 +89,100 @@ describe('HttpClient.get()', () => {
     expect(r.error.type).toBe('api_error')
     if (r.error.type === 'api_error') expect(r.error.status).toBe(404)
   })
+
+  it('returns Err(parse_error) on 200 with malformed JSON', async () => {
+    server.use(
+      http.get(
+        'https://app-api.pixiv.net/v1/broken',
+        () =>
+          new HttpResponse('{broken json', {
+            headers: { 'content-type': 'application/json' },
+          })
+      )
+    )
+    const r = await makeClient().get('/v1/broken')
+    expect(r.isErr).toBe(true)
+    if (!r.isErr) return
+
+    expect(r.error).toMatchObject({
+      type: 'parse_error',
+      body: '{broken json',
+    })
+    expect((r.error as { cause?: unknown }).cause).toBeInstanceOf(SyntaxError)
+  })
+
+  it('still notifies the interceptor with the raw body on malformed 200 JSON', async () => {
+    server.use(
+      http.get(
+        'https://app-api.pixiv.net/v1/broken-intercepted',
+        () =>
+          new HttpResponse('{broken json', {
+            headers: { 'content-type': 'application/json' },
+          })
+      )
+    )
+    const bodies: string[] = []
+    const client = makeClient(makeAuth(), {
+      onResponse: (record) => {
+        bodies.push(record.responseBody)
+      },
+    })
+    const r = await client.get('/v1/broken-intercepted')
+    expect(r.isErr).toBe(true)
+    expect(bodies).toEqual(['{broken json'])
+  })
+
+  it('returns Ok with the empty string on 200 with an empty JSON body', async () => {
+    server.use(
+      http.get(
+        'https://app-api.pixiv.net/v1/empty',
+        () =>
+          new HttpResponse('', {
+            headers: { 'content-type': 'application/json' },
+          })
+      )
+    )
+    const r = await makeClient().get<string>('/v1/empty')
+    expect(r.isOk).toBe(true)
+    if (r.isOk) expect(r.value).toBe('')
+  })
+
+  it('returns Ok with raw text on 200 with a non-JSON content-type', async () => {
+    server.use(
+      http.get(
+        'https://app-api.pixiv.net/v1/text',
+        () =>
+          new HttpResponse('<html></html>', {
+            headers: { 'content-type': 'text/html' },
+          })
+      )
+    )
+    const r = await makeClient().get<string>('/v1/text')
+    expect(r.isOk).toBe(true)
+    if (r.isOk) expect(r.value).toBe('<html></html>')
+  })
+
+  it('keeps api_error with raw text body on 500 with malformed JSON', async () => {
+    server.use(
+      http.get(
+        'https://app-api.pixiv.net/v1/broken500',
+        () =>
+          new HttpResponse('{broken json', {
+            status: 500,
+            headers: { 'content-type': 'application/json' },
+          })
+      )
+    )
+    const r = await makeClient().get('/v1/broken500')
+    expect(r.isErr).toBe(true)
+    if (!r.isErr) return
+
+    expect(r.error).toEqual({
+      type: 'api_error',
+      status: 500,
+      body: '{broken json',
+    })
+  })
 })
 
 // ---------------------------------------------------------------------------
