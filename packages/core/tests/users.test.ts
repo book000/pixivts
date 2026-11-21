@@ -1139,17 +1139,19 @@ describe('users.search()', () => {
       ),
       http.get('https://app-api.pixiv.net/v1/search/user', ({ request }) => {
         const offset = new URL(request.url).searchParams.get('offset')
-        return offset === '30'
-          ? HttpResponse.json({
-              user_previews: [USER_PREVIEW2],
-              next_url: null,
-              search_span_limit: 1000,
-            })
-          : HttpResponse.json({
-              user_previews: [USER_PREVIEW],
-              next_url: 'https://app-api.pixiv.net/v1/search/user?offset=30',
-              search_span_limit: 1000,
-            })
+        return HttpResponse.json(
+          offset === '30'
+            ? {
+                user_previews: [USER_PREVIEW2],
+                next_url: null,
+                search_span_limit: 1000,
+              }
+            : {
+                user_previews: [USER_PREVIEW],
+                next_url: 'https://app-api.pixiv.net/v1/search/user?offset=30',
+                search_span_limit: 1000,
+              }
+        )
       })
     )
     const client = await PixivClient.of('test-refresh-token')

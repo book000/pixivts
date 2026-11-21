@@ -1,9 +1,9 @@
 /**
  * Parameter building utilities.
  *
- * Provides camelCase → snake_case conversion and a URLSearchParams builder
- * that replicates the behaviour of the `qs` library used in the legacy code
- * (without the `qs` runtime dependency).
+ * Provides camelCase ↔ snake_case key conversion, a `URLSearchParams` builder
+ * that serialises arrays as `key[]=value` (the Rails convention the pixiv API
+ * expects), and `parseNextUrl` for extracting pagination cursors.
  */
 
 /**

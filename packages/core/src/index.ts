@@ -5,7 +5,7 @@
  * ```ts
  * import { PixivClient } from '@book000/pixivts'
  *
- * const client = await PixivClient.of(process.env.PIXIV_REFRESH_TOKEN)
+ * const client = await PixivClient.of(process.env.PIXIV_REFRESH_TOKEN!)
  * const result = await client.illusts.detail({ illustId: 12345 })
  * if (result.isOk) console.log(result.value.illust.title)
  * ```
@@ -31,6 +31,7 @@ export {
   apiError,
   parseError,
   PixivFetchError,
+  PixivAuthError,
 } from './errors'
 export type { PixivError } from './errors'
 
@@ -41,7 +42,7 @@ export type {
   HttpMethod,
 } from './interceptor'
 
-// Option constants and types (exported as values so callers can use e.g. BookmarkRestrict.PUBLIC)
+// Option constants (runtime const objects, e.g. BookmarkRestrict.PUBLIC)
 export {
   SearchTarget,
   SearchSort,
@@ -54,7 +55,7 @@ export {
   UserIllustType,
 } from './options'
 
-// Public API types (zod stripped at runtime — see types.ts)
+// Public API types (hand-written interfaces — see types.ts)
 export type {
   ImageUrls,
   ProfileImageUrls,
@@ -215,6 +216,18 @@ export type {
 } from './resources/users'
 
 export type { SpotlightArticlesParams } from './resources/spotlight'
+
+// Resource classes (type-only: instances are created by PixivClient)
+export type { IllustResource } from './resources/illusts'
+export type { NovelResource } from './resources/novels'
+export type { UserResource, UserBookmarksResource } from './resources/users'
+export type { MangaResource, MangaRecommendedParams } from './resources/manga'
+export type { UgoiraResource, UgoiraMetadataParams } from './resources/ugoira'
+export type { SpotlightResource } from './resources/spotlight'
+export type { ImageResource } from './resources/images'
+
+// HTTP client options
+export type { RateLimitRetryOptions } from './http'
 
 // PixivClient
 export { PixivClient } from './client'

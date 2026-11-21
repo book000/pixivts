@@ -7,12 +7,12 @@ This is NOT a fork of [@ibaraki-douji/pixivts](https://www.npmjs.com/package/@ib
 ## ✨ Features
 
 - **Zero runtime dependencies** — no axios, no zod at runtime; uses native `fetch`
-- **Result-typed API** — every method returns `Result<T, PixivError>`; no thrown exceptions for API errors
+- **Result-typed API** — request methods return `Result<T, PixivError>`; API errors are not thrown
 - **Automatic token refresh** — exchanges the refresh token for an access token on startup, and retries on 401
 - **ESM + CJS dual output** — works in Node.js ESM/CJS and edge runtimes
 - **Paginated results** — `PaginatedResultAsync` with `.pages()` / `.items()` async generators for multi-page iteration
 - **Resource-based namespaces** — `illusts`, `novels`, `users`, `manga`, `ugoira`, `spotlight`, `images`
-- **Optional MySQL recorder** — `@book000/pixivts-db-mysql` persists every API response via Drizzle ORM
+- **Optional MySQL recorder** — `@book000/pixivts-db-mysql` persists every successful (2xx) API response via Drizzle ORM
 
 ## 📦 Packages
 

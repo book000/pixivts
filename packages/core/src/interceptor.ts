@@ -30,7 +30,10 @@ export interface ResponseRecord {
   /** Full request URL including query string (null if unavailable). */
   url: string | null
 
-  /** JSON-serialized request headers (null if unavailable). */
+  /**
+   * JSON-serialized request headers (null if unavailable).
+   * The `Authorization` header value is replaced with `[REDACTED]`.
+   */
   requestHeaders: string | null
 
   /** URL-encoded request body for POST requests (null for GET). */
@@ -50,11 +53,12 @@ export interface ResponseRecord {
 }
 
 /**
- * A callback invoked after every successful API response.
+ * A callback invoked after every successful (2xx) API response.
  *
- * Implementations should be non-blocking — awaiting a slow DB write here will
- * add latency to every API call.  Consider queueing the record and writing
- * asynchronously if persistence latency matters.
+ * The HTTP client does not await the returned promise, so a slow callback does
+ * not delay the API call. A rejected promise is silently discarded and does
+ * not fail the request, so implementations must handle and report their own
+ * errors.
  */
 export type ResponseInterceptor = (
   record: ResponseRecord

@@ -1,7 +1,6 @@
 # Pagination
 
-List endpoints return `PaginatedResultAsync`, which extends `ResultAsync` and
-adds two async generators.
+List endpoints return `PaginatedResultAsync`, which extends `ResultAsync` and adds two async generators. If fetching any page fails, both generators throw a `PixivFetchError` (its `pixivError` property holds the `PixivError`).
 
 ## `.items()` — stream every item across all pages
 
@@ -27,8 +26,7 @@ for await (const page of client.illusts.search({ word: 'hatsune miku' }).pages()
 
 ## Awaiting the first page directly
 
-`PaginatedResultAsync` is also directly `await`-able and returns only the
-first page as a `Result`:
+`PaginatedResultAsync` is also directly `await`-able and returns only the first page as a `Result`:
 
 ```typescript
 const page = await client.illusts.search({ word: 'cat' })
@@ -39,8 +37,7 @@ if (page.isOk) {
 
 ## Resuming from a saved cursor
 
-Use `parseNextUrl` to extract typed cursor parameters from `next_url` so you
-can persist a position and resume across restarts.
+Use `parseNextUrl` to extract typed cursor parameters from `nextUrl` so you can persist a position and resume across restarts.
 
 ```typescript
 import { parseNextUrl } from '@book000/pixivts'
@@ -60,8 +57,7 @@ if (page.isOk && page.value.nextUrl) {
 
 ### Available cursor fields
 
-`ParsedNextUrl` contains only the pagination cursor fields (not the full
-query string). All fields are `number | undefined`.
+`ParsedNextUrl` contains only the pagination cursor fields (not the full query string). All fields are `number | undefined`.
 
 | Field | Endpoint |
 |---|---|

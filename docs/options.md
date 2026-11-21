@@ -1,8 +1,6 @@
 # Option Constants
 
-All option types are exported as both a `const` object and a string literal
-type with the same name.
-Use whichever style you prefer — both are fully type-safe and interchangeable.
+Each option is exported as a `const` object. Parameters accept either the constant or the plain string literal, so use whichever style you prefer. The constants are values only; to name the literal union as a type, use `(typeof BookmarkRestrict)[keyof typeof BookmarkRestrict]`.
 
 ```typescript
 import { BookmarkRestrict, RankingMode, SearchSort } from '@book000/pixivts'
