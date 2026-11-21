@@ -11,10 +11,7 @@ export default defineConfig({
     hookTimeout: 30_000,
     // Run serially to avoid race conditions on shared MySQL state.
     pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
+    maxWorkers: 1,
+    isolate: false,
   },
 })
