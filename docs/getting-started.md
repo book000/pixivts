@@ -37,7 +37,7 @@ if (result.isOk) {
 }
 ```
 
-`PixivError` is a union discriminated by `type`: `rate_limit`, `auth_failed`, `network`, `api_error` and `parse_error`. The `.pages()` and `.items()` generators of paginated results (see [Pagination](pagination.md)) throw a `PixivFetchError` instead, because a generator cannot return a `Result`.
+`PixivError` is a union discriminated by `type`: `invalid_url`, `rate_limit`, `auth_failed`, `network`, `api_error` and `parse_error`. The `.pages()` and `.items()` generators of paginated results (see [Pagination](pagination.md)) throw a `PixivFetchError` instead, because a generator cannot return a `Result`.
 
 You can also use the chainable helpers:
 

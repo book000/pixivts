@@ -195,12 +195,11 @@ export class HttpClient {
    * @returns `ResultAsync<T, PixivError>`
    */
   getAbsolute<T>(absoluteUrl: string): ResultAsync<T, PixivError> {
-    // Extract the endpoint path for the interceptor record
     let endpoint: string
     try {
       endpoint = new URL(absoluteUrl).pathname
     } catch {
-      endpoint = absoluteUrl
+      return ResultAsync.fromResult(err({ type: 'invalid_url' }))
     }
     return this.#send<T>(absoluteUrl, 'GET', endpoint, undefined)
   }
@@ -225,6 +224,14 @@ export class HttpClient {
     body: string | undefined,
     allowRefresh = true
   ): Promise<Result<T, PixivError>> {
+    try {
+      const parsed = new URL(url)
+      if (parsed.origin !== BASE_URL || parsed.username || parsed.password) {
+        return err({ type: 'invalid_url' })
+      }
+    } catch {
+      return err({ type: 'invalid_url' })
+    }
     const maxRetries = Math.max(0, this.#retry.maxRetries)
     const waitMs = Math.max(0, this.#retry.waitMs)
 
@@ -243,6 +250,7 @@ export class HttpClient {
       try {
         response = await fetch(url, {
           method,
+          redirect: 'error',
           headers: requestHeaders,
           body: method === 'POST' ? body : undefined,
         })
