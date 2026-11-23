@@ -10,6 +10,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { drizzle } from 'drizzle-orm/mysql2'
 import type { ResponseRecord } from '@book000/pixivts'
 import * as schema from '../src/schema'
+import * as migrations from '../src/migrations'
 import {
   addResponse,
   createRecorderBundle,
@@ -198,6 +199,27 @@ describe('createResponseRecorder()', () => {
     await bundle.close()
     expect(mockEnd).toHaveBeenCalled()
   })
+
+  it.each([false, true])(
+    'closes the pool and preserves the bootstrap error when cleanup fails: %s',
+    async (cleanupFails) => {
+      const bootstrapError = new Error('bootstrap failed')
+      const bootstrap = vi
+        .spyOn(migrations, 'bootstrapSchema')
+        .mockRejectedValueOnce(bootstrapError)
+      if (cleanupFails) mockEnd.mockRejectedValueOnce(new Error('close failed'))
+
+      await expect(
+        createResponseRecorder({
+          host: 'localhost',
+          database: 'testdb',
+          bootstrap: true,
+        })
+      ).rejects.toBe(bootstrapError)
+      expect(mockEnd).toHaveBeenCalledOnce()
+      bootstrap.mockRestore()
+    }
+  )
 
   it('bootstrap=true executes a CREATE TABLE statement via client.query()', async () => {
     await createResponseRecorder({

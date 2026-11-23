@@ -143,7 +143,16 @@ export async function createResponseRecorder(
   const { pool, db } = createDbConnection(opts)
 
   if (opts.bootstrap) {
-    await bootstrapSchema(db)
+    try {
+      await bootstrapSchema(db)
+    } catch (error) {
+      try {
+        await pool.end()
+      } catch {
+        // Preserve the initialization error if cleanup also fails.
+      }
+      throw error
+    }
   }
 
   return createRecorderBundle(db, () => pool.end())
