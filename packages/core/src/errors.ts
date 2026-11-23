@@ -11,6 +11,10 @@
  */
 export type PixivError =
   | {
+      /** An authenticated request URL is invalid or outside the pixiv API origin. */
+      type: 'invalid_url'
+    }
+  | {
       /** The request hit the rate limit and exhausted all retries. */
       type: 'rate_limit'
       /** Retry-After duration parsed from the last 429 response (milliseconds). */

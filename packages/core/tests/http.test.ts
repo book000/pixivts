@@ -48,6 +48,24 @@ describe('parseRetryAfter()', () => {
 // ---------------------------------------------------------------------------
 
 describe('HttpClient.get()', () => {
+  it('rejects authenticated redirects without following them', async () => {
+    server.use(
+      http.get('https://app-api.pixiv.net/v1/redirect', () =>
+        HttpResponse.redirect('https://attacker.example/collect')
+      )
+    )
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+    try {
+      const result = await makeClient().get('/v1/redirect')
+      expect(result.isErr).toBe(true)
+      if (result.isErr) expect(result.error.type).toBe('network')
+      expect(fetchSpy).toHaveBeenCalledTimes(1)
+      expect(fetchSpy.mock.calls[0][1]).toMatchObject({ redirect: 'error' })
+    } finally {
+      fetchSpy.mockRestore()
+    }
+  })
+
   it('returns Ok on 200', async () => {
     server.use(
       http.get('https://app-api.pixiv.net/v1/test', () =>

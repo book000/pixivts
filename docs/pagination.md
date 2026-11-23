@@ -2,6 +2,8 @@
 
 List endpoints return `PaginatedResultAsync`, which extends `ResultAsync` and adds two async generators. If fetching any page fails, both generators throw a `PixivFetchError` (its `pixivError` property holds the `PixivError`).
 
+Continuation URLs must use the `https://app-api.pixiv.net` origin; other or malformed URLs produce an `invalid_url` error. Authenticated API requests do not follow redirects and report them as network errors.
+
 ## `.items()` — stream every item across all pages
 
 ```typescript
