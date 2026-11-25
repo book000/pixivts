@@ -203,8 +203,8 @@ importers:
         specifier: 10.15.0
         version: 10.15.0(supports-color@7.2.0)
       eslint-plugin-jsdoc:
-        specifier: 65.5.1
-        version: 65.5.1(eslint@10.15.0(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)
+        specifier: 65.5.2
+        version: 65.5.2(eslint@10.15.0(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)
       prettier:
         specifier: 3.10.1
         version: 3.10.1
@@ -2028,8 +2028,8 @@ packages:
     peerDependencies:
       eslint: '>=8'
 
-  eslint-plugin-jsdoc@65.5.1:
-    resolution: {integrity: sha512-B7nUzgyazhOtiznF1fOQOmYZpTlLEdgaCsVV67V1WgtXuqWSWm0kPS4auekdHoEQBEKahS11weUC+z5nkhIu9g==}
+  eslint-plugin-jsdoc@65.5.2:
+    resolution: {integrity: sha512-zndWp29JWTh2q1cWZgwKHiyB454BCwTti0mpk3qC6V0LF3a3YOJJAHDCqI82WmbGMNUqiZUlbZcGy3kkX5tq/w==}
     engines: {node: ^22.22.2 || >=24.15.0}
     peerDependencies:
       eslint: ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
@@ -5249,7 +5249,7 @@ snapshots:
       eslint: 10.15.0(supports-color@7.2.0)
       eslint-compat-utils: 0.5.1(eslint@10.15.0(supports-color@7.2.0))
 
-  eslint-plugin-jsdoc@65.5.1(eslint@10.15.0(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3):
+  eslint-plugin-jsdoc@65.5.2(eslint@10.15.0(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3):
     dependencies:
       '@es-joy/escodegen': 5.0.1
       '@es-joy/jsdoccomment': 1.2.0
