@@ -25,7 +25,7 @@
     "rimraf": "6.1.4",
     "semantic-release": "26.0.1",
     "typescript": "6.0.3",
-    "vitest": "5.1.1"
+    "vitest": "5.1.2"
   },
   "packageManager": "pnpm@12.23.0"
 }
