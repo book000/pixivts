@@ -11,6 +11,10 @@
  */
 export type PixivError =
   | {
+      /** An authenticated request URL is invalid or outside the pixiv API origin. */
+      type: 'invalid_url'
+    }
+  | {
       /** The request hit the rate limit and exhausted all retries. */
       type: 'rate_limit'
       /** Retry-After duration parsed from the last 429 response (milliseconds). */
@@ -23,9 +27,9 @@ export type PixivError =
       status: number
     }
   | {
-      /** A network-level error occurred (fetch threw). */
+      /** A network-level error occurred while fetching or consuming the response. */
       type: 'network'
-      /** The underlying error thrown by fetch. */
+      /** The underlying error thrown by fetch or the response body stream. */
       cause: unknown
     }
   | {
@@ -80,6 +84,61 @@ export class PixivFetchError extends Error {
     // Spread PixivError fields onto this instance for backwards compatibility
     // with code that matches thrown values via { type, status, ... }.
     Object.assign(this, pixivError)
+  }
+}
+
+// ---------------------------------------------------------------------------
+// PixivAuthError — thrown when the OAuth token refresh fails
+// ---------------------------------------------------------------------------
+
+const MAX_AUTH_BODY_LENGTH = 200
+
+/**
+ * Replaces control characters, redacts token-like strings and truncates to
+ * `MAX_AUTH_BODY_LENGTH` characters, so the result is safe to log on one line.
+ */
+function sanitizeAuthBody(raw: string): string {
+  const redacted = raw
+    .replaceAll(/\p{Cc}/gu, ' ')
+    .replaceAll(/[\w-]{20,}/g, '[REDACTED]')
+  return redacted.length > MAX_AUTH_BODY_LENGTH
+    ? `${redacted.slice(0, MAX_AUTH_BODY_LENGTH)}...`
+    : redacted
+}
+
+/**
+ * Thrown by `AuthManager.refresh()` when the token endpoint returns a non-200
+ * response. The message keeps the `Failed to refresh pixiv token: HTTP <status>`
+ * prefix and appends the error code when one is available (for example
+ * `invalid_grant` for a revoked refresh token).
+ */
+export class PixivAuthError extends Error {
+  /** HTTP status code of the token endpoint response. */
+  readonly status: number
+  /** OAuth `error` code or pixiv `errors.system.message`, if present in the JSON body. */
+  readonly code?: string
+  /** Truncated response body with token-like strings redacted. */
+  readonly body: string
+
+  constructor(status: number, rawBody: string) {
+    let code: string | undefined
+    try {
+      const json = JSON.parse(rawBody) as {
+        error?: unknown
+        errors?: { system?: { message?: unknown } }
+      }
+      const c = json.error ?? json.errors?.system?.message
+      if (typeof c === 'string') code = sanitizeAuthBody(c)
+    } catch {
+      // Not JSON; keep only the sanitized body.
+    }
+    super(
+      `Failed to refresh pixiv token: HTTP ${status}${code ? ` (${code})` : ''}`
+    )
+    this.name = 'PixivAuthError'
+    this.status = status
+    this.code = code
+    this.body = sanitizeAuthBody(rawBody)
   }
 }
 

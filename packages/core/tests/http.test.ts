@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from './msw/handlers'
 import { AuthManager } from '../src/auth'
@@ -48,6 +48,24 @@ describe('parseRetryAfter()', () => {
 // ---------------------------------------------------------------------------
 
 describe('HttpClient.get()', () => {
+  it('rejects authenticated redirects without following them', async () => {
+    server.use(
+      http.get('https://app-api.pixiv.net/v1/redirect', () =>
+        HttpResponse.redirect('https://attacker.example/collect')
+      )
+    )
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+    try {
+      const result = await makeClient().get('/v1/redirect')
+      expect(result.isErr).toBe(true)
+      if (result.isErr) expect(result.error.type).toBe('network')
+      expect(fetchSpy).toHaveBeenCalledTimes(1)
+      expect(fetchSpy.mock.calls[0][1]).toMatchObject({ redirect: 'error' })
+    } finally {
+      fetchSpy.mockRestore()
+    }
+  })
+
   it('returns Ok on 200', async () => {
     server.use(
       http.get('https://app-api.pixiv.net/v1/test', () =>
@@ -88,6 +106,100 @@ describe('HttpClient.get()', () => {
 
     expect(r.error.type).toBe('api_error')
     if (r.error.type === 'api_error') expect(r.error.status).toBe(404)
+  })
+
+  it('returns Err(parse_error) on 200 with malformed JSON', async () => {
+    server.use(
+      http.get(
+        'https://app-api.pixiv.net/v1/broken',
+        () =>
+          new HttpResponse('{broken json', {
+            headers: { 'content-type': 'application/json' },
+          })
+      )
+    )
+    const r = await makeClient().get('/v1/broken')
+    expect(r.isErr).toBe(true)
+    if (!r.isErr) return
+
+    expect(r.error).toMatchObject({
+      type: 'parse_error',
+      body: '{broken json',
+    })
+    expect((r.error as { cause?: unknown }).cause).toBeInstanceOf(SyntaxError)
+  })
+
+  it('still notifies the interceptor with the raw body on malformed 200 JSON', async () => {
+    server.use(
+      http.get(
+        'https://app-api.pixiv.net/v1/broken-intercepted',
+        () =>
+          new HttpResponse('{broken json', {
+            headers: { 'content-type': 'application/json' },
+          })
+      )
+    )
+    const bodies: string[] = []
+    const client = makeClient(makeAuth(), {
+      onResponse: (record) => {
+        bodies.push(record.responseBody)
+      },
+    })
+    const r = await client.get('/v1/broken-intercepted')
+    expect(r.isErr).toBe(true)
+    expect(bodies).toEqual(['{broken json'])
+  })
+
+  it('returns Ok with the empty string on 200 with an empty JSON body', async () => {
+    server.use(
+      http.get(
+        'https://app-api.pixiv.net/v1/empty',
+        () =>
+          new HttpResponse('', {
+            headers: { 'content-type': 'application/json' },
+          })
+      )
+    )
+    const r = await makeClient().get<string>('/v1/empty')
+    expect(r.isOk).toBe(true)
+    if (r.isOk) expect(r.value).toBe('')
+  })
+
+  it('returns Ok with raw text on 200 with a non-JSON content-type', async () => {
+    server.use(
+      http.get(
+        'https://app-api.pixiv.net/v1/text',
+        () =>
+          new HttpResponse('<html></html>', {
+            headers: { 'content-type': 'text/html' },
+          })
+      )
+    )
+    const r = await makeClient().get<string>('/v1/text')
+    expect(r.isOk).toBe(true)
+    if (r.isOk) expect(r.value).toBe('<html></html>')
+  })
+
+  it('keeps api_error with raw text body on 500 with malformed JSON', async () => {
+    server.use(
+      http.get(
+        'https://app-api.pixiv.net/v1/broken500',
+        () =>
+          new HttpResponse('{broken json', {
+            status: 500,
+            headers: { 'content-type': 'application/json' },
+          })
+      )
+    )
+    const r = await makeClient().get('/v1/broken500')
+    expect(r.isErr).toBe(true)
+    if (!r.isErr) return
+
+    expect(r.error).toEqual({
+      type: 'api_error',
+      status: 500,
+      body: '{broken json',
+    })
   })
 })
 
@@ -254,4 +366,189 @@ describe('response interceptor', () => {
     expect(rec.responseType).toBe('JSON')
     expect(rec.statusCode).toBe(200)
   })
+
+  it('redacts the Authorization header in the record while still sending the real token', async () => {
+    let sentAuthorization: string | null = null
+    server.use(
+      http.get('https://app-api.pixiv.net/v1/intercepted', ({ request }) => {
+        sentAuthorization = request.headers.get('authorization')
+        return HttpResponse.json({ data: 42 })
+      })
+    )
+
+    const records: { requestHeaders: string | null }[] = []
+    const client = makeClient(makeAuth('secret-access-token'), {
+      onResponse: (rec) => {
+        records.push(rec)
+      },
+    })
+
+    await client.get('/v1/intercepted')
+
+    expect(sentAuthorization).toBe('Bearer secret-access-token')
+    expect(records).toHaveLength(1)
+    const raw = records[0].requestHeaders ?? ''
+    expect(raw).not.toContain('secret-access-token')
+    expect((JSON.parse(raw) as Record<string, string>).Authorization).toBe(
+      '[REDACTED]'
+    )
+  })
+
+  it('keeps the other request headers unchanged in the record for POST', async () => {
+    server.use(
+      http.post('https://app-api.pixiv.net/v1/intercepted', () =>
+        HttpResponse.json({ data: 42 })
+      )
+    )
+
+    const records: { requestHeaders: string | null }[] = []
+    const client = makeClient(makeAuth('secret-access-token'), {
+      onResponse: (rec) => {
+        records.push(rec)
+      },
+    })
+
+    await client.post('/v1/intercepted', 'a=b')
+
+    expect(records).toHaveLength(1)
+    const headers = JSON.parse(records[0].requestHeaders ?? '') as Record<
+      string,
+      string
+    >
+    expect(headers).toEqual({
+      Host: 'app-api.pixiv.net',
+      'App-OS': 'ios',
+      'App-OS-Version': '14.6',
+      'User-Agent': 'PixivIOSApp/7.13.3 (iOS 14.6; iPhone13,2)',
+      'Accept-Language': 'ja',
+      Authorization: '[REDACTED]',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    })
+  })
+
+  it('redacts the record after a 401 refresh and retry', async () => {
+    let retriedAuthorization: string | null = null
+    server.use(
+      http.post('https://oauth.secure.pixiv.net/auth/token', () =>
+        HttpResponse.json({
+          user: { id: '42' },
+          response: {
+            access_token: 'refreshed-token',
+            refresh_token: 'new-rt',
+          },
+        })
+      ),
+      http.get('https://app-api.pixiv.net/v1/intercepted', ({ request }) => {
+        const authorization = request.headers.get('authorization')
+        if (authorization === 'Bearer refreshed-token') {
+          retriedAuthorization = authorization
+          return HttpResponse.json({ data: 42 })
+        }
+        return new HttpResponse(null, { status: 401 })
+      })
+    )
+
+    const records: { requestHeaders: string | null }[] = []
+    const client = makeClient(makeAuth('old-token'), {
+      onResponse: (rec) => {
+        records.push(rec)
+      },
+    })
+
+    const result = await client.get('/v1/intercepted')
+
+    expect(result.isOk).toBe(true)
+    expect(retriedAuthorization).toBe('Bearer refreshed-token')
+    expect(records).toHaveLength(1)
+    const raw = records[0].requestHeaders ?? ''
+    expect(raw).not.toContain('old-token')
+    expect(raw).not.toContain('refreshed-token')
+    expect((JSON.parse(raw) as Record<string, string>).Authorization).toBe(
+      '[REDACTED]'
+    )
+  })
+
+  it('does not fail the request when the interceptor throws synchronously', async () => {
+    server.use(
+      http.get('https://app-api.pixiv.net/v1/intercepted', () =>
+        HttpResponse.json({ data: 42 })
+      )
+    )
+
+    const client = makeClient(makeAuth(), {
+      onResponse: () => {
+        throw new Error('sync interceptor failure')
+      },
+    })
+
+    const result = await client.get('/v1/intercepted')
+    expect(result.isOk).toBe(true)
+  })
+
+  it('does not fail the request when the interceptor rejects', async () => {
+    server.use(
+      http.get('https://app-api.pixiv.net/v1/intercepted', () =>
+        HttpResponse.json({ data: 42 })
+      )
+    )
+
+    const client = makeClient(makeAuth(), {
+      onResponse: () => Promise.reject(new Error('async interceptor failure')),
+    })
+
+    const result = await client.get('/v1/intercepted')
+    expect(result.isOk).toBe(true)
+  })
+})
+
+describe('response body stream failures', () => {
+  it.each([200, 404])(
+    'returns a network error when reading a %i response fails',
+    async (status) => {
+      const cause = new Error('body stream interrupted')
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode('partial'))
+        },
+        pull(controller) {
+          controller.error(cause)
+        },
+      })
+      const fetchSpy = vi
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValue(new Response(stream, { status }))
+      try {
+        const result = await makeClient().get('/v1/test')
+        expect(result.isErr).toBe(true)
+        if (result.isErr)
+          expect(result.error).toEqual({ type: 'network', cause })
+      } finally {
+        fetchSpy.mockRestore()
+      }
+    }
+  )
+
+  it.each([401, 429])(
+    'returns a network error when cancelling a %i response fails',
+    async (status) => {
+      const cause = new Error('body cancellation failed')
+      const stream = new ReadableStream({
+        cancel() {
+          return Promise.reject(cause)
+        },
+      })
+      const fetchSpy = vi
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValue(new Response(stream, { status }))
+      try {
+        const result = await makeClient().get('/v1/test')
+        expect(result.isErr).toBe(true)
+        if (result.isErr)
+          expect(result.error).toEqual({ type: 'network', cause })
+        expect(fetchSpy).toHaveBeenCalledTimes(1)
+      } finally {
+        fetchSpy.mockRestore()
+      }
+    }
+  )
 })

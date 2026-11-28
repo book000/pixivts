@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from './msw/handlers'
 import { AuthManager } from '../src/auth'
@@ -128,6 +128,36 @@ describe('PaginatedResultAsync — single page', () => {
 // ---------------------------------------------------------------------------
 
 describe('PaginatedResultAsync — multiple pages', () => {
+  it.each([
+    'https://app-api.pixiv.net.attacker.example/page',
+    'https://attacker.example/page',
+    // eslint-disable-next-line unicorn/prefer-https -- Exercise rejection of an HTTP downgrade.
+    'http://app-api.pixiv.net/page',
+    'https://app-api.pixiv.net:444/page',
+    'https://user@app-api.pixiv.net/page',
+    'not a URL',
+  ])('rejects an unsafe continuation URL: %s', async (nextUrl) => {
+    const httpClient = makeHttp()
+    const firstPage: ItemPage = { items: [], nextUrl }
+    const paginated = PaginatedResultAsync.fromResultAsync(
+      ResultAsync.fromResult(ok(firstPage)),
+      httpClient,
+      (page) => page.items
+    )
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+    try {
+      const pages = paginated.pages()
+      await expect(pages.next()).resolves.toMatchObject({ value: firstPage })
+      await expect(pages.next()).rejects.toMatchObject({
+        name: 'PixivFetchError',
+        pixivError: { type: 'invalid_url' },
+      })
+      expect(fetchSpy).not.toHaveBeenCalled()
+    } finally {
+      fetchSpy.mockRestore()
+    }
+  })
+
   it('pages() follows next_url across three pages', async () => {
     const httpClient = makeHttp()
 

@@ -3,9 +3,9 @@
  * CI guard: verifies that the built .d.ts files do not contain any reference to zod.
  *
  * zod is intentionally a devDependency of @book000/pixivts. Public types are
- * generated via z.infer<> and should be structurally inlined by rolldown-plugin-dts
- * (used by tsdown). If zod leaks into the output .d.ts files, downstream consumers
- * would need to install zod just to use our types.
+ * hand-written interfaces in src/types.ts and the zod schemas in src/schemas/
+ * are not exported from the barrel. If zod leaks into the output .d.ts files,
+ * downstream consumers would need to install zod just to use our types.
  *
  * This script fails the build if any of the following patterns appear in dist/*.d.ts:
  *   - import("zod")
@@ -67,8 +67,8 @@ for (const file of collectDts(CORE_DIST)) {
 if (hadError) {
   console.error(
     '\nzod leaked into the distributed .d.ts files. ' +
-      'Ensure all public types are exported as type-only re-exports of z.infer<> results ' +
-      'so that rolldown-plugin-dts can inline them structurally.'
+      'Ensure the public barrel (src/index.ts) exports only the hand-written types ' +
+      'from src/types.ts and no zod schema or z.infer<> type.'
   )
   process.exit(1)
 }

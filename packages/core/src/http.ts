@@ -13,6 +13,7 @@ import {
   apiError,
   authFailedError,
   networkError,
+  parseError,
   rateLimitError,
 } from './errors'
 import type { ResponseInterceptor } from './interceptor'
@@ -49,6 +50,20 @@ export interface HttpResponse<T> {
 }
 
 const DEFAULT_RETRY: RateLimitRetryOptions = { maxRetries: 3, waitMs: 10_000 }
+
+const REDACTED = '[REDACTED]'
+
+/** Returns a copy of the headers with the `Authorization` value masked. */
+function redactRequestHeaders(
+  headers: Record<string, string>
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(headers).map(([name, value]) => [
+      name,
+      name.toLowerCase() === 'authorization' ? REDACTED : value,
+    ])
+  )
+}
 
 const BASE_URL = 'https://app-api.pixiv.net'
 
@@ -163,9 +178,11 @@ export class HttpClient {
       }),
       networkError
     ).andThen((response) => {
-      return response.ok
-        ? ResultAsync.fromResult(ok(response) as Result<Response, PixivError>)
-        : ResultAsync.fromResult(err(apiError(response.status, null)))
+      return ResultAsync.fromResult(
+        response.ok
+          ? (ok(response) as Result<Response, PixivError>)
+          : err(apiError(response.status, null))
+      )
     })
   }
 
@@ -178,12 +195,11 @@ export class HttpClient {
    * @returns `ResultAsync<T, PixivError>`
    */
   getAbsolute<T>(absoluteUrl: string): ResultAsync<T, PixivError> {
-    // Extract the endpoint path for the interceptor record
     let endpoint: string
     try {
       endpoint = new URL(absoluteUrl).pathname
     } catch {
-      endpoint = absoluteUrl
+      return ResultAsync.fromResult(err({ type: 'invalid_url' }))
     }
     return this.#send<T>(absoluteUrl, 'GET', endpoint, undefined)
   }
@@ -208,6 +224,14 @@ export class HttpClient {
     body: string | undefined,
     allowRefresh = true
   ): Promise<Result<T, PixivError>> {
+    try {
+      const parsed = new URL(url)
+      if (parsed.origin !== BASE_URL || parsed.username || parsed.password) {
+        return err({ type: 'invalid_url' })
+      }
+    } catch {
+      return err({ type: 'invalid_url' })
+    }
     const maxRetries = Math.max(0, this.#retry.maxRetries)
     const waitMs = Math.max(0, this.#retry.waitMs)
 
@@ -226,6 +250,7 @@ export class HttpClient {
       try {
         response = await fetch(url, {
           method,
+          redirect: 'error',
           headers: requestHeaders,
           body: method === 'POST' ? body : undefined,
         })
@@ -233,9 +258,16 @@ export class HttpClient {
         return err(networkError(fetchError))
       }
 
+      if (response.status === 429 || response.status === 401) {
+        try {
+          await response.body?.cancel()
+        } catch (error: unknown) {
+          return err(networkError(error))
+        }
+      }
+
       // 429 Rate limit
       if (response.status === 429) {
-        await response.body?.cancel()
         const retryAfterMs = parseRetryAfter(
           response.headers.get('Retry-After'),
           waitMs
@@ -252,7 +284,6 @@ export class HttpClient {
 
       // 401 Auth failed → try token refresh once
       if (response.status === 401) {
-        await response.body?.cancel()
         if (allowRefresh) {
           try {
             await this.#auth.refresh()
@@ -267,13 +298,27 @@ export class HttpClient {
 
       // Parse response body
       const contentType = response.headers.get('content-type') ?? ''
-      const text = await response.text()
+      let text: string
+      try {
+        text = await response.text()
+      } catch (error: unknown) {
+        return err(networkError(error))
+      }
       let data: T
+      let malformedJson: PixivError | undefined
       const isJson = contentType.includes('application/json')
       if (isJson) {
         try {
           data = camelizeKeys(JSON.parse(text)) as T
-        } catch {
+        } catch (error) {
+          // An empty 2xx body (e.g. bookmark/follow delete) is not malformed JSON.
+          if (response.ok && text.trim() !== '') {
+            malformedJson = parseError(
+              `Malformed JSON in ${response.status} response from ${endpoint}`,
+              text,
+              error
+            )
+          }
           data = text as unknown as T
         }
       } else {
@@ -298,22 +343,26 @@ export class HttpClient {
       }
 
       // Notify interceptor (fire-and-forget, errors do not fail the request)
-      if (this.#interceptor) {
+      const interceptor = this.#interceptor
+      if (interceptor) {
         const record: ResponseRecord = {
           method,
           endpoint,
           url: response.url || url,
-          requestHeaders: JSON.stringify(requestHeaders),
+          requestHeaders: JSON.stringify(redactRequestHeaders(requestHeaders)),
           requestBody: body ?? null,
           responseType: isJson ? 'JSON' : 'TEXT',
           statusCode: response.status,
           responseHeaders: JSON.stringify(responseHeaders),
           responseBody: text,
         }
-        Promise.resolve(this.#interceptor(record)).catch(() => undefined)
+        // eslint-disable-next-line unicorn/prefer-promise-try -- Promise.try is ES2025; the library targets ES2022
+        new Promise<void>((resolve) => {
+          resolve(interceptor(record))
+        }).catch(() => undefined)
       }
 
-      return ok(httpResponse.data)
+      return malformedJson ? err(malformedJson) : ok(httpResponse.data)
     }
 
     return err(rateLimitError(lastRetryAfterMs))

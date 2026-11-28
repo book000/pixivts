@@ -1,6 +1,6 @@
 # MySQL Response Recorder
 
-`@book000/pixivts-db-mysql` is an optional add-on package that persists every pixiv API response to a MySQL database via [Drizzle ORM](https://orm.drizzle.team/).
+`@book000/pixivts-db-mysql` is an optional add-on package that persists every successful (2xx) pixiv API response to a MySQL database via [Drizzle ORM](https://orm.drizzle.team/). Error responses, network failures and image downloads (`client.images.fetch`) are not recorded.
 
 ## Installation
 
@@ -8,7 +8,7 @@
 npm install @book000/pixivts-db-mysql
 ```
 
-Requires MySQL 5.7+ or MariaDB 10.3+.
+The integration tests run against the MySQL service image configured in `.github/workflows/nodejs-ci.yml`. Other MySQL-compatible servers are untested.
 
 ## Quick Start
 
@@ -28,7 +28,7 @@ const client = await PixivClient.of(process.env.PIXIV_REFRESH_TOKEN!, {
   onResponse: interceptor,
 })
 
-// Every API call is now persisted automatically
+// Every successful API call is now persisted automatically
 const result = await client.illusts.detail({ illustId: 12345 })
 // ...
 
@@ -81,7 +81,38 @@ Responses are stored in a single `responses` table.
 | `response_body` | LONGTEXT | Raw response body |
 | `created_at` | DATETIME(3) | Timestamp |
 
-A unique composite index on `(method, endpoint, status_code, url_hash)` ensures each unique request/response is stored only once.
+A unique composite index on `(method, endpoint, status_code, url_hash)` keeps one row per combination: if a later response to the same request URL has the same method, endpoint and status code, it is silently ignored (`ON DUPLICATE KEY UPDATE id = id`) and the first recorded response is kept. The `created_at` column is written through a connection pool configured with the fixed time zone `+09:00`.
+
+### Credential redaction
+
+The `Authorization` header value is stored as `[REDACTED]` in `request_headers`, so the access token is never written to the database.
+
+Rows recorded by earlier versions may still contain `Authorization: Bearer <token>`. The library never modifies existing rows; scrub them deliberately with the statement below (requires MySQL 5.7+ or MariaDB 10.2.3+ for the JSON functions):
+
+```sql
+UPDATE responses
+SET request_headers = JSON_SET(request_headers, '$.Authorization', '[REDACTED]')
+WHERE id > 0
+  AND CASE
+    WHEN JSON_VALID(request_headers)
+      THEN JSON_CONTAINS_PATH(request_headers, 'one', '$.Authorization')
+    ELSE 0
+  END;
+```
+
+The `id > 0` condition is a key condition that keeps the statement valid when `sql_safe_updates` is enabled. The `CASE` expression guarantees that `JSON_CONTAINS_PATH` is evaluated only for valid JSON.
+
+Notes:
+
+- `JSON_SET` re-serializes the document, so key spacing and order in scrubbed rows may change. The `Authorization` value is the only semantic change.
+- The statement rewrites every matching row. On large tables, run it during a maintenance window or in `id` ranges.
+- Rows whose `request_headers` is not valid JSON are skipped. After the scrub, verify that nothing is left; the expected result is `0`:
+
+  ```sql
+  SELECT COUNT(*) FROM responses WHERE request_headers LIKE '%Bearer %';
+  ```
+
+- Database backups and exports taken before the scrub still contain the tokens. Purge them or treat them as secrets, and revoke the tokens if those copies may have been exposed.
 
 ## Query Helpers
 

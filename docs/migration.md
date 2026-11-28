@@ -25,7 +25,7 @@ const client = await PixivClient.of(refreshToken)
 
 ## Error Handling
 
-The previous version threw errors on failure. The current version returns `Result<T, PixivError>` — no thrown exceptions.
+The previous version threw errors on failure. The current version returns `Result<T, PixivError>` from request methods, so API errors are not thrown. (`PixivClient.of` still rejects with a `PixivAuthError` if the initial token exchange fails, and the `.pages()` / `.items()` generators throw a `PixivFetchError`.)
 
 ```typescript
 // ≤ 0.55.1
@@ -99,7 +99,7 @@ for await (const page of client.illusts.search({ word: 'hatsune miku' }).pages()
 
 // ≥ 0.56.2 — iterate all items across pages (async generator — throws on fetch error)
 for await (const illust of client.illusts.search({ word: 'hatsune miku' }).items()) {
-  console.log(illust) // IllustSimple
+  console.log(illust) // PixivIllustItem
 }
 ```
 
@@ -233,11 +233,7 @@ The `@book000/pixivts-db-mysql` package continues to save **raw snake_case** res
 
 ## `novels.text()`: string → `WebviewNovel`
 
-`client.novels.text()` previously resolved to the raw HTML body of the WebView
-novel page. It now parses that page and resolves to a structured
-`WebviewNovel` object (title, tags, rating counters, series navigation, body
-text, etc.), matching the response shape of other endpoints in this library.
-This is a **breaking change**.
+`client.novels.text()` previously resolved to the raw HTML body of the WebView novel page. It now parses that page and resolves to a structured `WebviewNovel` object (title, tags, rating counters, series navigation, body text, etc.), matching the response shape of other endpoints in this library. This is a **breaking change**.
 
 ```typescript
 // ≤ 0.62.x

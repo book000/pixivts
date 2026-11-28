@@ -56,28 +56,6 @@ export interface RecorderOptions extends ConnectionOptions {
 }
 
 // ---------------------------------------------------------------------------
-// Factory
-// ---------------------------------------------------------------------------
-
-/**
- * Creates a response recorder that persists every pixiv API response to MySQL.
- *
- * @param opts - Connection and bootstrapping options
- * @returns `{ interceptor, db, close }`
- *
- * @example
- * ```ts
- * const { interceptor, close } = await createResponseRecorder({
- *   host: 'localhost',
- *   database: 'pixivts',
- *   bootstrap: true,
- * })
- * const client = await PixivClient.of(token, { onResponse: interceptor })
- * // ...
- * await close()
- * ```
- */
-// ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
 
@@ -142,7 +120,7 @@ export function createRecorderBundle(
 }
 
 /**
- * Creates a response recorder that persists every pixiv API response to MySQL.
+ * Creates a response recorder that persists every successful (2xx) pixiv API response to MySQL.
  *
  * @param opts - Connection and bootstrapping options
  * @returns `{ interceptor, db, close }`
@@ -165,7 +143,16 @@ export async function createResponseRecorder(
   const { pool, db } = createDbConnection(opts)
 
   if (opts.bootstrap) {
-    await bootstrapSchema(db)
+    try {
+      await bootstrapSchema(db)
+    } catch (error) {
+      try {
+        await pool.end()
+      } catch {
+        // Preserve the initialization error if cleanup also fails.
+      }
+      throw error
+    }
   }
 
   return createRecorderBundle(db, () => pool.end())
@@ -299,5 +286,5 @@ export async function getEndpoints(
     )
     .orderBy(desc(count()))
 
-  return rows.map((r) => ({ ...r, count: r.count }))
+  return rows
 }
